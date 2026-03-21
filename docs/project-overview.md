@@ -1,107 +1,74 @@
-# Tổng quan dự án
+# Tổng quan dự án: Hệ thống Chia sẻ Tranh minh họa & Truyện tranh (Pixiv Clone)
 
-Xây dựng hệ thống website chia sẻ tranh minh họa và truyện tranh trực tuyến với các tính năng xã hội. (tương tự Pixiv)
+Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và khám phá các tác phẩm minh họa (illustrations), truyện tranh (manga/comic) và tiểu thuyết (novels) trực tuyến, tích hợp các tính năng xã hội và công nghệ AI hiện đại.
 
-## Các tính năng chính
-
-- Quản lý các tác phẩm minh họa và truyện tranh của người dùng (upload, chỉnh sửa, phân loại)
-- Quản lý người dùng và profile cá nhân
-- Quản lý tag nâng cao, tìm kiếm và hệ thống gợi ý nội dung
-- Quản lý hệ thống tương tác xã hội (like, bookmark, comment, follow, chia sẻ)
-- Hệ thống ranking (daily/weekly/monthly) và khám phá tác phẩm
-- Gallery cá nhân, bộ sưu tập và theo dõi người dùng khác
-- Thanh toán commission (nếu có yêu cầu) và quản lý bản quyền cơ bản
-
-### Tính năng AI tích hợp
-
-- **Tự động tag và mô tả tác phẩm (Auto-tagging & Captioning):** AI phân tích hình ảnh upload để gợi ý tag phù hợp (anime, chibi, landscape, NSFW flag...) và tạo caption ngắn gọn.
-- **Gợi ý nội dung cá nhân hóa nâng cao (Advanced AI Recommendation):** Sử dụng embedding hình ảnh và tag để recommend tác phẩm tương tự, nghệ sĩ phù hợp, hoặc "For You" feed dựa trên sở thích người dùng.
-- **Nâng cấp hình ảnh tự động (AI Upscaling & Enhancement):** Cho phép upscale độ phân giải, sharpen, denoise hình cũ hoặc low-res (hỗ trợ artist scan tranh tay).
-- **Phát hiện và gắn nhãn tác phẩm AI-generated (AI Detection & Labeling):** Tự động kiểm tra upload có phải nội dung AI gen không, gắn label "AI-assisted" hoặc flag để duy trì tính minh bạch cộng đồng.
-- **AI gợi ý ý tưởng và variation (AI Prompt Suggester & Variation):** Từ sketch hoặc tag, gợi ý prompt chi tiết, variation style, hoặc colorization tự động cho lineart (anime/manga style).
-- **AI Art Assistant Agent:** Chatbot thông minh hỗ trợ sáng tạo (gợi ý ý tưởng, pose, color palette, feedback cải thiện tác phẩm, recommend artist tương tự trên nền tảng).
-- …
-
-## Các phân quyền người dùng của hệ thống
-
-- **Admin**
-- **Người dùng thành viên** (logged-in user: có thể đăng tải tác phẩm, tương tác full, follow, bookmark...)
-- **Khách vãng lai** (guest: xem nội dung thôi, không đăng tải hoặc tương tác sâu)
-
-## Công nghệ sử dụng dự kiến
-
-- **Front-end:** Vue.js
+## 1. Công nghệ sử dụng
+- **Front-end:** Vue.js (Vite, Pinia, Vue Router)
 - **Back-end:** Node.js + Express.js
-- **Database:** MongoDB
-- …
---------------
-Phân tích và Danh sách Chức năng Xây dựng 
-1. Hệ thống Quản lý Người dùng (User Management)
-• Đăng ký/Đăng nhập: Hỗ trợ Email, Google, Facebook, Twitter.
+- **Database:** MongoDB (Mongoose)
+- **Công nghệ bổ trợ:** CDN cho lưu trữ ảnh, WebGL cho các công cụ vẽ online (nếu có).
 
-• Hồ sơ Cá nhân (Artist Profile):
+## 2. Phân quyền người dùng
+- **Khách vãng lai (Guest):** Xem nội dung công khai, tìm kiếm cơ bản, không thể tương tác sâu (like, comment, upload).
+- **Người dùng thành viên (Member):** Đăng tải tác phẩm, tương tác đầy đủ (like, bookmark, follow, comment), quản lý gallery cá nhân.
+- **Thành viên Premium:** Hưởng các đặc quyền như tìm kiếm nâng cao (lọc theo lượt bookmark), ẩn quảng cáo, xem lịch sử duyệt web chi tiết.
+- **Quản trị viên (Admin):** Kiểm duyệt nội dung, quản lý người dùng, theo dõi thống kê hệ thống và xử lý báo cáo vi phạm.
 
-  • Avatar, Cover image, Bio.
+## 3. Danh sách chức năng chi tiết
 
-  • Liên kết mạng xã hội (Twitter, Instagram, Portfolio).
+### A. Quản lý Người dùng (User Management)
+- **Đăng ký/Đăng nhập:** Hỗ trợ Email và định hướng tích hợp OAuth (Google, Facebook, Twitter).
+- **Hồ sơ Cá nhân (Artist Profile):**
+    - Tùy chỉnh Avatar, Cover image, Bio.
+    - Liên kết mạng xã hội và Portfolio cá nhân.
+    - Thống kê lượt bài đăng, lượt yêu thích và danh sách tác phẩm.
+- **Hệ thống Theo dõi (Follow System):** Theo dõi họa sĩ để cập nhật bài đăng mới trên Feed tin tức cá nhân.
 
-  • Danh sách tác phẩm đã đăng, danh sách yêu thích (Bookmarks).
+### B. Quản lý Tác phẩm (Artwork Management)
+- **Đăng tải đa dạng nội dung:**
+    - **Illustrations:** Ảnh đơn hoặc bộ sưu tập ảnh (Gallery).
+    - **Manga/Comic:** Hỗ trợ xem dạng cuộn hoặc lật trang.
+    - **Ugoira:** Định dạng ảnh động dựa trên chuỗi khung hình.
+    - **Novels:** Trình soạn thảo và đọc truyện chữ với giao diện tùy chỉnh.
+- **Hệ thống Tags nâng cao:**
+    - Gắn thẻ đa ngôn ngữ, gợi ý thẻ thông minh.
+    - Khóa thẻ (Tag lock) để bảo vệ tính chính xác của dữ liệu.
+- **Cài đặt hiển thị & Bảo mật:**
+    - Chế độ Công khai/Riêng tư.
+    - Phân loại độ tuổi (All ages, R-18, R-18G).
+    - Quản lý bản quyền cơ bản cho tác giả.
 
-• Hệ thống Theo dõi (Follow): Người dùng có thể theo dõi họa sĩ để cập nhật bài đăng mới trên Feed.
+### C. Tính năng AI tích hợp
+- **Auto-tagging & Captioning:** Tự động phân tích hình ảnh để gợi ý tag và tạo mô tả ngắn.
+- **AI Recommendation:** Hệ thống "For You" dựa trên embedding hình ảnh và hành vi người dùng.
+- **AI Enhancement:** Công cụ nâng cấp độ phân giải (Upscaling) và làm nét ảnh.
+- **AI Detection:** Tự động phát hiện và gắn nhãn các tác phẩm được tạo bởi AI (AI-generated labeling).
+- **AI Art Assistant:** Chatbot hỗ trợ gợi ý ý tưởng, pose tranh, hoặc phối màu.
 
-• Gói thành viên Premium: Chức năng tìm kiếm nâng cao, ẩn quảng cáo, xem lịch sử duyệt web.
+### D. Tương tác và Cộng đồng
+- **Yêu thích & Lưu trữ:** Bookmark tác phẩm vào các thư mục công khai hoặc riêng tư.
+- **Bình luận & Phản hồi:** Tương tác dưới mỗi bài đăng bằng văn bản hoặc emoji.
+- **Bảng xếp hạng (Ranking):** Tính toán top tác phẩm theo ngày, tuần, tháng (Daily/Weekly/Monthly).
+- **Ủy thác (Commission/Requests):** Hệ thống cho phép người dùng đặt hàng họa sĩ vẽ theo yêu cầu.
 
-2. Quản lý Tác phẩm (Artwork Management)
-• Đăng tải Đa nội dung:
+### E. Tìm kiếm & Khám phá
+- **Bộ lọc nâng cao:** Tìm kiếm theo thẻ, tỉ lệ khung hình, số lượt bookmark (vd: 100+, 500+ users), và thời gian.
+- **Khám phá (Discovery):** Thuật toán hiển thị các tác phẩm tương tự (Related Works) dựa trên tag và nội dung.
 
-  • Illustrations: Ảnh đơn hoặc bộ sưu tập ảnh.
+### F. Quản trị & Kỹ thuật
+- **Dashboard quản trị:** Kiểm duyệt nội dung, quản lý người dùng và thống kê lưu lượng.
+- **Báo cáo (Report):** Hệ thống xử lý báo cáo vi phạm bản quyền hoặc nội dung không phù hợp.
+- **Tối ưu hóa:** Sử dụng CDN để tải ảnh chất lượng cao tốc độ cao.
+- **Sự kiện/Cuộc thi (Contests):** Trang chuyên biệt cho các cuộc thi vẽ theo chủ đề.
 
-  • Manga/Comic: Hỗ trợ xem theo dạng cuộn hoặc lật trang.
+## 4. Gợi ý Cấu trúc Cơ sở Dữ liệu (Sơ lược)
 
-  • Ugoira: Định dạng ảnh động (Animation) dựa trên chuỗi khung hình.
-
-  • Novels: Soạn thảo và đọc truyện chữ với giao diện tùy chỉnh (font, cỡ chữ).
-
-• Hệ thống Thẻ (Tagging System):
-
-  • Gắn thẻ cho tác phẩm.
-
-  • Thẻ đa ngôn ngữ (Translation tags).
-
-  • Khóa thẻ (Tag lock) để tránh chỉnh sửa sai lệch từ cộng đồng.
-
-• Phân loại nội dung: Gắn nhãn nội dung phù hợp lứa tuổi (All ages, R-18, R-18G).
-
-3. Tương tác và Cộng đồng
-• Yêu thích (Bookmarks): Lưu tác phẩm theo chế độ Công khai hoặc Riêng tư.
-
-• Bình luận & Phản hồi: Cho phép bình luận bằng văn bản hoặc emoji.
-
-• Hệ thống Bảng xếp hạng (Ranking): Tính toán theo ngày, tuần, tháng cho các hạng mục (Illust, Manga, Rookie).
-
-• Feed tin tức: Hiển thị hoạt động của những họa sĩ đang theo dõi.
-
-• Yêu cầu vẽ (Requests/Commission): Hệ thống cho phép người dùng đặt hàng họa sĩ vẽ theo yêu cầu.
-
-4. Công cụ Tìm kiếm & Khám phá
-• Bộ lọc tìm kiếm: Lọc theo số lượng Bookmark (vd: 100+ users bookmarked), tỉ lệ ảnh, thời gian.
-
-• Gợi ý (Discovery): Thuật toán hiển thị các tác phẩm tương tự dựa trên hành vi người dùng.
-
-• Tìm kiếm theo thẻ liên quan: Gợi ý các từ khóa phổ biến.
-
-5. Chức năng Kỹ thuật & Bổ trợ
-• CDN & Lưu trữ: Tối ưu hóa tốc độ tải ảnh chất lượng cao.
-
-• Công cụ vẽ online (Sketch): Tích hợp trình vẽ cơ bản trên trình duyệt.
-
-• Sự kiện & Cuộc thi (Contests): Trang chuyên biệt cho các cuộc thi vẽ theo chủ đề.
-
-• API cho App Mobile: Hỗ trợ đồng bộ hóa trên nhiều nền tảng.
-
-6. Quản trị & Bảo mật
-• Hệ thống báo cáo (Report): Báo cáo vi phạm bản quyền hoặc nội dung không phù hợp.
-
-• Dashboard quản trị: Kiểm duyệt nội dung, quản lý người dùng, thống kê lưu lượng.
-------
-1. Hệ thống Quản lý Người dùng (User Management)Đây là nền móng để xây dựng cộng đồng.Đăng ký/Đăng nhập: Hỗ trợ Email, mạng xã hội.Hồ sơ nghệ sĩ (Artist Profile): Tên, ảnh đại diện (Avatar), ảnh bìa, giới thiệu bản thân, các liên kết mạng xã hội khác.Hệ thống Theo dõi (Follow System): Người dùng có thể theo dõi họa sĩ để nhận thông báo khi có tác phẩm mới.Phân quyền: Tài khoản thường và tài khoản Premium (có thêm các quyền lợi như tìm kiếm nâng cao, xem lịch sử duyệt).2. Hệ thống Quản lý Tác phẩm (Artwork Management)Đây là tính năng cốt lõi của website.Đăng tải đa phương tiện: * Illustrations: Ảnh đơn hoặc nhiều ảnh (Manga/Gallery).Ugoira: Định dạng ảnh động đặc trưng của Pixiv (chuỗi các khung hình kết hợp file âm thanh).Novels: Hỗ trợ soạn thảo và đăng tải truyện chữ.Gắn thẻ (Tagging System): Đây là "xương sống" để phân loại. Cho phép người dùng và cộng đồng gắn thẻ, gợi ý thẻ liên quan.Cài đặt hiển thị: Chế độ công khai, riêng tư, hoặc giới hạn độ tuổi (R-18).3. Chức năng Tương tác & Cộng đồngYêu thích & Lưu trữ (Bookmarks/Likes): Lưu lại các tác phẩm yêu thích vào bộ sưu tập cá nhân.Bình luận (Comments): Cho phép thảo luận dưới mỗi tác phẩm.Bảng xếp hạng (Rankings): Tự động tính toán các tác phẩm nổi bật theo ngày, tuần, tháng dựa trên lượt view và like.Khám phá (Discovery): Gợi ý tác phẩm dựa trên sở thích và hành vi của người dùng.4. Công cụ Tìm kiếm & Lọc (Search & Filtering)Tìm kiếm theo thẻ (Tag Search): Tìm chính xác hoặc tìm theo từ khóa liên quan.Bộ lọc nâng cao: Lọc theo kích thước ảnh, tỉ lệ khung hình (ngang/dọc), số lượt bookmark, hoặc theo thời gian đăng.5. Các tính năng Bổ trợ (Nâng cao)Nếu bạn muốn làm một bản "clone" hoàn chỉnh, bạn cần cân nhắc:Pixiv Sketch: Công cụ vẽ trực tuyến bằng WebGL/WebAssembly.Hệ thống Event/Contest: Tổ chức các cuộc thi vẽ theo chủ đề.Gợi ý AI: Tự động gắn thẻ hoặc phát hiện nội dung vi phạm bằng trí tuệ nhân tạo.Gợi ý Cấu trúc Cơ sở Dữ liệu (Sơ lược)Để bắt đầu lập trình, bạn có thể hình dung các bảng dữ liệu chính như sau:TableCác trường chính (Fields)Usersid, username, email, password_hash, bio, avatar_urlArtworksid, user_id, title, description, type (illust/manga/ugoira), view_countImagesid, artwork_id, image_path, order (cho manga nhiều trang)Tagsid, tag_name, usage_countBookmarksuser_id, artwork_id, created_atFollowsfollower_id, following_id
+| Table/Collection | Các trường chính (Fields) |
+|---|---|
+| **Users** | id, username, email, password_hash, bio, avatar_url, role, isPremium |
+| **Artworks** | id, user_id, title, description, type (illust/manga/ugoira), view_count, age_rating |
+| **Images** | id, artwork_id, image_path, page_order (cho manga) |
+| **Tags** | id, tag_name, usage_count, translations |
+| **Bookmarks** | user_id, artwork_id, folder_name, is_private |
+| **Follows** | follower_id, following_id |
+| **Comments** | id, artwork_id, user_id, content, created_at |

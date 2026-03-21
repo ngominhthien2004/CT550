@@ -8,6 +8,8 @@ const { errorHandler, notFound } = require('./middlewares/error.middleware');
 
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
+const artworkRoutes = require('./routes/artwork.routes');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -24,6 +26,9 @@ app.get('/api', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/artworks', artworkRoutes);
+
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 app.use(notFound);
 app.use(errorHandler);

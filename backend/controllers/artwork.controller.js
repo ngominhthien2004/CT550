@@ -1,0 +1,133 @@
+const Artwork = require('../models/Artwork');
+const Tag = require('../models/Tag');
+const fs = require('fs');
+const path = require('path');
+
+// Create Artwork
+const createArtwork = async (req, res, next) => {
+    try {
+        const { title, description, type, ageRating, tags } = req.body;
+        
+        if (!req.files || req.files.length === 0) {
+            res.status(400);
+            return next(new Error('Please upload at least one image'));
+        }
+
+        const images = req.files.map(file => `/uploads/${file.filename}`);
+
+        // Handle tags (simplified for phase 1 - convert strings to Tag IDs or just use what is sent)
+        // For now, let's assume tags are sent as an array of strings or existing IDs
+        let tagIds = [];
+        if (tags) {
+            const tagList = Array.isArray(tags) ? tags : [tags];
+            for (const tagName of tagList) {
+                let tag = await Tag.findOne({ name: tagName.toLowerCase() });
+                if (!tag) {
+                    tag = await Tag.create({ name: tagName.toLowerCase() });
+                }
+                tagIds.push(tag._id);
+                // Increment usage count
+                tag.usageCount += 1;
+                await tag.save();
+            }
+        }
+
+        const artwork = await Artwork.create({
+            user: req.user._id,
+            title,
+            description,
+            type,
+            images,
+            tags: tagIds,
+            ageRating
+        });
+
+        res.status(201).json(artwork);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Get All Artworks (with basic filtering)
+const getArtworks = async (req, res, next) => {
+    try {
+        const { type, ageRating, user, tag } = req.query;
+        const query = {};
+
+        if (type) query.type = type;
+        if (ageRating) query.ageRating = ageRating;
+        if (user) query.user = user;
+        if (tag) {
+            const foundTag = await Tag.findOne({ name: tag.toLowerCase() });
+            if (foundTag) query.tags = foundTag._id;
+        }
+
+        const artworks = await Artwork.find(query)
+            .populate('user', 'username displayName avatar')
+            .populate('tags', 'name')
+            .sort({ createdAt: -1 });
+
+        res.json(artworks);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Get Artwork By ID
+const getArtworkById = async (req, res, next) => {
+    try {
+        const artwork = await Artwork.findById(req.params.id)
+            .populate('user', 'username displayName avatar socialLinks')
+            .populate('tags', 'name translations');
+
+        if (artwork) {
+            // Increment view count
+            artwork.viewCount += 1;
+            await artwork.save();
+            res.json(artwork);
+        } else {
+            res.status(404);
+            next(new Error('Artwork not found'));
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Delete Artwork
+const deleteArtwork = async (req, res, next) => {
+    try {
+        const artwork = await Artwork.findById(req.params.id);
+
+        if (!artwork) {
+            res.status(404);
+            return next(new Error('Artwork not found'));
+        }
+
+        // Check if user owns the artwork
+        if (artwork.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+            res.status(401);
+            return next(new Error('User not authorized to delete this artwork'));
+        }
+
+        // Delete files from storage
+        artwork.images.forEach(imagePath => {
+            const fullPath = path.join(__dirname, '..', 'public', imagePath);
+            if (fs.existsSync(fullPath)) {
+                fs.unlinkSync(fullPath);
+            }
+        });
+
+        await artwork.deleteOne();
+        res.json({ message: 'Artwork removed' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = {
+    createArtwork,
+    getArtworks,
+    getArtworkById,
+    deleteArtwork
+};
