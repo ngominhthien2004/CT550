@@ -12,6 +12,7 @@ Mục tiêu: theo dõi trạng thái các chức năng đã/đang triển khai t
 | Feature | Scope (FE/BE/DB) | Owner/Agent | Status | Plan File | PR/Commit | Validation | Last Updated |
 |---|---|---|---|---|---|---|---|
 | (example) Comment API endpoints | BE, DB | Plan -> API Architect | Planned | /memories/session/plan.md | - | pending | 2026-03-20 |
+| Phase 1: User Auth, Profiles & Follow | BE, DB | Implementation Executor | Done | implementation_plan.md | pending push | Booted successfully | 2026-03-21 |
 
 ## Trạng thái chuẩn
 - `Planned`

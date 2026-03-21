@@ -9,6 +9,7 @@ Use this as a portable baseline for MEVN projects:
 - Preserve existing architecture and naming conventions.
 - Fix root causes where possible; avoid patch-only workarounds.
 - Avoid unrelated refactors.
+- Do NOT configure `git user.name` or `git user.email`. Assume the environment is properly authenticated and configured.
 
 ## Default Workflow Policy
 - Default to backend-first execution for features that affect both API and UI:
