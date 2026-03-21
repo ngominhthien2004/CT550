@@ -1,0 +1,47 @@
+# Copilot Instructions for MEVN Starter
+
+Use this as a portable baseline for MEVN projects:
+- `backend/`: Node.js + Express + Mongoose (MongoDB)
+- `frontend/`: Vue 3 + Vite + Pinia + Vue Router
+
+## Core Principles
+- Keep changes minimal and scoped to the user request.
+- Preserve existing architecture and naming conventions.
+- Fix root causes where possible; avoid patch-only workarounds.
+- Avoid unrelated refactors.
+
+## Default Workflow Policy
+- Default to backend-first execution for features that affect both API and UI:
+	1) define or update backend contract first,
+	2) validate data/model impact,
+	3) integrate frontend against finalized contract.
+- Prefer `Implementation Executor` as the default execution agent for implementation tasks.
+- Use one-time startup baseline from `docs/tasks/startup-checklist.md`.
+- Track feature progress in `docs/tasks/feature-tracker.md` with status flow `Planned -> In Progress -> Blocked -> Done`.
+
+## Backend Conventions (Expected)
+- Use ESM imports with explicit `.js` paths in backend files.
+- Implement API changes through `routes -> controllers -> models`.
+- Keep auth checks in middleware (e.g., `protect`, `admin`).
+- Prefer async handlers with centralized error middleware.
+
+## Frontend Conventions (Expected)
+- Keep page logic in `src/views/` and reusable UI in `src/components/`.
+- Keep shared business/data logic in Pinia stores.
+- Centralize HTTP client setup in `src/services/api.js`.
+- Keep route guards aligned with auth store and route metadata.
+
+## Security and Data Integrity
+- Never expose secrets in code; use `.env` and environment variables.
+- Do not bypass auth checks for private/admin endpoints.
+- Validate required request fields before write operations.
+- Avoid destructive operations unless explicitly requested.
+
+## Validation Checklist
+- Backend: run backend scripts and smoke-start server.
+- Frontend: run `npm run build` in frontend for compile-time validation.
+- If API contracts change, ensure frontend usage is updated.
+
+## Non-Goals
+- Do not add new frameworks/libraries without explicit request.
+- Do not redesign architecture unless explicitly requested.
