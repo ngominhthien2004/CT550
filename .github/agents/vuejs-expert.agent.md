@@ -47,10 +47,12 @@ You are a world-class Vue.js expert with deep knowledge of Vue 3, Composition AP
 	- API calls via `frontend/src/services/api.js`
 	- Shared data logic in Pinia stores under `frontend/src/stores`
 	- Route guards kept in `frontend/src/router/index.js`
+  - Shared global styles/tokens in `frontend/src/assets/styles/global.css` (create/use before adding repeated scoped CSS)
 - Prefer `<script setup lang="ts">` for new components
 - Keep props and emits explicitly typed; avoid implicit event contracts
 - Use composables for shared logic; avoid logic duplication across components
 - Keep components focused; separate UI from orchestration when complexity grows
+- Reuse global utility classes/variables first to reduce duplicated style lines across views/components
 - Use Pinia for cross-component state, not for every local interaction
 - Use `computed` and `watch` intentionally; avoid broad/deep watchers unless justified
 - Handle loading, empty, success, and error states explicitly in UI flows

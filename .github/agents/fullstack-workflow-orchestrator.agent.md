@@ -10,11 +10,11 @@ handoffs:
     send: false
   - label: Start Implementation
     agent: Implementation Executor
-    prompt: 'Execute the planned feature end-to-end in backend-first order (API contract, DB considerations, frontend integration), keep docs/tasks/feature-tracker.md status updated, and report validations and remaining risks. If this request is project bootstrap, run required setup commands directly (do not only print commands).'
+    prompt: 'Execute the planned feature end-to-end in backend-first order (API contract, DB considerations, frontend integration), keep docs/tasks/feature-tracker.md status updated, and report validations and remaining risks. If this request is project bootstrap, run required setup commands directly (do not only print commands). If user requested publish and validations pass, perform commit + push and update tracker PR/Commit field.'
     send: true
   - label: Finalize & Report
     agent: Technical Report Writer
-    prompt: 'Generate a final feature report (change summary, affected files, architecture impact, testing results, risks, and next steps) based on completed implementation outputs.'
+    prompt: 'Generate a final feature report (change summary, affected files, architecture impact, testing results, risks, and next steps) based on completed implementation outputs, using template from docs/report-templates (default chapter template: docs/report-templates/nienluan-chapter.template.md unless user specifies another).'
     send: true
 ---
 # Fullstack Workflow Orchestrator
@@ -43,9 +43,10 @@ Turn a feature request into a clear execution flow with minimal rework:
   - **Phase 1 (Foundation CRUD):** auth baseline, core models, create/read/update/delete flows.
   - **Phase 2 (Complex Features):** cross-entity workflows, advanced permissions, performance-sensitive features.
   - **Phase 3 (AI Features):** AI summarization/recommendation/moderation only after stable APIs and data quality.
-5. Use **Finalize & Report** to produce closing documentation for the implemented feature.
-6. For advanced/manual control, invoke specialist agents directly (`API Architect`, `Expert Vue.js Frontend Engineer`, `mongodb-performance-advisor`).
-7. Return to this orchestrator chat to summarize final scope, risks, and verification checklist.
+5. Use **Finalize & Report** to produce closing documentation for the implemented feature using `docs/report-templates/`.
+6. If validation passes and user asked to publish, run commit/push then update `docs/tasks/feature-tracker.md` with PR/Commit.
+7. For advanced/manual control, invoke specialist agents directly (`API Architect`, `Expert Vue.js Frontend Engineer`, `mongodb-performance-advisor`).
+8. Return to this orchestrator chat to summarize final scope, risks, and verification checklist.
 
 ## Output Expectations
 When reporting back, always include:

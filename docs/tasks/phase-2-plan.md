@@ -25,8 +25,11 @@
 - Review index va truy van cho feed/ranking/discovery.
 
 ## Trang thai
-- Current status: Planned
+- Current status: Done
 - Last updated: 2026-04-01
+
+## Tai lieu contract
+- docs/tasks/phase-2-api-contract.md
 
 ## Validation checklist
 - Backend smoke run thanh cong.

@@ -15,9 +15,11 @@ This file provides portable guidance for AI coding agents in MEVN repositories.
 ### Fullstack task
 1. Start with `Fullstack Workflow Orchestrator`.
 2. Use `Research & Plan` (includes one-time startup checklist update if needed).
-4. Use `Start Implementation` (default end-to-end path).
+3. Use `Start Implementation` (default end-to-end path).
 5. Use `Finalize & Report`.
-6. Return to orchestrator for summary and verification checklist.
+6. If validation passes and user requested publish, run commit + push flow and update tracker `PR/Commit`.
+7. Generate chapter/final report markdown from template in `docs/report-templates/` (default: `nienluan-chapter.template.md` for chapter-style reports).
+8. Return to orchestrator for summary and verification checklist.
 
 ### Backend-first task
 1. Start with `Implementation Executor`.
@@ -43,7 +45,8 @@ Advanced/manual mode (optional): call specialist agents directly (`API Architect
 1. Start with `Technical Report Writer`.
 2. Provide report type + required sections/template.
 3. Collect backend/frontend context via handoffs when needed.
-4. Finalize markdown chapters and export to DOCX/PDF.
+4. Fill template sections with evidence-based implemented/not-yet/future split.
+5. Finalize markdown chapters and export to DOCX/PDF.
 
 ## Report Templates
 - `docs/report-templates/feature-final-report.template.md`
