@@ -9,6 +9,9 @@ const { errorHandler, notFound } = require('./middlewares/error.middleware');
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const artworkRoutes = require('./routes/artwork.routes');
+const commentRoutes = require('./routes/comment.routes');
+const bookmarkRoutes = require('./routes/bookmark.routes');
+const feedRoutes = require('./routes/feed.routes');
 const path = require('path');
 
 const app = express();
@@ -27,6 +30,9 @@ app.get('/api', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/artworks', artworkRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/bookmarks', bookmarkRoutes);
+app.use('/api/feed', feedRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 

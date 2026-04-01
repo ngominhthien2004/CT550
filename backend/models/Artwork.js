@@ -47,6 +47,10 @@ const artworkSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    commentCount: {
+        type: Number,
+        default: 0
+    },
     isDraft: {
         type: Boolean,
         default: false
