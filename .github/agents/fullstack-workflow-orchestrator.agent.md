@@ -6,8 +6,8 @@ argument-hint: 'Describe feature scope, affected areas (frontend/backend/db), co
 handoffs:
   - label: Research & Plan
     agent: Plan
-    prompt: 'Research this repository for the requested task, identify impacted files/symbols in frontend, backend, and database layers, and return a concise implementation map with risks and execution order. One-time bootstrap rule: if docs/tasks/startup-checklist.md is missing or incomplete, create/update it first and mark baseline decisions. Then create/update docs/tasks/feature-tracker.md with one row for this feature (scope, status, plan file, validation state, last-updated date).'
-    send: true
+    prompt: 'Map impacted frontend/backend/database files and return a concise execution plan with risks. Update startup checklist/tracker only when relevant.'
+    send: false
   - label: Start Implementation
     agent: Implementation Executor
     prompt: 'Execute the planned feature end-to-end in backend-first order (API contract, DB considerations, frontend integration), keep docs/tasks/feature-tracker.md status updated, and report validations and remaining risks. If this request is project bootstrap, run required setup commands directly (do not only print commands).'
