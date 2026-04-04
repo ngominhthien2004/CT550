@@ -1,4 +1,5 @@
 <script setup>
+import { computed, ref } from 'vue'
 import {
   discoveryWorks,
   heroSlides,
@@ -7,22 +8,63 @@ import {
   topTags,
   trendingTags,
 } from '../assets/mock/home.mock'
+
+const isNavCollapsed = ref(false)
+
+const uploadedImageFiles = [
+  '111295072_p0_master1200.jpg',
+  '119926049_p0_master1200.jpg',
+  '120180230_p0_master1200.jpg',
+  '140754468_p0_master1200.jpg',
+  '142881404_p0_master1200.jpg',
+]
+
+const uploadedWorks = computed(() =>
+  uploadedImageFiles.map((fileName, index) => ({
+    id: `local-${index + 1}`,
+    title: `Artwork test #${index + 1}`,
+    author: 'user1',
+    likes: 0,
+    image: `/uploads/user1/illust/${fileName}`,
+  })),
+)
+
+const featuredWorks = computed(() =>
+  uploadedWorks.value.length > 0 ? uploadedWorks.value : discoveryWorks,
+)
+
+function toggleLeftNav() {
+  isNavCollapsed.value = !isNavCollapsed.value
+}
 </script>
 
 <template>
-  <div class="home-layout">
+  <div class="home-layout" :class="{ 'nav-collapsed': isNavCollapsed }">
     <aside class="left-nav page-block">
-      <div class="brand">IlluWrl</div>
-      <nav>
+      <div class="brand-row">
+        <div class="brand">IlluWrl</div>
+      </div>
+      <nav v-show="!isNavCollapsed">
         <a v-for="item in navItems" :key="item.id" href="#">{{ item.label }}</a>
       </nav>
+      <button v-show="!isNavCollapsed" type="button" class="nav-ghost">Yêu cầu đăng nhập</button>
     </aside>
 
     <section class="home-main page-block">
-      <header class="search-row">
-        <div class="search-box">Tìm kiếm minh họa, manga, tiểu thuyết</div>
-        <button class="pill light">Minh họa và Manga</button>
-        <button class="pill">Đăng tác phẩm</button>
+      <header class="top-nav page-block">
+        <div class="top-nav-left">
+          <button type="button" class="icon-btn ghost" @click="toggleLeftNav">☰</button>
+          <strong class="top-site-name">IlluWrl</strong>
+          <div class="search-box">Tìm kiếm minh họa, manga, tiểu thuyết</div>
+          <button class="pill light">Minh họa và Manga</button>
+          <button class="pill">Đăng tác phẩm</button>
+        </div>
+        <div class="top-nav-actions">
+          <button class="icon-round" aria-label="Tin nhắn" title="Tin nhắn">✉</button>
+          <button class="icon-round" aria-label="Thông báo" title="Thông báo">🔔</button>
+          <button class="pill light">Đăng ký</button>
+          <button class="pill">Đăng nhập</button>
+        </div>
       </header>
 
       <div class="tag-strip">
@@ -46,17 +88,15 @@ import {
 
       <section class="latest-section">
         <header class="section-head">
-          <h3>Tác phẩm mới dành cho bạn</h3>
+          <h3>Tác phẩm từ thư mục upload test</h3>
           <router-link to="/feed">Xem tất cả</router-link>
         </header>
 
         <div class="work-grid">
-          <article v-for="work in discoveryWorks" :key="work.id" class="work-card">
+          <article v-for="work in featuredWorks" :key="work.id" class="work-card">
             <img :src="work.image" :alt="work.title" loading="lazy" />
             <div class="work-meta">
               <strong>{{ work.title }}</strong>
-              <span>{{ work.author }}</span>
-              <small>{{ work.likes }} lượt thích</small>
             </div>
           </article>
         </div>
@@ -95,11 +135,22 @@ import {
   gap: 0.8rem;
 }
 
+.home-layout.nav-collapsed {
+  grid-template-columns: 76px minmax(0, 1fr) 280px;
+}
+
 .left-nav {
   padding: 1rem 0.8rem;
   position: sticky;
   top: 0.8rem;
   height: fit-content;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .brand {
@@ -115,6 +166,20 @@ import {
   gap: 0.2rem;
 }
 
+.icon-btn {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.icon-btn.ghost {
+  background: #f8fafc;
+}
+
 .left-nav a {
   text-decoration: none;
   color: #334155;
@@ -128,24 +193,72 @@ import {
   background: #edf5ff;
 }
 
+.nav-ghost {
+  margin-top: 0.8rem;
+  width: 100%;
+  border: 1px dashed #93c5fd;
+  background: #f0f7ff;
+  color: #1d4ed8;
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .home-main {
   padding: 1rem;
   display: grid;
   gap: 1rem;
 }
 
-.search-row {
+.top-nav {
+  padding: 0.65rem 0.8rem;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.top-nav-left {
+  display: flex;
+  align-items: center;
   gap: 0.6rem;
+  min-width: 0;
+}
+
+.top-site-name {
+  font-size: 1.15rem;
+  color: #1d4ed8;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.top-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .search-box {
-  flex: 1.4;
+  flex: 1;
+  min-width: 280px;
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 0.65rem 0.8rem;
   color: #64748b;
   background: #fff;
+}
+
+.icon-round {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .pill {
@@ -254,7 +367,7 @@ import {
 
 .work-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0.75rem;
 }
 
@@ -267,19 +380,15 @@ import {
 
 .work-card img {
   width: 100%;
-  height: 160px;
+  aspect-ratio: 1 / 1;
+  height: auto;
   object-fit: cover;
 }
 
 .work-meta {
   padding: 0.7rem;
   display: grid;
-  gap: 0.2rem;
-}
-
-.work-meta span,
-.work-meta small {
-  color: var(--muted);
+  gap: 0;
 }
 
 .right-rail {
@@ -334,13 +443,17 @@ import {
     grid-template-columns: 220px minmax(0, 1fr);
   }
 
+  .home-layout.nav-collapsed {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
   .right-rail {
     grid-column: 2;
     grid-template-columns: 1fr 1fr;
   }
 
   .work-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -353,8 +466,16 @@ import {
     position: static;
   }
 
-  .search-row {
-    flex-direction: column;
+  .top-nav-left {
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    min-width: 100%;
+  }
+
+  .top-nav-actions {
+    flex-wrap: wrap;
   }
 
   .right-rail,
