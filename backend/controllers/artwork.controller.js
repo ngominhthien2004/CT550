@@ -13,7 +13,11 @@ const createArtwork = async (req, res, next) => {
             return next(new Error('Please upload at least one image'));
         }
 
-        const images = req.files.map(file => `/uploads/${file.filename}`);
+        const publicDir = path.join(__dirname, '..', 'public');
+        const images = req.files.map((file) => {
+            const relativePath = path.relative(publicDir, file.path).replace(/\\/g, '/');
+            return `/${relativePath}`;
+        });
 
         // Handle tags (simplified for phase 1 - convert strings to Tag IDs or just use what is sent)
         // For now, let's assume tags are sent as an array of strings or existing IDs
@@ -112,7 +116,11 @@ const deleteArtwork = async (req, res, next) => {
 
         // Delete files from storage
         artwork.images.forEach(imagePath => {
-            const fullPath = path.join(__dirname, '..', 'public', imagePath);
+            const normalizedImagePath = imagePath.replace(/\\/g, '/').replace(/^\/+/, '');
+            const relativeToUploads = normalizedImagePath.startsWith('uploads/')
+                ? normalizedImagePath.slice('uploads/'.length)
+                : normalizedImagePath;
+            const fullPath = path.join(__dirname, '..', 'public', 'uploads', relativeToUploads);
             if (fs.existsSync(fullPath)) {
                 fs.unlinkSync(fullPath);
             }
