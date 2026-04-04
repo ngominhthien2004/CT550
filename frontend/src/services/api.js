@@ -14,6 +14,8 @@ api.interceptors.request.use((config) => {
 
 export const getFeed = (params = {}) => api.get('/feed', { params })
 export const getRankings = (params = {}) => api.get('/feed/rankings', { params })
+export const getArtworks = (params = {}) => api.get('/artworks', { params })
+export const getArtworkById = (artworkId) => api.get(`/artworks/${artworkId}`)
 
 export const getComments = (params = {}) => api.get('/comments', { params })
 export const createComment = (payload) => api.post('/comments', payload)

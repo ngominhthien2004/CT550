@@ -49,6 +49,7 @@ You are a world-class Vue.js expert with deep knowledge of Vue 3, Composition AP
 	- Route guards kept in `frontend/src/router/index.js`
   - Shared global styles/tokens in `frontend/src/assets/styles/global.css` (create/use before adding repeated scoped CSS)
   - If Bootstrap 5 CSS is installed or explicitly requested, prefer Bootstrap utility/layout classes before writing repeated custom CSS
+  - Use one icon system per screen (prefer Font Awesome when installed); avoid mixing emoji icons with library icons and keep icon-only controls accessible with labels
 - Prefer `<script setup lang="ts">` for new components
 - Keep props and emits explicitly typed; avoid implicit event contracts
 - Use composables for shared logic; avoid logic duplication across components

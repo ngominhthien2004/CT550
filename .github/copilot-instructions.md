@@ -32,6 +32,7 @@ Use this as a portable baseline for MEVN projects:
 - Centralize HTTP client setup in `src/services/api.js`.
 - Keep route guards aligned with auth store and route metadata.
 - Use Bootstrap 5 CSS utility/layout classes for frontend styling when Bootstrap is installed or explicitly requested.
+- For icons in frontend UI, keep a single icon set per screen (prefer Font Awesome when installed) and require accessible labels for icon-only buttons.
 
 ## Security and Data Integrity
 - Never expose secrets in code; use `.env` and environment variables.

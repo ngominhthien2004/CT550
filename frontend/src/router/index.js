@@ -4,12 +4,14 @@ import FeedView from '../views/FeedView.vue'
 import BookmarksView from '../views/BookmarksView.vue'
 import RankingsView from '../views/RankingsView.vue'
 import ArtworkCommentsView from '../views/ArtworkCommentsView.vue'
+import ArtworkDetailView from '../views/ArtworkDetailView.vue'
 
 const routes = [
   { path: '/', name: 'home', component: HomePage },
   { path: '/feed', name: 'feed', component: FeedView },
   { path: '/bookmarks', name: 'bookmarks', component: BookmarksView },
   { path: '/rankings', name: 'rankings', component: RankingsView },
+  { path: '/artworks/:id', name: 'artwork-detail', component: ArtworkDetailView },
   { path: '/artworks/:id/comments', name: 'artwork-comments', component: ArtworkCommentsView },
 ]
 

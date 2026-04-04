@@ -29,5 +29,7 @@ description: "Portable rules for Vue 3 frontend files in MEVN projects."
 - Keep UI changes minimal and consistent with existing patterns.
 - Do not introduce new UI frameworks without explicit request.
 - Bootstrap 5 CSS is approved when explicitly requested; prefer Bootstrap utility/layout classes before adding repeated custom CSS.
+- For icons, use one consistent icon set across a screen (prefer Font Awesome when installed); avoid mixing emoji icons with icon libraries.
+- For icon-only controls, include accessible labels (`aria-label`/`title`) and hide decorative icons from screen readers (`aria-hidden="true"`).
 - After frontend UI changes, run a browser smoke test on affected routes (prefer Playwright) before reporting completion.
 - Verify compile/build compatibility after changes.

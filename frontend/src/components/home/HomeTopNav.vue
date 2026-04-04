@@ -20,18 +20,30 @@ function handleToggleSidebar() {
 <template>
   <header class="top-nav page-block">
     <div class="top-nav-left">
-      <button type="button" class="icon-btn ghost" @click="handleToggleSidebar">☰</button>
+      <button type="button" class="icon-btn ghost" aria-label="Toggle sidebar" @click="handleToggleSidebar">
+        <i class="fa-solid fa-bars" aria-hidden="true"></i>
+      </button>
       <strong class="top-site-name">{{ props.siteName }}</strong>
       <div class="search-box">{{ props.searchPlaceholder }}</div>
-      <button class="icon-round" aria-label="Media" title="Media">🖼</button>
-      <button class="icon-round" aria-label="More" title="More">⋯</button>
+      <button class="icon-round" aria-label="Media" title="Media">
+        <i class="fa-regular fa-image" aria-hidden="true"></i>
+      </button>
+      <button class="icon-round" aria-label="More" title="More">
+        <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+      </button>
       <span class="premium-pill">Premium Free Trial</span>
     </div>
     <div class="top-nav-actions">
-      <button class="icon-round" aria-label="Messages" title="Messages">✉</button>
-      <button class="icon-round" aria-label="Notifications" title="Notifications">🔔</button>
+      <button class="icon-round" aria-label="Messages" title="Messages">
+        <i class="fa-regular fa-envelope" aria-hidden="true"></i>
+      </button>
+      <button class="icon-round" aria-label="Notifications" title="Notifications">
+        <i class="fa-regular fa-bell" aria-hidden="true"></i>
+      </button>
       <button class="post-btn">Post ▾</button>
-      <button class="icon-round" aria-label="Account" title="Account">👤</button>
+      <button class="icon-round" aria-label="Account" title="Account">
+        <i class="fa-regular fa-circle-user" aria-hidden="true"></i>
+      </button>
     </div>
   </header>
 </template>

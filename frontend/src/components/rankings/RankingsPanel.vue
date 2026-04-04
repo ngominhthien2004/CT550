@@ -16,7 +16,9 @@ defineProps({
     >
       <div class="d-flex align-items-center gap-3">
         <span class="badge text-bg-warning-subtle text-dark border">#{{ index + 1 }}</span>
-        <strong>{{ item.title }}</strong>
+        <strong>
+          <router-link class="text-decoration-none" :to="`/artworks/${item._id}`">{{ item.title }}</router-link>
+        </strong>
       </div>
       <span class="text-secondary small">{{ item.likeCount }} likes</span>
     </li>

@@ -1,10 +1,17 @@
 <script setup>
+const objectIdPattern = /^[0-9a-fA-F]{24}$/
+
 defineProps({
   works: {
     type: Array,
     default: () => [],
   },
 })
+
+function hasArtworkDetailRoute(work) {
+  const artworkId = work?._id || work?.id
+  return typeof artworkId === 'string' && objectIdPattern.test(artworkId)
+}
 </script>
 
 <template>
@@ -15,10 +22,20 @@ defineProps({
     </header>
 
     <div class="work-grid">
-      <article v-for="work in works" :key="work.id" class="work-card">
-        <img :src="work.image" :alt="work.title" loading="lazy" />
+      <article v-for="work in works" :key="work._id || work.id" class="work-card">
+        <router-link
+          v-if="hasArtworkDetailRoute(work)"
+          :to="`/artworks/${work._id || work.id}`"
+          class="work-cover-link"
+        >
+          <img :src="work.image" :alt="work.title" loading="lazy" />
+        </router-link>
+        <img v-else :src="work.image" :alt="work.title" loading="lazy" />
         <div class="work-meta">
-          <strong>{{ work.title }}</strong>
+          <router-link v-if="hasArtworkDetailRoute(work)" :to="`/artworks/${work._id || work.id}`" class="work-title-link">
+            <strong>{{ work.title }}</strong>
+          </router-link>
+          <strong v-else>{{ work.title }}</strong>
         </div>
       </article>
     </div>
@@ -51,11 +68,20 @@ defineProps({
   object-fit: cover;
 }
 
+.work-cover-link {
+  display: block;
+}
+
 .work-meta {
   padding: 0.55rem;
   display: grid;
   gap: 0;
   font-size: 0.86rem;
+}
+
+.work-title-link {
+  text-decoration: none;
+  color: inherit;
 }
 
 @media (max-width: 1200px) {

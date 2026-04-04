@@ -16,7 +16,9 @@ defineProps({
         </div>
         <div class="col-8 col-md-9">
           <div class="card-body py-3">
-            <h3 class="h6 mb-1">{{ item.title }}</h3>
+            <h3 class="h6 mb-1">
+              <router-link class="text-decoration-none" :to="`/artworks/${item._id}`">{{ item.title }}</router-link>
+            </h3>
             <p class="mb-0 text-secondary">by {{ item.user?.displayName || item.user?.username }}</p>
           </div>
         </div>
