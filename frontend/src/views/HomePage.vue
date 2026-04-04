@@ -13,7 +13,7 @@ import {
   topTags,
 } from '../assets/mock/home.mock'
 
-const isNavCollapsed = ref(false)
+const isNavCollapsed = ref(true)
 const liveWorks = ref([])
 
 const featuredWorks = computed(() =>

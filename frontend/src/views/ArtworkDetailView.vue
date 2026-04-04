@@ -9,7 +9,7 @@ import { useArtworkStore } from '../stores/artwork.store'
 
 const route = useRoute()
 const artworkStore = useArtworkStore()
-const isNavCollapsed = ref(false)
+const isNavCollapsed = ref(true)
 const relatedWorks = ref([])
 
 const artworkId = computed(() => route.params.id)
@@ -52,7 +52,7 @@ watch(artworkId, loadArtwork)
 
 <template>
   <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
-    <section class="container-fluid px-2 px-md-3 d-grid gap-3">
+    <section class="detail-page-content d-grid gap-3">
       <p v-if="artworkStore.loading" class="text-secondary mb-0">Loading artwork detail...</p>
       <p v-else-if="artworkStore.error" class="text-danger mb-0">{{ artworkStore.error }}</p>
 
@@ -61,3 +61,9 @@ watch(artworkId, loadArtwork)
     </section>
   </MainLayoutTemplate>
 </template>
+
+<style scoped>
+.detail-page-content {
+  width: 100%;
+}
+</style>

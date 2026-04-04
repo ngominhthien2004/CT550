@@ -55,6 +55,7 @@ function handleToggleSidebar() {
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+  height: 72px;
 }
 
 .top-nav-left {
