@@ -30,58 +30,27 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="page">
-    <h2>Artwork Comments</h2>
-    <div class="actions">
-      <input :value="artworkId" disabled />
-      <input v-model="content" placeholder="Write a comment..." />
-      <button @click="submitComment">Add comment</button>
+  <section class="page d-grid gap-3">
+    <h2 class="mb-0">Artwork Comments</h2>
+    <div class="row g-2">
+      <div class="col-12 col-lg-3">
+        <input :value="artworkId" class="form-control bg-light" disabled />
+      </div>
+      <div class="col-12 col-lg-7">
+        <input v-model="content" class="form-control" placeholder="Write a comment..." />
+      </div>
+      <div class="col-12 col-lg-2 d-grid">
+        <button class="btn btn-primary" @click="submitComment">Add comment</button>
+      </div>
     </div>
-    <p v-if="commentStore.loading">Loading comments...</p>
-    <p v-else-if="commentStore.error">{{ commentStore.error }}</p>
+    <p v-if="commentStore.loading" class="text-secondary mb-0">Loading comments...</p>
+    <p v-else-if="commentStore.error" class="text-danger mb-0">{{ commentStore.error }}</p>
     <CommentList v-else :comments="commentStore.items" :can-delete="true" @delete="removeComment" />
   </section>
 </template>
 
 <style scoped>
 .page {
-  display: grid;
-  gap: 0.75rem;
-}
-
-h2 {
-  margin: 0;
-}
-
-.actions {
-  display: grid;
-  grid-template-columns: minmax(160px, 220px) 1fr auto;
-  gap: 0.5rem;
-}
-
-input,
-button {
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 0.55rem 0.7rem;
-}
-
-input:disabled {
-  background: #f8fafc;
-  color: #64748b;
-}
-
-button {
-  cursor: pointer;
-  border-color: #0f172a;
-  background: #0f172a;
-  color: #fff;
-  font-weight: 600;
-}
-
-@media (max-width: 880px) {
-  .actions {
-    grid-template-columns: 1fr;
-  }
+  padding: 0.25rem 0;
 }
 </style>

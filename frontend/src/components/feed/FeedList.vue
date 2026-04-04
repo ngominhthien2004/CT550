@@ -8,53 +8,26 @@ defineProps({
 </script>
 
 <template>
-  <ul class="feed-list">
-    <li v-for="item in items" :key="item._id" class="feed-card">
-      <div class="feed-thumb" />
-      <div class="feed-meta">
-        <h3>{{ item.title }}</h3>
-        <p>by {{ item.user?.displayName || item.user?.username }}</p>
+  <ul class="list-unstyled d-grid gap-3 mb-0">
+    <li v-for="item in items" :key="item._id" class="card border-0 shadow-sm overflow-hidden">
+      <div class="row g-0">
+        <div class="col-4 col-md-3">
+          <div class="feed-thumb h-100" />
+        </div>
+        <div class="col-8 col-md-9">
+          <div class="card-body py-3">
+            <h3 class="h6 mb-1">{{ item.title }}</h3>
+            <p class="mb-0 text-secondary">by {{ item.user?.displayName || item.user?.username }}</p>
+          </div>
+        </div>
       </div>
     </li>
   </ul>
 </template>
 
 <style scoped>
-.feed-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.9rem;
-}
-
-.feed-card {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 0.8rem;
-  border: 1px solid var(--line);
-  background: #fff;
-  border-radius: 14px;
-  overflow: hidden;
-}
-
 .feed-thumb {
-  min-height: 88px;
+  min-height: 92px;
   background: linear-gradient(135deg, #8bd3ff, #ffd27f);
-}
-
-.feed-meta {
-  padding: 0.8rem;
-}
-
-.feed-meta h3 {
-  margin: 0 0 0.35rem;
-  font-size: 1rem;
-}
-
-.feed-meta p {
-  margin: 0;
-  color: #4b5563;
-  font-size: 0.92rem;
 }
 </style>

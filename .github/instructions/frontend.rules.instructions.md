@@ -27,5 +27,7 @@ description: "Portable rules for Vue 3 frontend files in MEVN projects."
 
 ## UI and Build Safety
 - Keep UI changes minimal and consistent with existing patterns.
-- Avoid introducing new UI frameworks without explicit request.
+- Do not introduce new UI frameworks without explicit request.
+- Bootstrap 5 CSS is approved when explicitly requested; prefer Bootstrap utility/layout classes before adding repeated custom CSS.
+- After frontend UI changes, run a browser smoke test on affected routes (prefer Playwright) before reporting completion.
 - Verify compile/build compatibility after changes.

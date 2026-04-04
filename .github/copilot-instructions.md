@@ -31,6 +31,7 @@ Use this as a portable baseline for MEVN projects:
 - Keep shared business/data logic in Pinia stores.
 - Centralize HTTP client setup in `src/services/api.js`.
 - Keep route guards aligned with auth store and route metadata.
+- Use Bootstrap 5 CSS utility/layout classes for frontend styling when Bootstrap is installed or explicitly requested.
 
 ## Security and Data Integrity
 - Never expose secrets in code; use `.env` and environment variables.
@@ -41,8 +42,10 @@ Use this as a portable baseline for MEVN projects:
 ## Validation Checklist
 - Backend: run backend scripts and smoke-start server.
 - Frontend: run `npm run build` in frontend for compile-time validation.
+- Frontend UI updates: run a Playwright browser smoke check on affected routes before reporting completion.
 - If API contracts change, ensure frontend usage is updated.
 
 ## Non-Goals
 - Do not add new frameworks/libraries without explicit request.
+- Bootstrap 5 CSS is an approved exception when the user asks to use Bootstrap in frontend work.
 - Do not redesign architecture unless explicitly requested.

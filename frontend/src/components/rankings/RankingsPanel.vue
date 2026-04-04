@@ -8,53 +8,23 @@ defineProps({
 </script>
 
 <template>
-  <ol class="ranking-list">
-    <li v-for="(item, index) in items" :key="item._id" class="ranking-item">
-      <div class="rank">#{{ index + 1 }}</div>
-      <div class="content">
+  <ol class="list-group list-group-numbered">
+    <li
+      v-for="(item, index) in items"
+      :key="item._id"
+      class="list-group-item d-flex align-items-center justify-content-between py-3"
+    >
+      <div class="d-flex align-items-center gap-3">
+        <span class="badge text-bg-warning-subtle text-dark border">#{{ index + 1 }}</span>
         <strong>{{ item.title }}</strong>
-        <span>{{ item.likeCount }} likes</span>
       </div>
+      <span class="text-secondary small">{{ item.likeCount }} likes</span>
     </li>
   </ol>
 </template>
 
 <style scoped>
-.ranking-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 0.65rem;
-}
-
-.ranking-item {
-  display: grid;
-  grid-template-columns: 62px 1fr;
-  align-items: center;
-  border: 1px solid var(--line);
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.rank {
-  text-align: center;
-  font-weight: 700;
-  color: #0f172a;
-  background: #fef3c7;
-  padding: 0.9rem 0;
-}
-
-.content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.8rem 1rem;
-}
-
-.content span {
-  color: #4b5563;
-  font-size: 0.9rem;
+:deep(.list-group-numbered > .list-group-item::before) {
+  display: none;
 }
 </style>

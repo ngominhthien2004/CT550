@@ -30,60 +30,30 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="page">
-    <h2>My Bookmarks</h2>
-    <div class="actions">
-      <input v-model="artworkId" placeholder="Artwork ID" />
-      <input v-model="folder" placeholder="Folder (default)" />
-      <button @click="submitBookmark">Add</button>
-      <button class="secondary" @click="removeBookmark">Delete latest</button>
+  <section class="page d-grid gap-3">
+    <h2 class="mb-0">My Bookmarks</h2>
+    <div class="row g-2">
+      <div class="col-12 col-lg-5">
+        <input v-model="artworkId" class="form-control" placeholder="Artwork ID" />
+      </div>
+      <div class="col-12 col-lg-4">
+        <input v-model="folder" class="form-control" placeholder="Folder (default)" />
+      </div>
+      <div class="col-12 col-sm-6 col-lg-1 d-grid">
+        <button class="btn btn-primary" @click="submitBookmark">Add</button>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-2 d-grid">
+        <button class="btn btn-outline-secondary" @click="removeBookmark">Delete latest</button>
+      </div>
     </div>
-    <p v-if="bookmarkStore.loading">Loading bookmarks...</p>
-    <p v-else-if="bookmarkStore.error">{{ bookmarkStore.error }}</p>
+    <p v-if="bookmarkStore.loading" class="text-secondary mb-0">Loading bookmarks...</p>
+    <p v-else-if="bookmarkStore.error" class="text-danger mb-0">{{ bookmarkStore.error }}</p>
     <BookmarksList v-else :items="bookmarkStore.items" />
   </section>
 </template>
 
 <style scoped>
 .page {
-  display: grid;
-  gap: 0.75rem;
-}
-
-h2 {
-  margin: 0;
-}
-
-.actions {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr auto auto;
-  gap: 0.5rem;
-}
-
-input,
-button {
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 0.55rem 0.7rem;
-}
-
-button {
-  cursor: pointer;
-  border-color: #0f172a;
-  background: #0f172a;
-  color: #fff;
-  font-weight: 600;
-}
-
-button.secondary {
-  border-color: #cbd5e1;
-  background: #fff;
-  color: #0f172a;
-}
-
-@media (max-width: 880px) {
-  .actions {
-    grid-template-columns: 1fr;
-  }
+  padding: 0.25rem 0;
 }
 </style>
