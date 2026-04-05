@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ArtworkDetailCard from '../components/artwork/ArtworkDetailCard.vue'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import { navItems } from '../assets/mock/home.mock'
+import { navItems } from '../constants/navigation'
 import { getArtworks } from '../services/api'
 import { useArtworkStore } from '../stores/artwork.store'
 

@@ -1,27 +1,44 @@
 # Frontend Page Checklist
 
-Muc tieu: theo doi danh sach trang frontend can co trong phase hien tai.
+Muc tieu: theo doi danh sach trang frontend da co va cac trang can xay dung tiep theo tu feature tracker.
 
 ## Tong quan
-- Total pages tracked: 5
-- Last updated: 2026-04-04
+- Total pages tracked: 17
+- Last updated: 2026-04-05
 - Owner: Expert Vue.js Frontend Engineer
 
-## Checklist
-- [x] HomePage - `/` - HomePage hero + discovery + ranking preview
-- [x] FeedView - `/feed` - feed theo doi tac gia
+## Hien tai (Da co)
+- [x] HomePage - `/` - trang chu discovery + tags + hero
+- [x] FeedView - `/feed` - explore artwork + search/filter type
 - [x] BookmarksView - `/bookmarks` - danh sach bookmark cua user
 - [x] RankingsView - `/rankings` - ranking theo period
+- [x] ArtworkDetailView - `/artworks/:id` - chi tiet artwork + related
 - [x] ArtworkCommentsView - `/artworks/:id/comments` - danh sach comment theo artwork
+- [x] TagDetailView - `/tags/:tagName` - danh sach artwork theo tag
+- [x] NotFoundView - `/:pathMatch(.*)*` - trang loi route khong ton tai
+
+## Tuong lai (Theo Feature Tracker)
+
+### Phase 2: Moderation & Reporting Workflow (Planned)
+- [ ] ReportCreateView - `/reports/new` - user gui bao cao artwork/comment/user
+- [ ] MyReportsView - `/reports` - user theo doi danh sach report da gui
+- [ ] ReportDetailView - `/reports/:id` - xem trang thai report va timeline xu ly
+- [ ] ModerationQueueView - `/moderation/reports` - hang doi report cho moderator
+- [ ] ModerationCaseDetailView - `/moderation/reports/:id` - chi tiet case + hanh dong xu ly
+
+### Phase 3: AI Auto-tagging, Captioning, Recommendation (Planned)
+- [ ] UploadAssistantView - `/upload/assistant` - goi y tag/caption AI khi dang bai
+- [ ] RecommendationFeedView - `/recommendations` - feed goi y ca nhan hoa
+- [ ] RecommendationSettingsView - `/settings/recommendations` - cau hinh goi y
+- [ ] CaptionSuggestionHistoryView - `/ai/captions` - lich su caption AI da tao
+
+### Phase 3: AI Detection Labeling + Art Assistant (Planned)
+- [ ] AIDetectionReviewView - `/moderation/ai-detection` - review ket qua AI detection
+- [ ] ArtworkLabelingView - `/artworks/:id/labels` - gan/kiem tra nhan noi dung
+- [ ] ArtAssistantChatView - `/assistant/art` - chat voi tro ly AI cho y tuong ve tranh
+- [ ] ArtAssistantSessionView - `/assistant/art/:sessionId` - chi tiet tung phien chat/tu van
 
 ## Note
-- Cac view dang duoc toi gian de de dang tach nho thanh component UI.
-- Cac component hien co: `components/feed/FeedList.vue`, `components/bookmarks/BookmarksList.vue`, `components/rankings/RankingsPanel.vue`, `components/comments/CommentList.vue`.
-
-## Backlog UI (Pixiv-inspired)
-- [x] HomePage - them nut thu gon thanh ben trai (placeholder)
-- [x] HomePage - them top navigation bar co nut dang nhap (placeholder)
-- [x] HomePage - giam khoang trang 2 ben giao dien desktop
-- [ ] HomePage - lien ket nut "Dang nhap" voi auth flow that su
-- [ ] HomePage - luu trang thai thu gon sidebar theo user/session
-- [ ] HomePage - them menu top-nav day du (message, notification, profile, upload)
+- Danh sach page tuong lai duoc trich tu cac feature Planned trong `docs/tasks/feature-tracker.md`.
+- Truoc khi implement tung page, can bo sung contract API + route guard + metadata dieu huong.
+- Uu tien thu tu: Moderation/Reporting truoc, sau do den AI pages.

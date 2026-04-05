@@ -44,6 +44,17 @@ defineProps({
             <h2 class="h5 mb-0 title">{{ artwork.title }}</h2>
             <p class="text-secondary small mb-0">{{ artwork.type }} · {{ artwork.ageRating }}</p>
             <p v-if="artwork.description" class="description mb-0">{{ artwork.description }}</p>
+
+            <div v-if="artwork.tags?.length" class="d-flex flex-wrap gap-2 align-items-center">
+              <router-link
+                v-for="tag in artwork.tags"
+                :key="tag._id || tag.name"
+                :to="`/tags/${encodeURIComponent(tag.name)}`"
+                class="tag-pill"
+              >
+                #{{ tag.name }}
+              </router-link>
+            </div>
           </div>
 
           <div class="meta-inline d-flex flex-wrap align-items-center gap-2 text-secondary small">
@@ -139,6 +150,21 @@ defineProps({
 .description {
   color: #3d4b63;
   line-height: 1.6;
+}
+
+.tag-pill {
+  text-decoration: none;
+  color: #1f3b7a;
+  background: #e8f0ff;
+  border: 1px solid #c8d8ff;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+}
+
+.tag-pill:hover {
+  background: #d7e5ff;
 }
 
 .avatar-dot {

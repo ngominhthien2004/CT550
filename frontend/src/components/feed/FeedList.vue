@@ -12,7 +12,8 @@ defineProps({
     <li v-for="item in items" :key="item._id" class="card border-0 shadow-sm overflow-hidden">
       <div class="row g-0">
         <div class="col-4 col-md-3">
-          <div class="feed-thumb h-100" />
+          <img v-if="item.image" class="feed-thumb h-100 w-100" :src="item.image" :alt="item.title" loading="lazy" />
+          <div v-else class="feed-thumb h-100" />
         </div>
         <div class="col-8 col-md-9">
           <div class="card-body py-3">
@@ -30,6 +31,7 @@ defineProps({
 <style scoped>
 .feed-thumb {
   min-height: 92px;
+  object-fit: cover;
   background: linear-gradient(135deg, #8bd3ff, #ffd27f);
 }
 </style>

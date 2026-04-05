@@ -28,6 +28,7 @@ defineEmits(['toggle-sidebar'])
 
     <AppSidebarMenu
       :nav-items="navItems"
+      :site-name="siteName"
       :is-nav-collapsed="isNavCollapsed"
       :style="{ zIndex: SIDEBAR_Z_INDEX }"
       @close-sidebar="$emit('toggle-sidebar')"

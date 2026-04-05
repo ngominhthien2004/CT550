@@ -4,6 +4,10 @@ defineProps({
     type: Array,
     default: () => [],
   },
+  siteName: {
+    type: String,
+    default: 'IlluWrl',
+  },
   isNavCollapsed: {
     type: Boolean,
     default: false,
@@ -19,7 +23,7 @@ defineEmits(['close-sidebar'])
       <button type="button" class="menu-toggle" aria-label="Close menu" @click="$emit('close-sidebar')">
         <i class="fa-solid fa-bars" aria-hidden="true"></i>
       </button>
-      <span class="brand">pixiv</span>
+      <router-link to="/" class="brand">{{ siteName }}</router-link>
     </div>
 
     <nav>
@@ -28,7 +32,7 @@ defineEmits(['close-sidebar'])
         <span>{{ item.label }}</span>
       </router-link>
     </nav>
-    <button type="button" class="nav-ghost">Yeu cau dang nhap</button>
+    <router-link to="/bookmarks" class="nav-ghost">Yeu cau dang nhap</router-link>
   </aside>
 </template>
 
@@ -59,6 +63,7 @@ defineEmits(['close-sidebar'])
 }
 
 .brand {
+  text-decoration: none;
   color: #1695f0;
   font-weight: 800;
   font-size: 2.7rem;
@@ -107,6 +112,9 @@ defineEmits(['close-sidebar'])
 }
 
 .nav-ghost {
+  text-decoration: none;
+  display: block;
+  text-align: center;
   margin-top: 1rem;
   width: 100%;
   border: 1px dashed #93c5fd;

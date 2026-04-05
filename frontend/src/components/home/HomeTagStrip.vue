@@ -5,11 +5,18 @@ defineProps({
     default: () => [],
   },
 })
+
+function buildTagRoute(tag) {
+  const normalizedTag = (tag || '').toString().replace(/^#/, '').trim().toLowerCase()
+  return `/tags/${encodeURIComponent(normalizedTag)}`
+}
 </script>
 
 <template>
   <div class="tag-strip">
-    <span v-for="tag in tags" :key="tag">{{ tag }}</span>
+    <router-link v-for="tag in tags" :key="tag" :to="buildTagRoute(tag)" class="tag-link">
+      {{ tag }}
+    </router-link>
   </div>
 </template>
 
@@ -21,7 +28,9 @@ defineProps({
   padding-bottom: 0.2rem;
 }
 
-.tag-strip span {
+.tag-link {
+  text-decoration: none;
+  display: inline-block;
   white-space: nowrap;
   padding: 0.56rem 1rem;
   border-radius: 6px;
@@ -30,27 +39,31 @@ defineProps({
   font-weight: 700;
 }
 
-.tag-strip span:nth-child(6n + 1) {
+.tag-link:nth-child(6n + 1) {
   background: #79a65a;
 }
 
-.tag-strip span:nth-child(6n + 2) {
+.tag-link:nth-child(6n + 2) {
   background: #b07ba4;
 }
 
-.tag-strip span:nth-child(6n + 3) {
+.tag-link:nth-child(6n + 3) {
   background: #5f88cc;
 }
 
-.tag-strip span:nth-child(6n + 4) {
+.tag-link:nth-child(6n + 4) {
   background: #d87a6e;
 }
 
-.tag-strip span:nth-child(6n + 5) {
+.tag-link:nth-child(6n + 5) {
   background: #7b78cf;
 }
 
-.tag-strip span:nth-child(6n + 6) {
+.tag-link:nth-child(6n + 6) {
   background: #5f9db0;
+}
+
+.tag-link:hover {
+  filter: brightness(1.06);
 }
 </style>

@@ -55,7 +55,7 @@ const createArtwork = async (req, res, next) => {
 // Get All Artworks (with basic filtering)
 const getArtworks = async (req, res, next) => {
     try {
-        const { type, ageRating, user, tag } = req.query;
+        const { type, ageRating, user, tag, q } = req.query;
         const query = {};
 
         if (type) query.type = type;
@@ -64,6 +64,15 @@ const getArtworks = async (req, res, next) => {
         if (tag) {
             const foundTag = await Tag.findOne({ name: tag.toLowerCase() });
             if (foundTag) query.tags = foundTag._id;
+        }
+        if (q) {
+            const keyword = q.trim();
+            if (keyword) {
+                query.$or = [
+                    { title: { $regex: keyword, $options: 'i' } },
+                    { description: { $regex: keyword, $options: 'i' } },
+                ];
+            }
         }
 
         const artworks = await Artwork.find(query)

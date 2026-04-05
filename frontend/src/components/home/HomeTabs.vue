@@ -1,9 +1,28 @@
+<script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+const activeTab = computed(() => {
+  if (route.path !== '/feed') {
+    return 'home'
+  }
+
+  const type = typeof route.query.type === 'string' ? route.query.type : ''
+  if (type === 'illust') return 'illust'
+  if (type === 'manga') return 'manga'
+  if (type === 'novel') return 'novel'
+  return 'home'
+})
+</script>
+
 <template>
   <div class="tabs">
-    <a class="active" href="#">Home</a>
-    <a href="#">Illustrations</a>
-    <a href="#">Manga</a>
-    <a href="#">Novels</a>
+    <router-link to="/" :class="{ active: activeTab === 'home' }">Home</router-link>
+    <router-link to="/feed?type=illust" :class="{ active: activeTab === 'illust' }">Illustrations</router-link>
+    <router-link to="/feed?type=manga" :class="{ active: activeTab === 'manga' }">Manga</router-link>
+    <router-link to="/feed?type=novel" :class="{ active: activeTab === 'novel' }">Novels</router-link>
   </div>
 </template>
 
