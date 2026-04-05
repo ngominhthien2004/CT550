@@ -1,6 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import AppSearchBar from './AppSearchBar.vue'
 
 const props = defineProps({
   siteName: {
@@ -9,33 +8,15 @@ const props = defineProps({
   },
   searchPlaceholder: {
     type: String,
-    default: 'Search illustrations/manga',
+    default: 'Search by title, tag, or artist',
   },
 })
 
 const emit = defineEmits(['toggle-sidebar'])
-const router = useRouter()
-const route = useRoute()
-const searchValue = ref(typeof route.query.q === 'string' ? route.query.q : '')
 
 function handleToggleSidebar() {
   emit('toggle-sidebar')
 }
-
-async function submitSearch() {
-  const normalizedQuery = searchValue.value.trim()
-  await router.push({
-    path: '/feed',
-    query: normalizedQuery ? { q: normalizedQuery } : {},
-  })
-}
-
-watch(
-  () => route.query.q,
-  (value) => {
-    searchValue.value = typeof value === 'string' ? value : ''
-  },
-)
 </script>
 
 <template>
@@ -46,14 +27,7 @@ watch(
       </button>
       <router-link to="/" class="top-site-name">{{ props.siteName }}</router-link>
 
-      <form class="search-box" @submit.prevent="submitSearch">
-        <input
-          v-model="searchValue"
-          type="search"
-          :placeholder="props.searchPlaceholder"
-          aria-label="Search artworks"
-        />
-      </form>
+      <AppSearchBar class="top-search" :placeholder="props.searchPlaceholder" variant="compact" />
 
       <router-link to="/feed" class="icon-round" aria-label="Media" title="Media">
         <i class="fa-regular fa-image" aria-hidden="true"></i>
@@ -61,7 +35,7 @@ watch(
       <router-link to="/rankings" class="icon-round" aria-label="More" title="More">
         <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
       </router-link>
-      <router-link to="/bookmarks" class="premium-pill">Premium Free Trial</router-link>
+      <router-link to="/signup" class="premium-pill">Premium Free Trial</router-link>
     </div>
     <div class="top-nav-actions">
       <router-link to="/messages" class="icon-round" aria-label="Messages" title="Messages">
@@ -124,27 +98,9 @@ watch(
   background: #f8fafc;
 }
 
-.search-box {
+.top-search {
   flex: 1 1 340px;
   min-width: 220px;
-  display: flex;
-  align-items: center;
-  border: 1px solid #e2e8f0;
-  border-radius: 999px;
-  background: #f8fafc;
-  overflow: hidden;
-}
-
-.search-box input {
-  width: 100%;
-  border: none;
-  background: transparent;
-  padding: 0.68rem 0.95rem;
-  color: #334155;
-}
-
-.search-box input:focus {
-  outline: none;
 }
 
 .icon-round {
@@ -184,7 +140,7 @@ watch(
     flex-wrap: wrap;
   }
 
-  .search-box {
+  .top-search {
     flex-basis: 100%;
   }
 

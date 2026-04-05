@@ -27,4 +27,7 @@ export const getMyBookmarks = (params = {}) => api.get('/bookmarks', { params })
 export const createBookmark = (payload) => api.post('/bookmarks', payload)
 export const deleteBookmark = (bookmarkId) => api.delete(`/bookmarks/${bookmarkId}`)
 
+export const registerAuthUser = (payload) => api.post('/auth/register', payload)
+export const loginAuthUser = (payload) => api.post('/auth/login', payload)
+
 export default api

@@ -3,7 +3,7 @@
 Muc tieu: theo doi danh sach trang frontend da co va cac trang can xay dung tiep theo tu feature tracker.
 
 ## Tong quan
-- Total pages tracked: 24
+- Total pages tracked: 26
 - Last updated: 2026-04-05
 - Owner: Expert Vue.js Frontend Engineer
 
@@ -18,7 +18,9 @@ Muc tieu: theo doi danh sach trang frontend da co va cac trang can xay dung tiep
 - [x] NotFoundView - `/:pathMatch(.*)*` - trang loi route khong ton tai
 - [x] MessagesView - `/messages` - trang tam cho message center
 - [x] NotificationsView - `/notifications` - trang tam cho thong bao
-- [x] AccountView - `/account` - trang tam cho profile/account
+- [x] AccountView - `/account` - profile/account + session info + logout
+- [x] SignUpView - `/signup` - dang ky tai khoan bang email/password
+- [x] LoginView - `/login` - dang nhap tai khoan bang email/password
 
 ## Tuong lai (Theo Feature Tracker)
 

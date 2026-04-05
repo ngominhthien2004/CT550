@@ -32,7 +32,7 @@ defineEmits(['close-sidebar'])
         <span>{{ item.label }}</span>
       </router-link>
     </nav>
-    <router-link to="/bookmarks" class="nav-ghost">Yeu cau dang nhap</router-link>
+    <router-link to="/login" class="nav-ghost">Yeu cau dang nhap</router-link>
   </aside>
 </template>
 
