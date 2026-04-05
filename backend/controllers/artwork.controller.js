@@ -55,8 +55,10 @@ const createArtwork = async (req, res, next) => {
 // Get All Artworks (with basic filtering)
 const getArtworks = async (req, res, next) => {
     try {
-        const { type, ageRating, user, tag, q } = req.query;
+        const { type, ageRating, user, tag, q, limit: rawLimit } = req.query;
         const query = {};
+        const parsedLimit = Number.parseInt(rawLimit, 10);
+        const limit = Number.isNaN(parsedLimit) ? 48 : Math.min(Math.max(parsedLimit, 1), 200);
 
         if (type) query.type = type;
         if (ageRating) query.ageRating = ageRating;
@@ -78,7 +80,8 @@ const getArtworks = async (req, res, next) => {
         const artworks = await Artwork.find(query)
             .populate('user', 'username displayName avatar')
             .populate('tags', 'name')
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .limit(limit);
 
         res.json(artworks);
     } catch (error) {

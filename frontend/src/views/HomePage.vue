@@ -30,7 +30,7 @@ function toggleLeftNav() {
 
 async function loadHomeArtworks() {
   try {
-    const { data } = await getArtworks()
+    const { data } = await getArtworks({ limit: 24 })
     if (Array.isArray(data) && data.length > 0) {
       liveWorks.value = data
       return

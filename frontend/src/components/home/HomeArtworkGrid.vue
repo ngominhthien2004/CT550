@@ -21,7 +21,11 @@ function hasArtworkDetailRoute(work) {
       <router-link to="/feed">View all</router-link>
     </header>
 
-    <div class="work-grid">
+    <p v-if="!works.length" class="empty-state mb-0">
+      Chua co artwork moi nhat de hien thi. Hay dang artwork dau tien de Home co noi dung.
+    </p>
+
+    <div v-else class="work-grid">
       <article v-for="work in works" :key="work._id || work.id" class="work-card">
         <router-link
           v-if="hasArtworkDetailRoute(work)"
@@ -46,6 +50,14 @@ function hasArtworkDetailRoute(work) {
 .latest-section {
   display: grid;
   gap: 0.75rem;
+}
+
+.empty-state {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 0.9rem;
+  color: var(--muted);
+  background: #fff;
 }
 
 .work-grid {

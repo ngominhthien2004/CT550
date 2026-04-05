@@ -64,14 +64,14 @@ watch(
       <router-link to="/bookmarks" class="premium-pill">Premium Free Trial</router-link>
     </div>
     <div class="top-nav-actions">
-      <router-link to="/feed" class="icon-round" aria-label="Messages" title="Messages">
+      <router-link to="/messages" class="icon-round" aria-label="Messages" title="Messages">
         <i class="fa-regular fa-envelope" aria-hidden="true"></i>
       </router-link>
-      <router-link to="/rankings" class="icon-round" aria-label="Notifications" title="Notifications">
+      <router-link to="/notifications" class="icon-round" aria-label="Notifications" title="Notifications">
         <i class="fa-regular fa-bell" aria-hidden="true"></i>
       </router-link>
       <router-link to="/" class="post-btn">Post ▾</router-link>
-      <router-link to="/bookmarks" class="icon-round" aria-label="Account" title="Account">
+      <router-link to="/account" class="icon-round" aria-label="Account" title="Account">
         <i class="fa-regular fa-circle-user" aria-hidden="true"></i>
       </router-link>
     </div>

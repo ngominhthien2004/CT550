@@ -7,12 +7,18 @@ import ArtworkCommentsView from '../views/ArtworkCommentsView.vue'
 import ArtworkDetailView from '../views/ArtworkDetailView.vue'
 import TagDetailView from '../views/TagDetailView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
+import MessagesView from '../views/MessagesView.vue'
+import NotificationsView from '../views/NotificationsView.vue'
+import AccountView from '../views/AccountView.vue'
 
 const routes = [
   { path: '/', name: 'home', component: HomePage },
   { path: '/feed', name: 'feed', component: FeedView },
   { path: '/bookmarks', name: 'bookmarks', component: BookmarksView },
   { path: '/rankings', name: 'rankings', component: RankingsView },
+  { path: '/messages', name: 'messages', component: MessagesView },
+  { path: '/notifications', name: 'notifications', component: NotificationsView },
+  { path: '/account', name: 'account', component: AccountView },
   { path: '/artworks/:id', name: 'artwork-detail', component: ArtworkDetailView },
   { path: '/artworks/:id/comments', name: 'artwork-comments', component: ArtworkCommentsView },
   { path: '/tags/:tagName', name: 'tag-detail', component: TagDetailView },
