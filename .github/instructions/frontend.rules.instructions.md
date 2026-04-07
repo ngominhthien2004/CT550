@@ -32,5 +32,6 @@ description: "Portable rules for Vue 3 frontend files in MEVN projects."
 - Bootstrap 5 CSS is approved when explicitly requested; prefer Bootstrap utility/layout classes before adding repeated custom CSS.
 - For icons, use one consistent icon set across a screen (prefer Font Awesome when installed); avoid mixing emoji icons with icon libraries.
 - For icon-only controls, include accessible labels (`aria-label`/`title`) and hide decorative icons from screen readers (`aria-hidden="true"`).
+- For local auth-dependent tests, prefer reusing existing QA accounts documented in `docs/reports/auth-test-accounts-2026-04-05.md`; create new accounts only when a test case explicitly requires account-creation coverage.
 - After frontend UI changes, run a browser smoke test on affected routes (prefer Playwright) before reporting completion.
 - Verify compile/build compatibility after changes.
