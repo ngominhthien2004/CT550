@@ -1,0 +1,208 @@
+plan_id: adhoc-upload-illu-20260406
+objective: Phan tich codebase frontend cho redesign trang upload theo layout anh va mo rong Manga/Ugoira/Novel
+focus_area: upload-redesign-pages
+created_at: "2026-04-06T00:00:00Z"
+created_by: gem-researcher
+status: completed
+
+tldr: |
+  - Frontend hien co 1 view upload duy nhat, route /upload, topbar nut Post tro truc tiep den /upload.
+  - Upload form hien la generic, chua co tab/page rieng cho Illust/Manga/Ugoira/Novel va chua co post menu dropdown.
+  - Backend contract da ho tro type ugoira o schema/route, nhung frontend UploadArtworkView chua expose option ugoira.
+  - Chua tim thay artifact anh tham chieu trong workspace, gap phan tich layout chi dua tren code hien tai va yeu cau text.
+
+research_metadata:
+  methodology: 2-pass hybrid retrieval (semantic_search + grep_search + file_search + read_file + symbol usages)
+  scope: frontend/src/router + views + components/layout + stores + services, doi chieu backend artwork contract
+  confidence: high
+  coverage: 90
+  decision_blockers: 1
+  research_blockers: 1
+
+files_analyzed:
+- file: UploadArtworkView.vue
+  path: frontend/src/views/UploadArtworkView.vue
+  purpose: Form upload artwork hien tai
+  key_elements:
+  - element: form reactive
+    type: variable
+    location: frontend/src/views/UploadArtworkView.vue:9
+    description: title, description, type, ageRating, tags, images
+  - element: validateForm
+    type: function
+    location: frontend/src/views/UploadArtworkView.vue:35
+    description: bat buoc title/description/type/ageRating/images
+  - element: type select
+    type: pattern
+    location: frontend/src/views/UploadArtworkView.vue:143
+    description: chi co illust/manga/novel, khong co ugoira
+  language: Vue
+  lines: 212
+
+- file: AppTopBar.vue
+  path: frontend/src/components/layout/AppTopBar.vue
+  purpose: Topbar va entry diem Post
+  key_elements:
+  - element: router-link post-btn
+    type: pattern
+    location: frontend/src/components/layout/AppTopBar.vue:47
+    description: nut Post dang la single link /upload, khong co menu item theo type
+  language: Vue
+  lines: 154
+
+- file: index.js
+  path: frontend/src/router/index.js
+  purpose: Dinh nghia route app
+  key_elements:
+  - element: upload route
+    type: variable
+    location: frontend/src/router/index.js:27
+    description: /upload -> UploadArtworkView
+  language: JavaScript
+  lines: 56
+
+- file: artwork.store.js
+  path: frontend/src/stores/artwork.store.js
+  purpose: Submit create artwork
+  key_elements:
+  - element: submitArtwork
+    type: function
+    location: frontend/src/stores/artwork.store.js:31
+    description: dong goi FormData append title/description/type/ageRating/tags/images
+  language: JavaScript
+  lines: 77
+
+- file: api.js
+  path: frontend/src/services/api.js
+  purpose: API abstraction layer
+  key_elements:
+  - element: createArtwork
+    type: function
+    location: frontend/src/services/api.js:15
+    description: POST /artworks
+  language: JavaScript
+  lines: 31
+
+- file: Artwork.js
+  path: backend/models/Artwork.js
+  purpose: Contract type backend
+  key_elements:
+  - element: type enum
+    type: variable
+    location: backend/models/Artwork.js:17
+    description: illust/manga/ugoira/novel
+  language: JavaScript
+  lines: 58
+
+patterns_found:
+- category: architecture
+  pattern: single upload view for all artwork types
+  description: frontend dung 1 trang upload chung + 1 submit action chung
+  examples:
+  - file: frontend/src/views/UploadArtworkView.vue
+    location: frontend/src/views/UploadArtworkView.vue:9
+    snippet: const form = reactive({ title, description, type, ageRating, tags, images })
+  prevalence: common
+
+- category: structure
+  pattern: post entry from topbar only
+  description: topbar co mot nut Post link truc tiep den /upload
+  examples:
+  - file: frontend/src/components/layout/AppTopBar.vue
+    location: frontend/src/components/layout/AppTopBar.vue:47
+    snippet: <router-link to="/upload" class="post-btn">Post ▾</router-link>
+  prevalence: common
+
+- category: architecture
+  pattern: route granularity at page level
+  description: router hien khong co nhom route upload theo type
+  examples:
+  - file: frontend/src/router/index.js
+    location: frontend/src/router/index.js:27
+    snippet: { path: '/upload', name: 'upload', component: UploadArtworkView }
+  prevalence: common
+
+related_architecture:
+  components_relevant_to_domain:
+  - component: AppTopBar
+    responsibility: dieu huong user den luong post
+    location: frontend/src/components/layout/AppTopBar.vue
+    relationship_to_domain: domain depends on this
+  - component: UploadArtworkView
+    responsibility: render upload form + validate + trigger submit
+    location: frontend/src/views/UploadArtworkView.vue
+    relationship_to_domain: domain depends on this
+  - component: artwork.store
+    responsibility: orchestration payload submit
+    location: frontend/src/stores/artwork.store.js
+    relationship_to_domain: domain depends on this
+  interfaces_used_by_domain:
+  - interface: Vue Router route + route meta guard
+    location: frontend/src/router/index.js
+    usage_pattern: route-level auth gating
+  data_flow_involving_domain: AppTopBar click Post -> route /upload -> UploadArtworkView submit -> artwork.store.submitArtwork -> api.createArtwork -> backend /api/artworks
+  key_relationships_to_domain:
+  - from: frontend/src/components/layout/AppTopBar.vue
+    to: frontend/src/router/index.js
+    relationship: imports (route navigation)
+  - from: frontend/src/views/UploadArtworkView.vue
+    to: frontend/src/stores/artwork.store.js
+    relationship: calls
+  - from: frontend/src/stores/artwork.store.js
+    to: frontend/src/services/api.js
+    relationship: calls
+
+related_technology_stack:
+  languages_used_in_domain:
+  - JavaScript
+  - Vue SFC
+  frameworks_used_in_domain:
+  - name: Vue 3
+    usage_in_domain: page/component composition
+  - name: Vue Router
+    usage_in_domain: route mapping for upload entry
+  - name: Pinia
+    usage_in_domain: submit state management
+  libraries_used_in_domain:
+  - name: axios
+    purpose_in_domain: API HTTP client
+
+related_conventions:
+  naming_patterns_in_domain: Upload view dat ten theo action (UploadArtworkView), route name dang lower-case
+  structure_of_domain: layout component + page view + store + service
+  error_handling_in_domain: localError o view va createError o store
+  testing_in_domain: khong thay test unit/e2e rieng cho upload redesign
+  documentation_in_domain: co plan/research upload trong docs/plan/adhoc-upload-illu-20260406
+
+related_dependencies:
+  internal:
+  - component: frontend/src/components/layout/MainLayoutTemplate.vue
+    relationship_to_domain: khung layout cua trang upload
+    direction: inbound
+  - component: backend/routes/artwork.routes.js
+    relationship_to_domain: endpoint nhan payload upload
+    direction: outbound
+  external:
+  - name: axios
+    purpose_for_domain: submit data
+
+domain_security_considerations:
+  sensitive_areas:
+  - area: /upload requires auth
+    location: frontend/src/router/index.js:27
+    concern: route phai giu requiresAuth khi tach route theo type
+  authentication_patterns_in_domain: global beforeEach guard dua tren auth.store isAuthenticated
+  authorization_patterns_in_domain: frontend chi gate auth, backend enforce protect middleware
+  data_validation_in_domain: frontend validate co ban; backend validate req.files > 0
+
+open_questions:
+- question: Anh tham chieu co yeu cau field dac thu ugoira (zip/frame/fps/thumbnail) hay khong?
+  context: workspace khong co image spec layout de doi chieu chi tiet
+  type: decision_blocker
+  affects: [upload-redesign-pages]
+
+gaps:
+- area: reference design asset
+  description: khong tim thay file anh mock/layout trong workspace de map 1-1 section/tab
+  impact: research_blocker
+  affects: [upload-redesign-pages]

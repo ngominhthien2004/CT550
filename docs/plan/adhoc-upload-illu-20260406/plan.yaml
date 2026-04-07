@@ -1,0 +1,319 @@
+plan_id: adhoc-upload-illu-20260406
+objective: Xay dung trang Dang Illu (frontend) toi thieu de tao artwork qua POST /api/artworks voi thay doi nho nhat
+created_at: "2026-04-06T10:00:00Z"
+created_by: gem-planner
+status: pending_approval
+research_confidence: high
+
+plan_metrics:
+  wave_1_task_count: 1
+  total_dependencies: 4
+  risk_score: medium
+
+tldr: |
+  Ke hoach tap trung vao frontend theo huong toi thieu: bo sung service + store action tao artwork,
+  gan route upload co guard dang nhap, cap nhat nut Post o topbar, hoan tat view Dang Illu co form bat buoc,
+  sau do verify bang npm run build frontend va smoke test, bao gom cac truong hop doi khang.
+open_questions:
+  - Chua co docs/PRD.yaml trong workspace, tam khoa scope theo user request hien tai.
+
+pre_mortem:
+  overall_risk_level: medium
+  critical_failure_modes:
+    - scenario: Form gui JSON thay vi multipart/form-data lam backend khong nhan req.files
+      likelihood: medium
+      impact: high
+      mitigation: Rang buoc store action dung FormData, append images dung field "images".
+    - scenario: Nut Post tro sai route, nguoi dung khong vao duoc trang Dang Illu
+      likelihood: medium
+      impact: medium
+      mitigation: Cap nhat AppTopBar va smoke test dieu huong den route upload.
+    - scenario: Submit that bai do user chua dang nhap (protect middleware)
+      likelihood: high
+      impact: medium
+      mitigation: Hien thi thong bao loi ro rang trong view/store; smoke test bang tai khoan da dang nhap.
+  assumptions:
+    - Endpoint POST /api/artworks da on dinh va khong doi contract.
+    - Frontend tiep tuc dung Pinia + axios client trong src/services/api.js.
+    - Khong mo rong backend trong pham vi nay.
+
+implementation_specification:
+  code_structure: Frontend-first trong cac diem chua co (services -> stores -> views -> router/layout), tai su dung MainLayoutTemplate va navigation hien tai.
+  affected_areas:
+    - frontend/src/services/api.js
+    - frontend/src/stores/artwork.store.js
+    - frontend/src/views/UploadArtworkView.vue
+    - frontend/src/router/index.js
+    - frontend/src/components/layout/AppTopBar.vue
+  component_details:
+    - component: Artwork API service
+      responsibility: Bo sung ham goi POST /artworks bang multipart/form-data
+      interfaces:
+        - createArtwork(formData)
+    - component: Artwork store
+      responsibility: Quan ly submit tao artwork (loading, error, success, created item)
+      interfaces:
+        - submitArtwork(payload)
+        - resetCreateState()
+    - component: Upload artwork view
+      responsibility: Render form toi thieu title/description/type/ageRating/tags/images va goi store submit
+      interfaces:
+        - Route view cho duong dan upload
+    - component: Router + Topbar post entry
+      responsibility: Dang ky route upload co requiresAuth, ap dung guard dang nhap theo co che router hien co, va tro nut Post den dung route
+      interfaces:
+        - Route name/path cho upload
+  dependencies:
+    - component: Upload artwork view
+      relationship: Goi Artwork store action de submit
+    - component: Artwork store
+      relationship: Goi Artwork API service de tao artwork
+    - component: AppTopBar
+      relationship: Dieu huong den route upload trong Vue Router
+  integration_points:
+    - Frontend route table trong frontend/src/router/index.js
+    - Topbar action trong frontend/src/components/layout/AppTopBar.vue
+    - Axios API layer trong frontend/src/services/api.js
+    - Route guard login check trong frontend/src/router/index.js
+
+contracts:
+  - from_task: T01
+    to_task: T02
+    interface: Action submitArtwork nhan payload form va tra ket qua create; contract backend giu nguyen yeu cau images >= 1 cho moi type (bao gom novel)
+    format: Pinia action contract (Promise, state loading/error)
+  - from_task: T02
+    to_task: T03
+    interface: Route /upload co meta requiresAuth va guard dieu huong guest truoc khi tiep tuc hoan tat upload view
+    format: Vue Router route meta + global/per-route guard contract
+  - from_task: T03
+    to_task: T04
+    interface: UploadArtworkView duoc export, submit su dung contract images >=1, va route /upload hoat dong cho user da dang nhap
+    format: Vue SFC default export + navigation
+  - from_task: T04
+    to_task: T05
+    interface: Bao cao ket qua build va smoke test de reviewer danh gia
+    format: Test evidence (terminal output + manual smoke notes)
+
+tasks:
+  - id: T01
+    title: Tao API + store action cho create artwork
+    description: |
+      Muc tieu: Hoan tat lop goi API va state submit tao artwork ma khong thay doi cac luong doc artwork hien co.
+      File target: src/services/api.js, src/stores/artwork.store.js.
+      Done criteria: co createArtwork(formData), co submitArtwork() quan ly loading/error/success, dung field images theo contract backend (images >=1 cho moi type, bao gom novel).
+    wave: 1
+    agent: gem-implementer
+    prototype: false
+    covers: [AC-01, AC-02]
+    priority: high
+    status: pending
+    dependencies: []
+    conflicts_with: []
+    context_files:
+      - path: frontend/src/services/api.js
+        description: Shared axios client va API exports hien tai
+      - path: frontend/src/stores/artwork.store.js
+        description: Store artwork hien co de mo rong create state
+    verification:
+      - Kiem tra payload submitArtwork duoc dong goi bang FormData va append "images".
+      - Kiem tra xu ly loi 401/403 va thong diep loi duoc dua vao state.
+    acceptance_criteria:
+      - AC-T01-1: Co createArtwork(formData) trong service va submitArtwork() trong store.
+      - AC-T01-2: Store co loading/error/success state cho luong create artwork.
+      - AC-T01-3: Contract images >=1 duoc ghi ro trong luong submit, khong tao nhanh rieng cho novel.
+
+  - id: T02
+    title: Gan route /upload co requiresAuth va cap nhat nut Post
+    description: |
+      Muc tieu: Mo duong vao trang Dang Illu som va chan guest vao /upload theo co che guard hien co.
+      File target: src/router/index.js, src/components/layout/AppTopBar.vue.
+      Done criteria: route /upload co meta requiresAuth, guard dieu huong guest den trang dang nhap (hoac route dang dung trong he thong), nut Post tro dung route upload.
+    wave: 2
+    agent: gem-implementer
+    prototype: false
+    covers: [AC-03, AC-04]
+    priority: high
+    status: pending
+    dependencies:
+      - T01
+    conflicts_with: []
+    context_files:
+      - path: frontend/src/router/index.js
+        description: Bang route hien tai va co che guard dang nhap
+      - path: frontend/src/components/layout/AppTopBar.vue
+        description: Nut Post hien dang tro '/'
+    verification:
+      - Thu guest truy cap truc tiep /upload va xac nhan bi redirect boi guard.
+      - Thu click nut Post khi da dang nhap va xac nhan vao duoc /upload.
+    acceptance_criteria:
+      - AC-T02-1: /upload duoc bao ve boi meta requiresAuth + guard (hoac co che tuong duong hien co).
+      - AC-T02-2: Guest khong the vao /upload; user da dang nhap vao duoc /upload.
+      - AC-T02-3: Nut Post topbar tro dung route upload.
+
+  - id: T03
+    title: Hoan tat view Dang Illu voi form toi thieu
+    description: |
+      Muc tieu: Tao trang upload co cac field bat buoc title, description, type (illust/manga/novel), ageRating, tags, images upload.
+      File target: src/views/UploadArtworkView.vue.
+      Done criteria: form validate co ban, tao FormData dung dinh dang, submit qua artwork store, hien thi trang thai loi/thanh cong, va duy tri contract images >=1 cho moi type.
+    wave: 3
+    agent: gem-implementer
+    prototype: false
+    covers: [AC-03]
+    priority: medium
+    status: pending
+    dependencies:
+      - T02
+    conflicts_with: []
+    context_files:
+      - path: frontend/src/views/LoginView.vue
+        description: Pattern xu ly form/loading/error trong view
+      - path: frontend/src/components/layout/MainLayoutTemplate.vue
+        description: Layout shell de tai su dung cho trang upload
+    verification:
+      - Thu submit voi user da dang nhap, co it nhat 1 image hop le, va xac nhan goi store action thanh cong.
+      - Thu chon type=novel nhung khong co image, xac nhan bi chan theo contract backend hien tai.
+    acceptance_criteria:
+      - AC-T03-1: View upload co day du field toi thieu theo yeu cau.
+      - AC-T03-2: Form submit dung store/service da tao o T01.
+      - AC-T03-3: Luong UI khong cho bo qua yeu cau images >=1 cho novel.
+
+  - id: T04
+    title: Verify build frontend va smoke test upload flow
+    description: |
+      Muc tieu: Xac nhan tinh dung cua route upload/guard va submit, bao gom cac case doi khang yeu cau.
+      File target: khong bat buoc sua file; co the bo sung test artifacts neu can.
+      Done criteria: npm run build frontend pass; smoke test bao gom guest vao /upload, token het han khi submit, upload file sai dinh dang, va happy path co image hop le.
+    wave: 4
+    agent: gem-browser-tester
+    prototype: false
+    covers: [AC-05]
+    priority: high
+    status: pending
+    dependencies:
+      - T03
+    conflicts_with: []
+    context_files:
+      - path: frontend/package.json
+        description: Lenh build frontend
+      - path: frontend/src/views/UploadArtworkView.vue
+        description: Form va submit flow can smoke test
+      - path: frontend/src/router/index.js
+        description: Guard cho /upload can duoc xac nhan
+    verification:
+      - Chay npm run build trong frontend thanh cong.
+      - Chay matrix test day du 3 case doi khang + 1 happy path.
+    acceptance_criteria:
+      - AC-T04-1: Build frontend pass khong loi compile.
+      - AC-T04-2: Case guest vao /upload bi chan va dieu huong dung.
+      - AC-T04-3: Case token het han khi submit duoc xu ly loi dung (401/redirect/thong bao).
+      - AC-T04-4: Case upload sai dinh dang bi chan o UI hoac tra loi backend dung ky vong.
+
+  - id: T05
+    title: Review thay doi va kiem soat regression
+    description: |
+      Muc tieu: Review nhanh de dam bao thay doi toi thieu, dung contract va khong gay regression route/layout.
+      File target: cac file da doi trong T01-T03.
+      Done criteria: khong co issue nghiem trong ve contract upload, dieu huong, hoac xu ly loi; neu co thi tao danh sach fix ro rang.
+    wave: 5
+    agent: gem-reviewer
+    prototype: false
+    covers: [AC-06]
+    priority: medium
+    status: pending
+    dependencies:
+      - T04
+    conflicts_with: []
+    context_files:
+      - path: frontend/src/services/api.js
+        description: Verify payload contract
+      - path: frontend/src/router/index.js
+        description: Verify route wiring
+      - path: frontend/src/components/layout/AppTopBar.vue
+        description: Verify Post navigation
+    verification:
+      - Review xac nhan khong co mo rong backend va khong thay doi contract API hien tai.
+      - Review xac nhan guard /upload, matrix doi khang, va contract images >=1 da duoc bao phu trong ke hoach/thuc thi.
+    acceptance_criteria:
+      - AC-T05-1: Khong co issue high severity ve auth guard, upload contract, hoac route regression.
+      - AC-T05-2: Neu co issue medium/low thi co action item ro rang, pham vi frontend-only.
+      - AC-T05-3: Ket luan review xac nhan thay doi toi thieu, khong mo rong backend.
+
+planning_pass: 1
+planning_history:
+  - pass: 1
+    reason: Revised plan theo feedback guard /upload, matrix doi khang, contract images >=1, va task-level criteria
+    timestamp: "2026-04-06T10:00:00Z"
+    estimated_effort: medium
+    estimated_files: 3
+    estimated_lines: 280
+    focus_area: upload-artwork
+    verification:
+      - npm run build trong frontend thanh cong
+      - Smoke test route upload + submit bao gom 3 case doi khang bat buoc
+      - Reviewer check contract va regression route/topbar
+    acceptance_criteria:
+      - AC-01: Co API create artwork o frontend service
+      - AC-02: Co store action submitArtwork va state loading/error
+      - AC-03: Co view Dang Illu voi form field toi thieu theo yeu cau
+      - AC-04: Nut Post topbar tro dung trang upload
+      - AC-05: Build frontend pass va smoke test upload flow hoan tat
+      - AC-06: Review khong co issue high severity
+    failure_modes:
+      - scenario: submit khong gui dung field images
+        likelihood: medium
+        impact: high
+        mitigation: test submit voi >=1 image va verify request field
+      - scenario: route upload conflict voi route dong
+        likelihood: low
+        impact: medium
+        mitigation: dat path ro rang va chay smoke navigation
+    tech_stack:
+      - Vue 3
+      - Vue Router
+      - Pinia
+      - Axios
+    test_coverage: Smoke test route upload + submit bao gom case doi khang bat buoc
+    requires_review: true
+    review_depth: standard
+    review_security_sensitive: false
+    validation_matrix:
+      - scenario: Mo trang upload tu nut Post
+        steps:
+          - Dang nhap voi tai khoan hop le
+          - Click nut Post tren topbar
+        expected_result: Dieu huong den trang upload artwork
+      - scenario: Guest truy cap truc tiep /upload
+        steps:
+          - Dang xuat hoan toan
+          - Truy cap URL /upload truc tiep
+        expected_result: Bi guard chan va dieu huong den trang dang nhap (hoac route tuong duong trong he thong)
+      - scenario: Token het han khi submit
+        steps:
+          - Dang nhap va mo trang /upload
+          - Lam token het han (hoac gia lap 401 tu backend)
+          - Submit form hop le voi >=1 image
+        expected_result: Nhan xu ly loi xac thuc dung ky vong (thong bao/redirect), khong tao artwork moi
+      - scenario: Upload file sai dinh dang
+        steps:
+          - Mo trang /upload
+          - Chon file khong phai image (vi du .txt)
+          - Thu submit form
+        expected_result: Bi chan tai UI hoac backend tra loi validation dung ky vong
+      - scenario: Submit form toi thieu (happy path)
+        steps:
+          - Nhap title/description/type/ageRating/tags
+          - Chon it nhat 1 image hop le
+          - Bam submit
+        expected_result: Nhan response thanh cong hoac thong bao loi backend dung ngu nghia
+    environment: development
+    requires_approval: false
+    devops_security_sensitive: false
+    task_type: update
+    audience: developers
+    coverage_matrix:
+      - API service + store create flow
+      - Route guard /upload va Post navigation
+      - Adversarial test matrix cho upload flow
+      - View upload field mapping
+      - Router + topbar navigation

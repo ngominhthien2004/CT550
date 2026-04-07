@@ -1,0 +1,324 @@
+plan_id: adhoc-upload-illu-20260406
+objective: Khao sat codebase MEVN de xay dung trang Dang Illu
+focus_area: upload-artwork
+created_at: "2026-04-06T00:00:00Z"
+created_by: gem-researcher
+status: completed
+
+tldr: |
+  - Backend da co endpoint tao artwork voi upload anh: POST /api/artworks, co protect + multer array images.
+  - Frontend chua co route/view/store action rieng cho Dang Illu; hien tai chi co luong doc artwork.
+  - Contract create artwork dang phu thuoc multipart/form-data va yeu cau images bat buoc, de gay mismatch neu muon ho tro type=novel.
+  - Diem gan UI gan nhat la nut Post trong top bar, hien dang tro ve '/'.
+
+research_metadata:
+  methodology: hybrid retrieval semantic_search + grep_search + targeted read_file, relationship discovery qua route-controller-model va router-service-store
+  scope: frontend/src (router, services, stores, layout components, views lien quan) + backend/routes/controllers/models/middlewares + server bootstrap
+  confidence: high
+  coverage: 92
+  decision_blockers: 1
+  research_blockers: 1
+
+files_analyzed:
+- file: artwork.routes.js
+  path: backend/routes/artwork.routes.js
+  purpose: Dinh nghia endpoint CRUD artwork va cau hinh upload file bang multer
+  key_elements:
+  - element: router.route('/').post(protect, upload.array('images', 10), createArtwork)
+    type: function
+    location: backend/routes/artwork.routes.js:58
+    description: Endpoint create artwork, yeu cau auth va nhan toi da 10 file field images
+  - element: resolveUploadDirectory
+    type: function
+    location: backend/routes/artwork.routes.js:11
+    description: Tinh thu muc luu theo userId/type
+  language: JavaScript
+  lines: 65
+
+- file: artwork.controller.js
+  path: backend/controllers/artwork.controller.js
+  purpose: Xu ly business cho tao artwork, lay danh sach, chi tiet, xoa
+  key_elements:
+  - element: createArtwork
+    type: function
+    location: backend/controllers/artwork.controller.js:7
+    description: Doc req.body + req.files, tao tag neu can, tao document Artwork
+  - element: req.files length guard
+    type: pattern
+    location: backend/controllers/artwork.controller.js:11
+    description: Bat buoc co it nhat 1 image
+  - element: res.status(201).json(artwork)
+    type: pattern
+    location: backend/controllers/artwork.controller.js:49
+    description: Response create artwork tra ve raw artwork document
+  language: JavaScript
+  lines: 153
+
+- file: Artwork.js
+  path: backend/models/Artwork.js
+  purpose: Mongoose schema cho artwork
+  key_elements:
+  - element: title required
+    type: variable
+    location: backend/models/Artwork.js:9
+    description: Tieu de bat buoc
+  - element: type enum required
+    type: variable
+    location: backend/models/Artwork.js:17
+    description: illust|manga|ugoira|novel
+  - element: images required
+    type: variable
+    location: backend/models/Artwork.js:24
+    description: Mang duong dan anh, moi phan tu required
+  - element: ageRating enum required
+    type: variable
+    location: backend/models/Artwork.js:32
+    description: all|r-18|r-18g
+  language: JavaScript
+  lines: 58
+
+- file: auth.middleware.js
+  path: backend/middlewares/auth.middleware.js
+  purpose: Xac thuc JWT cho protected routes
+  key_elements:
+  - element: protect
+    type: function
+    location: backend/middlewares/auth.middleware.js:4
+    description: Doc Bearer token, verify JWT, nap req.user
+  language: JavaScript
+  lines: 30
+
+- file: server.js
+  path: backend/server.js
+  purpose: Gan route va static uploads
+  key_elements:
+  - element: app.use('/api/artworks', artworkRoutes)
+    type: pattern
+    location: backend/server.js:33
+    description: Mount artwork API
+  - element: app.use('/uploads', express.static(...))
+    type: pattern
+    location: backend/server.js:39
+    description: Public static duong dan anh upload
+  language: JavaScript
+  lines: 45
+
+- file: index.js
+  path: frontend/src/router/index.js
+  purpose: Dinh nghia route frontend
+  key_elements:
+  - element: routes array
+    type: variable
+    location: frontend/src/router/index.js:16
+    description: Co home/feed/bookmarks/rankings/artwork detail; chua co route dang illu
+  language: JavaScript
+  lines: 39
+
+- file: api.js
+  path: frontend/src/services/api.js
+  purpose: Axios client va cac ham goi API
+  key_elements:
+  - element: api.interceptors.request
+    type: pattern
+    location: frontend/src/services/api.js:7
+    description: Tu dong gan Authorization Bearer tu localStorage
+  - element: getArtworks/getArtworkById
+    type: function
+    location: frontend/src/services/api.js:17
+    description: Hien chi co API doc artwork, chua co createArtwork
+  language: JavaScript
+  lines: 34
+
+- file: artwork.store.js
+  path: frontend/src/stores/artwork.store.js
+  purpose: Store quan ly artwork detail
+  key_elements:
+  - element: fetchArtworkDetail
+    type: function
+    location: frontend/src/stores/artwork.store.js:11
+    description: Goi getArtworkById de nap chi tiet artwork
+  language: JavaScript
+  lines: 24
+
+- file: AppTopBar.vue
+  path: frontend/src/components/layout/AppTopBar.vue
+  purpose: Thanh dieu huong top, co nut Post
+  key_elements:
+  - element: router-link post-btn
+    type: pattern
+    location: frontend/src/components/layout/AppTopBar.vue:47
+    description: Nut Post hien tro ve '/', la diem gan route Dang Illu
+  language: Vue
+  lines: 136
+
+- file: navigation.js
+  path: frontend/src/constants/navigation.js
+  purpose: Side nav items
+  key_elements:
+  - element: navItems
+    type: variable
+    location: frontend/src/constants/navigation.js:1
+    description: Chua co muc Dang Illu/Create Post
+  language: JavaScript
+  lines: 8
+
+patterns_found:
+- category: structure
+  pattern: backend upload pipeline route -> middleware -> controller -> model
+  description: Tao artwork luon di qua protect + multer truoc khi vao createArtwork
+  examples:
+  - file: backend/routes/artwork.routes.js
+    location: backend/routes/artwork.routes.js:58
+    snippet: .post(protect, upload.array('images', 10), createArtwork)
+  prevalence: common
+
+- category: architecture
+  pattern: frontend su dung service API tap trung + Pinia store cho business async
+  description: View goi store/service thay vi call truc tiep axios trong nhieu noi
+  examples:
+  - file: frontend/src/services/api.js
+    location: frontend/src/services/api.js:17
+    snippet: export const getArtworks = (params = {}) => api.get('/artworks', { params })
+  prevalence: common
+
+- category: naming
+  pattern: endpoint REST voi tien to /api, danh tu so nhieu
+  description: artwork endpoint la /api/artworks va frontend goi /artworks qua baseURL /api
+  examples:
+  - file: backend/server.js
+    location: backend/server.js:33
+    snippet: app.use('/api/artworks', artworkRoutes);
+  prevalence: common
+
+- category: error_handling
+  pattern: controller dung next(Error) + centralized error middleware
+  description: Loi tra ve theo shape { message, stack }
+  examples:
+  - file: backend/middlewares/error.middleware.js
+    location: backend/middlewares/error.middleware.js:4
+    snippet: res.json({ message: err.message, stack: ... })
+  prevalence: common
+
+related_architecture:
+  components_relevant_to_domain:
+  - component: Artwork API route
+    responsibility: Nhan request create/list/detail/delete artwork
+    location: backend/routes/artwork.routes.js
+    relationship_to_domain: domain depends on this
+  - component: Artwork controller
+    responsibility: Validate files, map paths, tao tags, tao document
+    location: backend/controllers/artwork.controller.js
+    relationship_to_domain: domain depends on this
+  - component: Frontend API client
+    responsibility: Goi backend va attach auth token
+    location: frontend/src/services/api.js
+    relationship_to_domain: this uses domain outputs
+  - component: Frontend top navigation
+    responsibility: Cho nguoi dung trigger hanh dong Post
+    location: frontend/src/components/layout/AppTopBar.vue
+    relationship_to_domain: this uses domain outputs
+  interfaces_used_by_domain:
+  - interface: HTTP multipart/form-data + Bearer auth
+    location: backend/routes/artwork.routes.js
+    usage_pattern: POST /api/artworks voi field images + metadata body
+  data_flow_involving_domain: Frontend (future upload form) -> axios /api/artworks -> auth middleware -> multer disk storage -> artwork controller -> Artwork/Tag models -> JSON response -> frontend state refresh
+  key_relationships_to_domain:
+  - from: frontend/src/services/api.js
+    to: backend/server.js
+    relationship: calls
+  - from: backend/server.js
+    to: backend/routes/artwork.routes.js
+    relationship: imports
+  - from: backend/routes/artwork.routes.js
+    to: backend/controllers/artwork.controller.js
+    relationship: calls
+  - from: backend/controllers/artwork.controller.js
+    to: backend/models/Artwork.js
+    relationship: imports
+
+related_technology_stack:
+  languages_used_in_domain:
+  - JavaScript
+  - Vue SFC
+  frameworks_used_in_domain:
+  - name: Express
+    usage_in_domain: Dinh nghia REST API va middleware chain cho upload
+  - name: Vue 3
+    usage_in_domain: Router/view/components cho luong UI va navigation
+  - name: Pinia
+    usage_in_domain: Quan ly state frontend (hien tai cho detail artwork)
+  libraries_used_in_domain:
+  - name: multer
+    purpose_in_domain: Xu ly multipart/form-data va luu file upload
+  - name: axios
+    purpose_in_domain: HTTP client frontend co interceptor auth
+  - name: mongoose
+    purpose_in_domain: Persist artwork/tag documents
+  external_apis_used_in_domain: []
+
+related_conventions:
+  naming_patterns_in_domain: Endpoint backend dat dang /api/<plural-resource>, frontend service dat ten dong tu get/create/delete theo resource
+  structure_of_domain: Backend tach routes/controllers/models, frontend tach router/services/stores/views/components
+  error_handling_in_domain: Backend next(Error) ve middleware chung; frontend luu error string trong store/view
+  testing_in_domain: Khong thay file test rieng cho upload/create artwork trong pham vi da quet
+  documentation_in_domain: docs/tasks/phase-2-api-contract.md mo ta social features, chua ghi contract create artwork/upload
+
+related_dependencies:
+  internal:
+  - component: backend/middlewares/auth.middleware.js
+    relationship_to_domain: Bao ve endpoint create/delete artwork
+    direction: inbound
+  - component: backend/models/Tag.js
+    relationship_to_domain: createArtwork tim/tao tag va tang usageCount
+    direction: outbound
+  - component: frontend/src/components/layout/AppTopBar.vue
+    relationship_to_domain: Diem vao UI cho hanh dong Post
+    direction: inbound
+  external:
+  - name: multer
+    purpose_for_domain: Parse va store file upload
+  - name: jsonwebtoken
+    purpose_for_domain: Verify Bearer token trong protect middleware
+
+domain_security_considerations:
+  sensitive_areas:
+  - area: Protected create artwork
+    location: backend/routes/artwork.routes.js:58
+    concern: Request phai co Bearer token hop le de co req.user
+  - area: File upload validation
+    location: backend/routes/artwork.routes.js:38
+    concern: Chi check ext/mimetype co ban, chua thay gioi han kich thuoc file
+  authentication_patterns_in_domain: JWT Bearer trong header Authorization, parse tai auth middleware protect
+  authorization_patterns_in_domain: Delete artwork cho owner hoac admin, create artwork cho user da dang nhap
+  data_validation_in_domain: Validate ton tai files o controller; cac field required con lai chu yeu de Mongoose enforce
+
+testing_patterns:
+  framework: not_found_in_scope
+  coverage_areas:
+  - Khong tim thay test tu dong cho create artwork/upload trong pham vi da quet
+  test_organization: not_found_in_scope
+  mock_patterns: []
+
+open_questions:
+- question: Frontend route Dang Illu du kien la gi (vi du /upload hay /post/create)?
+  context: Hien router chua co route upload, nhung top bar co nut Post
+  type: decision_blocker
+  affects: [survey-upload-illu]
+- question: Co can ho tro post type novel khong can images khong?
+  context: Model cho phep type novel nhung controller bat buoc req.files > 0
+  type: decision_blocker
+  affects: [survey-upload-illu]
+- question: Can response createArtwork duoc populate user/tags ngay hay tra raw ObjectId nhu hien tai?
+  context: res.status(201).json(artwork) hien tra raw document
+  type: research
+  affects: [survey-upload-illu]
+
+gaps:
+- area: Project scope source
+  description: Khong co docs/PRD.yaml trong workspace de doi chieu in_scope/out_of_scope
+  impact: research_blocker
+  affects: [survey-upload-illu]
+- area: Upload contract documentation
+  description: docs/tasks/phase-2-api-contract.md chua mo ta endpoint create artwork/upload
+  impact: decision_blocker
+  affects: [survey-upload-illu]

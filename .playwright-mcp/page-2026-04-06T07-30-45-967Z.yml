@@ -1,0 +1,19 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - heading "new" [level=1] [ref=e6]
+    - button "Show tag" [ref=e7] [cursor=pointer]
+  - navigation "Result tabs" [ref=e8]:
+    - generic [ref=e9]: Illustrations
+    - generic [ref=e10]: Manga
+    - generic [ref=e11]: Novels
+    - generic [ref=e12]: User
+    - generic [ref=e13]: Search option
+  - generic [ref=e14]:
+    - generic [ref=e15]:
+      - generic [ref=e16]: Order
+      - combobox "Order" [ref=e17]:
+        - option "Newest" [selected]
+        - option "Sort by popularity"
+    - generic [ref=e18]: Include manga
+    - generic [ref=e19]: 0 results
+  - paragraph [ref=e20]: No search result found.

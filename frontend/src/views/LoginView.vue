@@ -1,10 +1,11 @@
 <script setup>
 import { reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth.store'
 import AppSearchBar from '../components/layout/AppSearchBar.vue'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 
 const form = reactive({
@@ -29,7 +30,8 @@ async function submitLogin() {
       email: form.email.trim(),
       password: form.password,
     })
-    await router.push('/account')
+    const redirectPath = typeof route.query.redirect === 'string' ? route.query.redirect : '/account'
+    await router.push(redirectPath)
   } catch (_error) {
     localState.error = authStore.error || 'Login failed.'
   }
