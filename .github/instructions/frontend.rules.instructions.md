@@ -7,6 +7,7 @@ description: "Portable rules for Vue 3 frontend files in MEVN projects."
 ## Structure
 - Keep route pages in `src/views/`.
 - Keep reusable UI in `src/components/`.
+- For medium/large pages, split UI into small focused components under `src/components/` instead of keeping large single-file views.
 - Keep shared state and async business logic in Pinia stores.
 - Use shared API client under `src/services/`.
 
