@@ -1,13 +1,24 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { getArtworks } from '../services/api'
+import SearchOptionsModal from '../components/search/SearchOptionsModal.vue'
 
 const route = useRoute()
+const router = useRouter()
 const loading = ref(false)
 const error = ref('')
 const feedItems = ref([])
 const sortMode = ref('latest')
+const showTags = ref(true)
+const isSearchOptionsOpen = ref(false)
+const searchOptionsDraft = ref({
+  includeAll: '',
+  includeAny: '',
+  exclude: '',
+  target: 'all',
+  type: 'illust',
+})
 
 const keyword = computed(() => {
   const q = typeof route.query.q === 'string' ? route.query.q.trim() : ''
@@ -15,6 +26,14 @@ const keyword = computed(() => {
 })
 
 const activeType = computed(() => (typeof route.query.type === 'string' ? route.query.type : 'illust'))
+
+const currentSearchOptions = computed(() => ({
+  includeAll: typeof route.query.qall === 'string' ? route.query.qall : '',
+  includeAny: typeof route.query.qany === 'string' ? route.query.qany : '',
+  exclude: typeof route.query.qnot === 'string' ? route.query.qnot : '',
+  target: typeof route.query.target === 'string' ? route.query.target : 'all',
+  type: typeof route.query.type === 'string' ? route.query.type : 'illust',
+}))
 
 const relatedTags = computed(() => {
   const bucket = new Map()
@@ -50,6 +69,70 @@ const visibleItems = computed(() => {
   return source
 })
 
+function normalizeKeywords(raw) {
+  return String(raw || '')
+    .toLowerCase()
+    .split(/[\s,]+/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+function buildTargetText(item, target) {
+  const title = item.title || ''
+  const description = item.description || ''
+  const tags = (item.tags || []).map((tag) => tag?.name || '').join(' ')
+  const author = `${item.user?.displayName || ''} ${item.user?.username || ''}`
+
+  if (target === 'title') {
+    return title.toLowerCase()
+  }
+  if (target === 'tags') {
+    return tags.toLowerCase()
+  }
+  if (target === 'artist') {
+    return author.toLowerCase()
+  }
+  if (target === 'description') {
+    return description.toLowerCase()
+  }
+
+  return `${title} ${description} ${tags} ${author}`.toLowerCase()
+}
+
+function openSearchOptions() {
+  searchOptionsDraft.value = { ...currentSearchOptions.value }
+  isSearchOptionsOpen.value = true
+}
+
+async function applySearchOptions(payload) {
+  const query = {}
+  const currentSimpleQuery = typeof route.query.q === 'string' ? route.query.q.trim() : ''
+
+  if (currentSimpleQuery) {
+    query.q = currentSimpleQuery
+  }
+  if (payload.type) {
+    query.type = payload.type
+  }
+  if (payload.includeAll) {
+    query.qall = payload.includeAll
+  }
+  if (payload.includeAny) {
+    query.qany = payload.includeAny
+  }
+  if (payload.exclude) {
+    query.qnot = payload.exclude
+  }
+  if (payload.target && payload.target !== 'all') {
+    query.target = payload.target
+  }
+
+  await router.push({
+    path: '/feed',
+    query,
+  })
+}
+
 async function loadFeed() {
   loading.value = true
   error.value = ''
@@ -57,8 +140,15 @@ async function loadFeed() {
   try {
     const q = typeof route.query.q === 'string' ? route.query.q : ''
     const type = typeof route.query.type === 'string' ? route.query.type : 'illust'
+    const includeAllRaw = typeof route.query.qall === 'string' ? route.query.qall : ''
+    const includeAnyRaw = typeof route.query.qany === 'string' ? route.query.qany : ''
+    const excludeRaw = typeof route.query.qnot === 'string' ? route.query.qnot : ''
+    const target = typeof route.query.target === 'string' ? route.query.target : 'all'
     const { data } = await getArtworks()
     const normalizedQuery = q.trim().toLowerCase()
+    const includeAllTokens = [...normalizeKeywords(normalizedQuery), ...normalizeKeywords(includeAllRaw)]
+    const includeAnyTokens = normalizeKeywords(includeAnyRaw)
+    const excludeTokens = normalizeKeywords(excludeRaw)
 
     const baseItems = Array.isArray(data)
       ? data.map((item) => ({
@@ -69,11 +159,11 @@ async function loadFeed() {
 
     feedItems.value = baseItems.filter((item) => {
       const matchesType = type ? item.type === type : true
-      const tags = (item.tags || []).map((tag) => tag?.name || '').join(' ')
-      const author = `${item.user?.displayName || ''} ${item.user?.username || ''}`
-      const haystack = `${item.title || ''} ${item.description || ''} ${tags} ${author}`.toLowerCase()
-      const matchesQuery = normalizedQuery ? haystack.includes(normalizedQuery) : true
-      return matchesType && matchesQuery
+      const haystack = buildTargetText(item, target)
+      const matchesAll = includeAllTokens.every((token) => haystack.includes(token))
+      const matchesAny = includeAnyTokens.length ? includeAnyTokens.some((token) => haystack.includes(token)) : true
+      const matchesExclude = excludeTokens.every((token) => !haystack.includes(token))
+      return matchesType && matchesAll && matchesAny && matchesExclude
     })
   } catch (fetchError) {
     error.value = fetchError?.response?.data?.message || 'Failed to fetch artworks'
@@ -88,10 +178,11 @@ onMounted(() => {
 })
 
 watch(
-  () => route.query.q,
+  () => route.query,
   () => {
     loadFeed()
   },
+  { deep: true },
 )
 </script>
 
@@ -99,10 +190,10 @@ watch(
   <section class="search-page page-block">
     <header class="search-header">
       <h1>{{ keyword }}</h1>
-      <button type="button" class="show-tag-btn">Show tag</button>
+      <button type="button" class="show-tag-btn" @click="showTags = !showTags">{{ showTags ? 'Hide tag' : 'Show tag' }}</button>
     </header>
 
-    <div class="tag-strip" v-if="relatedTags.length">
+    <div class="tag-strip" v-if="showTags && relatedTags.length">
       <span v-for="tag in relatedTags" :key="tag.label" class="tag-chip">#{{ tag.label }}</span>
     </div>
 
@@ -111,7 +202,7 @@ watch(
       <span class="tab-item" :class="{ active: activeType === 'manga' }">Manga</span>
       <span class="tab-item" :class="{ active: activeType === 'novel' }">Novels</span>
       <span class="tab-item">User</span>
-      <span class="search-option-note">Search option</span>
+      <button type="button" class="search-option-note" @click="openSearchOptions">Search option</button>
     </nav>
 
     <div class="toolbar">
@@ -146,6 +237,12 @@ watch(
     </div>
 
     <p v-else class="state-note">No search result found.</p>
+
+    <SearchOptionsModal
+      v-model="isSearchOptionsOpen"
+      :initial-values="searchOptionsDraft"
+      @apply="applySearchOptions"
+    />
   </section>
 </template>
 
@@ -227,6 +324,9 @@ watch(
 }
 
 .search-option-note {
+  border: none;
+  background: transparent;
+  cursor: pointer;
   margin-left: auto;
   color: #334155;
   font-size: 0.95rem;

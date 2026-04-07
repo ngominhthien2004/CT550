@@ -1,8 +1,9 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppSearchBar from './AppSearchBar.vue'
 import { useAuthStore } from '../../stores/auth.store'
+import SearchOptionsModal from '../search/SearchOptionsModal.vue'
 
 const props = defineProps({
   siteName: {
@@ -18,6 +19,22 @@ const props = defineProps({
 const emit = defineEmits(['toggle-sidebar'])
 const router = useRouter()
 const authStore = useAuthStore()
+const isSearchScopeOpen = ref(false)
+const selectedSearchScope = ref('artworks')
+const isSearchOptionsOpen = ref(false)
+const searchOptionsDraft = ref({
+  includeAll: '',
+  includeAny: '',
+  exclude: '',
+  target: 'all',
+  type: 'illust',
+})
+
+const searchScopes = [
+  { key: 'artworks', label: 'Illustrations and Manga' },
+  { key: 'novel', label: 'Novels' },
+  { key: 'user', label: 'User' },
+]
 const userStats = {
   following: 300,
   followers: 10,
@@ -91,6 +108,51 @@ async function handleLogout() {
   authStore.logout()
   await router.push('/login')
 }
+
+function toggleSearchScopeMenu() {
+  isSearchScopeOpen.value = !isSearchScopeOpen.value
+}
+
+function chooseSearchScope(scopeKey) {
+  selectedSearchScope.value = scopeKey
+  isSearchScopeOpen.value = false
+}
+
+function openSearchOptions() {
+  const query = router.currentRoute.value.query
+  searchOptionsDraft.value = {
+    includeAll: typeof query.qall === 'string' ? query.qall : '',
+    includeAny: typeof query.qany === 'string' ? query.qany : '',
+    exclude: typeof query.qnot === 'string' ? query.qnot : '',
+    target: typeof query.target === 'string' ? query.target : 'all',
+    type: typeof query.type === 'string' ? query.type : 'illust',
+  }
+  isSearchOptionsOpen.value = true
+}
+
+async function applySearchOptions(payload) {
+  const query = {
+    type: payload.type || 'illust',
+  }
+
+  if (payload.includeAll) {
+    query.qall = payload.includeAll
+  }
+  if (payload.includeAny) {
+    query.qany = payload.includeAny
+  }
+  if (payload.exclude) {
+    query.qnot = payload.exclude
+  }
+  if (payload.target && payload.target !== 'all') {
+    query.target = payload.target
+  }
+
+  await router.push({
+    path: '/feed',
+    query,
+  })
+}
 </script>
 
 <template>
@@ -103,12 +165,37 @@ async function handleLogout() {
 
       <AppSearchBar class="top-search" :placeholder="props.searchPlaceholder" variant="compact" />
 
-      <router-link to="/feed" class="icon-round" aria-label="Media" title="Media">
-        <i class="fa-regular fa-image" aria-hidden="true"></i>
-      </router-link>
-      <router-link to="/rankings" class="icon-round" aria-label="More" title="More">
+      <div class="inline-menu" @keydown.esc="isSearchScopeOpen = false">
+        <button
+          type="button"
+          class="icon-round"
+          aria-label="Media"
+          title="Media"
+          :aria-expanded="isSearchScopeOpen"
+          @click="toggleSearchScopeMenu"
+        >
+          <i class="fa-regular fa-image" aria-hidden="true"></i>
+        </button>
+        <div v-if="isSearchScopeOpen" class="inline-menu-panel" role="menu" aria-label="Search scope menu">
+          <button
+            v-for="scope in searchScopes"
+            :key="scope.key"
+            type="button"
+            class="inline-menu-item"
+            :class="{ 'is-active': selectedSearchScope === scope.key }"
+            role="menuitem"
+            @click="chooseSearchScope(scope.key)"
+          >
+            <i v-if="selectedSearchScope === scope.key" class="fa-solid fa-check" aria-hidden="true"></i>
+            <span v-else class="inline-menu-spacer" aria-hidden="true"></span>
+            {{ scope.label }}
+          </button>
+        </div>
+      </div>
+
+      <button type="button" class="icon-round" aria-label="More" title="More" @click="openSearchOptions">
         <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
-      </router-link>
+      </button>
       <router-link to="/signup" class="premium-pill">Premium Free Trial</router-link>
     </div>
     <div class="top-nav-actions">
@@ -237,6 +324,12 @@ async function handleLogout() {
       </details>
     </div>
   </header>
+
+  <SearchOptionsModal
+    v-model="isSearchOptionsOpen"
+    :initial-values="searchOptionsDraft"
+    @apply="applySearchOptions"
+  />
 </template>
 
 <style scoped>
@@ -302,6 +395,52 @@ async function handleLogout() {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+}
+
+.inline-menu {
+  position: relative;
+}
+
+.inline-menu-panel {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.4rem);
+  min-width: 238px;
+  border: 1px solid #dce3ec;
+  border-radius: 0.72rem;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  z-index: 24;
+  padding: 0.35rem;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.inline-menu-item {
+  border: none;
+  background: transparent;
+  color: #374151;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.46rem;
+  padding: 0.45rem 0.54rem;
+}
+
+.inline-menu-item:hover,
+.inline-menu-item:focus-visible,
+.inline-menu-item.is-active {
+  background: #f1f5f9;
+}
+
+.inline-menu-item i,
+.inline-menu-spacer {
+  width: 1rem;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 .app-grid-btn {
