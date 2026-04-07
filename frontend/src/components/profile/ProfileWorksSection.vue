@@ -2,6 +2,14 @@
 const objectIdPattern = /^[0-9a-fA-F]{24}$/
 
 defineProps({
+  heading: {
+    type: String,
+    default: 'Works',
+  },
+  showFeatured: {
+    type: Boolean,
+    default: true,
+  },
   tabs: {
     type: Array,
     default: () => [],
@@ -33,7 +41,7 @@ function hasDetailRoute(artwork) {
 
 <template>
   <div class="content-grid">
-    <section class="featured-panel" aria-labelledby="featured-title">
+    <section v-if="showFeatured" class="featured-panel" aria-labelledby="featured-title">
       <div class="featured-header">
         <h2 id="featured-title">Featured</h2>
         <button type="button" class="featured-settings">Featured settings</button>
@@ -63,7 +71,7 @@ function hasDetailRoute(artwork) {
       </div>
 
       <div class="works-header">
-        <h3>Works</h3>
+        <h3>{{ heading }}</h3>
         <span v-if="activeType" class="filter-note">Filter: {{ activeType }}</span>
       </div>
 
@@ -93,7 +101,7 @@ function hasDetailRoute(artwork) {
 .content-grid {
   padding-top: 2rem;
   display: grid;
-  gap: 2rem;
+  gap: 1.6rem;
 }
 
 .featured-panel {

@@ -6,13 +6,16 @@ import ProfileCoverBanner from '../components/profile/ProfileCoverBanner.vue'
 import ProfileSummarySection from '../components/profile/ProfileSummarySection.vue'
 import ProfilePrimaryTabs from '../components/profile/ProfilePrimaryTabs.vue'
 import ProfileWorksSection from '../components/profile/ProfileWorksSection.vue'
+import ProfileBookmarksSection from '../components/profile/ProfileBookmarksSection.vue'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
+import { useBookmarkStore } from '../stores/bookmark.store'
 import { getArtworks } from '../services/api'
 
 const isNavCollapsed = ref(true)
 const router = useRouter()
 const authStore = useAuthStore()
+const bookmarkStore = useBookmarkStore()
 const user = computed(() => authStore.user)
 
 const profileLocation = computed(() => 'Japan (Private)')
@@ -21,6 +24,8 @@ const artworks = ref([])
 const loadingArtworks = ref(false)
 const artworksError = ref('')
 const activeType = ref('')
+const activeMainTab = ref('home')
+const activeBookmarkType = ref('')
 
 const typeLabelMap = {
   illust: 'Illustration',
@@ -56,6 +61,34 @@ const visibleArtworks = computed(() => {
   return artworks.value.filter((item) => String(item.type || '').toLowerCase() === activeType.value)
 })
 
+const bookmarkTypeTabs = computed(() => {
+  const bucket = new Map()
+
+  bookmarkStore.items.forEach((item) => {
+    const type = String(item?.artwork?.type || '').toLowerCase()
+    if (!typeLabelMap[type]) {
+      return
+    }
+    bucket.set(type, (bucket.get(type) || 0) + 1)
+  })
+
+  return Object.keys(typeLabelMap)
+    .filter((type) => bucket.has(type))
+    .map((type) => ({
+      value: type,
+      label: typeLabelMap[type],
+      count: bucket.get(type) || 0,
+    }))
+})
+
+const visibleBookmarks = computed(() => {
+  if (!activeBookmarkType.value) {
+    return bookmarkStore.items
+  }
+
+  return bookmarkStore.items.filter((item) => String(item?.artwork?.type || '').toLowerCase() === activeBookmarkType.value)
+})
+
 function normalizeArtwork(item) {
   return {
     ...item,
@@ -69,6 +102,14 @@ function toggleLeftNav() {
 
 function selectType(type) {
   activeType.value = type
+}
+
+function selectBookmarkType(type) {
+  activeBookmarkType.value = type
+}
+
+function selectMainTab(tab) {
+  activeMainTab.value = tab
 }
 
 async function loadUserArtworks() {
@@ -96,6 +137,16 @@ async function loadUserArtworks() {
   }
 }
 
+async function loadBookmarks() {
+  if (!user.value?._id) {
+    activeBookmarkType.value = ''
+    return
+  }
+
+  await bookmarkStore.fetchMyBookmarks({ limit: 120 })
+  activeBookmarkType.value = bookmarkTypeTabs.value[0]?.value || ''
+}
+
 async function goLogin() {
   await router.push('/login')
 }
@@ -107,12 +158,14 @@ async function logout() {
 
 onMounted(() => {
   loadUserArtworks()
+  loadBookmarks()
 })
 
 watch(
   () => user.value?._id,
   () => {
     loadUserArtworks()
+    loadBookmarks()
   },
 )
 </script>
@@ -124,14 +177,40 @@ watch(
 
       <div class="profile-main">
         <ProfileSummarySection :user="user" :following-count="followingCount" :profile-location="profileLocation" />
-        <ProfilePrimaryTabs :home-active="true" />
+        <ProfilePrimaryTabs :active-tab="activeMainTab" @select="selectMainTab" />
+
         <ProfileWorksSection
+          v-if="activeMainTab === 'home'"
+          heading="Works"
+          :show-featured="true"
           :tabs="typeTabs"
           :active-type="activeType"
           :artworks="visibleArtworks"
           :loading="loadingArtworks"
           :error="artworksError"
           @select-type="selectType"
+        />
+
+        <ProfileWorksSection
+          v-else-if="activeMainTab === 'illustrations'"
+          heading="Illustrations"
+          :show-featured="false"
+          :tabs="typeTabs"
+          :active-type="activeType"
+          :artworks="visibleArtworks"
+          :loading="loadingArtworks"
+          :error="artworksError"
+          @select-type="selectType"
+        />
+
+        <ProfileBookmarksSection
+          v-else
+          :tabs="bookmarkTypeTabs"
+          :active-type="activeBookmarkType"
+          :bookmarks="visibleBookmarks"
+          :loading="bookmarkStore.loading"
+          :error="bookmarkStore.error"
+          @select-type="selectBookmarkType"
         />
       </div>
     </section>

@@ -1,16 +1,19 @@
 <script setup>
 defineProps({
-  homeActive: {
-    type: Boolean,
-    default: true,
+  activeTab: {
+    type: String,
+    default: 'home',
   },
 })
+
+const emit = defineEmits(['select'])
 </script>
 
 <template>
   <nav class="profile-tabs" aria-label="Profile sections">
-    <button type="button" class="profile-tab" :class="{ active: homeActive }">Home</button>
-    <router-link to="/bookmarks" class="profile-tab">Bookmarks</router-link>
+    <button type="button" class="profile-tab" :class="{ active: activeTab === 'home' }" @click="emit('select', 'home')">Home</button>
+    <button type="button" class="profile-tab" :class="{ active: activeTab === 'illustrations' }" @click="emit('select', 'illustrations')">Illustrations</button>
+    <button type="button" class="profile-tab" :class="{ active: activeTab === 'bookmarks' }" @click="emit('select', 'bookmarks')">Bookmarks</button>
   </nav>
 </template>
 
