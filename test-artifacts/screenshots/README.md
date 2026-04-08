@@ -9,6 +9,7 @@ Store browser smoke-test screenshots by feature so QA evidence is easy to review
 - `test-artifacts/screenshots/dashboard/`
 - `test-artifacts/screenshots/search/`
 - `test-artifacts/screenshots/navigation/`
+- `test-artifacts/screenshots/follow-message-notification/`
 - `test-artifacts/screenshots/reports/` for Playwright `report.html` and `report.json`
 
 ## Naming Convention

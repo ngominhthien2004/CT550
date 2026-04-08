@@ -10,16 +10,18 @@ import ProfileBookmarksSection from '../components/profile/ProfileBookmarksSecti
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
+import { useFollowStore } from '../stores/follow.store'
 import { getArtworks } from '../services/api'
 
 const isNavCollapsed = ref(true)
 const router = useRouter()
 const authStore = useAuthStore()
 const bookmarkStore = useBookmarkStore()
+const followStore = useFollowStore()
 const user = computed(() => authStore.user)
 
 const profileLocation = computed(() => 'Japan (Private)')
-const followingCount = computed(() => 1)
+const followingCount = computed(() => followStore.followingCount)
 const artworks = ref([])
 const loadingArtworks = ref(false)
 const artworksError = ref('')
@@ -147,6 +149,17 @@ async function loadBookmarks() {
   activeBookmarkType.value = bookmarkTypeTabs.value[0]?.value || ''
 }
 
+async function loadFollowStats() {
+  if (!user.value?._id) {
+    return
+  }
+
+  await Promise.all([
+    followStore.fetchFollowing(user.value._id),
+    followStore.fetchFollowers(user.value._id),
+  ])
+}
+
 async function goLogin() {
   await router.push('/login')
 }
@@ -159,6 +172,7 @@ async function logout() {
 onMounted(() => {
   loadUserArtworks()
   loadBookmarks()
+  loadFollowStats()
 })
 
 watch(
@@ -166,6 +180,7 @@ watch(
   () => {
     loadUserArtworks()
     loadBookmarks()
+    loadFollowStats()
   },
 )
 </script>

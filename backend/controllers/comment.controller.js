@@ -1,5 +1,6 @@
 const Comment = require('../models/Comment');
 const Artwork = require('../models/Artwork');
+const { createNotification } = require('../utils/notification');
 
 const createComment = async (req, res, next) => {
     try {
@@ -24,6 +25,14 @@ const createComment = async (req, res, next) => {
 
         artwork.commentCount = (artwork.commentCount || 0) + 1;
         await artwork.save();
+
+        await createNotification({
+            userId: artwork.user,
+            actorId: req.user._id,
+            artworkId,
+            type: 'comment',
+            message: `${req.user.username || req.user.displayName || 'Someone'} commented on your artwork.`
+        });
 
         const populated = await Comment.findById(comment._id).populate('user', 'username displayName avatar');
         res.status(201).json(populated);

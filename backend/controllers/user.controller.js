@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Follow = require('../models/Follow');
+const { createNotification } = require('../utils/notification');
 
 const getUserProfile = async (req, res, next) => {
     try {
@@ -69,6 +70,14 @@ const followUser = async (req, res, next) => {
         }
 
         await Follow.create({ follower: followerId, following: targetUserId });
+
+        await createNotification({
+            userId: targetUserId,
+            actorId: followerId,
+            type: 'follow',
+            message: `${req.user.username || req.user.displayName || 'Someone'} followed you.`
+        });
+
         res.status(201).json({ message: 'User followed successfully' });
     } catch (error) {
         next(error);
@@ -110,4 +119,25 @@ const getFollowing = async (req, res, next) => {
     }
 };
 
-module.exports = { getUserProfile, updateUserProfile, followUser, unfollowUser, getFollowers, getFollowing };
+const getFollowStatus = async (req, res, next) => {
+    try {
+        const targetUserId = req.params.id;
+
+        if (!req.user) {
+            return res.json({ isFollowing: false });
+        }
+
+        const followRecord = await Follow.findOne({
+            follower: req.user._id,
+            following: targetUserId
+        });
+
+        res.json({
+            isFollowing: Boolean(followRecord)
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { getUserProfile, updateUserProfile, followUser, unfollowUser, getFollowers, getFollowing, getFollowStatus };

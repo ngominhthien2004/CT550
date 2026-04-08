@@ -1,5 +1,6 @@
 const Like = require('../models/Like');
 const Artwork = require('../models/Artwork');
+const { createNotification } = require('../utils/notification');
 
 const createLike = async (req, res, next) => {
     try {
@@ -23,6 +24,14 @@ const createLike = async (req, res, next) => {
 
         artwork.likeCount += 1;
         await artwork.save();
+
+        await createNotification({
+            userId: artwork.user,
+            actorId: req.user._id,
+            artworkId,
+            type: 'like',
+            message: `${req.user.username || req.user.displayName || 'Someone'} liked your artwork.`
+        });
 
         const populated = await Like.findById(like._id)
             .populate('artwork', 'title images type ageRating')
@@ -133,6 +142,14 @@ const toggleLike = async (req, res, next) => {
 
         artwork.likeCount += 1;
         await artwork.save();
+
+        await createNotification({
+            userId: artwork.user,
+            actorId: req.user._id,
+            artworkId,
+            type: 'like',
+            message: `${req.user.username || req.user.displayName || 'Someone'} liked your artwork.`
+        });
 
         return res.status(201).json({
             isLiked: true,

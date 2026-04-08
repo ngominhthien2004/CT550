@@ -16,8 +16,8 @@ Muc tieu: theo doi danh sach trang frontend da co va cac trang can xay dung tiep
 - [x] ArtworkCommentsView - `/artworks/:id/comments` - danh sach comment theo artwork
 - [x] TagDetailView - `/tags/:tagName` - danh sach artwork theo tag
 - [x] NotFoundView - `/:pathMatch(.*)*` - trang loi route khong ton tai
-- [x] MessagesView - `/messages` - trang tam cho message center
-- [x] NotificationsView - `/notifications` - trang tam cho thong bao
+- [x] MessagesView - `/messages` - inbox/sent + compose + mark-read voi backend API
+- [x] NotificationsView - `/notifications` - timeline thong bao + unread filter + mark-read voi backend API
 - [x] AccountView - `/account` - profile/account + session info + logout
 - [x] DashboardView - `/dashboard` - creator dashboard and reaction summary
 - [x] FavoritesView - `/favorites` - My Favorite list from liked artworks
@@ -50,3 +50,4 @@ Muc tieu: theo doi danh sach trang frontend da co va cac trang can xay dung tiep
 - HomePage hien su dung artwork moi nhat tu API (`/api/artworks?limit=24`), khong phu thuoc seed mock.
 - Truoc khi implement tung page, can bo sung contract API + route guard + metadata dieu huong.
 - Uu tien thu tu: Moderation/Reporting truoc, sau do den AI pages.
+- Da doi chieu parity FE/BE ngay 2026-04-08: cac gap Follow API va Messages/Notifications API da duoc tich hop.

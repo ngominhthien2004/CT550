@@ -48,7 +48,41 @@ export const getMyLikes = (params = {}) => likeApi.getMine(params)
 export const createLike = (payload) => likeApi.create(payload)
 export const deleteLike = (likeId) => likeApi.delete(likeId)
 
+export const userApi = {
+  getProfile: (userId) => api.get(`/users/${userId}/profile`),
+  updateProfile: (payload) => api.put('/users/profile', payload),
+  follow: (userId) => api.post(`/users/${userId}/follow`),
+  unfollow: (userId) => api.delete(`/users/${userId}/follow`),
+  getFollowers: (userId) => api.get(`/users/${userId}/followers`),
+  getFollowing: (userId) => api.get(`/users/${userId}/following`),
+  getFollowStatus: (userId) => api.get(`/users/${userId}/follow-status`),
+}
+
+export const messageApi = {
+  getMine: (params = {}) => api.get('/messages', { params }),
+  create: (payload) => api.post('/messages', payload),
+  markRead: (messageId) => api.patch(`/messages/${messageId}/read`),
+}
+
+export const notificationApi = {
+  getMine: (params = {}) => api.get('/notifications', { params }),
+  markRead: (notificationId) => api.patch(`/notifications/${notificationId}/read`),
+}
+
 export const registerAuthUser = (payload) => api.post('/auth/register', payload)
 export const loginAuthUser = (payload) => api.post('/auth/login', payload)
+
+export const getFollowers = (userId) => userApi.getFollowers(userId)
+export const getFollowing = (userId) => userApi.getFollowing(userId)
+export const getFollowStatus = (userId) => userApi.getFollowStatus(userId)
+export const followUser = (userId) => userApi.follow(userId)
+export const unfollowUser = (userId) => userApi.unfollow(userId)
+
+export const getMyMessages = (params = {}) => messageApi.getMine(params)
+export const createMessage = (payload) => messageApi.create(payload)
+export const markMessageRead = (messageId) => messageApi.markRead(messageId)
+
+export const getMyNotifications = (params = {}) => notificationApi.getMine(params)
+export const markNotificationRead = (notificationId) => notificationApi.markRead(notificationId)
 
 export default api

@@ -1,5 +1,5 @@
 <script setup>
-defineEmits(['toggle-bookmark', 'toggle-like'])
+defineEmits(['toggle-bookmark', 'toggle-like', 'toggle-follow'])
 
 defineProps({
   artwork: {
@@ -27,6 +27,18 @@ defineProps({
     default: false,
   },
   likeError: {
+    type: String,
+    default: '',
+  },
+  isFollowing: {
+    type: Boolean,
+    default: false,
+  },
+  followLoading: {
+    type: Boolean,
+    default: false,
+  },
+  followError: {
     type: String,
     default: '',
   },
@@ -119,8 +131,18 @@ defineProps({
               <p class="mb-0 text-secondary small">Following</p>
             </div>
           </div>
-          <button type="button" class="btn btn-sm btn-outline-secondary">Follow</button>
+          <button
+            type="button"
+            class="btn btn-sm"
+            :class="isFollowing ? 'btn-secondary' : 'btn-outline-secondary'"
+            :disabled="followLoading"
+            :aria-label="isFollowing ? 'Unfollow artist' : 'Follow artist'"
+            @click="$emit('toggle-follow')"
+          >
+            {{ isFollowing ? 'Following' : 'Follow' }}
+          </button>
         </div>
+        <p v-if="followError" class="small text-danger mb-0 px-3 pb-2">{{ followError }}</p>
       </div>
 
       <div class="comments-card card border-0 shadow-sm">

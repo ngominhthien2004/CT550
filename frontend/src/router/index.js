@@ -23,8 +23,8 @@ const routes = [
   { path: '/bookmarks', name: 'bookmarks', component: BookmarksView, meta: { requiresAuth: true } },
   { path: '/favorites', name: 'favorites', component: FavoritesView, meta: { requiresAuth: true } },
   { path: '/rankings', name: 'rankings', component: RankingsView },
-  { path: '/messages', name: 'messages', component: MessagesView },
-  { path: '/notifications', name: 'notifications', component: NotificationsView },
+  { path: '/messages', name: 'messages', component: MessagesView, meta: { requiresAuth: true } },
+  { path: '/notifications', name: 'notifications', component: NotificationsView, meta: { requiresAuth: true } },
   { path: '/signup', name: 'signup', component: SignUpView },
   { path: '/login', name: 'login', component: LoginView },
   {

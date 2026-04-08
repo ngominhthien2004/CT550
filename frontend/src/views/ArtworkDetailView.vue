@@ -9,6 +9,7 @@ import { useAuthStore } from '../stores/auth.store'
 import { useArtworkStore } from '../stores/artwork.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
 import { useLikeStore } from '../stores/like.store'
+import { useFollowStore } from '../stores/follow.store'
 
 const route = useRoute()
 const router = useRouter()
@@ -16,6 +17,7 @@ const authStore = useAuthStore()
 const artworkStore = useArtworkStore()
 const bookmarkStore = useBookmarkStore()
 const likeStore = useLikeStore()
+const followStore = useFollowStore()
 const isNavCollapsed = ref(true)
 const relatedWorks = ref([])
 const isBookmarked = ref(false)
@@ -24,6 +26,7 @@ const localBookmarkCount = ref(0)
 const localLikeCount = ref(0)
 const bookmarkError = ref('')
 const likeError = ref('')
+const followError = ref('')
 
 const artworkId = computed(() => route.params.id)
 const artwork = computed(() => artworkStore.detail)
@@ -40,6 +43,19 @@ const displayArtwork = computed(() => {
 })
 const bookmarkLoading = computed(() => bookmarkStore.isTogglingBookmark(artworkId.value))
 const likeLoading = computed(() => likeStore.isTogglingLike(artworkId.value))
+const artistId = computed(() => artwork.value?.user?._id || '')
+const isFollowing = computed(() => {
+  if (!artistId.value) {
+    return false
+  }
+  return followStore.isFollowingUser(artistId.value)
+})
+const followLoading = computed(() => {
+  if (!artistId.value) {
+    return false
+  }
+  return followStore.isTogglingFollow(artistId.value)
+})
 const displayAuthor = computed(() => {
   if (!artwork.value?.user) return 'Unknown artist'
   return artwork.value.user.displayName || artwork.value.user.username || 'Unknown artist'
@@ -87,6 +103,20 @@ async function loadLikeStatus() {
   }
 }
 
+async function loadFollowStatus() {
+  followError.value = ''
+
+  if (!artistId.value || !authStore.isAuthenticated || artistId.value === authStore.user?._id) {
+    return
+  }
+
+  try {
+    await followStore.fetchFollowStatus(artistId.value)
+  } catch (error) {
+    followError.value = error?.response?.data?.message || 'Could not load follow status'
+  }
+}
+
 async function loadArtwork() {
   if (artworkId.value) {
     await artworkStore.fetchArtworkDetail(artworkId.value)
@@ -94,6 +124,7 @@ async function loadArtwork() {
     syncLikeCountFromArtwork()
     await loadBookmarkStatus()
     await loadLikeStatus()
+    await loadFollowStatus()
     await loadRelatedWorks()
   }
 }
@@ -200,15 +231,43 @@ async function handleBookmarkToggle() {
   }
 }
 
+async function handleFollowToggle() {
+  followError.value = ''
+
+  if (!artistId.value || artistId.value === authStore.user?._id) {
+    return
+  }
+
+  if (!authStore.isAuthenticated) {
+    await router.push({
+      name: 'login',
+      query: { redirect: route.fullPath },
+    })
+    return
+  }
+
+  if (followLoading.value) {
+    return
+  }
+
+  try {
+    await followStore.toggleFollowByUser(artistId.value)
+  } catch (error) {
+    followError.value = error?.response?.data?.message || 'Failed to update follow status'
+  }
+}
+
 onMounted(loadArtwork)
 watch(artworkId, loadArtwork)
 watch(artwork, syncBookmarkCountFromArtwork)
 watch(artwork, syncLikeCountFromArtwork)
+watch(artistId, loadFollowStatus)
 watch(
   () => authStore.isAuthenticated,
   () => {
     loadBookmarkStatus()
     loadLikeStatus()
+    loadFollowStatus()
   },
 )
 </script>
@@ -230,8 +289,12 @@ watch(
         :is-bookmarked="isBookmarked"
         :bookmark-loading="bookmarkLoading"
         :bookmark-error="bookmarkError"
+        :is-following="isFollowing"
+        :follow-loading="followLoading"
+        :follow-error="followError"
         @toggle-like="handleLikeToggle"
         @toggle-bookmark="handleBookmarkToggle"
+        @toggle-follow="handleFollowToggle"
       />
       <p v-else class="text-secondary mb-0">No artwork data found.</p>
     </section>

@@ -1,5 +1,6 @@
 const Bookmark = require('../models/Bookmark');
 const Artwork = require('../models/Artwork');
+const { createNotification } = require('../utils/notification');
 
 const createBookmark = async (req, res, next) => {
     try {
@@ -24,6 +25,14 @@ const createBookmark = async (req, res, next) => {
 
         artwork.bookmarkCount += 1;
         await artwork.save();
+
+        await createNotification({
+            userId: artwork.user,
+            actorId: req.user._id,
+            artworkId,
+            type: 'bookmark',
+            message: `${req.user.username || req.user.displayName || 'Someone'} bookmarked your artwork.`
+        });
 
         const populated = await Bookmark.findById(bookmark._id)
             .populate('artwork', 'title images type ageRating')
@@ -135,6 +144,14 @@ const toggleBookmark = async (req, res, next) => {
 
         artwork.bookmarkCount += 1;
         await artwork.save();
+
+        await createNotification({
+            userId: artwork.user,
+            actorId: req.user._id,
+            artworkId,
+            type: 'bookmark',
+            message: `${req.user.username || req.user.displayName || 'Someone'} bookmarked your artwork.`
+        });
 
         return res.status(201).json({
             isBookmarked: true,

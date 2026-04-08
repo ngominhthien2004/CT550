@@ -14,6 +14,8 @@ const bookmarkRoutes = require('./routes/bookmark.routes');
 const likeRoutes = require('./routes/like.routes');
 const feedRoutes = require('./routes/feed.routes');
 const tagRoutes = require('./routes/tag.routes');
+const notificationRoutes = require('./routes/notification.routes');
+const messageRoutes = require('./routes/message.routes');
 const path = require('path');
 
 const app = express();
@@ -37,6 +39,8 @@ app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/likes', likeRoutes);
 app.use('/api/feed', feedRoutes);
 app.use('/api/tags', tagRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/messages', messageRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
