@@ -19,6 +19,8 @@ Muc tieu: theo doi danh sach trang frontend da co va cac trang can xay dung tiep
 - [x] MessagesView - `/messages` - trang tam cho message center
 - [x] NotificationsView - `/notifications` - trang tam cho thong bao
 - [x] AccountView - `/account` - profile/account + session info + logout
+- [x] DashboardView - `/dashboard` - creator dashboard and reaction summary
+- [x] FavoritesView - `/favorites` - My Favorite list from liked artworks
 - [x] SignUpView - `/signup` - dang ky tai khoan bang email/password
 - [x] LoginView - `/login` - dang nhap tai khoan bang email/password
 

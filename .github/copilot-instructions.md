@@ -33,6 +33,13 @@ Use this as a portable baseline for MEVN projects:
 - Keep route guards aligned with auth store and route metadata.
 - Use Bootstrap 5 CSS utility/layout classes for frontend styling when Bootstrap is installed or explicitly requested.
 - For icons in frontend UI, keep a single icon set per screen (prefer Font Awesome when installed) and require accessible labels for icon-only buttons.
+- New frontend pages must be built on top of the existing layout/template system (`MainLayoutTemplate` + established section components) instead of ad-hoc standalone page shells.
+
+## Screenshot Artifact Rules
+- Store UI smoke-test screenshots in `test-artifacts/screenshots/<feature>/` (example: `test-artifacts/screenshots/like-favorite/`).
+- Keep Playwright HTML/JSON reports in `test-artifacts/screenshots/reports/`.
+- Use descriptive, feature-first file names with date suffix when practical (example: `favorite-page-template-2026-04-08.png`).
+- For new features, create a dedicated screenshot folder before running smoke tests.
 
 ## Security and Data Integrity
 - Never expose secrets in code; use `.env` and environment variables.
