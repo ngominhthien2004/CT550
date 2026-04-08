@@ -73,6 +73,92 @@ const getMyBookmarks = async (req, res, next) => {
     }
 };
 
+const getBookmarkStatus = async (req, res, next) => {
+    try {
+        const { artworkId } = req.params;
+
+        const bookmark = await Bookmark.findOne({
+            user: req.user._id,
+            artwork: artworkId
+        });
+
+        res.json({
+            isBookmarked: !!bookmark,
+            bookmarkId: bookmark ? bookmark._id.toString() : null
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const toggleBookmark = async (req, res, next) => {
+    try {
+        const { artworkId } = req.body;
+
+        if (!artworkId) {
+            res.status(400);
+            return next(new Error('artworkId is required'));
+        }
+
+        const existing = await Bookmark.findOne({
+            user: req.user._id,
+            artwork: artworkId
+        });
+
+        if (existing) {
+            await existing.deleteOne();
+
+            const artwork = await Artwork.findById(existing.artwork);
+            if (artwork) {
+                artwork.bookmarkCount = Math.max(0, (artwork.bookmarkCount || 0) - 1);
+                await artwork.save();
+            }
+
+            return res.json({
+                isBookmarked: false,
+                bookmarkId: null,
+                message: 'Bookmark removed'
+            });
+        }
+
+        const artwork = await Artwork.findById(artworkId);
+        if (!artwork) {
+            res.status(404);
+            return next(new Error('Artwork not found'));
+        }
+
+        const bookmark = await Bookmark.create({
+            user: req.user._id,
+            artwork: artworkId,
+            folder: 'default'
+        });
+
+        artwork.bookmarkCount += 1;
+        await artwork.save();
+
+        return res.status(201).json({
+            isBookmarked: true,
+            bookmarkId: bookmark._id.toString(),
+            message: 'Artwork bookmarked'
+        });
+    } catch (error) {
+        if (error.code === 11000) {
+            const existing = await Bookmark.findOne({
+                user: req.user._id,
+                artwork: req.body.artworkId
+            });
+
+            return res.json({
+                isBookmarked: true,
+                bookmarkId: existing ? existing._id.toString() : null,
+                message: 'Artwork already bookmarked'
+            });
+        }
+
+        next(error);
+    }
+};
+
 const deleteBookmark = async (req, res, next) => {
     try {
         const bookmark = await Bookmark.findById(req.params.id);
@@ -102,5 +188,7 @@ const deleteBookmark = async (req, res, next) => {
 module.exports = {
     createBookmark,
     getMyBookmarks,
+    getBookmarkStatus,
+    toggleBookmark,
     deleteBookmark
 };

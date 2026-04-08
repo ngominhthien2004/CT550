@@ -1,4 +1,6 @@
 <script setup>
+defineEmits(['toggle-bookmark'])
+
 defineProps({
   artwork: {
     type: Object,
@@ -11,6 +13,18 @@ defineProps({
   relatedWorks: {
     type: Array,
     default: () => [],
+  },
+  isBookmarked: {
+    type: Boolean,
+    default: false,
+  },
+  bookmarkLoading: {
+    type: Boolean,
+    default: false,
+  },
+  bookmarkError: {
+    type: String,
+    default: '',
   },
 })
 </script>
@@ -32,13 +46,22 @@ defineProps({
             <button type="button" class="btn btn-sm btn-light" aria-label="Like">
               <i class="fa-regular fa-heart" aria-hidden="true"></i>
             </button>
-            <button type="button" class="btn btn-sm btn-light" aria-label="Bookmark">
-              <i class="fa-regular fa-bookmark" aria-hidden="true"></i>
+            <button
+              type="button"
+              class="btn btn-sm btn-light"
+              :class="{ 'bookmark-active': isBookmarked }"
+              :aria-label="isBookmarked ? 'Remove bookmark' : 'Add bookmark'"
+              :title="isBookmarked ? 'Remove bookmark' : 'Add bookmark'"
+              :disabled="bookmarkLoading"
+              @click="$emit('toggle-bookmark')"
+            >
+              <i :class="[isBookmarked ? 'fa-solid' : 'fa-regular', 'fa-bookmark']" aria-hidden="true"></i>
             </button>
             <button type="button" class="btn btn-sm btn-light" aria-label="More options">
               <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
             </button>
           </div>
+          <p v-if="bookmarkError" class="small text-danger mb-0">{{ bookmarkError }}</p>
 
           <div class="d-grid gap-2">
             <h2 class="h5 mb-0 title">{{ artwork.title }}</h2>
@@ -200,6 +223,12 @@ defineProps({
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.bookmark-active {
+  color: #8f1d39;
+  border-color: #d9b2bc;
+  background: #ffe9ee;
 }
 
 @media (max-width: 1100px) {

@@ -24,9 +24,17 @@ export const getComments = (params = {}) => api.get('/comments', { params })
 export const createComment = (payload) => api.post('/comments', payload)
 export const deleteComment = (commentId) => api.delete(`/comments/${commentId}`)
 
-export const getMyBookmarks = (params = {}) => api.get('/bookmarks', { params })
-export const createBookmark = (payload) => api.post('/bookmarks', payload)
-export const deleteBookmark = (bookmarkId) => api.delete(`/bookmarks/${bookmarkId}`)
+export const bookmarkApi = {
+  getMine: (params = {}) => api.get('/bookmarks', { params }),
+  create: (payload) => api.post('/bookmarks', payload),
+  delete: (bookmarkId) => api.delete(`/bookmarks/${bookmarkId}`),
+  getStatus: (artworkId) => api.get(`/bookmarks/status/${artworkId}`),
+  toggle: (artworkId) => api.post('/bookmarks/toggle', { artworkId }),
+}
+
+export const getMyBookmarks = (params = {}) => bookmarkApi.getMine(params)
+export const createBookmark = (payload) => bookmarkApi.create(payload)
+export const deleteBookmark = (bookmarkId) => bookmarkApi.delete(bookmarkId)
 
 export const registerAuthUser = (payload) => api.post('/auth/register', payload)
 export const loginAuthUser = (payload) => api.post('/auth/login', payload)
