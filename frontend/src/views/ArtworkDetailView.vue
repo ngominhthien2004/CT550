@@ -8,17 +8,22 @@ import { getArtworks } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useArtworkStore } from '../stores/artwork.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
+import { useLikeStore } from '../stores/like.store'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 const artworkStore = useArtworkStore()
 const bookmarkStore = useBookmarkStore()
+const likeStore = useLikeStore()
 const isNavCollapsed = ref(true)
 const relatedWorks = ref([])
 const isBookmarked = ref(false)
+const isLiked = ref(false)
 const localBookmarkCount = ref(0)
+const localLikeCount = ref(0)
 const bookmarkError = ref('')
+const likeError = ref('')
 
 const artworkId = computed(() => route.params.id)
 const artwork = computed(() => artworkStore.detail)
@@ -30,9 +35,11 @@ const displayArtwork = computed(() => {
   return {
     ...artwork.value,
     bookmarkCount: localBookmarkCount.value,
+    likeCount: localLikeCount.value,
   }
 })
 const bookmarkLoading = computed(() => bookmarkStore.isTogglingBookmark(artworkId.value))
+const likeLoading = computed(() => likeStore.isTogglingLike(artworkId.value))
 const displayAuthor = computed(() => {
   if (!artwork.value?.user) return 'Unknown artist'
   return artwork.value.user.displayName || artwork.value.user.username || 'Unknown artist'
@@ -40,6 +47,10 @@ const displayAuthor = computed(() => {
 
 function syncBookmarkCountFromArtwork() {
   localBookmarkCount.value = Number(artwork.value?.bookmarkCount || 0)
+}
+
+function syncLikeCountFromArtwork() {
+  localLikeCount.value = Number(artwork.value?.likeCount || 0)
 }
 
 async function loadBookmarkStatus() {
@@ -59,11 +70,30 @@ async function loadBookmarkStatus() {
   }
 }
 
+async function loadLikeStatus() {
+  likeError.value = ''
+
+  if (!artworkId.value || !authStore.isAuthenticated) {
+    isLiked.value = false
+    return
+  }
+
+  try {
+    const data = await likeStore.fetchLikeStatus(artworkId.value)
+    isLiked.value = Boolean(data?.isLiked)
+  } catch (error) {
+    isLiked.value = false
+    likeError.value = error?.response?.data?.message || 'Could not load like status'
+  }
+}
+
 async function loadArtwork() {
   if (artworkId.value) {
     await artworkStore.fetchArtworkDetail(artworkId.value)
     syncBookmarkCountFromArtwork()
+    syncLikeCountFromArtwork()
     await loadBookmarkStatus()
+    await loadLikeStatus()
     await loadRelatedWorks()
   }
 }
@@ -81,6 +111,47 @@ async function loadRelatedWorks() {
       .slice(0, 24)
   } catch (_error) {
     relatedWorks.value = []
+  }
+}
+
+async function handleLikeToggle() {
+  likeError.value = ''
+
+  if (!artworkId.value) {
+    return
+  }
+
+  if (!authStore.isAuthenticated) {
+    await router.push({
+      name: 'login',
+      query: { redirect: route.fullPath },
+    })
+    return
+  }
+
+  if (likeLoading.value) {
+    return
+  }
+
+  const previousStatus = isLiked.value
+  const previousCount = localLikeCount.value
+  const nextStatus = !previousStatus
+  const countDelta = nextStatus ? 1 : -1
+
+  isLiked.value = nextStatus
+  localLikeCount.value = Math.max(0, previousCount + countDelta)
+
+  try {
+    const data = await likeStore.toggleLikeByArtwork(artworkId.value)
+    isLiked.value = Boolean(data?.isLiked)
+
+    if (isLiked.value !== nextStatus) {
+      localLikeCount.value = Math.max(0, previousCount + (isLiked.value ? 1 : -1))
+    }
+  } catch (error) {
+    isLiked.value = previousStatus
+    localLikeCount.value = previousCount
+    likeError.value = error?.response?.data?.message || 'Failed to update like'
   }
 }
 
@@ -132,10 +203,12 @@ async function handleBookmarkToggle() {
 onMounted(loadArtwork)
 watch(artworkId, loadArtwork)
 watch(artwork, syncBookmarkCountFromArtwork)
+watch(artwork, syncLikeCountFromArtwork)
 watch(
   () => authStore.isAuthenticated,
   () => {
     loadBookmarkStatus()
+    loadLikeStatus()
   },
 )
 </script>
@@ -151,9 +224,13 @@ watch(
         :artwork="displayArtwork"
         :display-author="displayAuthor"
         :related-works="relatedWorks"
+        :is-liked="isLiked"
+        :like-loading="likeLoading"
+        :like-error="likeError"
         :is-bookmarked="isBookmarked"
         :bookmark-loading="bookmarkLoading"
         :bookmark-error="bookmarkError"
+        @toggle-like="handleLikeToggle"
         @toggle-bookmark="handleBookmarkToggle"
       />
       <p v-else class="text-secondary mb-0">No artwork data found.</p>

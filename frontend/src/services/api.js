@@ -32,9 +32,21 @@ export const bookmarkApi = {
   toggle: (artworkId) => api.post('/bookmarks/toggle', { artworkId }),
 }
 
+export const likeApi = {
+  getMine: (params = {}) => api.get('/likes', { params }),
+  create: (payload) => api.post('/likes', payload),
+  delete: (likeId) => api.delete(`/likes/${likeId}`),
+  getStatus: (artworkId) => api.get(`/likes/status/${artworkId}`),
+  toggle: (artworkId) => api.post('/likes/toggle', { artworkId }),
+}
+
 export const getMyBookmarks = (params = {}) => bookmarkApi.getMine(params)
 export const createBookmark = (payload) => bookmarkApi.create(payload)
 export const deleteBookmark = (bookmarkId) => bookmarkApi.delete(bookmarkId)
+
+export const getMyLikes = (params = {}) => likeApi.getMine(params)
+export const createLike = (payload) => likeApi.create(payload)
+export const deleteLike = (likeId) => likeApi.delete(likeId)
 
 export const registerAuthUser = (payload) => api.post('/auth/register', payload)
 export const loginAuthUser = (payload) => api.post('/auth/login', payload)

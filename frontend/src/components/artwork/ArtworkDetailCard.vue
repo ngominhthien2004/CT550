@@ -1,5 +1,5 @@
 <script setup>
-defineEmits(['toggle-bookmark'])
+defineEmits(['toggle-bookmark', 'toggle-like'])
 
 defineProps({
   artwork: {
@@ -17,6 +17,18 @@ defineProps({
   isBookmarked: {
     type: Boolean,
     default: false,
+  },
+  isLiked: {
+    type: Boolean,
+    default: false,
+  },
+  likeLoading: {
+    type: Boolean,
+    default: false,
+  },
+  likeError: {
+    type: String,
+    default: '',
   },
   bookmarkLoading: {
     type: Boolean,
@@ -43,8 +55,16 @@ defineProps({
           />
 
           <div class="post-actions d-flex align-items-center justify-content-end gap-3">
-            <button type="button" class="btn btn-sm btn-light" aria-label="Like">
-              <i class="fa-regular fa-heart" aria-hidden="true"></i>
+            <button
+              type="button"
+              class="btn btn-sm btn-light"
+              :class="{ 'like-active': isLiked }"
+              :aria-label="isLiked ? 'Remove like' : 'Add like'"
+              :title="isLiked ? 'Remove like' : 'Add like'"
+              :disabled="likeLoading"
+              @click="$emit('toggle-like')"
+            >
+              <i :class="[isLiked ? 'fa-solid' : 'fa-regular', 'fa-heart']" aria-hidden="true"></i>
             </button>
             <button
               type="button"
@@ -61,6 +81,7 @@ defineProps({
               <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
             </button>
           </div>
+          <p v-if="likeError" class="small text-danger mb-0">{{ likeError }}</p>
           <p v-if="bookmarkError" class="small text-danger mb-0">{{ bookmarkError }}</p>
 
           <div class="d-grid gap-2">
@@ -229,6 +250,12 @@ defineProps({
   color: #8f1d39;
   border-color: #d9b2bc;
   background: #ffe9ee;
+}
+
+.like-active {
+  color: #9f1239;
+  border-color: #f6bfd0;
+  background: #fff1f5;
 }
 
 @media (max-width: 1100px) {

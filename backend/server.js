@@ -11,6 +11,7 @@ const userRoutes = require('./routes/user.routes');
 const artworkRoutes = require('./routes/artwork.routes');
 const commentRoutes = require('./routes/comment.routes');
 const bookmarkRoutes = require('./routes/bookmark.routes');
+const likeRoutes = require('./routes/like.routes');
 const feedRoutes = require('./routes/feed.routes');
 const tagRoutes = require('./routes/tag.routes');
 const path = require('path');
@@ -33,6 +34,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/artworks', artworkRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
+app.use('/api/likes', likeRoutes);
 app.use('/api/feed', feedRoutes);
 app.use('/api/tags', tagRoutes);
 

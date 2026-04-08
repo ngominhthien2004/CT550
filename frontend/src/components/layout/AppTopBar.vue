@@ -58,6 +58,13 @@ const serviceLinks = [
     thumbnail: 'https://picsum.photos/seed/ct550-ranking/96/96',
   },
   {
+    key: 'favorite',
+    label: 'My Favorite',
+    description: 'Works you liked and want to revisit',
+    to: '/favorites',
+    thumbnail: 'https://picsum.photos/seed/ct550-favorites/96/96',
+  },
+  {
     key: 'bookmarks',
     label: 'Bookmarks',
     description: 'Saved works and reading list',
@@ -74,12 +81,13 @@ const serviceLinks = [
 ]
 
 const userMainLinks = [
-  { label: 'Dashboard', to: '/account' },
+  { label: 'Dashboard', to: '/dashboard' },
   { label: 'My works', to: '/feed' },
   { label: 'Manage requests', to: '/messages' },
 ]
 
 const userLibraryLinks = [
+  { label: 'My Favorite', to: '/favorites' },
   { label: 'Bookmarks', to: '/bookmarks' },
   { label: 'Browsing history', to: '/feed' },
   { label: 'Markers', to: '/rankings' },
@@ -107,6 +115,10 @@ function handleToggleSidebar() {
 async function handleLogout() {
   authStore.logout()
   await router.push('/login')
+}
+
+async function goAccountFromAvatar() {
+  await router.push('/account')
 }
 
 function toggleSearchScopeMenu() {
@@ -220,7 +232,9 @@ async function applySearchOptions(payload) {
 
       <details class="user-menu" v-if="authStore.isAuthenticated">
         <summary class="user-menu-trigger" aria-label="Open user menu" title="User menu">
-          <span class="user-avatar">{{ userInitial }}</span>
+          <a href="/account" class="user-avatar-link" aria-label="Go to account" @click.prevent.stop="goAccountFromAvatar">
+            <span class="user-avatar">{{ userInitial }}</span>
+          </a>
           <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
         </summary>
         <div class="user-menu-panel" role="menu" aria-label="User menu">
@@ -530,6 +544,11 @@ async function applySearchOptions(payload) {
   border-radius: 999px;
   padding: 0.2rem 0.42rem;
   cursor: pointer;
+}
+
+.user-avatar-link {
+  text-decoration: none;
+  display: inline-flex;
 }
 
 .user-menu-trigger::-webkit-details-marker {
