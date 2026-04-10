@@ -10,6 +10,14 @@ defineProps({
     type: String,
     default: 'Unknown artist',
   },
+  artistId: {
+    type: String,
+    default: '',
+  },
+  isOwnArtist: {
+    type: Boolean,
+    default: false,
+  },
   relatedWorks: {
     type: Array,
     default: () => [],
@@ -41,6 +49,14 @@ defineProps({
   followError: {
     type: String,
     default: '',
+  },
+  artistFollowersCount: {
+    type: Number,
+    default: 0,
+  },
+  artistFollowingCount: {
+    type: Number,
+    default: 0,
   },
   bookmarkLoading: {
     type: Boolean,
@@ -127,20 +143,38 @@ defineProps({
           <div class="d-flex align-items-center gap-2">
             <span class="avatar-dot" aria-hidden="true"></span>
             <div>
-              <p class="mb-0 fw-semibold">{{ displayAuthor }}</p>
-              <p class="mb-0 text-secondary small">Following</p>
+              <router-link
+                v-if="artistId"
+                :to="`/account?user=${artistId}`"
+                class="mb-0 fw-semibold text-decoration-none text-dark"
+              >
+                {{ displayAuthor }}
+              </router-link>
+              <p v-else class="mb-0 fw-semibold">{{ displayAuthor }}</p>
+              <p class="mb-0 text-secondary small">{{ isFollowing ? 'Following this artist' : 'Not following yet' }}</p>
+              <p class="mb-0 text-secondary x-small">Followers {{ artistFollowersCount }} · Following {{ artistFollowingCount }}</p>
             </div>
           </div>
-          <button
-            type="button"
-            class="btn btn-sm"
-            :class="isFollowing ? 'btn-secondary' : 'btn-outline-secondary'"
-            :disabled="followLoading"
-            :aria-label="isFollowing ? 'Unfollow artist' : 'Follow artist'"
-            @click="$emit('toggle-follow')"
-          >
-            {{ isFollowing ? 'Following' : 'Follow' }}
-          </button>
+          <div class="d-flex flex-column align-items-end gap-1">
+            <button
+              v-if="!isOwnArtist"
+              type="button"
+              class="btn btn-sm"
+              :class="isFollowing ? 'btn-outline-secondary' : 'btn-primary'"
+              :disabled="followLoading"
+              :aria-label="isFollowing ? 'Unfollow artist' : 'Follow artist'"
+              @click="$emit('toggle-follow')"
+            >
+              {{ isFollowing ? 'Following' : 'Follow' }}
+            </button>
+            <router-link
+              v-if="artistId"
+              :to="`/account?user=${artistId}`"
+              class="small text-decoration-none"
+            >
+              View profile
+            </router-link>
+          </div>
         </div>
         <p v-if="followError" class="small text-danger mb-0 px-3 pb-2">{{ followError }}</p>
       </div>
@@ -239,6 +273,10 @@ defineProps({
   border-radius: 999px;
   display: inline-block;
   background: linear-gradient(135deg, #ffb3b3, #ffd7a8);
+}
+
+.x-small {
+  font-size: 0.72rem;
 }
 
 .related-grid {

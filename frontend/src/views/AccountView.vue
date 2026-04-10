@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import ProfileCoverBanner from '../components/profile/ProfileCoverBanner.vue'
 import ProfileSummarySection from '../components/profile/ProfileSummarySection.vue'
@@ -11,23 +12,67 @@ import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
 import { useFollowStore } from '../stores/follow.store'
-import { getArtworks } from '../services/api'
+import { getArtworks, userApi } from '../services/api'
 
 const isNavCollapsed = ref(true)
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 const bookmarkStore = useBookmarkStore()
 const followStore = useFollowStore()
-const user = computed(() => authStore.user)
+const profileUser = ref(null)
+const profileLoading = ref(false)
+const profileError = ref('')
 
 const profileLocation = computed(() => 'Japan (Private)')
 const followingCount = computed(() => followStore.followingCount)
+const followersCount = computed(() => followStore.followersCount)
 const artworks = ref([])
 const loadingArtworks = ref(false)
 const artworksError = ref('')
 const activeType = ref('')
 const activeMainTab = ref('home')
 const activeBookmarkType = ref('')
+const followError = ref('')
+
+const queryUserId = computed(() => {
+  const id = route.query.user
+  return typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id) ? id : ''
+})
+
+const viewingUserId = computed(() => queryUserId.value || authStore.user?._id || '')
+const isOwnProfile = computed(() => {
+  if (!viewingUserId.value) {
+    return false
+  }
+
+  if (!authStore.user?._id) {
+    return false
+  }
+
+  return authStore.user._id === viewingUserId.value
+})
+
+const user = computed(() => {
+  if (profileUser.value) {
+    return profileUser.value
+  }
+  return authStore.user
+})
+
+const isFollowingProfile = computed(() => {
+  if (!viewingUserId.value || isOwnProfile.value) {
+    return false
+  }
+  return followStore.isFollowingUser(viewingUserId.value)
+})
+
+const followLoading = computed(() => {
+  if (!viewingUserId.value || isOwnProfile.value) {
+    return false
+  }
+  return followStore.isTogglingFollow(viewingUserId.value)
+})
 
 const typeLabelMap = {
   illust: 'Illustration',
@@ -115,7 +160,7 @@ function selectMainTab(tab) {
 }
 
 async function loadUserArtworks() {
-  if (!user.value?._id) {
+  if (!viewingUserId.value) {
     artworks.value = []
     activeType.value = ''
     return
@@ -125,7 +170,7 @@ async function loadUserArtworks() {
   artworksError.value = ''
 
   try {
-    const { data } = await getArtworks({ user: user.value._id, limit: 120 })
+    const { data } = await getArtworks({ user: viewingUserId.value, limit: 120 })
     artworks.value = Array.isArray(data) ? data.map(normalizeArtwork) : []
 
     const firstType = typeTabs.value[0]?.value || ''
@@ -140,7 +185,8 @@ async function loadUserArtworks() {
 }
 
 async function loadBookmarks() {
-  if (!user.value?._id) {
+  if (!isOwnProfile.value || !authStore.user?._id) {
+    bookmarkStore.items = []
     activeBookmarkType.value = ''
     return
   }
@@ -150,14 +196,67 @@ async function loadBookmarks() {
 }
 
 async function loadFollowStats() {
-  if (!user.value?._id) {
+  if (!viewingUserId.value) {
     return
   }
 
   await Promise.all([
-    followStore.fetchFollowing(user.value._id),
-    followStore.fetchFollowers(user.value._id),
+    followStore.fetchFollowing(viewingUserId.value),
+    followStore.fetchFollowers(viewingUserId.value),
   ])
+}
+
+async function loadProfile() {
+  if (!viewingUserId.value) {
+    profileUser.value = null
+    return
+  }
+
+  profileError.value = ''
+
+  if (isOwnProfile.value) {
+    profileUser.value = authStore.user
+    return
+  }
+
+  profileLoading.value = true
+
+  try {
+    const { data } = await userApi.getProfile(viewingUserId.value)
+    profileUser.value = data || null
+
+    if (authStore.isAuthenticated) {
+      await followStore.fetchFollowStatus(viewingUserId.value)
+    }
+  } catch (error) {
+    profileError.value = error?.response?.data?.message || 'Failed to load profile'
+    profileUser.value = null
+  } finally {
+    profileLoading.value = false
+  }
+}
+
+async function toggleFollow() {
+  followError.value = ''
+
+  if (!viewingUserId.value || isOwnProfile.value) {
+    return
+  }
+
+  if (!authStore.isAuthenticated) {
+    await router.push({
+      name: 'login',
+      query: { redirect: route.fullPath },
+    })
+    return
+  }
+
+  try {
+    await followStore.toggleFollowByUser(viewingUserId.value)
+    await loadFollowStats()
+  } catch (error) {
+    followError.value = error?.response?.data?.message || 'Failed to update follow status'
+  }
 }
 
 async function goLogin() {
@@ -170,14 +269,16 @@ async function logout() {
 }
 
 onMounted(() => {
+  loadProfile()
   loadUserArtworks()
   loadBookmarks()
   loadFollowStats()
 })
 
 watch(
-  () => user.value?._id,
+  () => viewingUserId.value,
   () => {
+    loadProfile()
     loadUserArtworks()
     loadBookmarks()
     loadFollowStats()
@@ -191,7 +292,19 @@ watch(
       <ProfileCoverBanner />
 
       <div class="profile-main">
-        <ProfileSummarySection :user="user" :following-count="followingCount" :profile-location="profileLocation" />
+        <ProfileSummarySection
+          :user="user"
+          :following-count="followingCount"
+          :followers-count="followersCount"
+          :profile-location="profileLocation"
+          :is-own-profile="isOwnProfile"
+          :is-following="isFollowingProfile"
+          :follow-loading="followLoading"
+          :follow-error="followError"
+          @toggle-follow="toggleFollow"
+        />
+        <p v-if="profileLoading" class="text-secondary mb-1">Loading profile...</p>
+        <p v-if="profileError" class="text-danger mb-1">{{ profileError }}</p>
         <ProfilePrimaryTabs :active-tab="activeMainTab" @select="selectMainTab" />
 
         <ProfileWorksSection
@@ -219,7 +332,7 @@ watch(
         />
 
         <ProfileBookmarksSection
-          v-else
+          v-else-if="isOwnProfile"
           :tabs="bookmarkTypeTabs"
           :active-type="activeBookmarkType"
           :bookmarks="visibleBookmarks"
@@ -227,6 +340,9 @@ watch(
           :error="bookmarkStore.error"
           @select-type="selectBookmarkType"
         />
+        <section v-else class="card border-0 shadow-sm p-3 text-secondary">
+          Bookmark list is only available on your own profile.
+        </section>
       </div>
     </section>
 

@@ -8,6 +8,7 @@ description: "Portable rules for Vue 3 frontend files in MEVN projects."
 - Keep route pages in `src/views/`.
 - Keep reusable UI in `src/components/`.
 - For medium/large pages, split UI into small focused components under `src/components/` instead of keeping large single-file views.
+- If a frontend file grows beyond 500 lines and has separable sections, split it into focused subcomponents/modules.
 - Keep shared state and async business logic in Pinia stores.
 - Use shared API client under `src/services/`.
 
@@ -34,4 +35,5 @@ description: "Portable rules for Vue 3 frontend files in MEVN projects."
 - For icon-only controls, include accessible labels (`aria-label`/`title`) and hide decorative icons from screen readers (`aria-hidden="true"`).
 - For local auth-dependent tests, prefer reusing existing QA accounts documented in `docs/reports/auth-test-accounts-2026-04-05.md`; create new accounts only when a test case explicitly requires account-creation coverage.
 - After frontend UI changes, run a browser smoke test on affected routes (prefer Playwright) before reporting completion.
+- After adding or modifying a frontend feature, capture at least one updated screenshot artifact of the affected UI state (prefer Chrome DevTools MCP screenshot tools in chat automation).
 - Verify compile/build compatibility after changes.

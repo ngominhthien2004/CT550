@@ -10,13 +10,35 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  followersCount: {
+    type: Number,
+    default: 0,
+  },
   profileLocation: {
     type: String,
     default: 'Japan (Private)',
   },
+  isOwnProfile: {
+    type: Boolean,
+    default: true,
+  },
+  isFollowing: {
+    type: Boolean,
+    default: false,
+  },
+  followLoading: {
+    type: Boolean,
+    default: false,
+  },
+  followError: {
+    type: String,
+    default: '',
+  },
 })
 
 const avatarInitial = computed(() => (props.user?.username || 'U').charAt(0).toUpperCase())
+
+const emit = defineEmits(['toggle-follow'])
 </script>
 
 <template>
@@ -24,17 +46,30 @@ const avatarInitial = computed(() => (props.user?.username || 'U').charAt(0).toU
     <div class="avatar-wrap" aria-label="User avatar">{{ avatarInitial }}</div>
 
     <div class="profile-meta">
-      <h1 class="profile-name">{{ user.username }}</h1>
-      <p class="profile-following">{{ followingCount }} Following</p>
+      <h1 class="profile-name">{{ user.displayName || user.username }}</h1>
+      <p class="profile-following">{{ followersCount }} Followers · {{ followingCount }} Following</p>
+      <p class="profile-status">{{ isOwnProfile ? 'This is your profile' : isFollowing ? 'You are following this user' : 'You are not following yet' }}</p>
       <p class="profile-subtle">
         <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
         {{ profileLocation }}
       </p>
-      <router-link to="/account" class="profile-link">View profile</router-link>
+      <router-link :to="`/account?user=${user._id}`" class="profile-link">View profile</router-link>
+      <p v-if="followError" class="profile-error">{{ followError }}</p>
     </div>
 
     <div class="profile-actions">
-      <button type="button" class="edit-profile-btn">Edit profile</button>
+      <button v-if="isOwnProfile" type="button" class="edit-profile-btn">Edit profile</button>
+      <button
+        v-else
+        type="button"
+        class="follow-profile-btn"
+        :class="isFollowing ? 'is-following' : 'is-not-following'"
+        :disabled="followLoading"
+        :aria-label="isFollowing ? 'Unfollow user' : 'Follow user'"
+        @click="emit('toggle-follow')"
+      >
+        {{ isFollowing ? 'Following' : 'Follow' }}
+      </button>
       <button type="button" class="share-btn" aria-label="Share profile" title="Share profile">
         <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>
       </button>
@@ -84,6 +119,18 @@ const avatarInitial = computed(() => (props.user?.username || 'U').charAt(0).toU
   font-size: 0.85rem;
 }
 
+.profile-status {
+  margin: 0;
+  color: #334155;
+  font-size: 0.82rem;
+}
+
+.profile-error {
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.78rem;
+}
+
 .profile-link {
   text-decoration: none;
   color: #6b7280;
@@ -111,6 +158,25 @@ const avatarInitial = computed(() => (props.user?.username || 'U').charAt(0).toU
   padding: 0.38rem 0.92rem;
   font-size: 0.83rem;
   font-weight: 700;
+}
+
+.follow-profile-btn {
+  border-radius: 999px;
+  padding: 0.38rem 0.92rem;
+  font-size: 0.83rem;
+  font-weight: 700;
+}
+
+.follow-profile-btn.is-not-following {
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+.follow-profile-btn.is-following {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #475569;
 }
 
 .share-btn {

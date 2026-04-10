@@ -27,6 +27,8 @@ const localLikeCount = ref(0)
 const bookmarkError = ref('')
 const likeError = ref('')
 const followError = ref('')
+const artistFollowersCount = ref(0)
+const artistFollowingCount = ref(0)
 
 const artworkId = computed(() => route.params.id)
 const artwork = computed(() => artworkStore.detail)
@@ -59,6 +61,12 @@ const followLoading = computed(() => {
 const displayAuthor = computed(() => {
   if (!artwork.value?.user) return 'Unknown artist'
   return artwork.value.user.displayName || artwork.value.user.username || 'Unknown artist'
+})
+const isOwnArtist = computed(() => {
+  if (!artistId.value || !authStore.user?._id) {
+    return false
+  }
+  return artistId.value === authStore.user._id
 })
 
 function syncBookmarkCountFromArtwork() {
@@ -117,6 +125,26 @@ async function loadFollowStatus() {
   }
 }
 
+async function loadFollowStats() {
+  if (!artistId.value) {
+    artistFollowersCount.value = 0
+    artistFollowingCount.value = 0
+    return
+  }
+
+  try {
+    await Promise.all([
+      followStore.fetchFollowers(artistId.value),
+      followStore.fetchFollowing(artistId.value),
+    ])
+    artistFollowersCount.value = Number(followStore.followers.length || 0)
+    artistFollowingCount.value = Number(followStore.following.length || 0)
+  } catch (_error) {
+    artistFollowersCount.value = 0
+    artistFollowingCount.value = 0
+  }
+}
+
 async function loadArtwork() {
   if (artworkId.value) {
     await artworkStore.fetchArtworkDetail(artworkId.value)
@@ -125,6 +153,7 @@ async function loadArtwork() {
     await loadBookmarkStatus()
     await loadLikeStatus()
     await loadFollowStatus()
+    await loadFollowStats()
     await loadRelatedWorks()
   }
 }
@@ -251,7 +280,13 @@ async function handleFollowToggle() {
   }
 
   try {
+    const wasFollowing = isFollowing.value
     await followStore.toggleFollowByUser(artistId.value)
+    const nowFollowing = followStore.isFollowingUser(artistId.value)
+
+    if (wasFollowing !== nowFollowing) {
+      artistFollowersCount.value = Math.max(0, artistFollowersCount.value + (nowFollowing ? 1 : -1))
+    }
   } catch (error) {
     followError.value = error?.response?.data?.message || 'Failed to update follow status'
   }
@@ -261,13 +296,17 @@ onMounted(loadArtwork)
 watch(artworkId, loadArtwork)
 watch(artwork, syncBookmarkCountFromArtwork)
 watch(artwork, syncLikeCountFromArtwork)
-watch(artistId, loadFollowStatus)
+watch(artistId, async () => {
+  await loadFollowStatus()
+  await loadFollowStats()
+})
 watch(
   () => authStore.isAuthenticated,
   () => {
     loadBookmarkStatus()
     loadLikeStatus()
     loadFollowStatus()
+    loadFollowStats()
   },
 )
 </script>
@@ -282,6 +321,8 @@ watch(
         v-else-if="displayArtwork"
         :artwork="displayArtwork"
         :display-author="displayAuthor"
+        :artist-id="artistId"
+        :is-own-artist="isOwnArtist"
         :related-works="relatedWorks"
         :is-liked="isLiked"
         :like-loading="likeLoading"
@@ -292,6 +333,8 @@ watch(
         :is-following="isFollowing"
         :follow-loading="followLoading"
         :follow-error="followError"
+        :artist-followers-count="artistFollowersCount"
+        :artist-following-count="artistFollowingCount"
         @toggle-like="handleLikeToggle"
         @toggle-bookmark="handleBookmarkToggle"
         @toggle-follow="handleFollowToggle"
