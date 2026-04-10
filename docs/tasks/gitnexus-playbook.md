@@ -1,56 +1,60 @@
 # GitNexus Playbook (MEVN Starter)
 
-Muc tieu: chuan hoa cach agent su dung GitNexus trong luong lam viec cua repo nay.
+Mục tiêu: chuẩn hóa cách agent sử dụng GitNexus trong luồng làm việc của repo này.
 
-## 1) Pham vi
+## 1) Phạm vi
 
-- Ap dung cho task fullstack va backend-first theo [AGENTS.md](/E:/HocTap/CT550/AGENTS.md).
-- GitNexus duoc xem la lop remote/repo hosting; workflow commit/push van theo git chuan.
+- Áp dụng cho task fullstack và backend-first theo AGENTS.md.
+- GitNexus được xem là lớp remote/repo hosting; workflow commit/push vẫn theo git chuẩn.
 
-## 2) Phan vai Agent
+## 2) Phân vai Agent
 
-| Agent | Vai tro voi GitNexus | Khong nen lam |
-|---|---|---|
-| Fullstack Workflow Orchestrator | Tao chien luoc branch, chot PR gate, quyet dinh merge | Truc tiep code nho le tung file |
-| Implementation Executor | Commit/push hang ngay, cap nhat nhanh theo tung lat cat feature | Tu y doi branch strategy da chot |
-| API Architect | Tao de xuat API va commit neu duoc giao branch rieng | Push thang `main` |
-| Expert Vue.js Frontend Engineer | Commit frontend theo branch duoc giao | Push code backend khong lien quan |
-| mongodb-performance-advisor | Commit tuning index/query khi co phan cong ro | Sua luong release/merge policy |
-| Technical Report Writer | Ghi PR/commit vao bao cao, chot dau vet release | Dung lam owner cua branch code chinh |
+| Agent                           | Vai trò với GitNexus                                            | Không nên làm                        |
+| ------------------------------- | --------------------------------------------------------------- | ------------------------------------ |
+| Fullstack Workflow Orchestrator | Tạo chiến lược branch, chốt PR gate, quyết định merge           | Trực tiếp code nhỏ lẻ từng file      |
+| Implementation Executor         | Commit/push hằng ngày, cập nhật nhanh theo từng lát cắt feature | Tự ý đổi branch strategy đã chốt     |
+| API Architect                   | Tạo đề xuất API và commit nếu được giao branch riêng            | Push thẳng `main`                    |
+| Expert Vue.js Frontend Engineer | Commit frontend theo branch được giao                           | Push code backend không liên quan    |
+| mongodb-performance-advisor     | Commit tuning index/query khi có phân công rõ                   | Sửa luồng release/merge policy       |
+| Technical Report Writer         | Ghi PR/commit vào báo cáo, chốt dấu vết release                 | Đứng làm owner của branch code chính |
 
-## 3) Workflow de xuat
+## 3) Workflow đề xuất
 
 ### A. Fullstack task
 
 1. Research & Plan (Owner: Fullstack Workflow Orchestrator)
-- Tao branch feature tu `main` (vi du: `feat/auth-profile-follow`).
-- Cap nhat [feature-tracker.md](/E:/HocTap/CT550/docs/tasks/feature-tracker.md) -> `Planned`/`In Progress`.
-- Push branch len GitNexus de mo duong phoi hop.
 
-2. Start Implementation (Owner chinh: Implementation Executor)
-- Lam theo lat cat nho: BE/DB truoc, FE sau (neu backend-first).
-- Moi lat cat dat moc: commit ro nghia + push ngay.
-- Neu co handoff specialist, moi specialist lam tren branch duoc giao, xong thi gui lai qua commit/PR.
+- Tạo branch feature từ `main` (ví dụ: `feat/auth-profile-follow`).
+- Cập nhật `docs/tasks/feature-tracker.md` -> `Planned`/`In Progress`.
+- Push branch lên GitNexus để mở đường phối hợp.
+
+2. Start Implementation (Owner chính: Implementation Executor)
+
+- Làm theo lát cắt nhỏ: BE/DB trước, FE sau (nếu backend-first).
+- Mỗi lát cắt đặt mốc: commit rõ nghĩa + push ngay.
+- Nếu có handoff specialist, mỗi specialist làm trên branch được giao, xong thì gửi lại qua commit/PR.
 
 3. Finalize & Report (Owner: Fullstack Workflow Orchestrator + Technical Report Writer)
-- Chay validation can thiet (build/test/lint theo muc co san).
-- Dam bao PR clean, commit message de doc.
-- Cap nhat [feature-tracker.md](/E:/HocTap/CT550/docs/tasks/feature-tracker.md) voi link PR/commit + ket qua validation.
+
+- Chạy validation cần thiết (build/test/lint theo mức có sẵn).
+- Đảm bảo PR clean, commit message dễ đọc.
+- Cập nhật `docs/tasks/feature-tracker.md` với link PR/commit + kết quả validation.
 
 4. Merge & Close
-- Merge vao `main` theo gate da chot.
-- Dong branch feature tren GitNexus neu khong dung nua.
-- Chot trang thai feature -> `Done`.
+
+- Merge vào `main` theo gate đã chốt.
+- Đóng branch feature trên GitNexus nếu không dùng nữa.
+- Chốt trạng thái feature -> `Done`.
 
 ### B. Backend-first task
 
-1. Khoi dong voi Implementation Executor (chi ro: bootstrap hay feature).
-2. Tao branch feature, push branch som.
-3. Hoan tat backend + validation backend.
-4. Neu can FE, handoff cho Expert Vue.js Frontend Engineer tren cung feature branch hoac PR phu.
-5. Chot PR tong, merge, cap nhat tracker.
+1. Khởi động với Implementation Executor (chỉ rõ: bootstrap hay feature).
+2. Tạo branch feature, push branch sớm.
+3. Hoàn tất backend + validation backend.
+4. Nếu cần FE, handoff cho Expert Vue.js Frontend Engineer trên cùng feature branch hoặc PR phụ.
+5. Chốt PR tổng, merge, cập nhật tracker.
 
-## 4) Quy uoc branch va commit
+## 4) Quy ước branch và commit
 
 - Branch:
 - `feat/<scope>-<short-name>`
@@ -58,26 +62,26 @@ Muc tieu: chuan hoa cach agent su dung GitNexus trong luong lam viec cua repo na
 - `chore/<scope>-<short-name>`
 
 - Commit:
-- Uu tien dinh dang ro rang, vi du: `feat(auth): add refresh token endpoint`
-- 1 commit = 1 y chinh, tranh commit qua lon.
+- Ưu tiên định dạng rõ ràng, ví dụ: `feat(auth): add refresh token endpoint`
+- 1 commit = 1 ý chính, tránh commit quá lớn.
 
-## 5) Nhip push de tranh mat tien do
+## 5) Nhịp push để tránh mất tiến độ
 
-- Push sau moi moc hoan thanh nho (khong om local qua lau).
-- Truoc khi handoff agent, bat buoc push + ghi ro commit hash moi nhat.
-- Khong force-push branch chung; neu bat buoc force-push branch ca nhan, phai thong bao owner.
+- Push sau mỗi mốc hoàn thành nhỏ (không ôm local quá lâu).
+- Trước khi handoff agent, bắt buộc push + ghi rõ commit hash mới nhất.
+- Không force-push branch chung; nếu bắt buộc force-push branch cá nhân, phải thông báo owner.
 
-## 6) Checklist nhanh truoc merge
+## 6) Checklist nhanh trước merge
 
-- Branch dung naming convention.
-- Feature tracker da cap nhat status + PR/commit.
-- Khong co file nhay cam (secret, token, `.env`) trong commit.
-- Build/test/lint toi thieu da chay (muc phu hop voi task).
-- Co ghi chu ngan ve rui ro con lai (neu co).
+- Branch đúng naming convention.
+- Feature tracker đã cập nhật status + PR/commit.
+- Không có file nhạy cảm (secret, token, `.env`) trong commit.
+- Build/test/lint tối thiểu đã chạy (mức phù hợp với task).
+- Có ghi chú ngắn về rủi ro còn lại (nếu có).
 
-## 7) Anti-pattern can tranh
+## 7) Anti-pattern cần tránh
 
-- Nhieu agent cung push 1 nhanh trong cung thoi diem ma khong co owner.
-- Gom nhieu feature khong lien quan vao 1 branch.
-- De `pending push` trong tracker qua lau sau khi da xong code.
-- Merge khi chua cap nhat validation evidence.
+- Nhiều agent cùng push 1 nhánh trong cùng thời điểm mà không có owner.
+- Gom nhiều feature không liên quan vào 1 branch.
+- Để `pending push` trong tracker quá lâu sau khi đã xong code.
+- Merge khi chưa cập nhật validation evidence.

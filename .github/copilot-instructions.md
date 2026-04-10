@@ -11,6 +11,11 @@ Use this as a portable baseline for MEVN projects:
 - Avoid unrelated refactors.
 - Do NOT configure `git user.name` or `git user.email`. Assume the environment is properly authenticated and configured.
 
+## Language Output Policy
+- When writing Vietnamese, always use full diacritics (dấu tiếng Việt đầy đủ).
+- If Vietnamese with diacritics cannot be ensured, write in English instead.
+- Do not write Vietnamese without diacritics in docs, comments, reports, or task artifacts.
+
 ## Default Workflow Policy
 - Default to backend-first execution for features that affect both API and UI:
 	1) define or update backend contract first,
@@ -40,6 +45,7 @@ Use this as a portable baseline for MEVN projects:
 - Keep Playwright HTML/JSON reports in `test-artifacts/screenshots/reports/`.
 - Use descriptive, feature-first file names with date suffix when practical (example: `favorite-page-template-2026-04-08.png`).
 - For new features, create a dedicated screenshot folder before running smoke tests.
+- When capturing screenshots from chat automation, prioritize ChromeDevTools MCP screenshot tools over Playwright screenshot tools.
 
 ## Security and Data Integrity
 - Never expose secrets in code; use `.env` and environment variables.

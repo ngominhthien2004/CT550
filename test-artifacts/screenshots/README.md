@@ -19,3 +19,4 @@ Store browser smoke-test screenshots by feature so QA evidence is easy to review
 ## Rule of Thumb
 - New feature => create a new subfolder under `test-artifacts/screenshots/` before taking screenshots.
 - Frontend pages should follow existing template layout patterns before generating screenshot evidence.
+- Prefer ChromeDevTools MCP screenshot tools for capture in automation chat flows.

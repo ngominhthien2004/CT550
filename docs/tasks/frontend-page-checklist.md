@@ -1,53 +1,59 @@
 # Frontend Page Checklist
 
-Muc tieu: theo doi danh sach trang frontend da co va cac trang can xay dung tiep theo tu feature tracker.
+Mục tiêu: theo dõi danh sách trang frontend đã có và các trang cần xây dựng tiếp theo từ feature tracker.
 
-## Tong quan
+## Tổng quan
+
 - Total pages tracked: 26
 - Last updated: 2026-04-05
 - Owner: Expert Vue.js Frontend Engineer
 
-## Hien tai (Da co)
-- [x] HomePage - `/` - trang chu discovery + tags + hero
+## Hiện tại (Đã có)
+
+- [x] HomePage - `/` - trang chủ discovery + tags + hero
 - [x] FeedView - `/feed` - explore artwork + search/filter type
-- [x] BookmarksView - `/bookmarks` - danh sach bookmark cua user
+- [x] BookmarksView - `/bookmarks` - danh sách bookmark của user
 - [x] RankingsView - `/rankings` - ranking theo period
-- [x] ArtworkDetailView - `/artworks/:id` - chi tiet artwork + related
-- [x] ArtworkCommentsView - `/artworks/:id/comments` - danh sach comment theo artwork
-- [x] TagDetailView - `/tags/:tagName` - danh sach artwork theo tag
-- [x] NotFoundView - `/:pathMatch(.*)*` - trang loi route khong ton tai
-- [x] MessagesView - `/messages` - inbox/sent + compose + mark-read voi backend API
-- [x] NotificationsView - `/notifications` - timeline thong bao + unread filter + mark-read voi backend API
+- [x] ArtworkDetailView - `/artworks/:id` - chi tiết artwork + related
+- [x] ArtworkCommentsView - `/artworks/:id/comments` - danh sách comment theo artwork
+- [x] TagDetailView - `/tags/:tagName` - danh sách artwork theo tag
+- [x] NotFoundView - `/:pathMatch(.*)*` - trang lỗi route không tồn tại
+- [x] MessagesView - `/messages` - inbox/sent + compose + mark-read với backend API
+- [x] NotificationsView - `/notifications` - timeline thông báo + unread filter + mark-read với backend API
 - [x] AccountView - `/account` - profile/account + session info + logout
 - [x] DashboardView - `/dashboard` - creator dashboard and reaction summary
 - [x] FavoritesView - `/favorites` - My Favorite list from liked artworks
-- [x] SignUpView - `/signup` - dang ky tai khoan bang email/password
-- [x] LoginView - `/login` - dang nhap tai khoan bang email/password
+- [x] SignUpView - `/signup` - đăng ký tài khoản bằng email/password
+- [x] LoginView - `/login` - đăng nhập tài khoản bằng email/password
 
-## Tuong lai (Theo Feature Tracker)
+## Tương lai (Theo Feature Tracker)
 
 ### Phase 2: Moderation & Reporting Workflow (Planned)
-- [ ] ReportCreateView - `/reports/new` - user gui bao cao artwork/comment/user
-- [ ] MyReportsView - `/reports` - user theo doi danh sach report da gui
-- [ ] ReportDetailView - `/reports/:id` - xem trang thai report va timeline xu ly
-- [ ] ModerationQueueView - `/moderation/reports` - hang doi report cho moderator
-- [ ] ModerationCaseDetailView - `/moderation/reports/:id` - chi tiet case + hanh dong xu ly
+
+- [ ] ReportCreateView - `/reports/new` - user gửi báo cáo artwork/comment/user
+- [ ] MyReportsView - `/reports` - user theo dõi danh sách report đã gửi
+- [ ] ReportDetailView - `/reports/:id` - xem trạng thái report và timeline xử lý
+- [ ] ModerationQueueView - `/moderation/reports` - hàng đợi report cho moderator
+- [ ] ModerationCaseDetailView - `/moderation/reports/:id` - chi tiết case + hành động xử lý
 
 ### Phase 3: AI Auto-tagging, Captioning, Recommendation (Planned)
-- [ ] UploadAssistantView - `/upload/assistant` - goi y tag/caption AI khi dang bai
-- [ ] RecommendationFeedView - `/recommendations` - feed goi y ca nhan hoa
-- [ ] RecommendationSettingsView - `/settings/recommendations` - cau hinh goi y
-- [ ] CaptionSuggestionHistoryView - `/ai/captions` - lich su caption AI da tao
+
+- [ ] UploadAssistantView - `/upload/assistant` - gợi ý tag/caption AI khi đăng bài
+- [ ] RecommendationFeedView - `/recommendations` - feed gợi ý cá nhân hóa
+- [ ] RecommendationSettingsView - `/settings/recommendations` - cấu hình gợi ý
+- [ ] CaptionSuggestionHistoryView - `/ai/captions` - lịch sử caption AI đã tạo
 
 ### Phase 3: AI Detection Labeling + Art Assistant (Planned)
-- [ ] AIDetectionReviewView - `/moderation/ai-detection` - review ket qua AI detection
-- [ ] ArtworkLabelingView - `/artworks/:id/labels` - gan/kiem tra nhan noi dung
-- [ ] ArtAssistantChatView - `/assistant/art` - chat voi tro ly AI cho y tuong ve tranh
-- [ ] ArtAssistantSessionView - `/assistant/art/:sessionId` - chi tiet tung phien chat/tu van
+
+- [ ] AIDetectionReviewView - `/moderation/ai-detection` - review kết quả AI detection
+- [ ] ArtworkLabelingView - `/artworks/:id/labels` - gán/kiểm tra nhãn nội dung
+- [ ] ArtAssistantChatView - `/assistant/art` - chat với trợ lý AI cho ý tưởng vẽ tranh
+- [ ] ArtAssistantSessionView - `/assistant/art/:sessionId` - chi tiết từng phiên chat/tư vấn
 
 ## Note
-- Danh sach page tuong lai duoc trich tu cac feature Planned trong `docs/tasks/feature-tracker.md`.
-- HomePage hien su dung artwork moi nhat tu API (`/api/artworks?limit=24`), khong phu thuoc seed mock.
-- Truoc khi implement tung page, can bo sung contract API + route guard + metadata dieu huong.
-- Uu tien thu tu: Moderation/Reporting truoc, sau do den AI pages.
-- Da doi chieu parity FE/BE ngay 2026-04-08: cac gap Follow API va Messages/Notifications API da duoc tich hop.
+
+- Danh sách page tương lai được trích từ các feature Planned trong `docs/tasks/feature-tracker.md`.
+- HomePage hiện sử dụng artwork mới nhất từ API (`/api/artworks?limit=24`), không phụ thuộc seed mock.
+- Trước khi implement từng page, cần bổ sung contract API + route guard + metadata điều hướng.
+- Ưu tiên thứ tự: Moderation/Reporting trước, sau đó đến AI pages.
+- Đã đối chiếu parity FE/BE ngày 2026-04-08: các gap Follow API và Messages/Notifications API đã được tích hợp.
