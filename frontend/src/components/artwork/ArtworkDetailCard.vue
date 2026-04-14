@@ -1,7 +1,9 @@
 <script setup>
+import { computed, ref, toRefs, watch } from 'vue'
+
 defineEmits(['toggle-bookmark', 'toggle-like', 'toggle-follow'])
 
-defineProps({
+const props = defineProps({
   artwork: {
     type: Object,
     required: true,
@@ -67,6 +69,67 @@ defineProps({
     default: '',
   },
 })
+
+const {
+  artwork,
+  displayAuthor,
+  artistId,
+  isOwnArtist,
+  relatedWorks,
+  isBookmarked,
+  isLiked,
+  likeLoading,
+  likeError,
+  isFollowing,
+  followLoading,
+  followError,
+  artistFollowersCount,
+  artistFollowingCount,
+  bookmarkLoading,
+  bookmarkError,
+} = toRefs(props)
+
+const selectedImageIndex = ref(0)
+
+const imageList = computed(() => {
+  if (!Array.isArray(artwork.value?.images)) {
+    return []
+  }
+
+  return artwork.value.images.filter((item) => typeof item === 'string' && item.trim())
+})
+
+const mainImage = computed(() => imageList.value[selectedImageIndex.value] || '')
+
+const uploadedAtLabel = computed(() => {
+  const createdAt = artwork.value?.createdAt
+
+  if (!createdAt) {
+    return ''
+  }
+
+  const date = new Date(createdAt)
+  if (Number.isNaN(date.getTime())) {
+    return ''
+  }
+
+  return date.toLocaleString()
+})
+
+function selectImage(index) {
+  if (index < 0 || index >= imageList.value.length) {
+    return
+  }
+  selectedImageIndex.value = index
+}
+
+watch(
+  () => artwork.value?._id,
+  () => {
+    selectedImageIndex.value = 0
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -75,12 +138,31 @@ defineProps({
       <div class="post-card card border-0 shadow-sm">
         <div class="card-body p-3 p-md-4 d-grid gap-3">
           <img
-            v-if="artwork.images?.[0]"
+            v-if="mainImage"
             class="img-fluid rounded-3 border w-100 main-image"
-            :src="artwork.images[0]"
+            :src="mainImage"
             :alt="artwork.title"
             loading="lazy"
           />
+
+          <div v-if="imageList.length > 1" class="d-grid gap-2">
+            <div class="d-flex align-items-center justify-content-between">
+              <p class="small text-secondary mb-0">Image {{ selectedImageIndex + 1 }} / {{ imageList.length }}</p>
+            </div>
+            <div class="thumbnail-strip">
+              <button
+                v-for="(image, index) in imageList"
+                :key="`${artwork._id}-thumb-${index}`"
+                type="button"
+                class="thumb-button"
+                :class="{ active: selectedImageIndex === index }"
+                :aria-label="`Open image ${index + 1}`"
+                @click="selectImage(index)"
+              >
+                <img :src="image" :alt="`${artwork.title} thumbnail ${index + 1}`" loading="lazy" />
+              </button>
+            </div>
+          </div>
 
           <div class="post-actions d-flex align-items-center justify-content-end gap-3">
             <button
@@ -115,6 +197,7 @@ defineProps({
           <div class="d-grid gap-2">
             <h2 class="h5 mb-0 title">{{ artwork.title }}</h2>
             <p class="text-secondary small mb-0">{{ artwork.type }} · {{ artwork.ageRating }}</p>
+            <p v-if="uploadedAtLabel" class="text-secondary small mb-0">Posted on {{ uploadedAtLabel }}</p>
             <p v-if="artwork.description" class="description mb-0">{{ artwork.description }}</p>
 
             <div v-if="artwork.tags?.length" class="d-flex flex-wrap gap-2 align-items-center">
@@ -173,6 +256,13 @@ defineProps({
               class="small text-decoration-none"
             >
               View profile
+            </router-link>
+            <router-link
+              v-if="artistId"
+              :to="`/account?user=${artistId}`"
+              class="small text-decoration-none"
+            >
+              View all works
             </router-link>
           </div>
         </div>
@@ -241,6 +331,32 @@ defineProps({
 .main-image {
   max-height: 72vh;
   object-fit: cover;
+}
+
+.thumbnail-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 0.45rem;
+}
+
+.thumb-button {
+  border: 1px solid #dbe4f0;
+  border-radius: 0.5rem;
+  padding: 0;
+  background: #fff;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.thumb-button img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.thumb-button.active {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
 }
 
 .title {

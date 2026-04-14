@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local-only artifacts (keep on machine, do not push)
+test-artifacts/
+tmp-chrome-user-data/
+tmp-chrome-user-date/
+.playwright-mcp/
+tmp-pixiv-check.js
