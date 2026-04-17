@@ -13,15 +13,31 @@ const commentSchema = mongoose.Schema({
     },
     content: {
         type: String,
-        required: true,
+        required: false,
         trim: true,
         maxlength: 2000
+    },
+    parentComment: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comment',
+        default: null
+    },
+    stickerUrl: {
+        type: String,
+        trim: true
     }
 }, {
     timestamps: true
 });
 
+commentSchema.path('content').validate(function (value) {
+    const hasContent = Boolean(value && value.trim());
+    const hasSticker = Boolean(this.stickerUrl && this.stickerUrl.trim());
+    return hasContent || hasSticker;
+}, 'Either content or stickerUrl is required');
+
 commentSchema.index({ artwork: 1, createdAt: -1 });
+commentSchema.index({ artwork: 1, parentComment: 1, createdAt: 1 });
 commentSchema.index({ user: 1, createdAt: -1 });
 
 const Comment = mongoose.model('Comment', commentSchema);

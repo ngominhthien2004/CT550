@@ -5,7 +5,7 @@ Mục tiêu: theo dõi danh sách trang frontend đã có và các trang cần x
 ## Tổng quan
 
 - Total pages tracked: 26
-- Last updated: 2026-04-05
+- Last updated: 2026-04-17
 - Owner: Expert Vue.js Frontend Engineer
 
 ## Hiện tại (Đã có)
@@ -57,3 +57,4 @@ Mục tiêu: theo dõi danh sách trang frontend đã có và các trang cần x
 - Trước khi implement từng page, cần bổ sung contract API + route guard + metadata điều hướng.
 - Ưu tiên thứ tự: Moderation/Reporting trước, sau đó đến AI pages.
 - Đã đối chiếu parity FE/BE ngày 2026-04-08: các gap Follow API và Messages/Notifications API đã được tích hợp.
+- Đã cập nhật parity comment ngày 2026-04-17: luồng reply thread + Display Replies + sticker comment trên trang chi tiết artwork đã hoạt động và có screenshot MCP.

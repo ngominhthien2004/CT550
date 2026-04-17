@@ -182,13 +182,17 @@ Phạm vi: hệ thống MEVN hiện tại trong repository CT550.
 - APIs:
   - `POST /api/comments`
   - `GET /api/comments?artworkId=...`
+  - `GET /api/comments/replies?commentId=...`
   - `DELETE /api/comments/:id`
 - Workflow:
 
-1. Tạo comment cần `artworkId` + `content` hợp lệ.
-2. Tăng/giảm `artwork.commentCount` khi tạo/xóa.
-3. Tạo notification type `comment` cho owner artwork.
-4. Xóa comment chỉ owner comment hoặc admin.
+1. Tạo comment top-level cần `artworkId` và ít nhất một trong hai trường: `content` hoặc `stickerUrl`.
+2. Tạo reply dùng thêm `parentCommentId` (parent phải thuộc cùng artwork).
+3. Lấy danh sách comment chính bằng `GET /api/comments` (top-level), kèm `replyCount`.
+4. Lấy replies của một comment bằng `GET /api/comments/replies`.
+5. Tăng/giảm `artwork.commentCount` khi tạo/xóa; xóa comment top-level sẽ xóa cả direct replies và trừ counter theo số lượng đã xóa.
+6. Tạo notification type `comment`: top-level notify chủ artwork, reply notify chủ comment cha (không self-notify).
+7. Xóa comment chỉ owner comment hoặc admin.
 
 ## 7. Feed và ranking
 

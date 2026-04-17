@@ -21,6 +21,7 @@ export const getTags = (params = {}) => api.get('/tags', { params })
 export const getTagDetail = (tagName) => api.get(`/tags/${encodeURIComponent(tagName)}`)
 
 export const getComments = (params = {}) => api.get('/comments', { params })
+export const getCommentReplies = (params = {}) => api.get('/comments/replies', { params })
 export const createComment = (payload) => api.post('/comments', payload)
 export const deleteComment = (commentId) => api.delete(`/comments/${commentId}`)
 

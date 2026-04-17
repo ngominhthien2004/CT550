@@ -89,6 +89,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Nút tim: like/unlike.
   - Nút bookmark: bookmark/unbookmark.
   - Nút Follow: follow/unfollow tác giả.
+  - Khối Comments inline: gửi comment, Reply theo từng comment, Display/Hide Replies, gửi sticker URL (tuỳ chọn), xóa comment nếu owner/admin.
   - Tag trong bài: vào trang tag (`/tags/:tagName`).
   - Open comments page: sang `/artworks/:id/comments`.
   - Related works: bấm ảnh/tiêu đề để chuyển sang artwork khác.
@@ -104,6 +105,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Delete trên từng comment (nếu có quyền): xóa comment.
 - Kết quả hiển thị:
   - Loading/Error hoặc danh sách comment từ API.
+  - Ghi chú: luồng comment nâng cao (reply thread + display replies + sticker) đã được ưu tiên triển khai trong khối comments của `ArtworkDetailView`.
 
 ## 3.7 BookmarksView (`/bookmarks`) [cần đăng nhập]
 
