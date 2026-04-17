@@ -13,7 +13,7 @@ description: "Close a MEVN feature with validation checklist, release notes, and
 1. Confirm changed files and scope boundaries.
 2. Run relevant checks (frontend build/backend startup or targeted tests).
 3. Record known risks and follow-up tasks.
-4. Produce report-ready summary for `Technical Report Writer`.
+4. Produce report-ready summary for `gem-documentation-writer`.
 5. Create a Git commit for the finalized feature and push to the remote repository (GitHub).
 
 ## Output format

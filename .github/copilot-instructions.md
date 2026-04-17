@@ -21,7 +21,7 @@ Use this as a portable baseline for MEVN projects:
 	1) define or update backend contract first,
 	2) validate data/model impact,
 	3) integrate frontend against finalized contract.
-- Prefer `Implementation Executor` as the default execution agent for implementation tasks.
+- Prefer `gem-implementer` as the default execution agent for implementation tasks.
 - Use one-time startup baseline from `docs/tasks/startup-checklist.md`.
 - Track feature progress in `docs/tasks/feature-tracker.md` with status flow `Planned -> In Progress -> Blocked -> Done`.
 

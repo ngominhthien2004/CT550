@@ -13,26 +13,26 @@
 
 ## Sequencing
 
-1. API Architect
+1. gem-researcher
 
 - Chốt input/output contract cho các AI endpoint.
 - Tách rõ xử lý đồng bộ và bất đồng bộ (job queue nếu cần).
 
-2. Implementation Executor
+2. gem-implementer
 
 - Tích hợp service layer AI + endpoint wrappers.
 - Đảm bảo fallback khi AI provider lỗi.
 
-3. Expert Vue.js Frontend Engineer
+3. gem-designer
 
 - Thêm luồng UI cho tag suggestions/recommendations/assistant.
 - Bảo vệ UX với state loading, retry, message an toàn.
 
-4. mongodb-performance-advisor
+4. gem-reviewer
 
 - Tối ưu lưu trữ metadata, recommendation cache, index.
 
-5. Technical Report Writer
+5. gem-documentation-writer
 
 - Tổng hợp đánh giá tính năng AI, rủi ro và kết quả validation.
 

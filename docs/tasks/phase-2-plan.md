@@ -15,22 +15,22 @@
 
 ## Sequencing (backend-first)
 
-1. API Architect
+1. gem-researcher
 
 - Chốt contract cho comment/bookmark/feed/ranking/report.
 - Định nghĩa model/index cần thiết cho hiệu năng truy vấn.
 
-2. Implementation Executor
+2. gem-implementer
 
 - Implement route -> controller -> model + middleware auth/role.
 - Bổ sung validation và error contracts.
 
-3. Expert Vue.js Frontend Engineer
+3. gem-designer
 
 - Xây view/pages + store actions theo API contract đã chốt.
 - Quản lý loading/error state rõ ràng.
 
-4. mongodb-performance-advisor
+4. gem-reviewer
 
 - Review index và truy vấn cho feed/ranking/discovery.
 

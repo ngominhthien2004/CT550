@@ -4,9 +4,9 @@ Mục tiêu: handoff rõ ràng để triển khai theo phase với ít rework.
 
 ## Phase 1 (Done) - Foundation CRUD
 
-- Handoff owner: Fullstack Workflow Orchestrator
-- Assigned to: Implementation Executor
-- Supporting: API Architect (on-demand)
+- Handoff owner: gem-orchestrator
+- Assigned to: gem-implementer
+- Supporting: gem-researcher (on-demand)
 - Input tài liệu:
   - docs/tasks/phase-1-plan.md
   - docs/tasks/feature-tracker.md
@@ -24,7 +24,7 @@ Mục tiêu: handoff rõ ràng để triển khai theo phase với ít rework.
 
 ### Handoff 1: API contract
 
-- Agent: API Architect
+- Agent: gem-researcher
 - Required output:
   - Endpoint matrix cho moderation/reporting và phần social mở rộng còn thiếu
   - Request/response schema + auth/role matrix
@@ -35,7 +35,7 @@ Mục tiêu: handoff rõ ràng để triển khai theo phase với ít rework.
 
 ### Handoff 2: Backend implementation
 
-- Agent: Implementation Executor
+- Agent: gem-implementer
 - Required output:
   - Route -> Controller -> Model cho tat ca endpoint phase 2
   - Validation + centralized error handling
@@ -44,7 +44,7 @@ Mục tiêu: handoff rõ ràng để triển khai theo phase với ít rework.
 
 ### Handoff 3: Frontend integration
 
-- Agent: Expert Vue.js Frontend Engineer
+- Agent: gem-designer
 - Required output:
   - Views/components/stores cho comment/bookmark/feed/ranking/report
   - API consumption qua shared client
@@ -53,7 +53,7 @@ Mục tiêu: handoff rõ ràng để triển khai theo phase với ít rework.
 
 ### Handoff 4: Performance review
 
-- Agent: mongodb-performance-advisor
+- Agent: gem-reviewer
 - Required output:
   - Index recommendations cho feed/ranking/discovery/comments
   - Query risk report và đề xuất tối ưu
@@ -62,34 +62,34 @@ Mục tiêu: handoff rõ ràng để triển khai theo phase với ít rework.
 
 ### Handoff 1: AI API design
 
-- Agent: API Architect
+- Agent: gem-researcher
 - Required output:
   - AI endpoint contracts, fallback strategy, error schema
   - Async/sync execution strategy
 
 ### Handoff 2: AI backend integration
 
-- Agent: Implementation Executor
+- Agent: gem-implementer
 - Required output:
   - AI service wrappers + endpoint integration
   - Safe fallback neu provider fail
 
 ### Handoff 3: AI frontend UX
 
-- Agent: Expert Vue.js Frontend Engineer
+- Agent: gem-designer
 - Required output:
   - UI flow cho auto-tagging/recommendation/assistant
   - Loading/error/retry states ro rang
 
 ### Handoff 4: Data + quality tuning
 
-- Agent: mongodb-performance-advisor
+- Agent: gem-reviewer
 - Required output:
   - Metadata/index/caching guidance cho AI workflows
 
 ### Handoff 5: Final reporting
 
-- Agent: Technical Report Writer
+- Agent: gem-documentation-writer
 - Required output:
   - Tong hop ket qua, metric, rui ro, danh gia chat luong theo template
   - Cap nhat report section trong docs/report-templates

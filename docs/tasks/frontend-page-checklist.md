@@ -6,7 +6,7 @@ Mục tiêu: theo dõi danh sách trang frontend đã có và các trang cần x
 
 - Total pages tracked: 26
 - Last updated: 2026-04-17
-- Owner: Expert Vue.js Frontend Engineer
+- Owner: gem-designer
 
 ## Hiện tại (Đã có)
 
