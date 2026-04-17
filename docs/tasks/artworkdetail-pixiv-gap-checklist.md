@@ -2,7 +2,7 @@
 
 Comparison sources:
 
-- Pixiv page: https://www.pixiv.net/en/artworks/143144139
+- Pixiv page: [https://www.pixiv.net/en/artworks/143144139](https://www.pixiv.net/en/artworks/143144139)
 - Current frontend: `frontend/src/views/ArtworkDetailView.vue`, `frontend/src/components/artwork/ArtworkDetailCard.vue`
 
 ## Goals
@@ -28,7 +28,13 @@ Comparison sources:
 
 ### Medium
 
-- [ ] Refine metadata layout to look closer to Pixiv grouping (title/tags/stats/time).
+- [x] Refine metadata layout to look closer to Pixiv grouping (title/tags/stats/time).
+- [ ] Match Pixiv layout details:
+  - [x] Action icon row under main image (like/bookmark/share/more).
+  - [x] Author row under caption (left column) with Follow + "View all works".
+  - [x] "Other works" horizontal strip under the author row (left column).
+  - [x] Sidebar follow card: compact header + full-width Follow button + small "Other works" preview.
+  - [x] Reduce card borders/padding to look flatter/airier like Pixiv.
 - [ ] Improve related works presentation while keeping current API.
 
 ### Hard (defer or require user decision)
@@ -49,4 +55,4 @@ Comparison sources:
 
 - [x] `npm run build` (frontend) passed.
 - [x] Smoke check route `/artworks/:id` passed.
-- [ ] Capture an updated screenshot artifact.
+- [x] Capture an updated screenshot artifact (local compare): `artworkdetail-after-split-no-dup-author.png` and user-provided comparison screenshots.

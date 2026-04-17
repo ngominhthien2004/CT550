@@ -1,0 +1,4 @@
+name = "ct550-backend"
+main = "src/index.ts"   # ← đổi thành file entry point của bạn
+compatibility_date = "2026-04-17"
+compatibility_flags = ["nodejs_compat"]
