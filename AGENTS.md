@@ -13,6 +13,7 @@ This file provides portable guidance for AI coding agents in MEVN repositories.
 - `gem-browser-tester`
 - `gem-documentation-writer`
 - `gem-debugger`
+- `gem-critic`
 - `gem-designer`
 - `gem-code-simplifier`
 - `gem-devops`
@@ -71,6 +72,12 @@ Advanced/manual mode (optional): call specialist agents directly (`gem-researche
 - During planning handoff (`Research & Plan` or `Scope & Plan`), add/update one row per feature.
 - Recommended status flow: `Planned` -> `In Progress` -> `Blocked` -> `Done`.
 
+## Process Docs
+
+- `docs/process/agent-execution-workflow.md`
+- `docs/process/agent-handoff-phases.md`
+- `docs/process/gitnexus-playbook.md`
+
 ## Local Skills (Included)
 
 - `.github/skills/mevn-context-map/SKILL.md`
@@ -78,6 +85,7 @@ Advanced/manual mode (optional): call specialist agents directly (`gem-researche
 - `.github/skills/mevn-playwright-ui-test/SKILL.md`
 - `.github/skills/mevn-report-docx/SKILL.md`
 - `.github/skills/mevn-feature-finalization/SKILL.md`
+- `.github/skills/mevn-gem-team-overlay/SKILL.md`
 
 ## Hooks (Included)
 

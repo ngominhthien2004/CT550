@@ -37,7 +37,7 @@ Mục tiêu: handoff rõ ràng để triển khai theo phase với ít rework.
 
 - Agent: gem-implementer
 - Required output:
-  - Route -> Controller -> Model cho tat ca endpoint phase 2
+  - Route -> Controller -> Model cho tất cả endpoint phase 2
   - Validation + centralized error handling
   - Backend smoke run pass
 - Dependency: Handoff 1 done
@@ -72,14 +72,14 @@ Mục tiêu: handoff rõ ràng để triển khai theo phase với ít rework.
 - Agent: gem-implementer
 - Required output:
   - AI service wrappers + endpoint integration
-  - Safe fallback neu provider fail
+  - Safe fallback nếu provider fail
 
 ### Handoff 3: AI frontend UX
 
 - Agent: gem-designer
 - Required output:
   - UI flow cho auto-tagging/recommendation/assistant
-  - Loading/error/retry states ro rang
+  - Loading/error/retry states rõ ràng
 
 ### Handoff 4: Data + quality tuning
 
@@ -91,8 +91,8 @@ Mục tiêu: handoff rõ ràng để triển khai theo phase với ít rework.
 
 - Agent: gem-documentation-writer
 - Required output:
-  - Tong hop ket qua, metric, rui ro, danh gia chat luong theo template
-  - Cap nhat report section trong docs/report-templates
+  - Tổng hợp kết quả, metric, rủi ro, đánh giá chất lượng theo template
+  - Cập nhật report section trong docs/report-templates
 
 ## Tracking rule
 

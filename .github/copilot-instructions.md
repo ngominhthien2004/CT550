@@ -59,6 +59,14 @@ Use this as a portable baseline for MEVN projects:
 - Frontend UI updates: run a Playwright browser smoke check on affected routes before reporting completion.
 - If API contracts change, ensure frontend usage is updated.
 
+## Process References
+- Keep agent process docs in `docs/process/` (`agent-execution-workflow.md`, `agent-handoff-phases.md`, `gitnexus-playbook.md`).
+
+## Gem-Team Overlay Policy
+- Gem-team already provides base workflow; project-specific behavior is applied as an overlay via local instructions/skills.
+- Prefer local overlay instead of editing plugin files under `C:/Users/Lenovo/.vscode/agent-plugins/.../gem-team` because extension updates can overwrite changes.
+- Load and apply `.github/skills/mevn-gem-team-overlay/SKILL.md` for implementation tasks requiring project workflow enforcement.
+
 ## Non-Goals
 - Do not add new frameworks/libraries without explicit request.
 - Bootstrap 5 CSS is an approved exception when the user asks to use Bootstrap in frontend work.

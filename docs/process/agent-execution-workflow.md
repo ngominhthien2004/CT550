@@ -57,7 +57,7 @@ Mục tiêu: chuẩn hóa quy trình làm việc của agent cho mỗi feature �
   - docs/tasks/feature-tracker.md
   - docs/tasks/backend-feature-checklist.md
   - docs/tasks/frontend-page-checklist.md
-  - docs/tasks/agent-handoff-phases.md (nếu thay đổi trạng thái phase/handoff)
+  - docs/process/agent-handoff-phases.md (nếu thay đổi trạng thái phase/handoff)
 - Cập nhật docs workflow khi thay đổi behavior:
   - docs/user-feature-workflows.md
   - docs/user-page-workflows.md
