@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useAuthStore } from '../../stores/auth.store'
 
 const props = defineProps({
   navItems: {
@@ -18,8 +19,18 @@ const props = defineProps({
 
 defineEmits(['close-sidebar'])
 
+const authStore = useAuthStore()
+
 const pixivStyleSections = computed(() => {
   if (Array.isArray(props.navItems) && props.navItems.length > 0) {
+    const manageGroup = [
+      { id: 'requests', label: 'Requests', to: '/messages', icon: 'fa-regular fa-comments' },
+    ]
+
+    if (authStore.user?.role === 'admin') {
+      manageGroup.push({ id: 'admin', label: 'Admin management', to: '/admin', icon: 'fa-solid fa-shield-halved' })
+    }
+
     return [
       props.navItems.slice(0, 1),
       [
@@ -36,7 +47,7 @@ const pixivStyleSections = computed(() => {
         { id: 'rankings', label: 'Rankings', to: '/rankings', icon: 'fa-solid fa-crown' },
         { id: 'latest-all', label: 'Newest by all', to: '/feed', icon: 'fa-solid fa-wand-sparkles' },
         { id: 'contests', label: 'Contests', to: '/rankings', icon: 'fa-regular fa-bookmark' },
-        { id: 'requests', label: 'Requests', to: '/messages', icon: 'fa-regular fa-comments' },
+        ...manageGroup,
       ],
     ]
   }

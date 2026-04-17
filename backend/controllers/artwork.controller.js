@@ -110,6 +110,44 @@ const getArtworkById = async (req, res, next) => {
     }
 };
 
+const getAdminArtworks = async (req, res, next) => {
+    try {
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
+        const skip = (page - 1) * limit;
+        const { q, type, ageRating } = req.query;
+
+        const filter = {};
+        if (type) filter.type = type;
+        if (ageRating) filter.ageRating = ageRating;
+        if (q && q.trim()) {
+            const keyword = q.trim();
+            filter.$or = [
+                { title: { $regex: keyword, $options: 'i' } },
+                { description: { $regex: keyword, $options: 'i' } },
+            ];
+        }
+
+        const [artworks, total] = await Promise.all([
+            Artwork.find(filter)
+                .populate('user', 'username displayName')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            Artwork.countDocuments(filter),
+        ]);
+
+        res.json({
+            artworks,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // Delete Artwork
 const deleteArtwork = async (req, res, next) => {
     try {
@@ -149,5 +187,6 @@ module.exports = {
     createArtwork,
     getArtworks,
     getArtworkById,
+    getAdminArtworks,
     deleteArtwork
 };

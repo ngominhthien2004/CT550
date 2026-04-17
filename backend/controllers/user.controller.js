@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const Follow = require('../models/Follow');
+const Artwork = require('../models/Artwork');
+const Comment = require('../models/Comment');
 const { createNotification } = require('../utils/notification');
 
 const getUserProfile = async (req, res, next) => {
@@ -140,4 +142,120 @@ const getFollowStatus = async (req, res, next) => {
     }
 };
 
-module.exports = { getUserProfile, updateUserProfile, followUser, unfollowUser, getFollowers, getFollowing, getFollowStatus };
+const getAdminOverview = async (req, res, next) => {
+    try {
+        const [
+            totalUsers,
+            totalAdmins,
+            totalPremium,
+            totalArtworks,
+            totalComments,
+        ] = await Promise.all([
+            User.countDocuments(),
+            User.countDocuments({ role: 'admin' }),
+            User.countDocuments({ isPremium: true }),
+            Artwork.countDocuments(),
+            Comment.countDocuments(),
+        ]);
+
+        res.json({
+            totalUsers,
+            totalAdmins,
+            totalPremium,
+            totalArtworks,
+            totalComments,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getAdminUsers = async (req, res, next) => {
+    try {
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
+        const skip = (page - 1) * limit;
+        const { q, role } = req.query;
+
+        const filter = {};
+        if (role && ['user', 'admin'].includes(role)) {
+            filter.role = role;
+        }
+
+        if (q && q.trim()) {
+            const keyword = q.trim();
+            filter.$or = [
+                { username: { $regex: keyword, $options: 'i' } },
+                { displayName: { $regex: keyword, $options: 'i' } },
+                { email: { $regex: keyword, $options: 'i' } },
+            ];
+        }
+
+        const [users, total] = await Promise.all([
+            User.find(filter)
+                .select('username displayName email role isPremium createdAt')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            User.countDocuments(filter),
+        ]);
+
+        res.json({
+            users,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const updateAdminUser = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            res.status(404);
+            return next(new Error('User not found'));
+        }
+
+        if (typeof req.body.role === 'string') {
+            if (!['user', 'admin'].includes(req.body.role)) {
+                res.status(400);
+                return next(new Error('Invalid role value'));
+            }
+            user.role = req.body.role;
+        }
+
+        if (typeof req.body.isPremium === 'boolean') {
+            user.isPremium = req.body.isPremium;
+        }
+
+        const updated = await user.save();
+
+        res.json({
+            _id: updated._id,
+            username: updated.username,
+            displayName: updated.displayName,
+            email: updated.email,
+            role: updated.role,
+            isPremium: updated.isPremium,
+            createdAt: updated.createdAt,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = {
+    getUserProfile,
+    updateUserProfile,
+    followUser,
+    unfollowUser,
+    getFollowers,
+    getFollowing,
+    getFollowStatus,
+    getAdminOverview,
+    getAdminUsers,
+    updateAdminUser,
+};

@@ -3,8 +3,8 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { createArtwork, getArtworks, getArtworkById, deleteArtwork } = require('../controllers/artwork.controller');
-const { protect } = require('../middlewares/auth.middleware');
+const { createArtwork, getArtworks, getArtworkById, getAdminArtworks, deleteArtwork } = require('../controllers/artwork.controller');
+const { protect, admin } = require('../middlewares/auth.middleware');
 
 const ALLOWED_ARTWORK_TYPES = new Set(['illust', 'manga', 'ugoira', 'novel']);
 
@@ -57,6 +57,9 @@ const upload = multer({
 router.route('/')
     .post(protect, upload.array('images', 10), createArtwork)
     .get(getArtworks);
+
+router.route('/admin/list')
+    .get(protect, admin, getAdminArtworks);
 
 router.route('/:id')
     .get(getArtworkById)

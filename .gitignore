@@ -29,3 +29,6 @@ tmp-chrome-user-data/
 tmp-chrome-user-date/
 .playwright-mcp/
 tmp-pixiv-check.js
+
+# Local prompt/skill bundle (do not push)
+.github/prompts/ui-ux-pro-max/

@@ -51,7 +51,8 @@ const userStats = {
   followers: 10,
 }
 
-const serviceLinks = [
+const serviceLinks = computed(() => {
+  const links = [
   {
     key: 'daily',
     label: 'Daily Feed',
@@ -87,13 +88,34 @@ const serviceLinks = [
     to: '/upload/illust',
     thumbnail: 'https://picsum.photos/seed/ct550-upload/96/96',
   },
-]
+  ]
 
-const userMainLinks = [
-  { label: 'Dashboard', to: '/dashboard' },
-  { label: 'My works', to: '/feed' },
-  { label: 'Manage requests', to: '/messages' },
-]
+  if (currentUser.value?.role === 'admin') {
+    links.unshift({
+      key: 'admin',
+      label: 'Admin',
+      description: 'Manage users, artworks, and moderation',
+      to: '/admin',
+      thumbnail: 'https://picsum.photos/seed/ct550-admin/96/96',
+    })
+  }
+
+  return links
+})
+
+const userMainLinks = computed(() => {
+  const links = [
+    { label: 'Dashboard', to: '/dashboard' },
+    { label: 'My works', to: '/feed' },
+    { label: 'Manage requests', to: '/messages' },
+  ]
+
+  if (currentUser.value?.role === 'admin') {
+    links.unshift({ label: 'Admin management', to: '/admin' })
+  }
+
+  return links
+})
 
 const userLibraryLinks = [
   { label: 'My Favorite', to: '/favorites' },

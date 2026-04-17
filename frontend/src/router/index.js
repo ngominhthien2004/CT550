@@ -12,6 +12,7 @@ import MessagesView from '../views/MessagesView.vue'
 import NotificationsView from '../views/NotificationsView.vue'
 import AccountView from '../views/AccountView.vue'
 import DashboardView from '../views/DashboardView.vue'
+import AdminManagementView from '../views/AdminManagementView.vue'
 import SignUpView from '../views/SignUpView.vue'
 import LoginView from '../views/LoginView.vue'
 import UploadArtworkView from '../views/UploadArtworkView.vue'
@@ -41,6 +42,7 @@ const routes = [
   },
   { path: '/account', name: 'account', component: AccountView },
   { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
+  { path: '/admin', name: 'admin-management', component: AdminManagementView, meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/artworks/:id', name: 'artwork-detail', component: ArtworkDetailView },
   { path: '/artworks/:id/comments', name: 'artwork-comments', component: ArtworkCommentsView },
   { path: '/tags/:tagName', name: 'tag-detail', component: TagDetailView },
@@ -53,12 +55,19 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
-  if (!to.meta.requiresAuth) {
+  const requiresAuth = Boolean(to.meta.requiresAuth)
+  const requiresAdmin = Boolean(to.meta.requiresAdmin)
+
+  if (!requiresAuth && !requiresAdmin) {
     return true
   }
 
   const authStore = useAuthStore()
   if (authStore.isAuthenticated) {
+    if (requiresAdmin && authStore.user?.role !== 'admin') {
+      return { name: 'home' }
+    }
+
     return true
   }
 
