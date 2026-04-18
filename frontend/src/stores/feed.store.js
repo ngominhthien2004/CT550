@@ -21,11 +21,11 @@ export const useFeedStore = defineStore('feed', {
         this.loading = false
       }
     },
-    async fetchRankings(period = 'daily') {
+    async fetchRankings(params = {}) {
       this.loading = true
       this.error = ''
       try {
-        const { data } = await getRankings({ period })
+        const { data } = await getRankings(params)
         this.rankings = data.artworks || []
       } catch (error) {
         this.error = error?.response?.data?.message || 'Failed to fetch rankings'

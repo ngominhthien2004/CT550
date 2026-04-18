@@ -13,6 +13,7 @@ api.interceptors.request.use((config) => {
 })
 
 export const getFeed = (params = {}) => api.get('/feed', { params })
+export const getDiscovery = (params = {}) => api.get('/feed/discovery', { params })
 export const getRankings = (params = {}) => api.get('/feed/rankings', { params })
 export const getArtworks = (params = {}) => api.get('/artworks', { params })
 export const getArtworkById = (artworkId) => api.get(`/artworks/${artworkId}`)
