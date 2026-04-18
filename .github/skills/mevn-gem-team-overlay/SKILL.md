@@ -28,6 +28,14 @@ description: "Bổ sung các bước bắt buộc theo workflow nội bộ khi c
    - Checklist liên quan trong `docs/tasks/`
    - Báo cáo trong `docs/reports/` nếu task yêu cầu
 
+## UI/UX augmentation cho gem-designer
+- Khi task là thiết kế UI/UX (layout, theme, typography, design system), yêu cầu `gem-designer` nạp thêm:
+   - `.github/prompts/ui-ux-pro-max/PROMPT.md`
+   - Dữ liệu trong `.github/prompts/ui-ux-pro-max/data/`
+- Nếu cần sinh design system, ưu tiên chạy script local theo đường dẫn repo:
+   - `python .github/prompts/ui-ux-pro-max/scripts/search.py "<query>" --design-system`
+- Nếu thư mục prompt không tồn tại trong máy hiện tại, fallback về quy chuẩn có sẵn trong `gem-designer` + design system hiện hữu của dự án.
+
 ## Done criteria
 - Code đúng phạm vi yêu cầu.
 - Validation kỹ thuật pass.

@@ -424,7 +424,7 @@ async function applySearchOptions(payload) {
 
 <style scoped>
 .top-nav {
-  padding: 0.55rem 0.8rem;
+  padding: 0.55rem 0;
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -66,6 +66,7 @@ Use this as a portable baseline for MEVN projects:
 - Gem-team already provides base workflow; project-specific behavior is applied as an overlay via local instructions/skills.
 - Prefer local overlay instead of editing plugin files under `C:/Users/Lenovo/.vscode/agent-plugins/.../gem-team` because extension updates can overwrite changes.
 - Load and apply `.github/skills/mevn-gem-team-overlay/SKILL.md` for implementation tasks requiring project workflow enforcement.
+- For UI/UX design tasks routed to `gem-designer`, additionally load `.github/prompts/ui-ux-pro-max/PROMPT.md` when available.
 
 ## Non-Goals
 - Do not add new frameworks/libraries without explicit request.

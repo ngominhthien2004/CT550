@@ -39,7 +39,7 @@ const pixivStyleSections = computed(() => {
         { id: 'novels', label: 'Novels', to: '/feed?type=novel', icon: 'fa-regular fa-rectangle-list' },
       ],
       [
-        { id: 'following', label: 'Newest by followed', to: '/feed', icon: 'fa-solid fa-users' },
+        { id: 'following', label: 'Newest by followed', to: '/newest_by_followed', icon: 'fa-solid fa-users' },
         { id: 'discovery', label: 'Discovery', to: '/feed', icon: 'fa-regular fa-compass' },
         { id: 'favorites', label: 'My Favorite', to: '/favorites', icon: 'fa-regular fa-heart' },
       ],

@@ -49,7 +49,7 @@ defineEmits(['toggle-sidebar'])
 }
 
 .main-pane {
-  padding: 0.55rem 1rem 1rem;
+  padding: 0.55rem 72px 1rem;
   display: grid;
   gap: 0.9rem;
 }
