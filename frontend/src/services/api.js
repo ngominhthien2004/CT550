@@ -1,7 +1,51 @@
 import axios from 'axios'
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
+
+function deriveUploadsBaseUrl(apiBaseUrl) {
+  if (!apiBaseUrl.startsWith('http://') && !apiBaseUrl.startsWith('https://')) {
+    return ''
+  }
+
+  try {
+    return new URL(apiBaseUrl).origin
+  } catch {
+    return ''
+  }
+}
+
+const UPLOADS_BASE_URL = (
+  import.meta.env.VITE_UPLOADS_BASE_URL || deriveUploadsBaseUrl(API_BASE_URL)
+).replace(/\/$/, '')
+
+function normalizeBackendAssetUrl(value) {
+  if (typeof value !== 'string') {
+    return value
+  }
+
+  if (!value.startsWith('/uploads/') || !UPLOADS_BASE_URL) {
+    return value
+  }
+
+  return `${UPLOADS_BASE_URL}${value}`
+}
+
+function normalizeResponseData(value) {
+  if (Array.isArray(value)) {
+    return value.map(normalizeResponseData)
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, nestedValue]) => [key, normalizeResponseData(nestedValue)]),
+    )
+  }
+
+  return normalizeBackendAssetUrl(value)
+}
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE_URL,
 })
 
 api.interceptors.request.use((config) => {
@@ -10,6 +54,11 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`
   }
   return config
+})
+
+api.interceptors.response.use((response) => {
+  response.data = normalizeResponseData(response.data)
+  return response
 })
 
 export const getFeed = (params = {}) => api.get('/feed', { params })

@@ -44,14 +44,6 @@ function normalizeImagePath(imagePath) {
   if (!imagePath) {
     return ''
   }
-  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    return imagePath
-  }
-
-  if (import.meta.env.DEV && imagePath.startsWith('/uploads/')) {
-    return `http://127.0.0.1:5000${imagePath}`
-  }
-
   return imagePath
 }
 
