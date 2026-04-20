@@ -45,7 +45,7 @@ const pixivStyleSections = computed(() => {
       ],
       [
         { id: 'rankings', label: 'Rankings', to: '/rankings', icon: 'fa-solid fa-crown' },
-        { id: 'latest-all', label: 'Newest by all', to: '/feed', icon: 'fa-solid fa-wand-sparkles' },
+        { id: 'latest-all', label: 'Newest by all', to: '/newest_by_all', icon: 'fa-solid fa-wand-sparkles' },
         { id: 'contests', label: 'Contests', to: '/rankings', icon: 'fa-regular fa-bookmark' },
         ...manageGroup,
       ],

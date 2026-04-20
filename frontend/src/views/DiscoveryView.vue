@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { getDiscovery } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
+import ArtworkCard from '../components/artwork/ArtworkCard.vue'
 import { navItems } from '../constants/navigation'
 
 const artworks = ref([])
@@ -137,18 +138,7 @@ onMounted(() => {
         <p v-else-if="error" class="state-note error mt-3">{{ error }}</p>
 
         <div v-if="visibleItems.length > 0" class="result-grid mt-4">
-          <article v-for="item in visibleItems" :key="item._id" class="result-card">
-            <router-link :to="`/artworks/${item._id}`" class="thumb-link">
-              <span v-if="item.isR18 || item.tags?.includes('R-18')" class="r18-badge">R-18</span>
-              <img v-if="item.image" :src="item.image" :alt="item.title" loading="lazy" />
-              <div v-else class="thumb-fallback"></div>
-            </router-link>
-            <router-link :to="`/artworks/${item._id}`" class="title-link">{{ item.title }}</router-link>
-            <div class="author-info">
-              <div class="author-avatar"></div>
-              <p class="author-name">{{ item.user?.displayName || item.user?.username || 'Unknown artist' }}</p>
-            </div>
-          </article>
+          <ArtworkCard v-for="item in visibleItems" :key="item._id" :item="item" />
         </div>
         <p v-else-if="!loading && artworks.length === 0" class="state-note mt-4">
           No new artworks found.

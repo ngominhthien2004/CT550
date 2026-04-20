@@ -86,9 +86,13 @@ const getDiscovery = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page, 10) || 1;
         const limit = parseInt(req.query.limit, 10) || 20;
+        const type = req.query.type;
         const skip = (page - 1) * limit;
 
         const filter = { isDraft: false };
+        if (type && type !== 'all' && type !== 'undefined') {
+            filter.type = type;
+        }
 
         const [artworks, total] = await Promise.all([
             Artwork.find(filter)
