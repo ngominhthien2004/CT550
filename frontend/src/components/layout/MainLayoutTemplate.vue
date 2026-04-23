@@ -1,10 +1,11 @@
 <script setup>
+import { onBeforeUnmount, watch } from 'vue'
 import AppSidebarMenu from './AppSidebarMenu.vue'
 import AppTopBar from './AppTopBar.vue'
 
 const SIDEBAR_Z_INDEX = 1040
 
-defineProps({
+const props = defineProps({
   navItems: {
     type: Array,
     default: () => [],
@@ -20,6 +21,18 @@ defineProps({
 })
 
 defineEmits(['toggle-sidebar'])
+
+watch(
+  () => props.isNavCollapsed,
+  (isCollapsed) => {
+    document.body.style.overflow = isCollapsed ? '' : 'hidden'
+  },
+  { immediate: true },
+)
+
+onBeforeUnmount(() => {
+  document.body.style.overflow = ''
+})
 </script>
 
 <template>
@@ -49,9 +62,9 @@ defineEmits(['toggle-sidebar'])
 }
 
 .main-pane {
-  padding: 0.55rem 72px 1rem;
+  padding: 0.35rem 40px 1rem;
   display: grid;
-  gap: 0.9rem;
+  gap: 0.7rem;
 }
 
 .sidebar-backdrop {
@@ -63,13 +76,14 @@ defineEmits(['toggle-sidebar'])
 
 @media (max-width: 1200px) {
   .main-pane {
-    padding-inline: 0.8rem;
+    padding-inline: 0.85rem;
   }
 }
 
 @media (max-width: 920px) {
   .main-pane {
     padding-inline: 0.65rem;
+    gap: 0.6rem;
   }
 }
 </style>

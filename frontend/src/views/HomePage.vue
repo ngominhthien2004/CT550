@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import HomeArtworkGrid from '../components/home/HomeArtworkGrid.vue'
+import HomeFeedColumn from '../components/home/HomeFeedColumn.vue'
 import HomeHeroBanner from '../components/home/HomeHeroBanner.vue'
 import HomeRecommendedUsers from '../components/home/HomeRecommendedUsers.vue'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
@@ -23,12 +24,15 @@ const heroSlide = {
 const authStore = useAuthStore()
 const followStore = useFollowStore()
 
-const featuredWorks = computed(() =>
+const normalizedWorks = computed(() =>
   liveWorks.value.map((item) => ({
     ...item,
     image: item.images?.[0] || '',
   })),
 )
+
+const spotlightWorks = computed(() => normalizedWorks.value.slice(0, 12))
+const feedWorks = computed(() => normalizedWorks.value.slice(12, 26))
 
 function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
@@ -114,16 +118,61 @@ async function toggleFollowFromHome(userId) {
 
 <template>
   <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
-    <HomeTagStrip :tags="liveTags" />
-    <HomeTabs />
-    <HomeHeroBanner :slide="heroSlide" />
-    <HomeRecommendedUsers
-      :users="recommendedUsers"
-      :is-authenticated="authStore.isAuthenticated"
-      :is-following-user="followStore.isFollowingUser"
-      :is-toggling-follow="followStore.isTogglingFollow"
-      @toggle-follow="toggleFollowFromHome"
-    />
-    <HomeArtworkGrid :works="featuredWorks" />
+    <section class="home-page">
+      <div class="home-main-column">
+        <HomeTabs />
+        <HomeTagStrip :tags="liveTags" />
+        <HomeHeroBanner :slide="heroSlide" />
+        <HomeArtworkGrid :works="spotlightWorks" />
+
+        <div class="home-feed-layout">
+          <HomeFeedColumn :works="feedWorks" />
+
+          <aside class="home-feed-sidebar">
+            <HomeRecommendedUsers
+              :users="recommendedUsers"
+              :is-authenticated="authStore.isAuthenticated"
+              :is-following-user="followStore.isFollowingUser"
+              :is-toggling-follow="followStore.isTogglingFollow"
+              @toggle-follow="toggleFollowFromHome"
+            />
+          </aside>
+        </div>
+      </div>
+    </section>
   </MainLayoutTemplate>
 </template>
+
+<style scoped>
+.home-page {
+  display: block;
+}
+
+.home-main-column {
+  display: grid;
+  gap: 0.8rem;
+  min-width: 0;
+}
+
+.home-feed-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 0.8rem;
+}
+
+.home-feed-sidebar {
+  position: sticky;
+  top: 0.45rem;
+  align-self: start;
+}
+
+@media (max-width: 920px) {
+  .home-feed-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .home-feed-sidebar {
+    position: static;
+  }
+}
+</style>

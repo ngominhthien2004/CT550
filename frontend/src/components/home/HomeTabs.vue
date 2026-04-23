@@ -4,11 +4,14 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const activeTab = computed(() => {
-  if (route.path === '/illustrations') return 'illust'
-  if (route.path === '/manga') return 'manga'
-  if (route.path === '/novels') return 'novel'
+const tabItems = [
+  { key: 'home', label: 'Home', to: { path: '/' } },
+  { key: 'illust', label: 'Illustrations', to: { path: '/feed', query: { type: 'illust' } } },
+  { key: 'manga', label: 'Manga', to: { path: '/feed', query: { type: 'manga' } } },
+  { key: 'novel', label: 'Novels', to: { path: '/feed', query: { type: 'novel' } } },
+]
 
+const activeTab = computed(() => {
   if (route.path === '/feed') {
     const type = typeof route.query.type === 'string' ? route.query.type : ''
     if (type === 'illust') return 'illust'
@@ -22,42 +25,46 @@ const activeTab = computed(() => {
 
 <template>
   <div class="tabs">
-    <router-link to="/" :class="{ active: activeTab === 'home' }">Home</router-link>
-    <router-link to="/illustrations" :class="{ active: activeTab === 'illust' }">Illustrations</router-link>
-    <router-link to="/manga" :class="{ active: activeTab === 'manga' }">Manga</router-link>
-    <router-link to="/novels" :class="{ active: activeTab === 'novel' }">Novels</router-link>
+    <router-link
+      v-for="item in tabItems"
+      :key="item.key"
+      :to="item.to"
+      :class="{ active: activeTab === item.key }"
+    >
+      {{ item.label }}
+    </router-link>
   </div>
 </template>
 
 <style scoped>
 .tabs {
   display: flex;
-  gap: 1.9rem;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 0;
+  gap: 1.35rem;
+  padding: 0;
+  border-bottom: 1px solid #e3e8ef;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .tabs a {
   text-decoration: none;
   color: #64748b;
   font-weight: 700;
-  padding: 0.55rem 0.1rem 0.7rem;
-  font-size: 0.95rem;
+  padding: 0.78rem 0.1rem 0.9rem;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
 }
 
 .tabs .active {
   color: #0f172a;
-  border-bottom: 4px solid #1695f0;
+  border-bottom-color: #0096fa;
 }
 
 @media (max-width: 920px) {
-  .tabs {
-    gap: 1rem;
-    overflow-x: auto;
-  }
-
   .tabs a {
-    font-size: 0.9rem;
+    font-size: 0.86rem;
+    padding-bottom: 0.8rem;
   }
 }
 </style>

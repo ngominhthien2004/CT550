@@ -35,8 +35,11 @@ function getUserHandle(item) {
 <template>
   <section class="recommend-users">
     <header class="section-head">
-      <h3>Recommended users</h3>
-      <span class="head-note">Artists you may want to follow</span>
+      <div>
+        <h3>Recommended users</h3>
+        <span class="head-note">Artists you may want to follow</span>
+      </div>
+      <router-link to="/account" class="head-link">Profile</router-link>
     </header>
 
     <p v-if="!users.length" class="empty-state mb-0">No recommended users available yet.</p>
@@ -80,11 +83,17 @@ function getUserHandle(item) {
 .recommend-users {
   display: grid;
   gap: 0.75rem;
+  border: 1px solid #e3e8ef;
+  border-radius: 18px;
+  background: #fff;
+  padding: 1rem;
+  max-height: calc(100vh - 1rem);
+  overflow: auto;
 }
 
 .section-head {
   display: flex;
-  align-items: baseline;
+  align-items: start;
   justify-content: space-between;
   gap: 0.65rem;
 }
@@ -99,6 +108,13 @@ function getUserHandle(item) {
   font-size: 0.8rem;
 }
 
+.head-link {
+  text-decoration: none;
+  color: #0096fa;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
 .empty-state {
   border: 1px dashed var(--line);
   border-radius: 12px;
@@ -109,17 +125,16 @@ function getUserHandle(item) {
 
 .user-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
 }
 
 .user-card {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 0.75rem;
   display: grid;
   gap: 0.65rem;
-  background: #fff;
+  background: #f8fbff;
 }
 
 .user-main-link {
@@ -186,15 +201,9 @@ function getUserHandle(item) {
   color: #475569;
 }
 
-@media (max-width: 1024px) {
-  .user-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 700px) {
-  .user-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 1120px) {
+  .recommend-users {
+    padding: 0.9rem;
   }
 }
 </style>
