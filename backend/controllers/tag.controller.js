@@ -1,12 +1,25 @@
 const Artwork = require('../models/Artwork');
 const Tag = require('../models/Tag');
 
+const normalizeTagName = (rawTagName = '') =>
+    String(rawTagName)
+        .trim()
+        .replace(/^#+/, '')
+        .replace(/\s+/g, '_')
+        .toLowerCase();
+
 const listTags = async (req, res, next) => {
     try {
         const parsedLimit = Number.parseInt(req.query.limit, 10);
         const limit = Number.isNaN(parsedLimit) ? 20 : Math.min(Math.max(parsedLimit, 1), 100);
+        const keyword = String(req.query.q || '').trim();
 
-        const tags = await Tag.find({ usageCount: { $gt: 0 } })
+        const query = { usageCount: { $gt: 0 } };
+        if (keyword) {
+            query.name = { $regex: normalizeTagName(keyword), $options: 'i' };
+        }
+
+        const tags = await Tag.find(query)
             .select('name usageCount')
             .sort({ usageCount: -1, name: 1 })
             .limit(limit);
@@ -20,7 +33,7 @@ const listTags = async (req, res, next) => {
 const getTagDetail = async (req, res, next) => {
     try {
         const rawTagName = decodeURIComponent((req.params.tagName || '').toString());
-        const normalizedTagName = rawTagName.trim().toLowerCase();
+        const normalizedTagName = normalizeTagName(rawTagName);
 
         if (!normalizedTagName) {
             res.status(400);

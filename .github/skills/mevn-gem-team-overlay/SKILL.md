@@ -27,6 +27,9 @@ description: "Bổ sung các bước bắt buộc theo workflow nội bộ khi c
    - `docs/tasks/feature-tracker.md`
    - Checklist liên quan trong `docs/tasks/`
    - Báo cáo trong `docs/reports/` nếu task yêu cầu
+6. Khi cần thêm dữ liệu mẫu/test data:
+   - Ưu tiên MongoDB MCP để insert/update/delete và verify dữ liệu.
+   - Không tạo script seed ad-hoc trừ khi người dùng yêu cầu rõ ràng script tái sử dụng.
 
 ## UI/UX augmentation cho gem-designer
 - Khi task là thiết kế UI/UX (layout, theme, typography, design system), yêu cầu `gem-designer` nạp thêm:

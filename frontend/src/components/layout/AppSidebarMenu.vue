@@ -34,9 +34,9 @@ const pixivStyleSections = computed(() => {
     return [
       props.navItems.slice(0, 1),
       [
-        { id: 'illust', label: 'Illustrations', to: '/feed?type=illust', icon: 'fa-regular fa-image' },
-        { id: 'manga', label: 'Manga', to: '/feed?type=manga', icon: 'fa-regular fa-square' },
-        { id: 'novels', label: 'Novels', to: '/feed?type=novel', icon: 'fa-regular fa-rectangle-list' },
+        { id: 'illust', label: 'Illustrations', to: '/illustrations', icon: 'fa-regular fa-image' },
+        { id: 'manga', label: 'Manga', to: '/manga', icon: 'fa-regular fa-square' },
+        { id: 'novels', label: 'Novels', to: '/novels', icon: 'fa-regular fa-rectangle-list' },
       ],
       [
         { id: 'following', label: 'Newest by followed', to: '/newest_by_followed', icon: 'fa-solid fa-users' },

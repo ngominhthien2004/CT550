@@ -1,7 +1,15 @@
 const Artwork = require('../models/Artwork');
 const Tag = require('../models/Tag');
+const { createNotification } = require('../utils/notification');
 const fs = require('fs');
 const path = require('path');
+
+const normalizeTagName = (rawTagName = '') =>
+    String(rawTagName)
+        .trim()
+        .replace(/^#+/, '')
+        .replace(/\s+/g, '_')
+        .toLowerCase();
 
 // Create Artwork
 const createArtwork = async (req, res, next) => {
@@ -23,11 +31,16 @@ const createArtwork = async (req, res, next) => {
         // For now, let's assume tags are sent as an array of strings or existing IDs
         let tagIds = [];
         if (tags) {
-            const tagList = Array.isArray(tags) ? tags : [tags];
-            for (const tagName of tagList) {
-                let tag = await Tag.findOne({ name: tagName.toLowerCase() });
+            const rawTagList = Array.isArray(tags) ? tags : [tags];
+            const normalizedTagList = rawTagList
+                .map((tagName) => normalizeTagName(tagName))
+                .filter(Boolean);
+            const uniqueTagList = [...new Set(normalizedTagList)];
+
+            for (const tagName of uniqueTagList) {
+                let tag = await Tag.findOne({ name: tagName });
                 if (!tag) {
-                    tag = await Tag.create({ name: tagName.toLowerCase() });
+                    tag = await Tag.create({ name: tagName });
                 }
                 tagIds.push(tag._id);
                 // Increment usage count
@@ -44,6 +57,13 @@ const createArtwork = async (req, res, next) => {
             images,
             tags: tagIds,
             ageRating
+        });
+
+        await createNotification({
+            userId: req.user._id,
+            artworkId: artwork._id,
+            type: 'system',
+            message: `Artwork \"${artwork.title}\" posted successfully.`
         });
 
         res.status(201).json(artwork);
@@ -64,7 +84,7 @@ const getArtworks = async (req, res, next) => {
         if (ageRating) query.ageRating = ageRating;
         if (user) query.user = user;
         if (tag) {
-            const foundTag = await Tag.findOne({ name: tag.toLowerCase() });
+            const foundTag = await Tag.findOne({ name: normalizeTagName(tag) });
             if (foundTag) query.tags = foundTag._id;
         }
         if (q) {

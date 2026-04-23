@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '../views/HomePage.vue'
+import TypedHomeFeedView from '../views/TypedHomeFeedView.vue'
 import FeedView from '../views/FeedView.vue'
 import BookmarksView from '../views/BookmarksView.vue'
 import FavoritesView from '../views/FavoritesView.vue'
@@ -23,6 +24,33 @@ import { useAuthStore } from '../stores/auth.store'
 
 const routes = [
   { path: '/', name: 'home', component: HomePage },
+  {
+    path: '/illustrations',
+    name: 'illustrations',
+    component: TypedHomeFeedView,
+    props: {
+      workType: 'illust',
+      pageTitle: 'Illustrations',
+    },
+  },
+  {
+    path: '/manga',
+    name: 'manga',
+    component: TypedHomeFeedView,
+    props: {
+      workType: 'manga',
+      pageTitle: 'Manga',
+    },
+  },
+  {
+    path: '/novels',
+    name: 'novels',
+    component: TypedHomeFeedView,
+    props: {
+      workType: 'novel',
+      pageTitle: 'Novels',
+    },
+  },
   { path: '/feed', name: 'feed', component: FeedView },
   { path: '/discovery', name: 'discovery', component: DiscoveryView },
   { path: '/newest_by_all', name: 'newest-all', component: NewestByAllView },

@@ -53,6 +53,11 @@ Use this as a portable baseline for MEVN projects:
 - Validate required request fields before write operations.
 - Avoid destructive operations unless explicitly requested.
 
+## Data Setup Policy
+- When the user asks to add/sample/seed data, prefer MongoDB MCP tools for inserts/updates/deletes/query verification.
+- Do not create new one-off seed scripts for ad-hoc data requests unless the user explicitly asks for a reusable script.
+- If MongoDB MCP is unavailable in the current environment, clearly report that limitation and ask before falling back to script-based seeding.
+
 ## Validation Checklist
 - Backend: run backend scripts and smoke-start server.
 - Frontend: run `npm run build` in frontend for compile-time validation.
