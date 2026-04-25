@@ -9,6 +9,7 @@ import ProfilePrimaryTabs from '../components/profile/ProfilePrimaryTabs.vue'
 import ProfileWorksSection from '../components/profile/ProfileWorksSection.vue'
 import ProfileBookmarksSection from '../components/profile/ProfileBookmarksSection.vue'
 import ProfileLikesSection from '../components/profile/ProfileLikesSection.vue'
+import ProfileEditModal from '../components/profile/ProfileEditModal.vue'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
@@ -38,6 +39,7 @@ const activeMainTab = ref('home')
 const activeBookmarkType = ref('')
 const activeLikeType = ref('')
 const followError = ref('')
+const showEditModal = ref(false)
 
 const queryUserId = computed(() => {
   const id = route.query.user
@@ -305,6 +307,27 @@ async function toggleFollow() {
     followError.value = error?.response?.data?.message || 'Failed to update follow status'
   }
 }
+async function handleUpdateProfile(formData) {
+  try {
+    const { data } = await userApi.updateProfile(formData)
+    
+    // Update local profile state
+    if (profileUser.value) {
+      profileUser.value = { ...profileUser.value, ...data }
+    }
+    
+    // Update auth store user if it's our own profile
+    if (isOwnProfile.value) {
+      authStore.user = { ...authStore.user, ...data }
+      localStorage.setItem('authUser', JSON.stringify(authStore.user))
+    }
+    
+    showEditModal.value = false
+    alert('Profile updated successfully!')
+  } catch (err) {
+    alert(err?.response?.data?.message || 'Failed to update profile')
+  }
+}
 
 async function goLogin() {
   await router.push('/login')
@@ -328,6 +351,14 @@ watch(
     loadFollowStats()
   },
 )
+
+watch(showEditModal, (val) => {
+  if (val) {
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = ''
+  }
+})
 </script>
 
 <template>
@@ -347,7 +378,7 @@ watch(
           :follow-error="followError"
           :artwork-count="artworks.length"
           @toggle-follow="toggleFollow"
-          @edit-profile="router.push('/dashboard')"
+          @edit-profile="showEditModal = true"
         />
         <p v-if="profileLoading" class="text-secondary mb-1">Loading profile...</p>
         <p v-if="profileError" class="text-danger mb-1">{{ profileError }}</p>
@@ -402,6 +433,14 @@ watch(
           This list is only available on your own profile.
         </section>
       </div>
+      <Teleport to="body">
+        <ProfileEditModal
+          :show="showEditModal"
+          :user="user"
+          @close="showEditModal = false"
+          @save="handleUpdateProfile"
+        />
+      </Teleport>
     </section>
 
     <section v-else class="page-block p-3 p-md-4 d-grid gap-2">
