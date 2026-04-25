@@ -20,6 +20,14 @@ export const useLikeStore = defineStore('likes', {
       try {
         const { data } = await getMyLikes(params)
         this.items = data.likes || []
+
+        // Pre-populate statusByArtwork so ArtworkCard shows red hearts immediately
+        this.items.forEach((item) => {
+          const artworkId = item?.artwork?._id || item?.artwork
+          if (artworkId) {
+            this.statusByArtwork[artworkId] = true
+          }
+        })
       } catch (error) {
         this.error = error?.response?.data?.message || 'Failed to fetch likes'
       } finally {

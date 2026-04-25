@@ -8,9 +8,11 @@ import ProfileSummarySection from '../components/profile/ProfileSummarySection.v
 import ProfilePrimaryTabs from '../components/profile/ProfilePrimaryTabs.vue'
 import ProfileWorksSection from '../components/profile/ProfileWorksSection.vue'
 import ProfileBookmarksSection from '../components/profile/ProfileBookmarksSection.vue'
+import ProfileLikesSection from '../components/profile/ProfileLikesSection.vue'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
+import { useLikeStore } from '../stores/like.store'
 import { useFollowStore } from '../stores/follow.store'
 import { getArtworks, userApi } from '../services/api'
 
@@ -19,6 +21,7 @@ const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 const bookmarkStore = useBookmarkStore()
+const likeStore = useLikeStore()
 const followStore = useFollowStore()
 const profileUser = ref(null)
 const profileLoading = ref(false)
@@ -33,6 +36,7 @@ const artworksError = ref('')
 const activeType = ref('')
 const activeMainTab = ref('home')
 const activeBookmarkType = ref('')
+const activeLikeType = ref('')
 const followError = ref('')
 
 const queryUserId = computed(() => {
@@ -134,6 +138,34 @@ const visibleBookmarks = computed(() => {
   return bookmarkStore.items.filter((item) => String(item?.artwork?.type || '').toLowerCase() === activeBookmarkType.value)
 })
 
+const likeTypeTabs = computed(() => {
+  const bucket = new Map()
+
+  likeStore.items.forEach((item) => {
+    const type = String(item?.artwork?.type || '').toLowerCase()
+    if (!typeLabelMap[type]) {
+      return
+    }
+    bucket.set(type, (bucket.get(type) || 0) + 1)
+  })
+
+  return Object.keys(typeLabelMap)
+    .filter((type) => bucket.has(type))
+    .map((type) => ({
+      value: type,
+      label: typeLabelMap[type],
+      count: bucket.get(type) || 0,
+    }))
+})
+
+const visibleLikes = computed(() => {
+  if (!activeLikeType.value) {
+    return likeStore.items
+  }
+
+  return likeStore.items.filter((item) => String(item?.artwork?.type || '').toLowerCase() === activeLikeType.value)
+})
+
 function normalizeArtwork(item) {
   return {
     ...item,
@@ -151,6 +183,10 @@ function selectType(type) {
 
 function selectBookmarkType(type) {
   activeBookmarkType.value = type
+}
+
+function selectLikeType(type) {
+  activeLikeType.value = type
 }
 
 function selectMainTab(tab) {
@@ -193,6 +229,17 @@ async function loadBookmarks() {
 
   await bookmarkStore.fetchMyBookmarks({ limit: 120 })
   activeBookmarkType.value = bookmarkTypeTabs.value[0]?.value || ''
+}
+
+async function loadLikes() {
+  if (!isOwnProfile.value || !authStore.user?._id) {
+    likeStore.items = []
+    activeLikeType.value = ''
+    return
+  }
+
+  await likeStore.fetchMyLikes({ limit: 120 })
+  activeLikeType.value = likeTypeTabs.value[0]?.value || ''
 }
 
 async function loadFollowStats() {
@@ -267,6 +314,7 @@ onMounted(() => {
   loadProfile()
   loadUserArtworks()
   loadBookmarks()
+  loadLikes()
   loadFollowStats()
 })
 
@@ -276,6 +324,7 @@ watch(
     loadProfile()
     loadUserArtworks()
     loadBookmarks()
+    loadLikes()
     loadFollowStats()
   },
 )
@@ -329,7 +378,7 @@ watch(
         />
 
         <ProfileBookmarksSection
-          v-else-if="isOwnProfile"
+          v-else-if="activeMainTab === 'bookmarks' && isOwnProfile"
           :tabs="bookmarkTypeTabs"
           :active-type="activeBookmarkType"
           :bookmarks="visibleBookmarks"
@@ -337,8 +386,19 @@ watch(
           :error="bookmarkStore.error"
           @select-type="selectBookmarkType"
         />
-        <section v-else class="bookmarks-placeholder">
-          Bookmark list is only available on your own profile.
+
+        <ProfileLikesSection
+          v-else-if="activeMainTab === 'likes' && isOwnProfile"
+          :tabs="likeTypeTabs"
+          :active-type="activeLikeType"
+          :likes="visibleLikes"
+          :loading="likeStore.loading"
+          :error="likeStore.error"
+          @select-type="selectLikeType"
+        />
+
+        <section v-else-if="(activeMainTab === 'bookmarks' || activeMainTab === 'likes') && !isOwnProfile" class="bookmarks-placeholder">
+          This list is only available on your own profile.
         </section>
       </div>
     </section>

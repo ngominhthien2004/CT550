@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useBookmarkStore } from '../../stores/bookmark.store'
+import { useLikeStore } from '../../stores/like.store'
 import { useAuthStore } from '../../stores/auth.store'
 
 const props = defineProps({
@@ -12,19 +12,22 @@ const props = defineProps({
 })
 
 const router = useRouter()
-const bookmarkStore = useBookmarkStore()
+const likeStore = useLikeStore()
 const authStore = useAuthStore()
 
-const isBookmarked = computed(() => {
-  if (bookmarkStore.statusByArtwork[props.item._id] !== undefined) {
-    return bookmarkStore.getBookmarkStatus(props.item._id)
+const isLiked = computed(() => {
+  if (likeStore.statusByArtwork[props.item._id] !== undefined) {
+    return likeStore.getLikeStatus(props.item._id)
   }
-  return Boolean(props.item.isBookmarked)
+  return Boolean(props.item.isLiked)
 })
 
-const isToggling = computed(() => bookmarkStore.isTogglingBookmark(props.item._id))
+const isToggling = computed(() => likeStore.isTogglingLike(props.item._id))
 
-async function handleLike() {
+async function handleLike(e) {
+  e.preventDefault()
+  e.stopPropagation()
+
   if (!authStore.isAuthenticated) {
     router.push('/login')
     return
@@ -32,12 +35,12 @@ async function handleLike() {
   if (isToggling.value) return
 
   try {
-    if (bookmarkStore.statusByArtwork[props.item._id] === undefined) {
-       bookmarkStore.statusByArtwork[props.item._id] = Boolean(props.item.isBookmarked)
+    if (likeStore.statusByArtwork[props.item._id] === undefined) {
+       likeStore.statusByArtwork[props.item._id] = Boolean(props.item.isLiked)
     }
-    await bookmarkStore.toggleBookmarkByArtwork(props.item._id)
+    await likeStore.toggleLikeByArtwork(props.item._id)
   } catch (error) {
-    console.error('Failed to toggle bookmark:', error)
+    console.error('Failed to toggle like:', error)
   }
 }
 
@@ -72,8 +75,8 @@ function getImageCount(item) {
       </span>
 
       <!-- Like button -->
-      <button class="btn-like" :class="{ 'is-liked': isBookmarked }" aria-label="Like" @click.prevent="handleLike" :disabled="isToggling">
-        <i :class="isBookmarked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
+      <button class="btn-like" :class="{ 'is-liked': isLiked }" aria-label="Like" @click.prevent="handleLike" :disabled="isToggling">
+        <i :class="isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
       </button>
     </router-link>
 

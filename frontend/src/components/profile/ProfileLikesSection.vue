@@ -1,8 +1,6 @@
 <script setup>
 import ArtworkCard from '../artwork/ArtworkCard.vue'
 
-const objectIdPattern = /^[0-9a-fA-F]{24}$/
-
 defineProps({
   tabs: {
     type: Array,
@@ -12,7 +10,7 @@ defineProps({
     type: String,
     default: '',
   },
-  bookmarks: {
+  likes: {
     type: Array,
     default: () => [],
   },
@@ -27,20 +25,16 @@ defineProps({
 })
 
 const emit = defineEmits(['select-type'])
-
-function hasArtworkRoute(bookmark) {
-  return typeof bookmark?.artwork?._id === 'string' && objectIdPattern.test(bookmark.artwork._id)
-}
 </script>
 
 <template>
-  <section class="bookmarks-panel" aria-label="Bookmarks section">
-    <div v-if="tabs.length" class="bookmark-type-tabs" role="tablist" aria-label="Bookmark type tabs">
+  <section class="likes-panel" aria-label="Favorites section">
+    <div v-if="tabs.length" class="like-type-tabs" role="tablist" aria-label="Favorite type tabs">
       <button
         v-for="tab in tabs"
         :key="tab.value"
         type="button"
-        class="bookmark-type-tab"
+        class="like-type-tab"
         :class="{ active: tab.value === activeType }"
         role="tab"
         :aria-selected="tab.value === activeType"
@@ -51,39 +45,39 @@ function hasArtworkRoute(bookmark) {
       </button>
     </div>
 
-    <div class="bookmarks-head">
-      <h3>Bookmarks</h3>
-      <span class="small text-secondary">Saved from your favorite works</span>
+    <div class="likes-head">
+      <h3>Favorites</h3>
+      <span class="small text-secondary">Works you've liked</span>
     </div>
 
-    <p v-if="loading" class="bm-note">Loading bookmarks...</p>
+    <p v-if="loading" class="bm-note">Loading favorites...</p>
     <p v-else-if="error" class="bm-note error">{{ error }}</p>
 
-    <div v-else-if="bookmarks.length" class="bookmark-grid">
-      <ArtworkCard v-for="bookmark in bookmarks" :key="bookmark._id" :item="bookmark.artwork" />
+    <div v-else-if="likes.length" class="like-grid">
+      <ArtworkCard v-for="like in likes" :key="like._id" :item="like.artwork" />
     </div>
 
-    <div v-else class="bookmark-empty">
-      <i class="fa-regular fa-bookmark" aria-hidden="true"></i>
-      <p>No bookmark found.</p>
+    <div v-else class="like-empty">
+      <i class="fa-solid fa-heart" aria-hidden="true"></i>
+      <p>No favorites found.</p>
     </div>
   </section>
 </template>
 
 <style scoped>
-.bookmarks-panel {
+.likes-panel {
   padding-top: 2rem;
   display: grid;
   gap: 1rem;
 }
 
-.bookmark-type-tabs {
+.like-type-tabs {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
 
-.bookmark-type-tab {
+.like-type-tab {
   border: 1px solid #dbe4ef;
   border-radius: 999px;
   background: #fff;
@@ -96,20 +90,20 @@ function hasArtworkRoute(bookmark) {
   gap: 0.35rem;
 }
 
-.bookmark-type-tab.active {
+.like-type-tab.active {
   border-color: #93c5fd;
   color: #0369a1;
   background: #e0f2fe;
 }
 
-.bookmarks-head {
+.likes-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.8rem;
 }
 
-.bookmarks-head h3 {
+.likes-head h3 {
   margin: 0;
   font-size: 1.05rem;
 }
@@ -123,37 +117,37 @@ function hasArtworkRoute(bookmark) {
   color: #dc2626;
 }
 
-.bookmark-grid {
+.like-grid {
   display: grid;
   gap: 1rem 0.9rem;
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
-.bookmark-empty {
+.like-empty {
   min-height: 180px;
   display: grid;
   place-items: center;
   color: #b4bac5;
 }
 
-.bookmark-empty i {
+.like-empty i {
   font-size: 1.4rem;
 }
 
-.bookmark-empty p {
+.like-empty p {
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
 }
 
 @media (max-width: 1240px) {
-  .bookmark-grid {
+  .like-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 920px) {
-  .bookmark-grid {
+  .like-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
