@@ -334,6 +334,12 @@ async function goLogin() {
 }
 
 onMounted(() => {
+  if (route.query.tab === 'likes') {
+    activeMainTab.value = 'likes'
+  } else if (route.query.tab === 'bookmarks') {
+    activeMainTab.value = 'bookmarks'
+  }
+
   loadProfile()
   loadUserArtworks()
   loadBookmarks()
