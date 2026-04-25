@@ -1,9 +1,8 @@
 <script setup>
+import { computed } from 'vue'
 import ArtworkCard from '../artwork/ArtworkCard.vue'
 
-const objectIdPattern = /^[0-9a-fA-F]{24}$/
-
-defineProps({
+const props = defineProps({
   tabs: {
     type: Array,
     default: () => [],
@@ -28,14 +27,25 @@ defineProps({
 
 const emit = defineEmits(['select-type'])
 
-function hasArtworkRoute(bookmark) {
-  return typeof bookmark?.artwork?._id === 'string' && objectIdPattern.test(bookmark.artwork._id)
-}
+const totalCount = computed(() => {
+  return props.tabs.reduce((sum, tab) => sum + tab.count, 0)
+})
 </script>
 
 <template>
   <section class="bookmarks-panel" aria-label="Bookmarks section">
-    <div v-if="tabs.length" class="bookmark-type-tabs" role="tablist" aria-label="Bookmark type tabs">
+    <div class="bookmark-type-tabs" role="tablist" aria-label="Bookmark type tabs">
+      <button
+        type="button"
+        class="bookmark-type-tab"
+        :class="{ active: activeType === '' }"
+        role="tab"
+        :aria-selected="activeType === ''"
+        @click="emit('select-type', '')"
+      >
+        All
+        <span>{{ totalCount }}</span>
+      </button>
       <button
         v-for="tab in tabs"
         :key="tab.value"
@@ -49,11 +59,6 @@ function hasArtworkRoute(bookmark) {
         {{ tab.label }}
         <span>{{ tab.count }}</span>
       </button>
-    </div>
-
-    <div class="bookmarks-head">
-      <h3>Bookmarks</h3>
-      <span class="small text-secondary">Saved from your favorite works</span>
     </div>
 
     <p v-if="loading" class="bm-note">Loading bookmarks...</p>
@@ -100,18 +105,6 @@ function hasArtworkRoute(bookmark) {
   border-color: #93c5fd;
   color: #0369a1;
   background: #e0f2fe;
-}
-
-.bookmarks-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.8rem;
-}
-
-.bookmarks-head h3 {
-  margin: 0;
-  font-size: 1.05rem;
 }
 
 .bm-note {

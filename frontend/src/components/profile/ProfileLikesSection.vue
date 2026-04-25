@@ -1,7 +1,8 @@
 <script setup>
+import { computed } from 'vue'
 import ArtworkCard from '../artwork/ArtworkCard.vue'
 
-defineProps({
+const props = defineProps({
   tabs: {
     type: Array,
     default: () => [],
@@ -25,11 +26,26 @@ defineProps({
 })
 
 const emit = defineEmits(['select-type'])
+
+const totalCount = computed(() => {
+  return props.tabs.reduce((sum, tab) => sum + tab.count, 0)
+})
 </script>
 
 <template>
   <section class="likes-panel" aria-label="Favorites section">
-    <div v-if="tabs.length" class="like-type-tabs" role="tablist" aria-label="Favorite type tabs">
+    <div class="like-type-tabs" role="tablist" aria-label="Favorite type tabs">
+      <button
+        type="button"
+        class="like-type-tab"
+        :class="{ active: activeType === '' }"
+        role="tab"
+        :aria-selected="activeType === ''"
+        @click="emit('select-type', '')"
+      >
+        All
+        <span>{{ totalCount }}</span>
+      </button>
       <button
         v-for="tab in tabs"
         :key="tab.value"
@@ -43,11 +59,6 @@ const emit = defineEmits(['select-type'])
         {{ tab.label }}
         <span>{{ tab.count }}</span>
       </button>
-    </div>
-
-    <div class="likes-head">
-      <h3>Favorites</h3>
-      <span class="small text-secondary">Works you've liked</span>
     </div>
 
     <p v-if="loading" class="bm-note">Loading favorites...</p>
@@ -94,18 +105,6 @@ const emit = defineEmits(['select-type'])
   border-color: #93c5fd;
   color: #0369a1;
   background: #e0f2fe;
-}
-
-.likes-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.8rem;
-}
-
-.likes-head h3 {
-  margin: 0;
-  font-size: 1.05rem;
 }
 
 .bm-note {

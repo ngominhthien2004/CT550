@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
@@ -45,11 +45,25 @@ const props = defineProps({
 const avatarSrc = computed(() => props.user?.avatar || DEFAULT_PROFILE_AVATAR)
 const profileBio = computed(() => props.user?.bio || (props.isOwnProfile ? 'Curate your cover, avatar, and gallery to give your profile more character.' : 'This creator has not added a bio yet.'))
 
-const emit = defineEmits(['toggle-follow'])
+const emit = defineEmits(['toggle-follow', 'edit-profile'])
+
+const shareTooltip = ref('')
 
 function handleAvatarError(event) {
   if (event.target?.src !== DEFAULT_PROFILE_AVATAR) {
     event.target.src = DEFAULT_PROFILE_AVATAR
+  }
+}
+
+async function handleShare() {
+  const url = window.location.href
+  try {
+    await navigator.clipboard.writeText(url)
+    shareTooltip.value = 'Link copied!'
+    setTimeout(() => { shareTooltip.value = '' }, 2000)
+  } catch {
+    shareTooltip.value = 'Copy failed'
+    setTimeout(() => { shareTooltip.value = '' }, 2000)
   }
 }
 </script>
@@ -87,7 +101,7 @@ function handleAvatarError(event) {
     </div>
 
     <div class="profile-actions">
-      <button v-if="isOwnProfile" type="button" class="edit-profile-btn">Edit profile</button>
+      <button v-if="isOwnProfile" type="button" class="edit-profile-btn" @click="emit('edit-profile')">Edit profile</button>
       <button
         v-else
         type="button"
@@ -99,12 +113,12 @@ function handleAvatarError(event) {
       >
         {{ isFollowing ? 'Following' : 'Follow' }}
       </button>
-      <button type="button" class="share-btn" aria-label="Share profile" title="Share profile">
-        <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>
-      </button>
-      <button type="button" class="share-btn" aria-label="Profile actions" title="Profile actions">
-        <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
-      </button>
+      <div class="share-wrap">
+        <button type="button" class="share-btn" aria-label="Share profile" title="Share profile" @click="handleShare">
+          <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>
+        </button>
+        <span v-if="shareTooltip" class="share-tooltip">{{ shareTooltip }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -268,6 +282,38 @@ function handleAvatarError(event) {
   background: transparent;
   color: #6b7280;
   font-size: 1rem;
+  cursor: pointer;
+}
+
+.share-btn:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.share-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.share-tooltip {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 @media (max-width: 820px) {

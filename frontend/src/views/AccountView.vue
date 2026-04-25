@@ -210,7 +210,7 @@ async function loadUserArtworks() {
   try {
     const { data } = await getArtworks({ user: viewingUserId.value, limit: 120 })
     artworks.value = Array.isArray(data) ? data.map(normalizeArtwork) : []
-    activeType.value = typeTabs.value[0]?.value || ''
+    activeType.value = ''
   } catch (error) {
     artworksError.value = error?.response?.data?.message || 'Failed to load user artworks'
     artworks.value = []
@@ -228,7 +228,7 @@ async function loadBookmarks() {
   }
 
   await bookmarkStore.fetchMyBookmarks({ limit: 120 })
-  activeBookmarkType.value = bookmarkTypeTabs.value[0]?.value || ''
+  activeBookmarkType.value = ''
 }
 
 async function loadLikes() {
@@ -239,7 +239,7 @@ async function loadLikes() {
   }
 
   await likeStore.fetchMyLikes({ limit: 120 })
-  activeLikeType.value = likeTypeTabs.value[0]?.value || ''
+  activeLikeType.value = ''
 }
 
 async function loadFollowStats() {
@@ -347,6 +347,7 @@ watch(
           :follow-error="followError"
           :artwork-count="artworks.length"
           @toggle-follow="toggleFollow"
+          @edit-profile="router.push('/dashboard')"
         />
         <p v-if="profileLoading" class="text-secondary mb-1">Loading profile...</p>
         <p v-if="profileError" class="text-danger mb-1">{{ profileError }}</p>

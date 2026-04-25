@@ -1,7 +1,7 @@
 <script setup>
+import { computed } from 'vue'
 import ArtworkCard from '../artwork/ArtworkCard.vue'
 
-const objectIdPattern = /^[0-9a-fA-F]{24}$/
 const HOME_PREVIEW_LIMIT = 8
 
 const props = defineProps({
@@ -43,11 +43,26 @@ function visibleItems() {
   }
   return props.artworks.slice(0, HOME_PREVIEW_LIMIT)
 }
+
+const totalCount = computed(() => {
+  return props.tabs.reduce((sum, tab) => sum + tab.count, 0)
+})
 </script>
 
 <template>
   <section class="works-panel" aria-label="Works section">
     <div v-if="tabs.length" class="type-tabs" role="tablist" aria-label="Artwork type tabs">
+      <button
+        type="button"
+        class="type-tab"
+        :class="{ active: activeType === '' }"
+        role="tab"
+        :aria-selected="activeType === ''"
+        @click="emit('select-type', '')"
+      >
+        All
+        <span class="type-count">{{ totalCount }}</span>
+      </button>
       <button
         v-for="tab in tabs"
         :key="tab.value"
