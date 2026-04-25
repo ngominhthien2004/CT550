@@ -181,10 +181,6 @@ function visibleItems() {
 .works-grid {
   display: grid;
   gap: 1rem 0.9rem;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-}
-
-.works-grid.compact {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
@@ -218,15 +214,13 @@ function visibleItems() {
 }
 
 @media (max-width: 1240px) {
-  .works-grid,
-  .works-grid.compact {
+  .works-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 920px) {
-  .works-grid,
-  .works-grid.compact {
+  .works-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

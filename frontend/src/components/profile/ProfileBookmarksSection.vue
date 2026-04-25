@@ -1,4 +1,6 @@
 <script setup>
+import ArtworkCard from '../artwork/ArtworkCard.vue'
+
 const objectIdPattern = /^[0-9a-fA-F]{24}$/
 
 defineProps({
@@ -58,16 +60,7 @@ function hasArtworkRoute(bookmark) {
     <p v-else-if="error" class="bm-note error">{{ error }}</p>
 
     <div v-else-if="bookmarks.length" class="bookmark-grid">
-      <article v-for="bookmark in bookmarks" :key="bookmark._id" class="bookmark-card">
-        <router-link v-if="hasArtworkRoute(bookmark)" :to="`/artworks/${bookmark.artwork._id}`" class="bookmark-thumb-link">
-          <img :src="bookmark.artwork?.images?.[0] || ''" :alt="bookmark.artwork?.title || 'Artwork'" loading="lazy" />
-        </router-link>
-        <img v-else :src="bookmark.artwork?.images?.[0] || ''" :alt="bookmark.artwork?.title || 'Artwork'" loading="lazy" />
-        <router-link v-if="hasArtworkRoute(bookmark)" :to="`/artworks/${bookmark.artwork._id}`" class="bookmark-title">
-          {{ bookmark.artwork?.title || 'Untitled' }}
-        </router-link>
-        <p class="bookmark-folder">Folder: {{ bookmark.folder || 'default' }}</p>
-      </article>
+      <ArtworkCard v-for="bookmark in bookmarks" :key="bookmark._id" :item="bookmark.artwork" />
     </div>
 
     <div v-else class="bookmark-empty">
@@ -131,34 +124,8 @@ function hasArtworkRoute(bookmark) {
 
 .bookmark-grid {
   display: grid;
-  gap: 0.8rem;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-}
-
-.bookmark-card {
-  display: grid;
-  gap: 0.2rem;
-}
-
-.bookmark-card img {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: 10px;
-  background: #f1f5f9;
-}
-
-.bookmark-title {
-  text-decoration: none;
-  color: #111827;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.bookmark-folder {
-  margin: 0;
-  color: #6b7280;
-  font-size: 0.72rem;
+  gap: 1rem 0.9rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .bookmark-empty {
