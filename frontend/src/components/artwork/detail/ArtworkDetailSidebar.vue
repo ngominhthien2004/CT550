@@ -6,6 +6,7 @@ const emit = defineEmits(['toggle-follow'])
 const props = defineProps({
   displayAuthor: { type: String, default: 'Unknown artist' },
   artistId: { type: String, default: '' },
+  artistAvatar: { type: String, default: 'https://s.pximg.net/common/images/no_profile.png' },
   isOwnArtist: { type: Boolean, default: false },
   isFollowing: { type: Boolean, default: false },
   followLoading: { type: Boolean, default: false },
@@ -25,7 +26,7 @@ const hasSameAuthorWorks = computed(() => Array.isArray(sameAuthorWorks.value) &
     <section class="sidebar-card d-grid gap-2">
       <div class="d-flex align-items-center justify-content-between gap-2">
         <div class="d-flex align-items-center gap-2">
-          <span class="avatar-dot" aria-hidden="true"></span>
+          <img :src="artistAvatar" :alt="displayAuthor" class="avatar-img" @error="(e) => e.target.src = 'https://s.pximg.net/common/images/no_profile.png'" />
           <div class="d-grid">
             <router-link v-if="artistId" :to="`/account?user=${artistId}`" class="fw-semibold text-decoration-none text-dark">
               {{ displayAuthor }}
@@ -91,12 +92,13 @@ const hasSameAuthorWorks = computed(() => Array.isArray(sameAuthorWorks.value) &
   padding: 1.25rem;
 }
 
-.avatar-dot {
+.avatar-img {
   width: 48px;
   height: 48px;
   border-radius: 50%;
   display: inline-block;
-  background: linear-gradient(135deg, #ffb3b3, #ffd7a8);
+  object-fit: cover;
+  background: #f0f0f0;
 }
 
 .x-small {

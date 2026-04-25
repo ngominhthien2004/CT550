@@ -1,6 +1,5 @@
 <script setup>
-const objectIdPattern = /^[0-9a-fA-F]{24}$/
-const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
+import ArtworkCard from '../artwork/ArtworkCard.vue'
 
 defineProps({
   works: {
@@ -8,33 +7,6 @@ defineProps({
     default: () => [],
   },
 })
-
-function hasArtworkDetailRoute(work) {
-  const artworkId = work?._id || work?.id
-  return typeof artworkId === 'string' && objectIdPattern.test(artworkId)
-}
-
-function displayAuthor(work) {
-  return work?.user?.displayName || work?.user?.username || 'Unknown artist'
-}
-
-function authorInitial(work) {
-  return displayAuthor(work).charAt(0).toUpperCase()
-}
-
-function profileLink(userId) {
-  return userId ? `/account?user=${userId}` : '/account'
-}
-
-function profileAvatar(work) {
-  return work?.user?.avatar || DEFAULT_PROFILE_AVATAR
-}
-
-function handleAvatarError(event) {
-  if (event.target?.src !== DEFAULT_PROFILE_AVATAR) {
-    event.target.src = DEFAULT_PROFILE_AVATAR
-  }
-}
 </script>
 
 <template>
@@ -52,39 +24,7 @@ function handleAvatarError(event) {
     </p>
 
     <div v-else class="work-grid">
-      <article v-for="work in works" :key="work._id || work.id" class="work-card">
-        <router-link
-          v-if="hasArtworkDetailRoute(work)"
-          :to="`/artworks/${work._id || work.id}`"
-          class="work-cover-link"
-        >
-          <img :src="work.image" :alt="work.title" loading="lazy" />
-        </router-link>
-        <div v-else class="image-wrap">
-          <img :src="work.image" :alt="work.title" loading="lazy" />
-        </div>
-
-        <div class="work-meta">
-          <div class="author-row">
-            <router-link :to="profileLink(work.user?._id)" class="author-link">
-              <span class="author-avatar">
-                <img :src="profileAvatar(work)" :alt="displayAuthor(work)" @error="handleAvatarError" />
-              </span>
-              <span class="author-name">{{ displayAuthor(work) }}</span>
-            </router-link>
-          </div>
-
-          <router-link
-            v-if="hasArtworkDetailRoute(work)"
-            :to="`/artworks/${work._id || work.id}`"
-            class="work-title-link"
-            :title="work.title"
-          >
-            <strong class="work-title">{{ work.title }}</strong>
-          </router-link>
-          <strong v-else class="work-title" :title="work.title">{{ work.title }}</strong>
-        </div>
-      </article>
+      <ArtworkCard v-for="work in works" :key="work._id || work.id" :item="work" class="work-card-override" />
     </div>
   </section>
 </template>
@@ -115,91 +55,12 @@ function handleAvatarError(event) {
   gap: 0.8rem 0.72rem;
 }
 
-.work-card {
+.work-card-override {
   transition: transform 0.16s ease;
 }
 
-.work-card:hover {
+.work-card-override:hover {
   transform: translateY(-2px);
-}
-
-.work-card img {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  height: auto;
-  object-fit: cover;
-  border-radius: 14px;
-  display: block;
-  background: #eef3f8;
-}
-
-.work-cover-link {
-  display: block;
-}
-
-.image-wrap {
-  position: relative;
-}
-
-.work-meta {
-  padding: 0.44rem 0.12rem 0;
-  display: grid;
-  gap: 0.28rem;
-  font-size: 0.86rem;
-}
-
-.author-row {
-  min-width: 0;
-}
-
-.author-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.38rem;
-  min-width: 0;
-  text-decoration: none;
-  color: #64748b;
-}
-
-.author-avatar {
-  width: 1.1rem;
-  height: 1.1rem;
-  border-radius: 999px;
-  overflow: hidden;
-  flex-shrink: 0;
-  background: #d9e6fb;
-}
-
-.author-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.author-name {
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 0.74rem;
-}
-
-.work-title-link {
-  text-decoration: none;
-  color: inherit;
-}
-
-.work-title {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.25;
-  min-height: 2.5em;
-  color: #1f2937;
-  font-size: 0.85rem;
-  font-weight: 600;
 }
 
 @media (max-width: 1200px) {

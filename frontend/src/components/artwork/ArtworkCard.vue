@@ -1,10 +1,45 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useBookmarkStore } from '../../stores/bookmark.store'
+import { useAuthStore } from '../../stores/auth.store'
+
+const props = defineProps({
   item: {
     type: Object,
     required: true,
   },
 })
+
+const router = useRouter()
+const bookmarkStore = useBookmarkStore()
+const authStore = useAuthStore()
+
+const isBookmarked = computed(() => {
+  if (bookmarkStore.statusByArtwork[props.item._id] !== undefined) {
+    return bookmarkStore.getBookmarkStatus(props.item._id)
+  }
+  return Boolean(props.item.isBookmarked)
+})
+
+const isToggling = computed(() => bookmarkStore.isTogglingBookmark(props.item._id))
+
+async function handleLike() {
+  if (!authStore.isAuthenticated) {
+    router.push('/login')
+    return
+  }
+  if (isToggling.value) return
+
+  try {
+    if (bookmarkStore.statusByArtwork[props.item._id] === undefined) {
+       bookmarkStore.statusByArtwork[props.item._id] = Boolean(props.item.isBookmarked)
+    }
+    await bookmarkStore.toggleBookmarkByArtwork(props.item._id)
+  } catch (error) {
+    console.error('Failed to toggle bookmark:', error)
+  }
+}
 
 function getImage(item) {
   if (!item) return ''
@@ -37,8 +72,8 @@ function getImageCount(item) {
       </span>
 
       <!-- Like button -->
-      <button class="btn-like" aria-label="Like" @click.prevent>
-        <i class="fa-regular fa-heart"></i>
+      <button class="btn-like" :class="{ 'is-liked': isBookmarked }" aria-label="Like" @click.prevent="handleLike" :disabled="isToggling">
+        <i :class="isBookmarked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
       </button>
     </router-link>
 
@@ -48,14 +83,14 @@ function getImageCount(item) {
       </router-link>
       <router-link
         v-if="item.user?._id"
-        :to="`/users/${item.user._id}/profile`"
+        :to="`/account?user=${item.user._id}`"
         class="card-author"
       >
         <img
-          :src="item.user?.avatar || ''"
+          :src="item.user?.avatar || 'https://s.pximg.net/common/images/no_profile.png'"
           class="author-avatar"
           :alt="item.user?.displayName || item.user?.username"
-          @error="(e) => (e.target.style.display = 'none')"
+          @error="(e) => (e.target.src = 'https://s.pximg.net/common/images/no_profile.png')"
         />
         <span>{{ item.user?.displayName || item.user?.username }}</span>
       </router-link>
@@ -74,9 +109,9 @@ function getImageCount(item) {
 .card-cover-link {
   display: block;
   position: relative;
-  border-radius: 8px;
+  border-radius: 14px;
   overflow: hidden;
-  background: #f4f4f5;
+  background: #f3f4f6;
   text-decoration: none;
 }
 
@@ -119,30 +154,30 @@ function getImageCount(item) {
 
 .btn-like {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  right: 0.45rem;
+  bottom: 0.45rem;
+  width: 1.95rem;
+  height: 1.95rem;
+  border-radius: 999px;
   border: none;
-  background: rgba(255, 255, 255, 0.88);
-  color: #6b7280;
-  display: flex;
+  background: rgba(255, 255, 255, 0.92);
+  color: #111827;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.15s, color 0.15s;
-  font-size: 14px;
-}
-
-.card-cover-link:hover .btn-like {
-  opacity: 1;
+  transition: transform 0.15s, background 0.15s, color 0.15s;
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.16);
+  font-size: 0.88rem;
 }
 
 .btn-like:hover {
-  color: #ef4444;
+  transform: scale(1.05);
   background: #fff;
+}
+
+.btn-like.is-liked {
+  color: #ef4444;
 }
 
 /* ─── Meta (title + author) ─── */
@@ -154,14 +189,14 @@ function getImageCount(item) {
 }
 
 .card-title {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  color: #18181b;
+  color: #111827;
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.3;
+  line-height: 1.35;
 }
 
 .card-title:hover {
@@ -173,7 +208,7 @@ function getImageCount(item) {
   align-items: center;
   gap: 5px;
   text-decoration: none;
-  color: #71717a;
+  color: #6b7280;
   font-size: 0.78rem;
   min-width: 0;
 }

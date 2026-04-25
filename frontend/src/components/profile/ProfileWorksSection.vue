@@ -1,4 +1,6 @@
 <script setup>
+import ArtworkCard from '../artwork/ArtworkCard.vue'
+
 const objectIdPattern = /^[0-9a-fA-F]{24}$/
 const HOME_PREVIEW_LIMIT = 8
 
@@ -34,10 +36,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['select-type', 'show-all'])
-
-function hasDetailRoute(artwork) {
-  return typeof artwork?._id === 'string' && objectIdPattern.test(artwork._id)
-}
 
 function visibleItems() {
   if (!props.showFeatured) {
@@ -77,22 +75,7 @@ function visibleItems() {
     <p v-else-if="error" class="works-note error">{{ error }}</p>
 
     <div v-else-if="artworks.length" class="works-grid" :class="{ compact: showFeatured }">
-      <article v-for="artwork in visibleItems()" :key="artwork._id" class="work-card">
-        <router-link v-if="hasDetailRoute(artwork)" :to="`/artworks/${artwork._id}`" class="work-cover-link">
-          <img :src="artwork.image" :alt="artwork.title" loading="lazy" />
-          <span class="work-heart" aria-hidden="true">
-            <i class="fa-regular fa-heart"></i>
-          </span>
-        </router-link>
-        <div v-else class="work-image-wrap">
-          <img :src="artwork.image" :alt="artwork.title" loading="lazy" />
-          <span class="work-heart" aria-hidden="true">
-            <i class="fa-regular fa-heart"></i>
-          </span>
-        </div>
-        <router-link v-if="hasDetailRoute(artwork)" :to="`/artworks/${artwork._id}`" class="work-title-link">{{ artwork.title }}</router-link>
-        <p class="work-author">{{ artwork.user?.displayName || artwork.user?.username || 'Unknown' }}</p>
-      </article>
+      <ArtworkCard v-for="artwork in visibleItems()" :key="artwork._id" :item="artwork" />
     </div>
 
     <section v-else class="works-empty" aria-label="Works list empty state">
@@ -203,56 +186,6 @@ function visibleItems() {
 
 .works-grid.compact {
   grid-template-columns: repeat(5, minmax(0, 1fr));
-}
-
-.work-card {
-  display: grid;
-  gap: 0.34rem;
-  align-content: start;
-}
-
-.work-card img {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 14px;
-  object-fit: cover;
-  background: #f3f4f6;
-}
-
-.work-cover-link,
-.work-image-wrap {
-  display: block;
-  position: relative;
-}
-
-.work-heart {
-  position: absolute;
-  right: 0.45rem;
-  bottom: 0.45rem;
-  width: 1.95rem;
-  height: 1.95rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #111827;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.16);
-  font-size: 0.88rem;
-}
-
-.work-title-link {
-  text-decoration: none;
-  color: #111827;
-  font-size: 0.9rem;
-  font-weight: 700;
-  line-height: 1.35;
-}
-
-.work-author {
-  margin: 0;
-  color: #6b7280;
-  font-size: 0.78rem;
 }
 
 .works-empty {

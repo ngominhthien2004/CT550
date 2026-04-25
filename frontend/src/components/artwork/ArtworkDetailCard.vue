@@ -139,6 +139,10 @@ const authorOtherWorks = computed(() => {
     .filter((item) => item?.user?._id === artistId.value)
     .slice(0, 10)
 })
+
+const artistAvatar = computed(() => {
+  return artwork.value?.user?.avatar || 'https://s.pximg.net/common/images/no_profile.png'
+})
 </script>
 
 <template>
@@ -169,6 +173,7 @@ const authorOtherWorks = computed(() => {
         <ArtworkDetailAuthorRow
           :display-author="displayAuthor"
           :artist-id="artistId"
+          :artist-avatar="artistAvatar"
           :is-own-artist="isOwnArtist"
           :is-following="isFollowing"
           :follow-loading="followLoading"
@@ -180,6 +185,7 @@ const authorOtherWorks = computed(() => {
       <ArtworkDetailSidebar
         :display-author="displayAuthor"
         :artist-id="artistId"
+        :artist-avatar="artistAvatar"
         :is-own-artist="isOwnArtist"
         :is-following="isFollowing"
         :follow-loading="followLoading"
