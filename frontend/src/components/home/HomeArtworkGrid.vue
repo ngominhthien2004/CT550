@@ -1,5 +1,6 @@
 <script setup>
 const objectIdPattern = /^[0-9a-fA-F]{24}$/
+const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
 defineProps({
   works: {
@@ -19,6 +20,20 @@ function displayAuthor(work) {
 
 function authorInitial(work) {
   return displayAuthor(work).charAt(0).toUpperCase()
+}
+
+function profileLink(userId) {
+  return userId ? `/account?user=${userId}` : '/account'
+}
+
+function profileAvatar(work) {
+  return work?.user?.avatar || DEFAULT_PROFILE_AVATAR
+}
+
+function handleAvatarError(event) {
+  if (event.target?.src !== DEFAULT_PROFILE_AVATAR) {
+    event.target.src = DEFAULT_PROFILE_AVATAR
+  }
 }
 </script>
 
@@ -51,22 +66,12 @@ function authorInitial(work) {
 
         <div class="work-meta">
           <div class="author-row">
-            <router-link
-              v-if="work.user?._id"
-              :to="`/account?user=${work.user._id}`"
-              class="author-link"
-            >
-              <span v-if="work.user?.avatar" class="author-avatar">
-                <img :src="work.user.avatar" :alt="displayAuthor(work)" />
+            <router-link :to="profileLink(work.user?._id)" class="author-link">
+              <span class="author-avatar">
+                <img :src="profileAvatar(work)" :alt="displayAuthor(work)" @error="handleAvatarError" />
               </span>
-              <span v-else class="author-avatar fallback">{{ authorInitial(work) }}</span>
               <span class="author-name">{{ displayAuthor(work) }}</span>
             </router-link>
-
-            <div v-else class="author-link is-static">
-              <span class="author-avatar fallback">{{ authorInitial(work) }}</span>
-              <span class="author-name">{{ displayAuthor(work) }}</span>
-            </div>
           </div>
 
           <router-link
@@ -156,10 +161,6 @@ function authorInitial(work) {
   color: #64748b;
 }
 
-.author-link.is-static {
-  pointer-events: none;
-}
-
 .author-avatar {
   width: 1.1rem;
   height: 1.1rem;
@@ -173,15 +174,6 @@ function authorInitial(work) {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.author-avatar.fallback {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #2450a8;
-  font-size: 0.68rem;
-  font-weight: 700;
 }
 
 .author-name {

@@ -1,4 +1,6 @@
 <script setup>
+const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
+
 defineProps({
   works: {
     type: Array,
@@ -37,6 +39,20 @@ function imageGridClass(work) {
 function hasMultipleImages(work) {
   return visibleImages(work).length > 1
 }
+
+function profileLink(userId) {
+  return userId ? `/account?user=${userId}` : '/account'
+}
+
+function profileAvatar(work) {
+  return work?.user?.avatar || DEFAULT_PROFILE_AVATAR
+}
+
+function handleAvatarError(event) {
+  if (event.target?.src !== DEFAULT_PROFILE_AVATAR) {
+    event.target.src = DEFAULT_PROFILE_AVATAR
+  }
+}
 </script>
 
 <template>
@@ -56,11 +72,14 @@ function hasMultipleImages(work) {
     <div v-else class="feed-list">
       <article v-for="work in works" :key="work._id" class="feed-card">
         <header class="feed-card-head">
-          <router-link :to="`/account?user=${work.user?._id || ''}`" class="author-link">
-            <span v-if="work.user?.avatar" class="author-avatar">
-              <img :src="work.user.avatar" :alt="work.user?.displayName || work.user?.username || work.title" />
+          <router-link :to="profileLink(work.user?._id)" class="author-link">
+            <span class="author-avatar">
+              <img
+                :src="profileAvatar(work)"
+                :alt="work.user?.displayName || work.user?.username || work.title"
+                @error="handleAvatarError"
+              />
             </span>
-            <span v-else class="author-avatar fallback">{{ getAuthorInitial(work) }}</span>
             <span class="author-meta">
               <strong>{{ work.user?.displayName || work.user?.username || 'Unknown artist' }}</strong>
               <small>{{ formatDate(work.createdAt) }}</small>
@@ -187,14 +206,6 @@ function hasMultipleImages(work) {
   height: 100%;
   object-fit: cover;
   display: block;
-}
-
-.author-avatar.fallback {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #2450a8;
-  font-weight: 700;
 }
 
 .author-meta {

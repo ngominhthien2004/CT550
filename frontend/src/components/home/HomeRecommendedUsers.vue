@@ -1,4 +1,6 @@
 <script setup>
+const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
+
 const props = defineProps({
   users: {
     type: Array,
@@ -30,6 +32,20 @@ function getUserHandle(item) {
   }
   return `@${item.username}`
 }
+
+function profileLink(userId) {
+  return userId ? `/account?user=${userId}` : '/account'
+}
+
+function profileAvatar(item) {
+  return item?.avatar || DEFAULT_PROFILE_AVATAR
+}
+
+function handleAvatarError(event) {
+  if (event.target?.src !== DEFAULT_PROFILE_AVATAR) {
+    event.target.src = DEFAULT_PROFILE_AVATAR
+  }
+}
 </script>
 
 <template>
@@ -46,8 +62,10 @@ function getUserHandle(item) {
 
     <div v-else class="user-grid">
       <article v-for="item in users" :key="item._id" class="user-card">
-        <router-link :to="`/account?user=${item._id}`" class="user-main-link">
-          <span class="user-avatar" aria-hidden="true">{{ (item.username || 'U').charAt(0).toUpperCase() }}</span>
+        <router-link :to="profileLink(item._id)" class="user-main-link">
+          <span class="user-avatar" aria-hidden="true">
+            <img :src="profileAvatar(item)" :alt="getUserLabel(item)" @error="handleAvatarError" />
+          </span>
           <div class="user-meta">
             <strong>{{ getUserLabel(item) }}</strong>
             <small>{{ getUserHandle(item) }}</small>
@@ -149,13 +167,16 @@ function getUserHandle(item) {
   width: 2.2rem;
   height: 2.2rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #bfdbfe, #93c5fd);
-  color: #1e3a8a;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
+  overflow: hidden;
+  background: #d7e4f8;
   flex-shrink: 0;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .user-meta {

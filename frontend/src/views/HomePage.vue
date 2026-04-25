@@ -56,6 +56,7 @@ function normalizeRecommendedUsers(artworks) {
         _id: user._id,
         username: user.username || '',
         displayName: user.displayName || user.username || 'Unknown user',
+        avatar: user.avatar || '',
         artworkCount: 0,
       })
     }

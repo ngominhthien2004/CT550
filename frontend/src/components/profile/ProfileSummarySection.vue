@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from 'vue'
 
+const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
+
 const props = defineProps({
   user: {
     type: Object,
@@ -34,26 +36,53 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  artworkCount: {
+    type: Number,
+    default: 0,
+  },
 })
 
-const avatarInitial = computed(() => (props.user?.username || 'U').charAt(0).toUpperCase())
+const avatarSrc = computed(() => props.user?.avatar || DEFAULT_PROFILE_AVATAR)
+const profileBio = computed(() => props.user?.bio || (props.isOwnProfile ? 'Curate your cover, avatar, and gallery to give your profile more character.' : 'This creator has not added a bio yet.'))
 
 const emit = defineEmits(['toggle-follow'])
+
+function handleAvatarError(event) {
+  if (event.target?.src !== DEFAULT_PROFILE_AVATAR) {
+    event.target.src = DEFAULT_PROFILE_AVATAR
+  }
+}
 </script>
 
 <template>
   <div class="profile-summary">
-    <div class="avatar-wrap" aria-label="User avatar">{{ avatarInitial }}</div>
+    <div class="avatar-shell">
+      <div class="avatar-wrap">
+        <img :src="avatarSrc" :alt="user.displayName || user.username" @error="handleAvatarError" />
+      </div>
+    </div>
 
     <div class="profile-meta">
       <h1 class="profile-name">{{ user.displayName || user.username }}</h1>
-      <p class="profile-following">{{ followersCount }} Followers · {{ followingCount }} Following</p>
-      <p class="profile-status">{{ isOwnProfile ? 'This is your profile' : isFollowing ? 'You are following this user' : 'You are not following yet' }}</p>
-      <p class="profile-subtle">
-        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-        {{ profileLocation }}
-      </p>
-      <router-link :to="`/account?user=${user._id}`" class="profile-link">View profile</router-link>
+      <p class="profile-handle">@{{ user.username || 'member' }}</p>
+
+      <div class="profile-stats">
+        <span><strong>{{ followersCount }}</strong> Followers</span>
+        <span><strong>{{ followingCount }}</strong> Following</span>
+        <span><strong>{{ artworkCount }}</strong> Works</span>
+      </div>
+
+      <p class="profile-bio">{{ profileBio }}</p>
+
+      <div class="profile-subtle-row">
+        <p class="profile-subtle">
+          <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+          {{ profileLocation }}
+        </p>
+        <router-link :to="`/account?user=${user._id}`" class="profile-link">View profile</router-link>
+      </div>
+
+      <p class="profile-status">{{ isOwnProfile ? 'This is your public profile surface.' : isFollowing ? 'You are following this user.' : 'Follow this creator to keep up with new works.' }}</p>
       <p v-if="followError" class="profile-error">{{ followError }}</p>
     </div>
 
@@ -73,56 +102,107 @@ const emit = defineEmits(['toggle-follow'])
       <button type="button" class="share-btn" aria-label="Share profile" title="Share profile">
         <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>
       </button>
+      <button type="button" class="share-btn" aria-label="Profile actions" title="Profile actions">
+        <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+      </button>
     </div>
   </div>
 </template>
 
 <style scoped>
 .profile-summary {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 1.1rem;
+  align-items: start;
+  background: #fff;
+  padding: 0 0 1.1rem;
+}
+
+.avatar-shell {
+  position: relative;
+  margin-top: -44px;
 }
 
 .avatar-wrap {
-  width: 76px;
-  height: 76px;
+  width: 94px;
+  height: 94px;
   border-radius: 999px;
   background: linear-gradient(135deg, #dbe5ef, #b9c8d6);
-  color: #6b7785;
-  border: 3px solid #fff;
+  border: 4px solid #fff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 1.1rem;
   flex-shrink: 0;
 }
 
+.avatar-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .profile-meta {
-  padding-top: 18px;
+  padding-top: 0.8rem;
   display: grid;
-  gap: 0.3rem;
+  gap: 0.45rem;
+  min-width: 0;
 }
 
 .profile-name {
   margin: 0;
-  font-size: 1.6rem;
+  font-size: clamp(1.7rem, 1.3rem + 1vw, 2.45rem);
   font-weight: 700;
   color: #1f2937;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
 }
 
-.profile-following,
+.profile-handle {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.profile-stats {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.9rem 1.15rem;
+  color: #334155;
+  font-size: 0.92rem;
+}
+
+.profile-stats strong {
+  font-size: 1rem;
+}
+
+.profile-bio {
+  max-width: 760px;
+  color: #334155;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.profile-subtle-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
 .profile-subtle {
   margin: 0;
   color: #6b7280;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
 }
 
 .profile-status {
   margin: 0;
-  color: #334155;
-  font-size: 0.82rem;
+  color: #64748b;
+  font-size: 0.84rem;
 }
 
 .profile-error {
@@ -133,8 +213,9 @@ const emit = defineEmits(['toggle-follow'])
 
 .profile-link {
   text-decoration: none;
-  color: #6b7280;
-  font-size: 0.86rem;
+  color: #64748b;
+  font-size: 0.88rem;
+  font-weight: 600;
 }
 
 .profile-link:hover,
@@ -143,8 +224,7 @@ const emit = defineEmits(['toggle-follow'])
 }
 
 .profile-actions {
-  margin-left: auto;
-  padding-top: 12px;
+  padding-top: 0.8rem;
   display: flex;
   align-items: center;
   gap: 0.55rem;
@@ -155,21 +235,22 @@ const emit = defineEmits(['toggle-follow'])
   border-radius: 999px;
   background: #f3f4f6;
   color: #374151;
-  padding: 0.38rem 0.92rem;
-  font-size: 0.83rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.88rem;
   font-weight: 700;
 }
 
 .follow-profile-btn {
   border-radius: 999px;
-  padding: 0.38rem 0.92rem;
-  font-size: 0.83rem;
+  padding: 0.7rem 1.2rem;
+  min-width: 106px;
+  font-size: 0.88rem;
   font-weight: 700;
 }
 
 .follow-profile-btn.is-not-following {
-  border: 1px solid #2563eb;
-  background: #2563eb;
+  border: 1px solid #0096fa;
+  background: #0096fa;
   color: #fff;
 }
 
@@ -180,22 +261,37 @@ const emit = defineEmits(['toggle-follow'])
 }
 
 .share-btn {
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   border: none;
   border-radius: 999px;
   background: transparent;
   color: #6b7280;
+  font-size: 1rem;
 }
 
 @media (max-width: 820px) {
   .profile-summary {
-    flex-wrap: wrap;
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .avatar-shell {
+    margin-top: -30px;
+  }
+
+  .avatar-wrap {
+    width: 82px;
+    height: 82px;
+  }
+
+  .profile-meta,
+  .profile-actions {
+    padding-top: 0;
   }
 
   .profile-actions {
-    margin-left: 0;
-    padding-top: 0;
+    justify-content: flex-start;
   }
 }
 </style>

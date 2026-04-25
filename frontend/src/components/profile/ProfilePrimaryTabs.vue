@@ -19,22 +19,23 @@ const emit = defineEmits(['select'])
 
 <style scoped>
 .profile-tabs {
-  margin-top: 0.7rem;
+  margin-top: 0.5rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.9rem;
   border-bottom: 1px solid #edf0f4;
+  overflow-x: auto;
 }
 
 .profile-tab {
   border: none;
   background: transparent;
-  text-decoration: none;
   color: #6b7280;
-  font-size: 0.86rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  padding: 0.82rem 0.85rem;
-  border-bottom: 2px solid transparent;
+  padding: 0.95rem 0.1rem 0.85rem;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
 }
 
 .profile-tab.active {

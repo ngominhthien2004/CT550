@@ -42,11 +42,7 @@ const queryUserId = computed(() => {
 
 const viewingUserId = computed(() => queryUserId.value || authStore.user?._id || '')
 const isOwnProfile = computed(() => {
-  if (!viewingUserId.value) {
-    return false
-  }
-
-  if (!authStore.user?._id) {
+  if (!viewingUserId.value || !authStore.user?._id) {
     return false
   }
 
@@ -73,6 +69,8 @@ const followLoading = computed(() => {
   }
   return followStore.isTogglingFollow(viewingUserId.value)
 })
+
+const profileCoverImage = computed(() => user.value?.coverImage || artworks.value[0]?.image || '')
 
 const typeLabelMap = {
   illust: 'Illustration',
@@ -159,6 +157,10 @@ function selectMainTab(tab) {
   activeMainTab.value = tab
 }
 
+function showAllWorks() {
+  activeMainTab.value = 'illustrations'
+}
+
 async function loadUserArtworks() {
   if (!viewingUserId.value) {
     artworks.value = []
@@ -172,9 +174,7 @@ async function loadUserArtworks() {
   try {
     const { data } = await getArtworks({ user: viewingUserId.value, limit: 120 })
     artworks.value = Array.isArray(data) ? data.map(normalizeArtwork) : []
-
-    const firstType = typeTabs.value[0]?.value || ''
-    activeType.value = firstType
+    activeType.value = typeTabs.value[0]?.value || ''
   } catch (error) {
     artworksError.value = error?.response?.data?.message || 'Failed to load user artworks'
     artworks.value = []
@@ -263,11 +263,6 @@ async function goLogin() {
   await router.push('/login')
 }
 
-async function logout() {
-  authStore.logout()
-  await router.push('/login')
-}
-
 onMounted(() => {
   loadProfile()
   loadUserArtworks()
@@ -289,7 +284,7 @@ watch(
 <template>
   <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
     <section v-if="user" class="profile-page page-block">
-      <ProfileCoverBanner />
+      <ProfileCoverBanner :user="user" :cover-image="profileCoverImage" :is-own-profile="isOwnProfile" />
 
       <div class="profile-main">
         <ProfileSummarySection
@@ -301,6 +296,7 @@ watch(
           :is-following="isFollowingProfile"
           :follow-loading="followLoading"
           :follow-error="followError"
+          :artwork-count="artworks.length"
           @toggle-follow="toggleFollow"
         />
         <p v-if="profileLoading" class="text-secondary mb-1">Loading profile...</p>
@@ -309,7 +305,7 @@ watch(
 
         <ProfileWorksSection
           v-if="activeMainTab === 'home'"
-          heading="Works"
+          heading="Illustrations and Manga"
           :show-featured="true"
           :tabs="typeTabs"
           :active-type="activeType"
@@ -317,11 +313,12 @@ watch(
           :loading="loadingArtworks"
           :error="artworksError"
           @select-type="selectType"
+          @show-all="showAllWorks"
         />
 
         <ProfileWorksSection
           v-else-if="activeMainTab === 'illustrations'"
-          heading="Illustrations"
+          heading="All works"
           :show-featured="false"
           :tabs="typeTabs"
           :active-type="activeType"
@@ -340,7 +337,7 @@ watch(
           :error="bookmarkStore.error"
           @select-type="selectBookmarkType"
         />
-        <section v-else class="card border-0 shadow-sm p-3 text-secondary">
+        <section v-else class="bookmarks-placeholder">
           Bookmark list is only available on your own profile.
         </section>
       </div>
@@ -358,21 +355,29 @@ watch(
 .profile-page {
   background: #fff;
   min-height: calc(100vh - 112px);
+  overflow: hidden;
 }
 
 .profile-main {
-  max-width: 980px;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: 0 1.4rem 3.25rem;
-  margin-top: -40px;
+  padding: 0 1.65rem 3.5rem;
   position: relative;
   z-index: 2;
 }
 
+.bookmarks-placeholder {
+  margin-top: 1.25rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 1rem 1.1rem;
+  color: #64748b;
+  background: #fff;
+}
+
 @media (max-width: 820px) {
   .profile-main {
-    padding: 0 0.85rem 2rem;
-    margin-top: -28px;
+    padding: 0 0.9rem 2rem;
   }
 }
 </style>
