@@ -44,6 +44,31 @@ const props = defineProps({
 
 const avatarSrc = computed(() => props.user?.avatar || DEFAULT_PROFILE_AVATAR)
 const profileBio = computed(() => props.user?.bio || (props.isOwnProfile ? 'Curate your cover, avatar, and gallery to give your profile more character.' : 'This creator has not added a bio yet.'))
+const socialLinks = computed(() => {
+  const links = props.user?.socialLinks || {}
+  const rows = [
+    {
+      key: 'twitter',
+      icon: 'fa-brands fa-x-twitter',
+      href: links.twitter,
+      label: 'X (Twitter)',
+    },
+    {
+      key: 'instagram',
+      icon: 'fa-brands fa-instagram',
+      href: links.instagram,
+      label: 'Instagram',
+    },
+    {
+      key: 'portfolio',
+      icon: 'fa-solid fa-globe',
+      href: links.portfolio,
+      label: 'Portfolio',
+    },
+  ]
+
+  return rows.filter((item) => typeof item.href === 'string' && item.href.trim())
+})
 
 const emit = defineEmits(['toggle-follow', 'edit-profile'])
 
@@ -94,6 +119,20 @@ async function handleShare() {
           {{ profileLocation }}
         </p>
         <router-link :to="`/account?user=${user._id}`" class="profile-link">View profile</router-link>
+        <div v-if="socialLinks.length" class="profile-socials" aria-label="Social media links">
+          <a
+            v-for="social in socialLinks"
+            :key="social.key"
+            :href="social.href"
+            class="social-icon-btn"
+            target="_blank"
+            rel="noopener noreferrer"
+            :aria-label="social.label"
+            :title="social.label"
+          >
+            <i :class="social.icon" aria-hidden="true"></i>
+          </a>
+        </div>
       </div>
 
       <p class="profile-status">{{ isOwnProfile ? 'This is your public profile surface.' : isFollowing ? 'You are following this user.' : 'Follow this creator to keep up with new works.' }}</p>
@@ -113,6 +152,15 @@ async function handleShare() {
       >
         {{ isFollowing ? 'Following' : 'Follow' }}
       </button>
+      <router-link
+        v-if="!isOwnProfile"
+        :to="`/messages?user=${user._id}`"
+        class="message-btn"
+        aria-label="Message this user"
+        title="Message"
+      >
+        <i class="fa-regular fa-envelope" aria-hidden="true"></i>
+      </router-link>
       <div class="share-wrap">
         <button type="button" class="share-btn" aria-label="Share profile" title="Share profile" @click="handleShare">
           <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>
@@ -219,6 +267,32 @@ async function handleShare() {
   font-size: 0.84rem;
 }
 
+.profile-socials {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.social-icon-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dbe4ef;
+  background: #fff;
+  color: #475569;
+  text-decoration: none;
+  font-size: 0.82rem;
+}
+
+.social-icon-btn:hover,
+.social-icon-btn:focus-visible {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
 .profile-error {
   margin: 0;
   color: #dc2626;
@@ -283,6 +357,26 @@ async function handleShare() {
   color: #6b7280;
   font-size: 1rem;
   cursor: pointer;
+}
+
+.message-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid #dbe4ef;
+  background: #fff;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.message-btn:hover,
+.message-btn:focus-visible {
+  background: #eff6ff;
+  color: #2563eb;
 }
 
 .share-btn:hover {
