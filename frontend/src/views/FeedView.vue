@@ -27,6 +27,29 @@ const keyword = computed(() => {
 
 const activeType = computed(() => (typeof route.query.type === 'string' ? route.query.type : 'illust'))
 
+const searchTypeTabs = [
+  { key: 'illust', label: 'Illustrations' },
+  { key: 'manga', label: 'Manga' },
+  { key: 'novel', label: 'Novels' },
+]
+
+const baseSearchQuery = computed(() => {
+  const query = {}
+  const q = typeof route.query.q === 'string' ? route.query.q.trim() : ''
+  const qall = typeof route.query.qall === 'string' ? route.query.qall : ''
+  const qany = typeof route.query.qany === 'string' ? route.query.qany : ''
+  const qnot = typeof route.query.qnot === 'string' ? route.query.qnot : ''
+  const target = typeof route.query.target === 'string' ? route.query.target : ''
+
+  if (q) query.q = q
+  if (qall) query.qall = qall
+  if (qany) query.qany = qany
+  if (qnot) query.qnot = qnot
+  if (target && target !== 'all') query.target = target
+
+  return query
+})
+
 const currentSearchOptions = computed(() => ({
   includeAll: typeof route.query.qall === 'string' ? route.query.qall : '',
   includeAny: typeof route.query.qany === 'string' ? route.query.qany : '',
@@ -75,6 +98,16 @@ function normalizeKeywords(raw) {
     .split(/[\s,]+/)
     .map((item) => item.trim())
     .filter(Boolean)
+}
+
+function buildTypeRoute(type) {
+  return {
+    path: '/feed',
+    query: {
+      ...baseSearchQuery.value,
+      type,
+    },
+  }
 }
 
 function buildTargetText(item, target) {
@@ -193,17 +226,23 @@ watch(
       <button type="button" class="show-tag-btn" @click="showTags = !showTags">{{ showTags ? 'Hide tag' : 'Show tag' }}</button>
     </header>
 
+    <nav class="result-tabs" aria-label="Result tabs">
+      <router-link
+        v-for="tab in searchTypeTabs"
+        :key="tab.key"
+        class="tab-item"
+        :class="{ active: activeType === tab.key }"
+        :to="buildTypeRoute(tab.key)"
+      >
+        {{ tab.label }}
+      </router-link>
+      <span class="tab-item is-muted">Users</span>
+      <button type="button" class="search-option-note" @click="openSearchOptions">Search option</button>
+    </nav>
+
     <div class="tag-strip" v-if="showTags && relatedTags.length">
       <span v-for="tag in relatedTags" :key="tag.label" class="tag-chip">#{{ tag.label }}</span>
     </div>
-
-    <nav class="result-tabs" aria-label="Result tabs">
-      <span class="tab-item" :class="{ active: activeType === 'illust' }">Illustrations</span>
-      <span class="tab-item" :class="{ active: activeType === 'manga' }">Manga</span>
-      <span class="tab-item" :class="{ active: activeType === 'novel' }">Novels</span>
-      <span class="tab-item">User</span>
-      <button type="button" class="search-option-note" @click="openSearchOptions">Search option</button>
-    </nav>
 
     <div class="toolbar">
       <label class="toolbar-select">
@@ -262,6 +301,7 @@ watch(
 .search-header h1 {
   margin: 0;
   font-size: 2.1rem;
+  text-transform: capitalize;
 }
 
 .show-tag-btn {
@@ -277,6 +317,7 @@ watch(
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin-top: -0.05rem;
 }
 
 .tag-chip {
@@ -307,20 +348,26 @@ watch(
 .result-tabs {
   display: flex;
   align-items: flex-end;
-  gap: 1.5rem;
+  gap: 1.15rem;
   border-bottom: 1px solid #e2e8f0;
   padding-bottom: 0.2rem;
 }
 
 .tab-item {
+  text-decoration: none;
   color: #64748b;
   font-weight: 700;
   padding-bottom: 0.65rem;
+  border-bottom: 3px solid transparent;
 }
 
 .tab-item.active {
   color: #0f172a;
   border-bottom: 3px solid #1695f0;
+}
+
+.tab-item.is-muted {
+  color: #94a3b8;
 }
 
 .search-option-note {

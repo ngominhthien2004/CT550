@@ -6,18 +6,15 @@ const route = useRoute()
 
 const tabItems = [
   { key: 'home', label: 'Home', to: { path: '/' } },
-  { key: 'illust', label: 'Illustrations', to: { path: '/feed', query: { type: 'illust' } } },
-  { key: 'manga', label: 'Manga', to: { path: '/feed', query: { type: 'manga' } } },
-  { key: 'novel', label: 'Novels', to: { path: '/feed', query: { type: 'novel' } } },
+  { key: 'illust', label: 'Illustrations', to: { path: '/illustrations' } },
+  { key: 'manga', label: 'Manga', to: { path: '/manga' } },
+  { key: 'novel', label: 'Novels', to: { path: '/novels' } },
 ]
 
 const activeTab = computed(() => {
-  if (route.path === '/feed') {
-    const type = typeof route.query.type === 'string' ? route.query.type : ''
-    if (type === 'illust') return 'illust'
-    if (type === 'manga') return 'manga'
-    if (type === 'novel') return 'novel'
-  }
+  if (route.path === '/illustrations') return 'illust'
+  if (route.path === '/manga') return 'manga'
+  if (route.path === '/novels') return 'novel'
 
   return 'home'
 })

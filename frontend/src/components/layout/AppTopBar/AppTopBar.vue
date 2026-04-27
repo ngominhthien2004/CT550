@@ -327,40 +327,42 @@ async function applySearchOptions(payload) {
       </button>
       <router-link to="/" class="top-site-name">{{ props.siteName }}</router-link>
 
-      <AppSearchBar class="top-search" :placeholder="props.searchPlaceholder" variant="compact" />
+      <div class="top-nav-left-right">
+        <AppSearchBar class="top-search" :placeholder="props.searchPlaceholder" variant="compact" />
 
-      <div class="inline-menu" @keydown.esc="isSearchScopeOpen = false">
-        <button
-          type="button"
-          class="icon-round"
-          aria-label="Media"
-          title="Media"
-          :aria-expanded="isSearchScopeOpen"
-          @click="toggleSearchScopeMenu"
-        >
-          <i class="fa-regular fa-image" aria-hidden="true"></i>
-        </button>
-        <div v-if="isSearchScopeOpen" class="inline-menu-panel" role="menu" aria-label="Search scope menu">
+        <div class="inline-menu" @keydown.esc="isSearchScopeOpen = false">
           <button
-            v-for="scope in searchScopes"
-            :key="scope.key"
             type="button"
-            class="inline-menu-item"
-            :class="{ 'is-active': selectedSearchScope === scope.key }"
-            role="menuitem"
-            @click="chooseSearchScope(scope.key)"
+            class="icon-round"
+            aria-label="Media"
+            title="Media"
+            :aria-expanded="isSearchScopeOpen"
+            @click="toggleSearchScopeMenu"
           >
-            <i v-if="selectedSearchScope === scope.key" class="fa-solid fa-check" aria-hidden="true"></i>
-            <span v-else class="inline-menu-spacer" aria-hidden="true"></span>
-            {{ scope.label }}
+            <i class="fa-regular fa-image" aria-hidden="true"></i>
           </button>
+          <div v-if="isSearchScopeOpen" class="inline-menu-panel" role="menu" aria-label="Search scope menu">
+            <button
+              v-for="scope in searchScopes"
+              :key="scope.key"
+              type="button"
+              class="inline-menu-item"
+              :class="{ 'is-active': selectedSearchScope === scope.key }"
+              role="menuitem"
+              @click="chooseSearchScope(scope.key)"
+            >
+              <i v-if="selectedSearchScope === scope.key" class="fa-solid fa-check" aria-hidden="true"></i>
+              <span v-else class="inline-menu-spacer" aria-hidden="true"></span>
+              {{ scope.label }}
+            </button>
+          </div>
         </div>
-      </div>
 
-      <button type="button" class="icon-round" aria-label="More" title="More" @click="openSearchOptions">
-        <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
-      </button>
-      <router-link to="/signup" class="premium-pill">Premium Free Trial</router-link>
+        <button type="button" class="icon-round" aria-label="More" title="More" @click="openSearchOptions">
+          <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+        </button>
+        <router-link to="/signup" class="premium-pill">Premium Free Trial</router-link>
+      </div>
     </div>
 
     <div class="top-nav-actions">
@@ -427,7 +429,7 @@ async function applySearchOptions(payload) {
   padding: 0.55rem 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 0.75rem;
   height: 72px;
 }
@@ -437,6 +439,16 @@ async function applySearchOptions(payload) {
   align-items: center;
   gap: 0.55rem;
   min-width: 0;
+  flex: 1 1 auto;
+}
+
+.top-nav-left-right {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-left: auto;
+  min-width: 0;
+  max-width: min(980px, 100%);
 }
 
 .top-site-name {
@@ -469,8 +481,8 @@ async function applySearchOptions(payload) {
 }
 
 .top-search {
-  flex: 1 1 340px;
-  min-width: 220px;
+  flex: 0 1 620px;
+  min-width: 300px;
 }
 
 .icon-round {
@@ -560,6 +572,11 @@ async function applySearchOptions(payload) {
 @media (max-width: 920px) {
   .top-nav-left {
     flex-wrap: wrap;
+  }
+
+  .top-nav-left-right {
+    width: 100%;
+    margin-left: 0;
   }
 
   .top-search {

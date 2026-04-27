@@ -33,11 +33,21 @@ defineEmits(['toggle', 'mark-read'])
   <details class="quick-panel" :open="open" @toggle="$emit('toggle', $event)">
     <summary class="icon-round panel-trigger" aria-label="Messages" title="Messages">
       <i class="fa-regular fa-envelope" aria-hidden="true"></i>
-      <span v-if="unreadCount" class="alert-dot" aria-label="Unread messages">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
+      <span
+        v-if="unreadCount"
+        class="alert-dot"
+        :class="{ 'is-dot-only': !open }"
+        :aria-label="open ? 'Unread messages' : 'Unread messages available'"
+      >
+        <template v-if="open">{{ unreadCount > 9 ? '9+' : unreadCount }}</template>
+      </span>
     </summary>
     <div class="quick-panel-box" role="menu" aria-label="Message preview panel">
       <div class="quick-panel-head">
-        <p class="quick-panel-title">Messages</p>
+        <p class="quick-panel-title">
+          Messages
+          <span v-if="unreadCount" class="quick-panel-count">({{ unreadCount > 9 ? '9+' : unreadCount }})</span>
+        </p>
         <router-link to="/messages" class="quick-view-all" role="menuitem">View all</router-link>
       </div>
 
@@ -119,6 +129,13 @@ defineEmits(['toggle', 'mark-read'])
   border: 2px solid #fff;
 }
 
+.alert-dot.is-dot-only {
+  min-width: 10px;
+  width: 10px;
+  height: 10px;
+  padding: 0;
+}
+
 .quick-panel-box {
   position: absolute;
   right: 0;
@@ -148,6 +165,13 @@ defineEmits(['toggle', 'mark-read'])
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: #334155;
+}
+
+.quick-panel-count {
+  letter-spacing: 0;
+  text-transform: none;
+  color: #0f172a;
+  margin-left: 0.2rem;
 }
 
 .quick-view-all {

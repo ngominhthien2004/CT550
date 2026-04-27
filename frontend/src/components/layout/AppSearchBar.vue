@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getArtworks } from '../../services/api'
+import AppSearchHistoryPanel from './AppSearchHistoryPanel.vue'
 
 const props = defineProps({
   placeholder: {
@@ -21,9 +22,15 @@ const props = defineProps({
 
 const router = useRouter()
 const route = useRoute()
+const SEARCH_HISTORY_KEY = 'illuwrl.searchHistory'
+const SEARCH_HISTORY_LIMIT = 8
 const searchValue = ref(typeof route.query.q === 'string' ? route.query.q : '')
 const featuredArtworks = ref([])
 const activeIndex = ref(0)
+const searchHistory = ref([])
+const isHistoryOpen = ref(false)
+const searchShellRef = ref(null)
+const defaultSuggestions = ['landscape', 'character design', 'fanart', 'manga panel', 'novel cover']
 let rotationTimer = null
 
 const activeArtwork = computed(() => featuredArtworks.value[activeIndex.value] || null)
@@ -49,10 +56,80 @@ function normalizeImagePath(imagePath) {
 
 async function submitSearch() {
   const normalizedQuery = searchValue.value.trim()
+  if (normalizedQuery) {
+    rememberSearchQuery(normalizedQuery)
+  }
+
+  isHistoryOpen.value = false
   await router.push({
     path: '/feed',
     query: normalizedQuery ? { q: normalizedQuery } : {},
   })
+}
+
+function loadSearchHistory() {
+  try {
+    const raw = localStorage.getItem(SEARCH_HISTORY_KEY)
+    const parsed = JSON.parse(raw || '[]')
+    searchHistory.value = Array.isArray(parsed) ? parsed.filter((item) => typeof item === 'string' && item.trim()) : []
+  } catch (_error) {
+    searchHistory.value = []
+  }
+}
+
+function saveSearchHistory() {
+  localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(searchHistory.value.slice(0, SEARCH_HISTORY_LIMIT)))
+}
+
+function rememberSearchQuery(query) {
+  const normalized = query.trim()
+  if (!normalized) {
+    return
+  }
+
+  const deduped = [normalized, ...searchHistory.value.filter((item) => item !== normalized)]
+  searchHistory.value = deduped.slice(0, SEARCH_HISTORY_LIMIT)
+  saveSearchHistory()
+}
+
+const filteredSuggestions = computed(() => {
+  const keyword = searchValue.value.trim().toLowerCase()
+  if (!keyword) {
+    return defaultSuggestions
+  }
+
+  return defaultSuggestions.filter((item) => item.toLowerCase().includes(keyword)).slice(0, 5)
+})
+
+function deleteHistoryItem(item) {
+  searchHistory.value = searchHistory.value.filter((entry) => entry !== item)
+  saveSearchHistory()
+}
+
+function clearSearchHistory() {
+  searchHistory.value = []
+  saveSearchHistory()
+}
+
+async function chooseHistoryItem(item) {
+  searchValue.value = item
+  await submitSearch()
+}
+
+function openHistoryPanel() {
+  if (!props.backgroundOnly) {
+    isHistoryOpen.value = true
+  }
+}
+
+function closeHistoryPanelOnOutsideClick(event) {
+  if (!searchShellRef.value) {
+    return
+  }
+
+  if (!searchShellRef.value.contains(event.target)) {
+    isHistoryOpen.value = false
+  }
 }
 
 async function loadLatestArtworkCovers() {
@@ -102,6 +179,12 @@ watch(featuredArtworks, () => {
 })
 
 onMounted(async () => {
+  loadSearchHistory()
+
+  if (!props.backgroundOnly) {
+    document.addEventListener('mousedown', closeHistoryPanelOnOutsideClick)
+  }
+
   if (props.variant === 'showcase' || props.backgroundOnly) {
     await loadLatestArtworkCovers()
     startRotation()
@@ -109,21 +192,40 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  if (!props.backgroundOnly) {
+    document.removeEventListener('mousedown', closeHistoryPanelOnOutsideClick)
+  }
   stopRotation()
 })
 </script>
 
 <template>
-  <div class="search-shell" :class="[`search-shell--${props.variant}`, { 'search-shell--background-only': props.backgroundOnly }]">
+  <div ref="searchShellRef" class="search-shell" :class="[`search-shell--${props.variant}`, { 'search-shell--background-only': props.backgroundOnly }]">
     <div v-if="props.variant === 'showcase' || props.backgroundOnly" class="showcase-bg" :style="showcaseBackground"></div>
     <div class="search-overlay"></div>
 
     <form v-if="!props.backgroundOnly" class="search-content" @submit.prevent="submitSearch">
       <label class="search-field" aria-label="Search artworks">
         <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-        <input v-model="searchValue" type="search" :placeholder="props.placeholder" aria-label="Search artworks" />
+        <input
+          v-model="searchValue"
+          type="search"
+          :placeholder="props.placeholder"
+          aria-label="Search artworks"
+          @focus="openHistoryPanel"
+          @click="openHistoryPanel"
+        />
       </label>
       <button type="submit" class="search-submit">Search</button>
+
+      <AppSearchHistoryPanel
+        v-if="isHistoryOpen"
+        :search-history="searchHistory"
+        :filtered-suggestions="filteredSuggestions"
+        @choose-item="chooseHistoryItem"
+        @delete-item="deleteHistoryItem"
+        @clear-history="clearSearchHistory"
+      />
     </form>
 
     <p v-if="!props.backgroundOnly && props.variant === 'showcase' && activeArtwork" class="showcase-caption mb-0">
@@ -137,7 +239,7 @@ onBeforeUnmount(() => {
 .search-shell {
   position: relative;
   border-radius: 22px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .search-shell--compact {
@@ -165,6 +267,7 @@ onBeforeUnmount(() => {
 .showcase-bg {
   position: absolute;
   inset: 0;
+  border-radius: inherit;
   background-size: cover;
   background-position: center;
   transition: background-image 0.55s ease;
@@ -173,6 +276,7 @@ onBeforeUnmount(() => {
 .search-overlay {
   position: absolute;
   inset: 0;
+  border-radius: inherit;
   background: linear-gradient(120deg, rgba(15, 23, 42, 0.22), rgba(30, 41, 59, 0));
 }
 
@@ -188,6 +292,7 @@ onBeforeUnmount(() => {
   gap: 0.55rem;
   padding: 0.55rem;
 }
+
 
 .search-shell--showcase .search-content {
   padding: 0.9rem;

@@ -144,22 +144,36 @@ watch(
 
 <template>
   <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
-    <HomeTagStrip :tags="liveTags" />
-    <HomeTabs />
-    <HomeHeroBanner :slide="heroSlide" />
-    <p v-if="isLoading" class="type-loading">Loading {{ pageTitle.toLowerCase() }}...</p>
-    <HomeRecommendedUsers
-      :users="recommendedUsers"
-      :is-authenticated="authStore.isAuthenticated"
-      :is-following-user="followStore.isFollowingUser"
-      :is-toggling-follow="followStore.isTogglingFollow"
-      @toggle-follow="toggleFollowFromHome"
-    />
-    <HomeArtworkGrid :works="featuredWorks" />
+    <section class="typed-home-page">
+      <div class="typed-home-main-column">
+        <HomeTabs />
+        <HomeTagStrip :tags="liveTags" />
+        <HomeHeroBanner :slide="heroSlide" />
+        <p v-if="isLoading" class="type-loading">Loading {{ pageTitle.toLowerCase() }}...</p>
+        <HomeRecommendedUsers
+          :users="recommendedUsers"
+          :is-authenticated="authStore.isAuthenticated"
+          :is-following-user="followStore.isFollowingUser"
+          :is-toggling-follow="followStore.isTogglingFollow"
+          @toggle-follow="toggleFollowFromHome"
+        />
+        <HomeArtworkGrid :works="featuredWorks" />
+      </div>
+    </section>
   </MainLayoutTemplate>
 </template>
 
 <style scoped>
+.typed-home-page {
+  display: block;
+}
+
+.typed-home-main-column {
+  display: grid;
+  gap: 0.8rem;
+  min-width: 0;
+}
+
 .type-loading {
   margin: 0;
   color: #54607b;
