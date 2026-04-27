@@ -62,7 +62,7 @@ async function submitSearch() {
 
   isHistoryOpen.value = false
   await router.push({
-    path: '/feed',
+    path: '/search',
     query: normalizedQuery ? { q: normalizedQuery } : {},
   })
 }

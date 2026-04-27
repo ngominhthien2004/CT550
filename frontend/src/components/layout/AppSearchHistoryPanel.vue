@@ -1,4 +1,6 @@
 <script setup>
+import { onMounted, ref, watch } from 'vue'
+
 const props = defineProps({
   searchHistory: {
     type: Array,
@@ -12,7 +14,11 @@ const props = defineProps({
 
 const emit = defineEmits(['choose-item', 'delete-item', 'clear-history'])
 
-const favoriteTags = [
+const FAVORITE_TAG_KEY = 'illuwrl.favoriteTags'
+const favoriteTagList = ref([])
+const isFavoriteEditOpen = ref(false)
+
+const defaultFavoriteTags = [
   { label: 'gay', sub: '#ケイ' },
   { label: 'yukata', sub: '#浴衣' },
   { label: 'sci-fi', sub: '#future' },
@@ -26,6 +32,41 @@ const popularIllustTags = [
 ]
 
 const popularNovelTags = ['#isekai romance', '#dark fantasy', '#coming of age', '#slow burn', '#slice of life']
+
+function openFavoriteEdit() {
+  isFavoriteEditOpen.value = true
+}
+
+function closeFavoriteEdit() {
+  isFavoriteEditOpen.value = false
+}
+
+function removeFavoriteTag(label) {
+  favoriteTagList.value = favoriteTagList.value.filter((tag) => tag.label !== label)
+}
+
+onMounted(() => {
+  try {
+    const raw = localStorage.getItem(FAVORITE_TAG_KEY)
+    const parsed = JSON.parse(raw || '[]')
+    if (Array.isArray(parsed) && parsed.length) {
+      favoriteTagList.value = parsed.filter((tag) => tag?.label)
+      return
+    }
+  } catch (_error) {
+    // Fall back to defaults when local storage has invalid data.
+  }
+
+  favoriteTagList.value = [...defaultFavoriteTags]
+})
+
+watch(
+  favoriteTagList,
+  (value) => {
+    localStorage.setItem(FAVORITE_TAG_KEY, JSON.stringify(value))
+  },
+  { deep: true },
+)
 </script>
 
 <template>
@@ -78,11 +119,11 @@ const popularNovelTags = ['#isekai romance', '#dark fantasy', '#coming of age', 
     <section class="panel-block">
       <div class="panel-block-head">
         <strong>Your favorite tags</strong>
-        <button type="button">Edit</button>
+        <button type="button" @click="openFavoriteEdit">Edit</button>
       </div>
       <div class="favorite-tags">
         <button
-          v-for="tag in favoriteTags"
+          v-for="tag in favoriteTagList"
           :key="tag.label"
           type="button"
           class="favorite-tag"
@@ -128,6 +169,30 @@ const popularNovelTags = ['#isekai romance', '#dark fantasy', '#coming of age', 
         </button>
       </div>
     </section>
+
+    <Teleport to="body">
+      <div v-if="isFavoriteEditOpen" class="favorite-modal-overlay" role="dialog" aria-modal="true" aria-label="Edit favorite tags">
+        <div class="favorite-modal-card">
+          <button type="button" class="favorite-modal-close" aria-label="Close" @click="closeFavoriteEdit">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
+          <h3>Your favorite tags</h3>
+          <p class="favorite-count">{{ favoriteTagList.length }}/10</p>
+
+          <div class="favorite-modal-list">
+            <article v-for="tag in favoriteTagList" :key="`modal-${tag.label}`" class="favorite-modal-item">
+              <div>
+                <strong>{{ tag.label }}</strong>
+                <p>{{ tag.sub }}</p>
+              </div>
+              <button type="button" aria-label="Remove tag" @click="removeFavoriteTag(tag.label)">
+                <i class="fa-solid fa-trash" aria-hidden="true"></i>
+              </button>
+            </article>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -355,6 +420,89 @@ const popularNovelTags = ['#isekai romance', '#dark fantasy', '#coming of age', 
   border-radius: 999px;
   padding: 0.3rem 0.62rem;
   font-size: 0.78rem;
+}
+
+.favorite-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  background: rgba(15, 23, 42, 0.42);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.favorite-modal-card {
+  width: min(520px, 92vw);
+  min-height: 320px;
+  max-height: 78vh;
+  border-radius: 22px;
+  border: 1px solid #d8e1ef;
+  background: #fff;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.2);
+  padding: 0.85rem 1.15rem 1rem;
+  position: relative;
+  overflow: auto;
+}
+
+.favorite-modal-card h3 {
+  margin: 0;
+  text-align: center;
+  font-size: 1.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #0f172a;
+}
+
+.favorite-count {
+  text-align: right;
+  margin: 0.52rem 0 0.3rem;
+  color: #64748b;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.favorite-modal-close {
+  position: absolute;
+  top: 0.62rem;
+  right: 0.68rem;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.favorite-modal-list {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.favorite-modal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+}
+
+.favorite-modal-item strong {
+  color: #1f2937;
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.favorite-modal-item p {
+  margin: 0.1rem 0 0;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.favorite-modal-item button {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 1.2rem;
+  padding: 0.1rem 0.24rem;
 }
 
 @media (max-width: 920px) {

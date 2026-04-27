@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '../views/HomePage.vue'
 import TypedHomeFeedView from '../views/TypedHomeFeedView.vue'
 import FeedView from '../views/FeedView.vue'
+import SearchResultsView from '../views/SearchResultsView.vue'
 import BookmarksView from '../views/BookmarksView.vue'
 import FavoritesView from '../views/FavoritesView.vue'
 import RankingsView from '../views/RankingsView.vue'
@@ -52,6 +53,7 @@ const routes = [
     },
   },
   { path: '/feed', name: 'feed', component: FeedView },
+  { path: '/search', name: 'search-results', component: SearchResultsView },
   { path: '/discovery', name: 'discovery', component: DiscoveryView },
   { path: '/newest_by_all', name: 'newest-all', component: NewestByAllView },
   { path: '/newest_by_followed', name: 'following-newest', component: FollowingNewestView, meta: { requiresAuth: true } },
