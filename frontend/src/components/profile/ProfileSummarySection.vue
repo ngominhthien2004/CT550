@@ -106,8 +106,8 @@ async function handleShare() {
       <p class="profile-handle">@{{ user.username || 'member' }}</p>
 
       <div class="profile-stats">
-        <span><strong>{{ followersCount }}</strong> Followers</span>
-        <span><strong>{{ followingCount }}</strong> Following</span>
+        <router-link :to="`/users/${user._id}/followers`" class="stat-link"><strong>{{ followersCount }}</strong> Followers</router-link>
+        <router-link :to="`/users/${user._id}/following`" class="stat-link"><strong>{{ followingCount }}</strong> Following</router-link>
         <span><strong>{{ artworkCount }}</strong> Works</span>
       </div>
 
@@ -239,6 +239,16 @@ async function handleShare() {
 
 .profile-stats strong {
   font-size: 1rem;
+}
+
+.stat-link {
+  text-decoration: none;
+  color: #334155;
+}
+
+.stat-link:hover,
+.stat-link:focus-visible {
+  color: #1695f0;
 }
 
 .profile-bio {

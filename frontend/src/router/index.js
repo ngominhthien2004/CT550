@@ -21,6 +21,7 @@ import UploadArtworkView from '../views/UploadArtworkView.vue'
 import FollowingNewestView from '../views/FollowingNewestView.vue'
 import DiscoveryView from '../views/DiscoveryView.vue'
 import NewestByAllView from '../views/NewestByAllView.vue'
+import FollowUsersView from '../views/FollowUsersView.vue'
 import { useAuthStore } from '../stores/auth.store'
 
 const routes = [
@@ -78,6 +79,8 @@ const routes = [
     meta: { requiresAuth: true },
   },
   { path: '/account', name: 'account', component: AccountView },
+  { path: '/users/:id/following', name: 'users-following', component: FollowUsersView },
+  { path: '/users/:id/followers', name: 'followers', component: FollowUsersView },
   { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
   { path: '/admin', name: 'admin-management', component: AdminManagementView, meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/artworks/:id', name: 'artwork-detail', component: ArtworkDetailView },
