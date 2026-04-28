@@ -3,13 +3,16 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchOptionsModal from '../components/search/SearchOptionsModal.vue'
 import { getArtworks } from '../services/api'
+import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
+import { navItems } from '../constants/navigation'
 
 const route = useRoute()
 const router = useRouter()
+const isNavCollapsed = ref(true)
 const loading = ref(false)
 const error = ref('')
 const searchItems = ref([])
-const sortMode = ref('newest')
+const sortMode = ref(typeof route.query.order === 'string' ? route.query.order : 'newest')
 const showTags = ref(true)
 const isSearchOptionsOpen = ref(false)
 const searchOptionsDraft = ref({
@@ -26,6 +29,7 @@ const keyword = computed(() => {
 })
 
 const activeType = computed(() => (typeof route.query.type === 'string' ? route.query.type : 'illust'))
+const ageFilter = computed(() => (typeof route.query.age === 'string' ? route.query.age : 'all'))
 
 const searchTypeTabs = [
   { key: 'illust', label: 'Illustrations' },
@@ -48,12 +52,16 @@ const baseSearchQuery = computed(() => {
   const qany = typeof route.query.qany === 'string' ? route.query.qany : ''
   const qnot = typeof route.query.qnot === 'string' ? route.query.qnot : ''
   const target = typeof route.query.target === 'string' ? route.query.target : ''
+  const order = typeof route.query.order === 'string' ? route.query.order : ''
+  const age = typeof route.query.age === 'string' ? route.query.age : ''
 
   if (q) query.q = q
   if (qall) query.qall = qall
   if (qany) query.qany = qany
   if (qnot) query.qnot = qnot
   if (target && target !== 'all') query.target = target
+  if (order && order !== 'newest') query.order = order
+  if (age && age !== 'all') query.age = age
 
   return query
 })
@@ -82,17 +90,62 @@ const relatedTags = computed(() => {
     .slice(0, 12)
 })
 
-const visibleItems = computed(() => {
-  const source = [...searchItems.value]
+const fallbackTags = computed(() => {
+  const q = keyword.value.trim().toLowerCase()
+  const base = ['new', 'original character', 'manga', 'illustration', 'fanart', 'anime']
+  const merged = q ? [q, ...base] : base
+  return [...new Set(merged)].slice(0, 10)
+})
 
-  if (sortMode.value === 'popular') {
-    source.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
-  } else {
-    source.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+const displayTags = computed(() => {
+  if (relatedTags.value.length) {
+    return relatedTags.value.map((tag) => tag.label)
+  }
+  return fallbackTags.value
+})
+
+const typeCounts = computed(() => {
+  const counts = {
+    illust: 0,
+    manga: 0,
+    novel: 0,
   }
 
-  return source
+  for (const item of searchItems.value) {
+    const type = String(item.type || '').toLowerCase()
+    if (Object.hasOwn(counts, type)) {
+      counts[type] += 1
+    }
+  }
+
+  return counts
 })
+
+const visibleItems = computed(() => {
+  const source = searchItems.value.filter((item) => {
+    if (activeType.value && item.type !== activeType.value) {
+      return false
+    }
+
+    const isR18 = item.ageRating === 'r-18' || item.ageRating === 'r-18g' || item.isR18 === true
+    if (ageFilter.value === 'safe' && isR18) {
+      return false
+    }
+    if (ageFilter.value === 'r18' && !isR18) {
+      return false
+    }
+
+    return true
+  })
+
+  if (sortMode.value === 'popular') {
+    return source.toSorted((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
+  } else {
+    return source.toSorted((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+  }
+})
+
+const resultTotal = computed(() => visibleItems.value.length)
 
 const placeholderCount = computed(() => {
   if (loading.value || error.value || !visibleItems.value.length) {
@@ -101,6 +154,10 @@ const placeholderCount = computed(() => {
 
   return Math.min(18, Math.max(0, 30 - visibleItems.value.length))
 })
+
+function toggleLeftNav() {
+  isNavCollapsed.value = !isNavCollapsed.value
+}
 
 function normalizeKeywords(raw) {
   return String(raw || '')
@@ -140,6 +197,42 @@ function buildTypeRoute(type) {
       type,
     },
   }
+}
+
+async function setAgeFilter(value) {
+  const query = {
+    ...route.query,
+    age: value === 'all' ? undefined : value,
+  }
+
+  await router.replace({
+    path: '/search',
+    query,
+  })
+}
+
+async function handleSortChange() {
+  const query = {
+    ...route.query,
+    order: sortMode.value === 'newest' ? undefined : sortMode.value,
+  }
+
+  await router.replace({
+    path: '/search',
+    query,
+  })
+}
+
+async function applySearchTag(tagLabel) {
+  const query = {
+    ...route.query,
+    q: tagLabel,
+  }
+
+  await router.push({
+    path: '/search',
+    query,
+  })
 }
 
 function openSearchOptions() {
@@ -182,7 +275,6 @@ async function loadSearchItems() {
 
   try {
     const q = typeof route.query.q === 'string' ? route.query.q : ''
-    const type = typeof route.query.type === 'string' ? route.query.type : 'illust'
     const includeAllRaw = typeof route.query.qall === 'string' ? route.query.qall : ''
     const includeAnyRaw = typeof route.query.qany === 'string' ? route.query.qany : ''
     const excludeRaw = typeof route.query.qnot === 'string' ? route.query.qnot : ''
@@ -202,12 +294,11 @@ async function loadSearchItems() {
       : []
 
     searchItems.value = baseItems.filter((item) => {
-      const matchesType = type ? item.type === type : true
       const haystack = buildTargetText(item, target)
       const matchesAll = includeAllTokens.every((token) => haystack.includes(token))
       const matchesAny = includeAnyTokens.length ? includeAnyTokens.some((token) => haystack.includes(token)) : true
       const matchesExclude = excludeTokens.every((token) => !haystack.includes(token))
-      return matchesType && matchesAll && matchesAny && matchesExclude
+      return matchesAll && matchesAny && matchesExclude
     })
   } catch (fetchError) {
     error.value = fetchError?.response?.data?.message || 'Failed to fetch artworks'
@@ -222,6 +313,13 @@ onMounted(() => {
 })
 
 watch(
+  () => route.query.order,
+  (value) => {
+    sortMode.value = value === 'popular' ? 'popular' : 'newest'
+  },
+)
+
+watch(
   () => route.query,
   () => {
     loadSearchItems()
@@ -231,70 +329,84 @@ watch(
 </script>
 
 <template>
-  <section class="search-result-page page-block">
-    <header class="result-header">
-      <h1>{{ keyword }}</h1>
-      <button type="button" class="show-tag-btn" @click="showTags = !showTags">
-        {{ showTags ? 'Hide tag' : 'Show tag' }}
-      </button>
-    </header>
+  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+    <section class="search-result-page page-block">
+      <header class="result-header">
+        <h1>{{ keyword }}</h1>
+        <p class="result-count-head">{{ resultTotal.toLocaleString() }} results</p>
+        <button type="button" class="show-tag-btn" @click="showTags = !showTags">
+          {{ showTags ? 'Hide tag' : 'Show tag' }}
+        </button>
+      </header>
 
-    <div class="tag-strip" v-if="showTags && relatedTags.length">
-      <button v-for="tag in relatedTags" :key="tag.label" type="button" class="tag-chip">#{{ tag.label }}</button>
-    </div>
+      <div class="tag-strip" v-if="showTags && displayTags.length">
+        <button
+          v-for="tag in displayTags"
+          :key="tag"
+          type="button"
+          class="tag-chip"
+          @click="applySearchTag(tag)"
+        >
+          #{{ tag }}
+        </button>
+      </div>
 
-    <nav class="result-tabs" aria-label="Result tabs">
-      <router-link
-        v-for="tab in searchTypeTabs"
-        :key="tab.key"
-        class="tab-item"
-        :class="{ active: activeType === tab.key }"
-        :to="buildTypeRoute(tab.key)"
-      >
-        {{ tab.label }}
-      </router-link>
-      <span class="tab-item tab-muted">User</span>
-      <button type="button" class="search-option-note" @click="openSearchOptions">Search option</button>
-    </nav>
-
-    <div class="filter-row">
-      <label class="order-select">
-        <select v-model="sortMode">
-          <option value="newest">Newest</option>
-          <option value="popular">Sort by popularity</option>
-        </select>
-      </label>
-      <button type="button" class="filter-chip is-active">All-Ages</button>
-      <button type="button" class="filter-chip">R-18</button>
-      <span class="include-note">Include manga</span>
-    </div>
-
-    <p v-if="loading" class="state-note">Loading results...</p>
-    <p v-else-if="error" class="state-note error">{{ error }}</p>
-
-    <div v-else class="result-grid-wrap">
-      <article v-for="item in visibleItems" :key="item._id" class="result-card">
-        <router-link :to="`/artworks/${item._id}`" class="thumb-link">
-          <img v-if="item.image" :src="item.image" :alt="item.title" loading="lazy" />
-          <div v-else class="thumb-fallback"></div>
+      <nav class="result-tabs" aria-label="Result tabs">
+        <router-link
+          v-for="tab in searchTypeTabs"
+          :key="tab.key"
+          class="tab-item"
+          :class="{ active: activeType === tab.key }"
+          :to="buildTypeRoute(tab.key)"
+        >
+          {{ tab.label }} <span class="tab-count">{{ typeCounts[tab.key].toLocaleString() }}</span>
         </router-link>
-        <router-link :to="`/artworks/${item._id}`" class="title-link">{{ item.title }}</router-link>
-        <p class="author-name">{{ item.user?.displayName || item.user?.username || 'Unknown artist' }}</p>
-      </article>
+        <span class="tab-item tab-muted">User</span>
+        <button type="button" class="search-option-note" @click="openSearchOptions">Search option</button>
+      </nav>
 
-      <article v-for="idx in placeholderCount" :key="`placeholder-${idx}`" class="result-card placeholder-card">
-        <div class="thumb-placeholder"></div>
-        <div class="line-placeholder long"></div>
-        <div class="line-placeholder short"></div>
-      </article>
-    </div>
+      <div class="filter-row">
+        <label class="order-select">
+          <select v-model="sortMode" @change="handleSortChange">
+            <option value="newest">Newest</option>
+            <option value="popular">Sort by popularity</option>
+          </select>
+        </label>
+        <button type="button" class="filter-chip" :class="{ 'is-active': ageFilter === 'safe' }" @click="setAgeFilter('safe')">All-Ages</button>
+        <button type="button" class="filter-chip" :class="{ 'is-active': ageFilter === 'r18' }" @click="setAgeFilter('r18')">R-18</button>
+        <button type="button" class="filter-chip" :class="{ 'is-active': ageFilter === 'all' }" @click="setAgeFilter('all')">All</button>
+        <span class="include-note">Tag match mode: {{ currentSearchOptions.target === 'all' ? 'all fields' : currentSearchOptions.target }}</span>
+      </div>
 
-    <SearchOptionsModal
-      v-model="isSearchOptionsOpen"
-      :initial-values="searchOptionsDraft"
-      @apply="applySearchOptions"
-    />
-  </section>
+      <p v-if="loading" class="state-note">Loading results...</p>
+      <p v-else-if="error" class="state-note error">{{ error }}</p>
+
+      <p v-else-if="!visibleItems.length" class="state-note">No works found for this filter. Try another tag or switch tab.</p>
+
+      <div v-else class="result-grid-wrap">
+        <article v-for="item in visibleItems" :key="item._id" class="result-card">
+          <router-link :to="`/artworks/${item._id}`" class="thumb-link">
+            <img v-if="item.image" :src="item.image" :alt="item.title" loading="lazy" />
+            <div v-else class="thumb-fallback"></div>
+          </router-link>
+          <router-link :to="`/artworks/${item._id}`" class="title-link">{{ item.title }}</router-link>
+          <p class="author-name">{{ item.user?.displayName || item.user?.username || 'Unknown artist' }}</p>
+        </article>
+
+        <article v-for="idx in placeholderCount" :key="`placeholder-${idx}`" class="result-card placeholder-card">
+          <div class="thumb-placeholder"></div>
+          <div class="line-placeholder long"></div>
+          <div class="line-placeholder short"></div>
+        </article>
+      </div>
+
+      <SearchOptionsModal
+        v-model="isSearchOptionsOpen"
+        :initial-values="searchOptionsDraft"
+        @apply="applySearchOptions"
+      />
+    </section>
+  </MainLayoutTemplate>
 </template>
 
 <style scoped>
@@ -308,6 +420,7 @@ watch(
   display: flex;
   align-items: center;
   gap: 0.7rem;
+  flex-wrap: wrap;
 }
 
 .result-header h1 {
@@ -315,6 +428,13 @@ watch(
   text-transform: lowercase;
   font-size: 2rem;
   color: #111827;
+}
+
+.result-count-head {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .show-tag-btn {
@@ -363,6 +483,12 @@ watch(
   border-bottom: 3px solid transparent;
 }
 
+.tab-count {
+  color: #94a3b8;
+  font-size: 0.72rem;
+  margin-left: 0.2rem;
+}
+
 .tab-item.active {
   color: #0f172a;
   border-bottom-color: #1695f0;
@@ -406,8 +532,8 @@ watch(
 }
 
 .filter-chip.is-active {
-  color: #ea580c;
-  background: #fff7ed;
+  color: #2563eb;
+  background: #eff6ff;
 }
 
 .include-note {

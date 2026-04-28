@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useAuthStore } from '../../stores/auth.store'
 
 const props = defineProps({
   searchHistory: {
@@ -17,12 +18,12 @@ const emit = defineEmits(['choose-item', 'delete-item', 'clear-history'])
 const FAVORITE_TAG_KEY = 'illuwrl.favoriteTags'
 const favoriteTagList = ref([])
 const isFavoriteEditOpen = ref(false)
+const authStore = useAuthStore()
+const favoriteTagKey = computed(() => {
+  const userId = authStore.user?._id || 'guest'
+  return `${FAVORITE_TAG_KEY}.${userId}`
+})
 
-const defaultFavoriteTags = [
-  { label: 'gay', sub: '#ケイ' },
-  { label: 'yukata', sub: '#浴衣' },
-  { label: 'sci-fi', sub: '#future' },
-]
 
 const popularIllustTags = [
   { label: '#anime boy', image: 'https://picsum.photos/seed/ct550-illu1/150/88' },
@@ -45,9 +46,9 @@ function removeFavoriteTag(label) {
   favoriteTagList.value = favoriteTagList.value.filter((tag) => tag.label !== label)
 }
 
-onMounted(() => {
+function loadFavoriteTags() {
   try {
-    const raw = localStorage.getItem(FAVORITE_TAG_KEY)
+    const raw = localStorage.getItem(favoriteTagKey.value)
     const parsed = JSON.parse(raw || '[]')
     if (Array.isArray(parsed) && parsed.length) {
       favoriteTagList.value = parsed.filter((tag) => tag?.label)
@@ -57,13 +58,16 @@ onMounted(() => {
     // Fall back to defaults when local storage has invalid data.
   }
 
-  favoriteTagList.value = [...defaultFavoriteTags]
-})
+  favoriteTagList.value = []
+}
+
+onMounted(loadFavoriteTags)
+watch(favoriteTagKey, loadFavoriteTags)
 
 watch(
   favoriteTagList,
   (value) => {
-    localStorage.setItem(FAVORITE_TAG_KEY, JSON.stringify(value))
+    localStorage.setItem(favoriteTagKey.value, JSON.stringify(value))
   },
   { deep: true },
 )
@@ -132,6 +136,7 @@ watch(
           <span>{{ tag.label }}</span>
           <small>{{ tag.sub }}</small>
         </button>
+        <p v-if="!favoriteTagList.length" class="favorite-empty">No favorite tags yet.</p>
       </div>
     </section>
 
@@ -341,6 +346,12 @@ watch(
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.favorite-empty {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.78rem;
 }
 
 .favorite-tag {

@@ -17,7 +17,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
 
 - Nút menu (biểu tượng bars): mở/đóng sidebar trái.
 - Logo IlluWrl: về Home (`/`).
-- Ô tìm kiếm: nhập từ khóa rồi Enter, chuyển sang Feed (`/feed?q=...`).
+- Ô tìm kiếm: nhập từ khóa rồi Enter, chuyển sang Search Results (`/search?q=...`).
 - Nút Media: mở menu chọn phạm vi tìm kiếm (Illustrations and Manga, Novels, User).
 - Nút More (ellipsis): mở modal Search option; bấm Apply sẽ chuyển sang `/feed` kèm query nâng cao (`qall`, `qany`, `qnot`, `target`, `type`).
 - Nút Premium Free Trial: chuyển tới `/signup`.
@@ -77,6 +77,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
 
 - Mục tiêu: xem tất cả artwork thuộc tag.
 - Nút/tương tác:
+  - Add to favorite tag: thêm tag hiện tại vào danh sách favorite tags của người dùng (lưu localStorage, tối đa 10).
   - Các card trong lưới dùng HomeArtworkGrid: bấm ảnh/tiêu đề để vào `/artworks/:id`.
 - Kết quả hiển thị:
   - Hiện tổng số artwork theo tag.
