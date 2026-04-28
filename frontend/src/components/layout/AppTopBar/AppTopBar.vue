@@ -1,8 +1,9 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import SearchOptionsModal from '../../search/SearchOptionsModal.vue'
 import { useAuthStore } from '../../../stores/auth.store'
+import { useFollowStore } from '../../../stores/follow.store'
 import {
   getMyMessages,
   getMyNotifications,
@@ -30,6 +31,7 @@ const props = defineProps({
 const emit = defineEmits(['toggle-sidebar'])
 const router = useRouter()
 const authStore = useAuthStore()
+const followStore = useFollowStore()
 const selectedSearchScope = ref('artworks')
 const isSearchOptionsOpen = ref(false)
 const searchOptionsDraft = ref({
@@ -45,10 +47,6 @@ const searchScopes = [
   { key: 'novel', label: 'Novels' },
   { key: 'user', label: 'User' },
 ]
-const userStats = {
-  following: 300,
-  followers: 10,
-}
 
 const serviceLinks = computed(() => {
   const links = [
@@ -132,11 +130,16 @@ const userSettingLinks = [
 
 const siteLabel = computed(() => props.siteName || 'IlluWrl')
 const currentUser = computed(() => authStore.user)
+const userId = computed(() => currentUser.value?._id || '')
 const userInitial = computed(() => {
   const source = currentUser.value?.username || currentUser.value?.email || 'U'
   return source.charAt(0).toUpperCase()
 })
 const userDisplayName = computed(() => currentUser.value?.username || 'User')
+const userStats = computed(() => ({
+  following: followStore.followingCount,
+  followers: followStore.followersCount,
+}))
 
 const isMessageMenuOpen = ref(false)
 const isNotificationMenuOpen = ref(false)
@@ -158,9 +161,19 @@ async function handleLogout() {
   await router.push('/login')
 }
 
-async function goAccountFromAvatar() {
-  await router.push('/account')
-}
+watch(
+  () => userId.value,
+  async (id) => {
+    if (!authStore.isAuthenticated || !id) {
+      followStore.fetchFollowing('')
+      followStore.fetchFollowers('')
+      return
+    }
+
+    await Promise.all([followStore.fetchFollowing(id), followStore.fetchFollowers(id)])
+  },
+  { immediate: true },
+)
 
 function chooseSearchScope(scopeKey) {
   selectedSearchScope.value = scopeKey
@@ -365,6 +378,7 @@ async function applySearchOptions(payload) {
 
       <AppTopBarUserMenu
         v-if="authStore.isAuthenticated"
+        :user-id="userId"
         :user-initial="userInitial"
         :user-display-name="userDisplayName"
         :user-stats="userStats"
@@ -372,7 +386,6 @@ async function applySearchOptions(payload) {
         :user-library-links="userLibraryLinks"
         :user-business-links="userBusinessLinks"
         :user-setting-links="userSettingLinks"
-        @open-account="goAccountFromAvatar"
         @logout="handleLogout"
       />
 

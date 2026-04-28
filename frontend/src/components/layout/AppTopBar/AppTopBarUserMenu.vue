@@ -1,5 +1,9 @@
 <script setup>
 const props = defineProps({
+  userId: {
+    type: String,
+    required: true,
+  },
   userInitial: {
     type: String,
     required: true,
@@ -30,26 +34,40 @@ const props = defineProps({
   },
 })
 
-defineEmits(['open-account', 'logout'])
+defineEmits(['logout'])
 </script>
 
 <template>
   <details class="user-menu">
     <summary class="user-menu-trigger" aria-label="Open user menu" title="User menu">
-      <a href="/account" class="user-avatar-link" aria-label="Go to account" @click.prevent.stop="$emit('open-account')">
+      <router-link to="/account" class="user-avatar-link" aria-label="Go to account" @click.stop>
         <span class="user-avatar">{{ props.userInitial }}</span>
-      </a>
+      </router-link>
       <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
     </summary>
     <div class="user-menu-panel" role="menu" aria-label="User menu">
       <div class="user-hero">
-        <span class="user-avatar large">{{ props.userInitial }}</span>
+        <router-link to="/account" class="user-hero-link" aria-label="Go to account">
+          <span class="user-avatar large">{{ props.userInitial }}</span>
+        </router-link>
         <div class="user-hero-meta">
           <p class="mb-0 fw-bold">{{ props.userDisplayName }}</p>
           <p class="mb-0 small text-secondary">user_{{ props.userDisplayName.toLowerCase() }}</p>
           <div class="user-stats">
-            <span><strong>{{ props.userStats.following }}</strong> Following</span>
-            <span><strong>{{ props.userStats.followers }}</strong> Followers</span>
+            <router-link
+              :to="{ name: 'users-following', params: { id: props.userId } }"
+              class="user-stat-link"
+              aria-label="View following"
+            >
+              <strong>{{ props.userStats.following }}</strong> Following
+            </router-link>
+            <router-link
+              :to="{ name: 'followers', params: { id: props.userId } }"
+              class="user-stat-link"
+              aria-label="View followers"
+            >
+              <strong>{{ props.userStats.followers }}</strong> Followers
+            </router-link>
           </div>
         </div>
       </div>
@@ -138,6 +156,11 @@ defineEmits(['open-account', 'logout'])
   display: inline-flex;
 }
 
+.user-hero-link {
+  text-decoration: none;
+  display: inline-flex;
+}
+
 .user-menu-trigger::-webkit-details-marker {
   display: none;
 }
@@ -196,6 +219,19 @@ defineEmits(['open-account', 'logout'])
   gap: 1rem;
   font-size: 0.76rem;
   color: #6b7280;
+}
+
+.user-stat-link {
+  color: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.user-stat-link:hover,
+.user-stat-link:focus-visible {
+  text-decoration: underline;
 }
 
 .menu-group {
