@@ -19,6 +19,10 @@ Phạm vi: hệ thống MEVN hiện tại trong repository CT550.
 - Middleware `protect` đảm bảo endpoint yêu cầu đăng nhập.
 - Utility `createNotification` tạo thông báo khi có hành động tương tác.
 
+Ghi chú frontend-only:
+
+- Lịch sử tìm kiếm và favorite tags được lưu trong localStorage theo user (key có hậu tố userId hoặc guest), không đi qua API.
+
 ## 3. Auth và session
 
 ### 3.1 Đăng ký
@@ -89,8 +93,19 @@ Phạm vi: hệ thống MEVN hiện tại trong repository CT550.
 - APIs:
   - `GET /api/users/:id/followers`
   - `GET /api/users/:id/following`
+- Frontend routes:
+  - `/users/:id/followers`
+  - `/users/:id/following`
 - Controller: `getFollowers`, `getFollowing`
 - Workflow: query collection `Follow` + populate thông tin user.
+
+### 4.5 Follow stats trên top bar
+
+- Frontend hiển thị Following/Followers trong user menu.
+- Dữ liệu lấy từ `GET /api/users/:id/following` và `GET /api/users/:id/followers` thông qua follow store.
+- Link điều hướng:
+  - Following -> `/users/:id/following`
+  - Followers -> `/users/:id/followers`
 
 ## 5. Đăng và quản lý artwork
 
@@ -145,6 +160,12 @@ Phạm vi: hệ thống MEVN hiện tại trong repository CT550.
 2. Kiểm tra quyền: owner hoặc admin.
 3. Xóa file upload trong disk.
 4. Xóa document artwork.
+
+## 5.5 Favorite tag (frontend-only)
+
+- Trang tag (`/tags/:tagName`) có nút Add/Remove favorite tag.
+- Nếu chưa đăng nhập, bấm Add/Remove sẽ chuyển về `/login?redirect=<current-page>`.
+- Khi đã đăng nhập, tag được thêm/gỡ trong localStorage theo user, giới hạn 10 tag.
 
 ## 6. Tương tác artwork: Like, Bookmark, Comment
 
@@ -219,6 +240,23 @@ Phạm vi: hệ thống MEVN hiện tại trong repository CT550.
 2. Lấy artwork không draft trong khoảng thời gian đó.
 3. Sort theo `likeCount`, `bookmarkCount`, `viewCount`, `createdAt`.
 
+### 7.3 Search Results (frontend-only)
+
+- Frontend route: `/search`
+- API nguồn dữ liệu: `GET /api/artworks` (lọc/đối sánh trên client).
+- Query hỗ trợ: `q`, `qall`, `qany`, `qnot`, `target`, `type`, `order`, `age`.
+- Workflow:
+
+1. Tải danh sách artwork, chuẩn hóa `images` thành ảnh đại diện.
+2. Lọc theo keyword/token và `target` (title/tags/artist/description/all).
+3. Lọc theo `type`, `age` và sắp xếp theo `order`.
+
+### 7.4 Lịch sử tìm kiếm & favorite tags (frontend-only)
+
+- Lưu lịch sử tìm kiếm theo localStorage key `illuwrl.searchHistory` (tối đa 8 mục).
+- Favorite tags lưu theo localStorage key `illuwrl.favoriteTags.{userId}` (tối đa 10 mục).
+- Cho phép xóa từng mục, clear history, và mở modal để xóa favorite tags.
+
 ## 8. Notification
 
 ### 8.1 Xem thông báo (cần login)
@@ -283,6 +321,10 @@ Phạm vi: hệ thống MEVN hiện tại trong repository CT550.
 1. normalize tagName.
 2. Tìm tag.
 3. Trả về danh sách artwork thuộc tag đó.
+
+- UI bổ sung:
+  - TagDetailView cho phép add/remove favorite tag.
+  - Lưu localStorage theo user, tối đa 10; nếu chưa login thì redirect `/login?redirect=<current-page>`.
 
 ## 11. Route cần đăng nhập (frontend)
 

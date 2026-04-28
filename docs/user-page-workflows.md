@@ -18,6 +18,9 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
 - Nút menu (biểu tượng bars): mở/đóng sidebar trái.
 - Logo IlluWrl: về Home (`/`).
 - Ô tìm kiếm: nhập từ khóa rồi Enter, chuyển sang Search Results (`/search?q=...`).
+  - Focus/click mở panel lịch sử tìm kiếm (tối đa 8 mục), có nút xóa từng mục và Clear history.
+  - Hiện gợi ý nhanh và danh sách favorite tags (tối đa 10, lưu theo user trong localStorage).
+  - Nút Edit favorite tags mở modal để xóa tag yêu thích.
 - Nút Media: mở menu chọn phạm vi tìm kiếm (Illustrations and Manga, Novels, User).
 - Nút More (ellipsis): mở modal Search option; bấm Apply sẽ chuyển sang `/feed` kèm query nâng cao (`qall`, `qany`, `qnot`, `target`, `type`).
 - Nút Premium Free Trial: chuyển tới `/signup`.
@@ -28,9 +31,15 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Novel -> `/upload/novel`
 - Nút Messages: vào `/messages`.
 - Nút Notifications: vào `/notifications`.
-- Avatar user (khi đã đăng nhập): mở user menu, có các lối tắt Dashboard/My works/Messages/Favorites/Bookmarks/Settings và nút Log out.
+- Avatar user (khi đã đăng nhập): mở user menu; bấm avatar trong menu sẽ về `/account`.
+  - Thống kê Following/Followers lấy từ dữ liệu follow thực và dẫn tới `/users/:id/following` và `/users/:id/followers`.
+  - Nhóm liên kết chính: Dashboard (`/dashboard`), My works (`/feed`), Manage requests (`/messages`).
+  - Nhóm thư viện: My Favorite (`/favorites`), Bookmarks (`/bookmarks`), Browsing history (`/feed`), Markers (`/rankings`).
+  - Nhóm business & settings: Money management (`/account`), Settings (`/account`), Send feedback (`/messages`).
+  - Link Admin management chỉ hiện cho admin (`/admin`).
+  - Có Language, Dark Theme (UI toggle) và nút Log out.
 - Nút Log in (khi chưa đăng nhập): vào `/login`.
-- Nút Related services (grid 9 chấm): mở menu dịch vụ, mỗi item điều hướng sang page tương ứng (Feed, Rankings, Favorites, Bookmarks, Upload).
+- Nút Related services (grid 9 chấm): mở menu dịch vụ, mỗi item điều hướng sang page tương ứng (Feed, Rankings, Favorites, Bookmarks, Upload; thêm Admin nếu role admin).
 
 ### 2.2 Sidebar trái
 
@@ -64,7 +73,20 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Error: hiện message lỗi.
   - Empty: “No search result found.”
 
-## 3.3 RankingsView (`/rankings`)
+## 3.3 SearchResultsView (`/search`)
+
+- Mục tiêu: hiển thị kết quả tìm kiếm theo từ khóa và bộ lọc.
+- Nút/tương tác:
+  - Tabs Illustrations/Manga/Novels: đổi `type` trong query; tab User hiện trạng thái disabled.
+  - Tag chips: click chuyển lại tìm kiếm theo tag (`q=tag`).
+  - Order select (Newest/Sort by popularity): đổi sắp xếp (`order`).
+  - Filter chip All-Ages/R-18/All: đổi bộ lọc độ tuổi (`age`).
+  - Search option: mở modal nâng cao (include all/any/exclude, target).
+- Kết quả hiển thị:
+  - Loading/Error/Empty theo trạng thái fetch và filter.
+  - Kèm tổng số results và dải tag liên quan (fallback nếu không có tag từ dữ liệu).
+
+## 3.4 RankingsView (`/rankings`)
 
 - Mục tiêu: xem bảng xếp hạng theo kỳ.
 - Nút/tương tác:
@@ -73,17 +95,18 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
 - Kết quả hiển thị:
   - Loading/Error/No data theo trạng thái store.
 
-## 3.4 TagDetailView (`/tags/:tagName`)
+## 3.5 TagDetailView (`/tags/:tagName`)
 
 - Mục tiêu: xem tất cả artwork thuộc tag.
 - Nút/tương tác:
-  - Add to favorite tag: thêm tag hiện tại vào danh sách favorite tags của người dùng (lưu localStorage, tối đa 10).
+  - Add/Remove favorite tag: thêm hoặc gỡ tag khỏi danh sách favorite tags (lưu localStorage theo user, tối đa 10).
+  - Nếu chưa đăng nhập, hành động add/remove sẽ chuyển về `/login?redirect=<current-page>`.
   - Các card trong lưới dùng HomeArtworkGrid: bấm ảnh/tiêu đề để vào `/artworks/:id`.
 - Kết quả hiển thị:
   - Hiện tổng số artwork theo tag.
   - Có trạng thái loading/error/empty.
 
-## 3.5 ArtworkDetailView (`/artworks/:id`)
+## 3.6 ArtworkDetailView (`/artworks/:id`)
 
 - Mục tiêu: xem chi tiết bài đăng và tương tác.
 - Nút/tương tác chính:
@@ -98,7 +121,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Nếu chưa đăng nhập mà bấm like/bookmark/follow thì chuyển về `/login?redirect=<current-page>`.
   - Counter hiển thị (view/like/bookmark/comment) cập nhật theo trạng thái toggle.
 
-## 3.6 ArtworkCommentsView (`/artworks/:id/comments`)
+## 3.7 ArtworkCommentsView (`/artworks/:id/comments`)
 
 - Mục tiêu: thêm, xem, xóa comment của artwork.
 - Nút/tương tác:
@@ -108,7 +131,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Loading/Error hoặc danh sách comment từ API.
   - Ghi chú: luồng comment nâng cao (reply thread + display replies + sticker) đã được ưu tiên triển khai trong khối comments của `ArtworkDetailView`.
 
-## 3.7 BookmarksView (`/bookmarks`) [cần đăng nhập]
+## 3.8 BookmarksView (`/bookmarks`) [cần đăng nhập]
 
 - Mục tiêu: quản lý bookmark cá nhân.
 - Nút/tương tác:
@@ -117,7 +140,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
 - Kết quả hiển thị:
   - Hiện danh sách bookmarks hoặc thông báo lỗi từ store.
 
-## 3.8 FavoritesView (`/favorites`) [cần đăng nhập]
+## 3.9 FavoritesView (`/favorites`) [cần đăng nhập]
 
 - Mục tiêu: xem các artwork đã like.
 - Nút/tương tác:
@@ -129,7 +152,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Có overview số item và tổng likes theo filter hiện tại.
   - Nếu chưa đăng nhập: hiện nút Go to login.
 
-## 3.9 MessagesView (`/messages`) [cần đăng nhập]
+## 3.10 MessagesView (`/messages`) [cần đăng nhập]
 
 - Mục tiêu: inbox/sent và gửi tin nhắn.
 - Nút/tương tác:
@@ -141,7 +164,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Có loading/error/empty state.
   - Nếu chưa đăng nhập: hiện nút Go to login.
 
-## 3.10 NotificationsView (`/notifications`) [cần đăng nhập]
+## 3.11 NotificationsView (`/notifications`) [cần đăng nhập]
 
 - Mục tiêu: xem timeline thông báo.
 - Nút/tương tác:
@@ -153,7 +176,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Hiển thị unread count, loading/error/empty state.
   - Nếu chưa đăng nhập: hiện nút Go to login.
 
-## 3.11 AccountView (`/account`)
+## 3.12 AccountView (`/account`)
 
 - Mục tiêu: trang profile tổng hợp theo tab.
 - Nút/tương tác:
@@ -165,7 +188,17 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
 - Kết quả hiển thị:
   - Nếu chưa đăng nhập: hiện thông báo + Go to login.
 
-## 3.12 DashboardView (`/dashboard`) [cần đăng nhập]
+## 3.13 FollowUsersView (`/users/:id/following`, `/users/:id/followers`)
+
+- Mục tiêu: xem danh sách Following/Follower của một user.
+- Nút/tương tác:
+  - Tabs Following/My pixiv/Followers (My pixiv hiện disabled).
+  - Card user: xem avatar, tên hiển thị và preview tác phẩm.
+  - Nút Follow/Unfollow (trên card): toggle theo trạng thái; nếu chưa login thì redirect về `/login?redirect=<current-page>`.
+- Kết quả hiển thị:
+  - Loading/Error/Empty theo trạng thái store.
+
+## 3.14 DashboardView (`/dashboard`) [cần đăng nhập]
 
 - Mục tiêu: dashboard creator.
 - Nút/tương tác:
@@ -176,7 +209,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Loading/Error dashboard data.
   - Nếu chưa đăng nhập: hiện Go to login.
 
-## 3.13 UploadArtworkView (`/upload/:kind`) [cần đăng nhập]
+## 3.15 UploadArtworkView (`/upload/:kind`) [cần đăng nhập]
 
 - Mục tiêu: đăng bài theo 4 loại (illust, manga, ugoira, novel).
 - Nút/tương tác:
@@ -193,7 +226,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Validation lỗi hiển thị theo rule trong view.
   - Thành công hiển thị “Post created successfully.”
 
-## 3.14 SignUpView (`/signup`)
+## 3.16 SignUpView (`/signup`)
 
 - Mục tiêu: tạo tài khoản mới.
 - Nút/tương tác:
@@ -204,7 +237,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
 - Kết quả hiển thị:
   - Lỗi validate hoặc lỗi từ auth store hiển thị ngay trên form.
 
-## 3.15 LoginView (`/login`)
+## 3.17 LoginView (`/login`)
 
 - Mục tiêu: đăng nhập tài khoản.
 - Nút/tương tác:
@@ -215,7 +248,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Nếu có `?redirect=...` thì login thành công sẽ quay về URL đó.
   - Nếu không có redirect thì về `/account`.
 
-## 3.16 NotFoundView (`/:pathMatch(.*)*`)
+## 3.18 NotFoundView (`/:pathMatch(.*)*`)
 
 - Mục tiêu: xử lý route không tồn tại.
 - Nút/tương tác:
