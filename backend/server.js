@@ -1,9 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
 require('dotenv').config();
 
 const connectDB = require('./config/db');
+const { getAllowedOrigins, getJwtSecret } = require('./config/env');
 const { errorHandler, notFound } = require('./middlewares/error.middleware');
 
 const authRoutes = require('./routes/auth.routes');
@@ -20,8 +20,28 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const allowedOrigins = getAllowedOrigins();
 
-app.use(cors());
+getJwtSecret();
+
+const corsOptions = {
+    origin(origin, callback) {
+        if (!origin) {
+            return callback(null, true);
+        }
+
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        const corsError = new Error('CORS origin not allowed');
+        corsError.statusCode = 403;
+        return callback(corsError);
+    },
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Connect to MongoDB

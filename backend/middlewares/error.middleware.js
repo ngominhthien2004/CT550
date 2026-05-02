@@ -1,6 +1,19 @@
 const errorHandler = (err, req, res, next) => {
-    const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+    const statusCode = err?.statusCode || (res.statusCode === 200 ? 500 : res.statusCode);
     res.status(statusCode);
+
+    if (err?.code === 'LIMIT_FILE_SIZE') {
+        res.status(413);
+        return res.json({
+            message: 'Uploaded file exceeds the maximum allowed size.',
+            stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+        });
+    }
+
+    if (err?.message === 'Images only!') {
+        res.status(400);
+    }
+
     res.json({
         message: err.message,
         stack: process.env.NODE_ENV === 'production' ? null : err.stack,

@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const { createArtwork, getArtworks, getArtworkById, getAdminArtworks, deleteArtwork } = require('../controllers/artwork.controller');
 const { protect, admin } = require('../middlewares/auth.middleware');
+const { getMaxUploadFileSizeBytes } = require('../config/env');
 
 const ALLOWED_ARTWORK_TYPES = new Set(['illust', 'manga', 'ugoira', 'novel']);
 
@@ -43,12 +44,16 @@ function checkFileType(file, cb) {
     if (extname && mimetype) {
         return cb(null, true);
     } else {
-        cb('Images only!');
+        cb(new Error('Images only!'));
     }
 }
 
 const upload = multer({
     storage,
+    limits: {
+        fileSize: getMaxUploadFileSizeBytes(),
+        files: 10,
+    },
     fileFilter: function (req, file, cb) {
         checkFileType(file, cb);
     },
