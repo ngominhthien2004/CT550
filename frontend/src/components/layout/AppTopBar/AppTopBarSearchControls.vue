@@ -65,7 +65,7 @@ function chooseSearchScope(scopeKey) {
     <button type="button" class="icon-round" aria-label="More" title="More" @click="emit('open-search-options')">
       <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
     </button>
-    <router-link to="/signup" class="premium-pill">Premium Free Trial</router-link>
+    <router-link to="/premium" class="premium-pill">Premium Free Trial</router-link>
   </div>
 </template>
 

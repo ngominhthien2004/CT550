@@ -22,6 +22,7 @@ import FollowingNewestView from '../views/FollowingNewestView.vue'
 import DiscoveryView from '../views/DiscoveryView.vue'
 import NewestByAllView from '../views/NewestByAllView.vue'
 import FollowUsersView from '../views/FollowUsersView.vue'
+import PremiumView from '../views/PremiumView.vue'
 import { useAuthStore } from '../stores/auth.store'
 
 const routes = [
@@ -64,6 +65,7 @@ const routes = [
   { path: '/rankings', name: 'rankings', component: RankingsView },
   { path: '/messages', name: 'messages', component: MessagesView, meta: { requiresAuth: true } },
   { path: '/notifications', name: 'notifications', component: NotificationsView, meta: { requiresAuth: true } },
+  { path: '/premium', name: 'premium', component: PremiumView },
   { path: '/signup', name: 'signup', component: SignUpView },
   { path: '/login', name: 'login', component: LoginView },
   {
