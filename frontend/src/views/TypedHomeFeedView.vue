@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import HomeArtworkGrid from '../components/home/HomeArtworkGrid.vue'
+import HomeFeedColumn from '../components/home/HomeFeedColumn.vue'
 import HomeHeroBanner from '../components/home/HomeHeroBanner.vue'
 import HomeRecommendedUsers from '../components/home/HomeRecommendedUsers.vue'
 import HomeTabs from '../components/home/HomeTabs.vue'
@@ -37,12 +38,15 @@ const heroSlide = computed(() => ({
   image: heroImage,
 }))
 
-const featuredWorks = computed(() =>
+const normalizedWorks = computed(() =>
   liveWorks.value.map((item) => ({
     ...item,
     image: item.images?.[0] || '',
   })),
 )
+
+const spotlightWorks = computed(() => normalizedWorks.value.slice(0, 12))
+const feedWorks = computed(() => normalizedWorks.value.slice(12, 26))
 
 function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
@@ -150,14 +154,21 @@ watch(
         <HomeTagStrip :tags="liveTags" />
         <HomeHeroBanner :slide="heroSlide" />
         <p v-if="isLoading" class="type-loading">Loading {{ pageTitle.toLowerCase() }}...</p>
-        <HomeRecommendedUsers
-          :users="recommendedUsers"
-          :is-authenticated="authStore.isAuthenticated"
-          :is-following-user="followStore.isFollowingUser"
-          :is-toggling-follow="followStore.isTogglingFollow"
-          @toggle-follow="toggleFollowFromHome"
-        />
-        <HomeArtworkGrid :works="featuredWorks" />
+        <HomeArtworkGrid :works="spotlightWorks" />
+
+        <div class="typed-home-feed-layout">
+          <HomeFeedColumn :works="feedWorks" />
+
+          <aside class="typed-home-feed-sidebar">
+            <HomeRecommendedUsers
+              :users="recommendedUsers"
+              :is-authenticated="authStore.isAuthenticated"
+              :is-following-user="followStore.isFollowingUser"
+              :is-toggling-follow="followStore.isTogglingFollow"
+              @toggle-follow="toggleFollowFromHome"
+            />
+          </aside>
+        </div>
       </div>
     </section>
   </MainLayoutTemplate>
@@ -178,5 +189,27 @@ watch(
   margin: 0;
   color: #54607b;
   font-weight: 600;
+}
+
+.typed-home-feed-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 0.8rem;
+}
+
+.typed-home-feed-sidebar {
+  position: sticky;
+  top: 0.45rem;
+  align-self: start;
+}
+
+@media (max-width: 920px) {
+  .typed-home-feed-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .typed-home-feed-sidebar {
+    position: static;
+  }
 }
 </style>

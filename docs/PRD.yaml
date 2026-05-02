@@ -1,0 +1,40 @@
+title: "Trang Premium"
+version: "1.0"
+date: "2026-04-28"
+language: "vi-VN"
+summary: "Xay dung trang Premium voi CTA dan den /signup, su dung tai nguyen do nhom tu tao."
+
+routes:
+  - path: "/premium"
+    purpose: "Trang gioi thieu Premium va keu goi dang ky."
+
+cta:
+  primary:
+    label: "Dang ky Premium"
+    target: "/signup"
+
+assets:
+  source: "original"
+  notes: "Tat ca hinh anh/illustration/noi dung la tai nguyen do nhom tu tao."
+
+scope:
+  in_scope:
+    - "Tao trang /premium voi noi dung gioi thieu loi ich Premium."
+    - "Hien thi CTA chinh dan den /signup."
+    - "Noi dung Viet Nam, co dau day du."
+    - "Thiet ke phan biet ro gia tri Premium (loi ich, gia tri, thong tin goi)."
+  out_of_scope:
+    - "Thanh toan va he thong dang ky Premium."
+    - "Thay doi API hoac database."
+    - "Dang nhap/phan quyen moi."
+
+acceptance_criteria:
+  - "Dieu huong den /premium hoat dong dung va trang hien thi khong loi."
+  - "CTA chinh hien thi ro rang va dan den /signup."
+  - "Noi dung tieng Viet co dau day du, ro rang, nhat quan thuat ngu."
+  - "Su dung tai nguyen goc, khong lay tu nguon ben ngoai."
+  - "Trang trinh bay loi ich Premium, bao gom toi thieu 3 loi ich cu the."
+
+assumptions:
+  - "Route /signup da ton tai va hoat dong."
+  - "Khong can thay doi backend cho trang tinh /premium."

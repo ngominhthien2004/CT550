@@ -1,0 +1,257 @@
+plan_id: premium-ui-20260428
+objective: "Research existing codebase for premium-related UI: topbar premium button, routes, any premium view or styles. Identify where to add /premium route, layout patterns, and reusable components."
+focus_area: "frontend-premium-ui"
+created_at: "2026-04-28"
+created_by: "gem-researcher"
+status: "completed"
+
+tldr: |
+  - Top bar already renders a Premium CTA as a pill link to /signup via AppTopBarSearchControls; workflow docs confirm this behavior.
+  - Router has no /premium route and no Premium view file exists in frontend/src/views.
+  - Shared layout pattern uses MainLayoutTemplate + AppTopBar + AppSidebarMenu with navItems and isNavCollapsed.
+  - Premium UI mentions currently appear in admin management (premium status) and creator dashboard tabs (premium chip).
+
+research_metadata:
+  methodology: "search_subagent + semantic_search + grep_search, then read_file on router/layout/topbar/docs"
+  scope: "Frontend layout, router, navigation constants, premium-related UI snippets, and workflow docs"
+  confidence: "medium"
+  coverage: 0.35
+  decision_blockers: 0
+  research_blockers: 0
+
+files_analyzed:
+  - file: "AGENTS.md"
+    path: "AGENTS.md"
+    purpose: "Project-wide agent workflow conventions"
+    key_elements:
+      - element: "Suggested Workflow"
+        type: "pattern"
+        location: "AGENTS.md:18"
+        description: "Defines researcher/implementer roles and planning workflow"
+    language: "markdown"
+    lines: 90
+  - file: "PRD.yaml"
+    path: "docs/PRD.yaml"
+    purpose: "Premium page requirements and route definition"
+    key_elements:
+      - element: "routes"
+        type: "pattern"
+        location: "docs/PRD.yaml:7"
+        description: "Declares /premium route purpose"
+      - element: "cta.primary.target"
+        type: "variable"
+        location: "docs/PRD.yaml:12"
+        description: "CTA target is /signup"
+    language: "yaml"
+    lines: 33
+  - file: "user-page-workflows.md"
+    path: "docs/user-page-workflows.md"
+    purpose: "UI behavior for shared top bar and pages"
+    key_elements:
+      - element: "Top bar premium CTA"
+        type: "pattern"
+        location: "docs/user-page-workflows.md:20"
+        description: "Premium Free Trial button routes to /signup"
+    language: "markdown"
+    lines: 170
+  - file: "AppTopBarSearchControls.vue"
+    path: "frontend/src/components/layout/AppTopBar/AppTopBarSearchControls.vue"
+    purpose: "Top bar search controls and premium CTA button"
+    key_elements:
+      - element: "Premium Free Trial link"
+        type: "pattern"
+        location: "frontend/src/components/layout/AppTopBar/AppTopBarSearchControls.vue:36"
+        description: "Router link to /signup with premium-pill class"
+      - element: ".premium-pill"
+        type: "pattern"
+        location: "frontend/src/components/layout/AppTopBar/AppTopBarSearchControls.vue:93"
+        description: "Top bar premium CTA styling"
+    language: "vue"
+    lines: 142
+  - file: "AppTopBar.vue"
+    path: "frontend/src/components/layout/AppTopBar/AppTopBar.vue"
+    purpose: "Top bar container composing search, post, message, notification, user menus"
+    key_elements:
+      - element: "AppTopBarSearchControls"
+        type: "component"
+        location: "frontend/src/components/layout/AppTopBar/AppTopBar.vue:69"
+        description: "Injects search UI and premium CTA into top bar"
+      - element: "serviceLinks"
+        type: "pattern"
+        location: "frontend/src/components/layout/AppTopBar/AppTopBar.vue:24"
+        description: "Related services menu with standard links"
+    language: "vue"
+    lines: 265
+  - file: "MainLayoutTemplate.vue"
+    path: "frontend/src/components/layout/MainLayoutTemplate.vue"
+    purpose: "Shared page shell with sidebar and top bar"
+    key_elements:
+      - element: "AppTopBar"
+        type: "component"
+        location: "frontend/src/components/layout/MainLayoutTemplate.vue:26"
+        description: "Shared top bar for most pages"
+      - element: "AppSidebarMenu"
+        type: "component"
+        location: "frontend/src/components/layout/MainLayoutTemplate.vue:19"
+        description: "Sidebar menu using navItems"
+    language: "vue"
+    lines: 83
+  - file: "AppSidebarMenu.vue"
+    path: "frontend/src/components/layout/AppSidebarMenu.vue"
+    purpose: "Sidebar navigation and sections"
+    key_elements:
+      - element: "pixivStyleSections"
+        type: "pattern"
+        location: "frontend/src/components/layout/AppSidebarMenu.vue:16"
+        description: "Builds grouped navigation from navItems and fixed sections"
+    language: "vue"
+    lines: 120
+  - file: "index.js"
+    path: "frontend/src/router/index.js"
+    purpose: "Frontend route definitions and auth guard"
+    key_elements:
+      - element: "routes array"
+        type: "pattern"
+        location: "frontend/src/router/index.js:21"
+        description: "All current routes; no /premium route present"
+      - element: "beforeEach guard"
+        type: "function"
+        location: "frontend/src/router/index.js:74"
+        description: "Auth/admin route enforcement"
+    language: "javascript"
+    lines: 94
+  - file: "navigation.js"
+    path: "frontend/src/constants/navigation.js"
+    purpose: "Base navItems for sidebar"
+    key_elements:
+      - element: "navItems"
+        type: "variable"
+        location: "frontend/src/constants/navigation.js:1"
+        description: "Sidebar core navigation items; no premium link"
+    language: "javascript"
+    lines: 9
+  - file: "FavoritesView.vue"
+    path: "frontend/src/views/FavoritesView.vue"
+    purpose: "Example of view layout pattern"
+    key_elements:
+      - element: "MainLayoutTemplate usage"
+        type: "pattern"
+        location: "frontend/src/views/FavoritesView.vue:67"
+        description: "Uses MainLayoutTemplate with navItems and isNavCollapsed"
+    language: "vue"
+    lines: 200
+
+patterns_found:
+  - category: "structure"
+    pattern: "Views wrap content with MainLayoutTemplate"
+    description: "Most pages use MainLayoutTemplate and pass navItems + isNavCollapsed + site-name"
+    examples:
+      - file: "frontend/src/views/FavoritesView.vue"
+        location: "frontend/src/views/FavoritesView.vue:67"
+        snippet: "<MainLayoutTemplate :nav-items=\"navItems\" :is-nav-collapsed=\"isNavCollapsed\" site-name=\"IlluWrl\" ...>"
+    prevalence: "common"
+  - category: "structure"
+    pattern: "Top bar search controls encapsulate Premium CTA"
+    description: "Premium button appears inside AppTopBarSearchControls and is styled as .premium-pill"
+    examples:
+      - file: "frontend/src/components/layout/AppTopBar/AppTopBarSearchControls.vue"
+        location: "frontend/src/components/layout/AppTopBar/AppTopBarSearchControls.vue:34"
+        snippet: "<router-link to=\"/signup\" class=\"premium-pill\">Premium Free Trial</router-link>"
+    prevalence: "common"
+  - category: "naming"
+    pattern: "Premium UI badges use 'premium' flags"
+    description: "Creator dashboard tabs mark premium features with a premium flag and chip"
+    examples:
+      - file: "frontend/src/components/dashboard/CreatorDashboardTabs.vue"
+        location: "frontend/src/components/dashboard/CreatorDashboardTabs.vue:1"
+        snippet: "{ key: 'analytics', label: 'Access analytics', premium: true }"
+    prevalence: "occasional"
+  - category: "architecture"
+    pattern: "Router centralizes view wiring"
+    description: "All page routes live in frontend/src/router/index.js"
+    examples:
+      - file: "frontend/src/router/index.js"
+        location: "frontend/src/router/index.js:21"
+        snippet: "const routes = [ { path: '/', name: 'home', component: HomePage }, ... ]"
+    prevalence: "common"
+
+related_architecture:
+  components_relevant_to_domain:
+    - component: "AppTopBarSearchControls"
+      responsibility: "Top bar search controls + Premium CTA"
+      location: "frontend/src/components/layout/AppTopBar/AppTopBarSearchControls.vue"
+      relationship_to_domain: "domain depends on this"
+    - component: "MainLayoutTemplate"
+      responsibility: "Shared page shell"
+      location: "frontend/src/components/layout/MainLayoutTemplate.vue"
+      relationship_to_domain: "domain depends on this"
+    - component: "AppSidebarMenu"
+      responsibility: "Sidebar navigation"
+      location: "frontend/src/components/layout/AppSidebarMenu.vue"
+      relationship_to_domain: "domain depends on this"
+  interfaces_used_by_domain:
+    - interface: "Router view registration"
+      location: "frontend/src/router/index.js"
+      usage_pattern: "Route objects declared in routes array"
+  data_flow_involving_domain: "Top bar CTA routes to /signup via router-link; layout uses navItems constants for sidebar"
+  key_relationships_to_domain:
+    - from: "frontend/src/components/layout/MainLayoutTemplate.vue"
+      to: "frontend/src/components/layout/AppTopBar.vue"
+      relationship: "composes"
+    - from: "frontend/src/components/layout/AppTopBar.vue"
+      to: "frontend/src/components/layout/AppTopBar/AppTopBarSearchControls.vue"
+      relationship: "composes"
+    - from: "frontend/src/views/FavoritesView.vue"
+      to: "frontend/src/components/layout/MainLayoutTemplate.vue"
+      relationship: "composes"
+
+related_technology_stack:
+  languages_used_in_domain:
+    - "JavaScript"
+    - "Vue (SFC)"
+  frameworks_used_in_domain:
+    - name: "Vue 3"
+      usage_in_domain: "Component-based UI for views/layouts"
+    - name: "Vue Router"
+      usage_in_domain: "Route definitions and navigation"
+  libraries_used_in_domain:
+    - name: "Font Awesome"
+      purpose_in_domain: "Icon usage in top bar and sidebar"
+  external_apis_used_in_domain: []
+
+related_conventions:
+  naming_patterns_in_domain: "Layout components named AppTopBar*, AppSidebarMenu; views in frontend/src/views"
+  structure_of_domain: "MainLayoutTemplate wraps pages; top bar includes search controls and actions"
+  error_handling_in_domain: "Not applicable for static layout"
+  testing_in_domain: "No UI tests referenced in this scope"
+  documentation_in_domain: "User workflows documented in docs/user-page-workflows.md"
+
+related_dependencies:
+  internal:
+    - component: "frontend/src/constants/navigation.js"
+      relationship_to_domain: "Provides base navItems for sidebar"
+      direction: "inbound"
+    - component: "frontend/src/stores/auth.store"
+      relationship_to_domain: "Auth-based rendering in top bar/sidebar"
+      direction: "inbound"
+  external: []
+
+open_questions:
+  - question: "Should the top bar premium CTA remain linked to /signup or change to /premium once the page exists?"
+    context: "Current top bar CTA links to /signup and workflow docs describe that behavior."
+    type: "decision_blocker"
+    affects: ["premium-ui-20260428"]
+  - question: "Should /premium appear in the sidebar or services menu navigation?"
+    context: "navigation.js and AppSidebarMenu do not include a premium link."
+    type: "nice_to_know"
+    affects: ["premium-ui-20260428"]
+
+gaps:
+  - area: "Premium view file"
+    description: "No Premium view file found in frontend/src/views; /premium route is not registered in router."
+    impact: "decision_blocker"
+    affects: ["premium-ui-20260428"]
+  - area: "Premium-specific styles"
+    description: "Only premium UI styling found is .premium-pill (top bar) and .premium-chip (dashboard tabs)."
+    impact: "nice_to_know"
+    affects: ["premium-ui-20260428"]
