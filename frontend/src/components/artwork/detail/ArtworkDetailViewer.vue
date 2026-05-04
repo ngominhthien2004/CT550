@@ -108,7 +108,7 @@ watch(
 
 .main-image {
   max-width: 100%;
-  max-height: 85vh; /* Larger limit like Pixiv */
+  max-height: 85vh; /* Larger limit like IlluWrl */
   object-fit: contain; /* Avoid cropping artwork */
   background: #f0f0f0;
   cursor: zoom-in;
@@ -116,7 +116,7 @@ watch(
 
 .viewer-actions {
   display: flex;
-  justify-content: center; /* Center like Pixiv for focal actions */
+  justify-content: center; /* Center like IlluWrl for focal actions */
   align-items: center;
   gap: 1.5rem;
   padding: 1rem 0;

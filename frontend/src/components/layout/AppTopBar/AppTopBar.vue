@@ -131,10 +131,7 @@ const userSettingLinks = [
 const siteLabel = computed(() => props.siteName || 'IlluWrl')
 const currentUser = computed(() => authStore.user)
 const userId = computed(() => currentUser.value?._id || '')
-const userInitial = computed(() => {
-  const source = currentUser.value?.username || currentUser.value?.email || 'U'
-  return source.charAt(0).toUpperCase()
-})
+const userAvatar = computed(() => currentUser.value?.avatar || '')
 const userDisplayName = computed(() => currentUser.value?.username || 'User')
 const userStats = computed(() => ({
   following: followStore.followingCount,
@@ -379,7 +376,7 @@ async function applySearchOptions(payload) {
       <AppTopBarUserMenu
         v-if="authStore.isAuthenticated"
         :user-id="userId"
-        :user-initial="userInitial"
+        :user-avatar="userAvatar"
         :user-display-name="userDisplayName"
         :user-stats="userStats"
         :user-main-links="userMainLinks"
@@ -412,6 +409,11 @@ async function applySearchOptions(payload) {
   height: 72px;
 }
 
+.top-nav.page-block {
+  border: none;
+  box-shadow: none;
+}
+
 .top-nav-left {
   display: flex;
   align-items: center;
@@ -436,7 +438,7 @@ async function applySearchOptions(payload) {
 }
 
 .icon-btn {
-  border: 1px solid var(--line);
+  border: none;
   background: #fff;
   border-radius: 10px;
   width: 36px;
@@ -452,7 +454,7 @@ async function applySearchOptions(payload) {
 .icon-round {
   text-decoration: none;
   color: inherit;
-  border: 1px solid #e2e8f0;
+  border: none;
   background: #fff;
   border-radius: 999px;
   width: 36px;

@@ -36,8 +36,8 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="pixiv-card">
-    <div class="pixiv-row">
+  <div class="upload-card">
+    <div class="upload-row">
       <label for="upload-title" class="row-label">Title</label>
       <div class="row-content">
         <div class="input-with-count">
@@ -56,7 +56,7 @@ const props = defineProps({
       </div>
     </div>
 
-    <div class="pixiv-row">
+    <div class="upload-row">
       <label for="upload-caption" class="row-label">Caption</label>
       <div class="row-content">
         <div class="input-with-count align-top">
@@ -73,7 +73,7 @@ const props = defineProps({
       </div>
     </div>
 
-    <div v-if="props.isManga" class="pixiv-row">
+    <div v-if="props.isManga" class="upload-row">
       <label class="row-label">Series</label>
       <div class="row-content row-inline">
         <input v-model="props.form.mangaSeriesName" type="text" class="form-control" placeholder="Series name" />
@@ -81,7 +81,7 @@ const props = defineProps({
       </div>
     </div>
 
-    <div v-if="props.isUgoira" class="pixiv-row">
+    <div v-if="props.isUgoira" class="upload-row">
       <label for="ugoira-notes" class="row-label">Ugoira notes</label>
       <div class="row-content">
         <textarea
@@ -94,7 +94,7 @@ const props = defineProps({
       </div>
     </div>
 
-    <div v-if="props.isNovel" class="pixiv-row">
+    <div v-if="props.isNovel" class="upload-row">
       <label class="row-label">Novel format</label>
       <div class="row-content">
         <div class="d-flex flex-wrap gap-3" role="radiogroup" aria-label="Novel posting format">
@@ -114,7 +114,7 @@ const props = defineProps({
       </div>
     </div>
 
-    <div v-if="props.isNovel" class="pixiv-row">
+    <div v-if="props.isNovel" class="upload-row">
       <label for="upload-novel-text" class="row-label">Main novel text</label>
       <div class="row-content">
         <div class="input-with-count align-top">
@@ -134,19 +134,19 @@ const props = defineProps({
 </template>
 
 <style scoped>
-.pixiv-card {
+.upload-card {
   border: 1px solid #dce4ee;
   border-radius: 8px;
   background: #fff;
 }
 
-.pixiv-row {
+.upload-row {
   display: grid;
   grid-template-columns: 140px minmax(0, 1fr);
   border-bottom: 1px solid #edf2f8;
 }
 
-.pixiv-row:last-child {
+.upload-row:last-child {
   border-bottom: 0;
 }
 
@@ -185,7 +185,7 @@ const props = defineProps({
 }
 
 @media (max-width: 767px) {
-  .pixiv-row {
+  .upload-row {
     grid-template-columns: 1fr;
   }
 

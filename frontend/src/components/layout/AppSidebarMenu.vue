@@ -21,7 +21,7 @@ defineEmits(['close-sidebar'])
 
 const authStore = useAuthStore()
 
-const pixivStyleSections = computed(() => {
+const illuWrlStyleSections = computed(() => {
   if (Array.isArray(props.navItems) && props.navItems.length > 0) {
     const manageGroup = [
       { id: 'requests', label: 'Requests', to: '/messages', icon: 'fa-regular fa-comments' },
@@ -67,7 +67,7 @@ const pixivStyleSections = computed(() => {
 
     <nav>
       <ul class="nav-list">
-        <li v-for="(group, groupIndex) in pixivStyleSections" :key="`group-${groupIndex}`" class="nav-group">
+        <li v-for="(group, groupIndex) in illuWrlStyleSections" :key="`group-${groupIndex}`" class="nav-group">
           <router-link v-for="item in group" :key="item.id" :to="item.to" class="nav-link-item">
             <i :class="item.icon" aria-hidden="true"></i>
             <span>{{ item.label }}</span>
