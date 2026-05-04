@@ -1,8 +1,8 @@
-# ArtworkDetail vs Pixiv Checklist
+# ArtworkDetail vs IlluWrl Checklist
 
 Comparison sources:
 
-- Pixiv page: [https://www.pixiv.net/en/artworks/143144139](https://www.pixiv.net/en/artworks/143144139)
+- IlluWrl reference page: [https://www.pixiv.net/en/artworks/143144139](https://www.pixiv.net/en/artworks/143144139)
 - Current frontend: `frontend/src/views/ArtworkDetailView.vue`, `frontend/src/components/artwork/ArtworkDetailCard.vue`
 
 ## Goals
@@ -13,7 +13,7 @@ Comparison sources:
 
 ## Re-fetch verification (2026-04-10)
 
-- Confirmed title, author block, Follow, "View all works", tags, counters (like/bookmark/view), upload time, related works, and works by all users are present on Pixiv.
+- Confirmed title, author block, Follow, "View all works", tags, counters (like/bookmark/view), upload time, related works, and works by all users are present on IlluWrl.
 - Parsed values from the target page: like `176`, bookmark `251`, view `4,618`, upload time `April 4, 2026 7:28 PM`.
 - Rechecked against current `ArtworkDetail` implementation.
 
@@ -28,13 +28,13 @@ Comparison sources:
 
 ### Medium
 
-- [x] Refine metadata layout to look closer to Pixiv grouping (title/tags/stats/time).
-- [ ] Match Pixiv layout details:
+- [x] Refine metadata layout to look closer to IlluWrl grouping (title/tags/stats/time).
+- [ ] Match IlluWrl layout details:
   - [x] Action icon row under main image (like/bookmark/share/more).
   - [x] Author row under caption (left column) with Follow + "View all works".
   - [x] "Other works" horizontal strip under the author row (left column).
   - [x] Sidebar follow card: compact header + full-width Follow button + small "Other works" preview.
-  - [x] Reduce card borders/padding to look flatter/airier like Pixiv.
+  - [x] Reduce card borders/padding to look flatter/airier like IlluWrl.
 - [ ] Improve related works presentation while keeping current API.
 
 ### Hard (defer or require user decision)
@@ -46,7 +46,7 @@ Comparison sources:
 
 ## Decisions for user
 
-- [ ] Choose Pixiv parity level:
+- [ ] Choose IlluWrl parity level:
   - Option A: Core UX parity (viewer + metadata + author block)
   - Option B: Deeper parity (add lightbox/comments/share)
 - [ ] Prioritize between inline comments and lightbox.

@@ -51,8 +51,8 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
 </script>
 
 <template>
-  <div class="pixiv-card">
-    <div class="pixiv-row">
+  <div class="upload-card">
+    <div class="upload-row">
       <label for="upload-tags" class="row-label">Tags</label>
       <div class="row-content">
         <div class="tag-input-wrap">
@@ -107,7 +107,7 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
       </div>
     </div>
 
-    <div class="pixiv-row compact">
+    <div class="upload-row compact">
       <span class="row-label"></span>
       <label class="form-check mb-0">
         <input v-model="modelAllowTagEdit" class="form-check-input" type="checkbox" />
@@ -118,19 +118,19 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
 </template>
 
 <style scoped>
-.pixiv-card {
+.upload-card {
   border: 1px solid #dce4ee;
   border-radius: 8px;
   background: #fff;
 }
 
-.pixiv-row {
+.upload-row {
   display: grid;
   grid-template-columns: 140px minmax(0, 1fr);
   border-bottom: 1px solid #edf2f8;
 }
 
-.pixiv-row.compact {
+.upload-row.compact {
   border-bottom: 0;
 }
 
@@ -238,7 +238,7 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
 }
 
 @media (max-width: 767px) {
-  .pixiv-row {
+  .upload-row {
     grid-template-columns: 1fr;
   }
 

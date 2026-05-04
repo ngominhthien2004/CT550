@@ -38,6 +38,7 @@ defineProps({
   height: 300px;
   border-bottom: 1px solid #e5e7eb;
   position: relative;
+  margin-inline: -72px;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -97,6 +98,7 @@ defineProps({
   .profile-cover {
     height: 220px;
     padding: 1rem 1rem 1.15rem;
+    margin-inline: -18px;
   }
 }
 </style>

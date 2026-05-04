@@ -215,7 +215,7 @@ const artistAvatar = computed(() => {
 .detail-top {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
-  gap: 2.5rem; /* Increased gap for better Pixiv feel */
+  gap: 2.5rem; /* Increased gap for better IlluWrl feel */
   align-items: start;
   position: relative;
 }

@@ -38,7 +38,7 @@ const tagList = computed(() => (Array.isArray(artwork.value?.tags) ? artwork.val
       </router-link>
     </div>
 
-    <div class="pixiv-stats text-secondary small">
+    <div class="stats-row text-secondary small">
       <span class="stat-inline"><i class="fa-regular fa-eye" aria-hidden="true"></i> {{ formatNumber(artwork.viewCount) }}</span>
       <button
         type="button"
@@ -113,7 +113,7 @@ const tagList = computed(() => (Array.isArray(artwork.value?.tags) ? artwork.val
   text-decoration: underline;
 }
 
-.pixiv-stats {
+.stats-row {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
@@ -143,6 +143,6 @@ const tagList = computed(() => (Array.isArray(artwork.value?.tags) ? artwork.val
 }
 
 .stat-button.active {
-  color: #f91880; /* Twitter/Pixiv like pink-red for likes */
+  color: #f91880; /* Brand like accent */
 }
 </style>

@@ -16,8 +16,8 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="pixiv-card">
-    <div class="pixiv-row">
+  <div class="upload-card">
+    <div class="upload-row">
       <span class="row-label">Visible to</span>
       <div class="row-content d-flex flex-wrap gap-3" role="radiogroup" aria-label="Visible to age setting">
         <label class="form-check">
@@ -35,7 +35,7 @@ const props = defineProps({
       </div>
     </div>
 
-    <div class="pixiv-row">
+    <div class="upload-row">
       <span class="row-label">AI-generated work</span>
       <div class="row-content d-flex flex-wrap gap-3" role="radiogroup" aria-label="AI generated setting">
         <label class="form-check">
@@ -49,7 +49,7 @@ const props = defineProps({
       </div>
     </div>
 
-    <div class="pixiv-row">
+    <div class="upload-row">
       <span class="row-label">Open to</span>
       <div class="row-content d-flex flex-wrap gap-3" role="radiogroup" aria-label="Post visibility setting">
         <label class="form-check">
@@ -62,7 +62,7 @@ const props = defineProps({
         </label>
         <label class="form-check">
           <input v-model="props.form.openTo" class="form-check-input" type="radio" name="openTo" value="mypixiv" />
-          <span class="form-check-label">My pixiv only</span>
+          <span class="form-check-label">My IlluWrl only</span>
         </label>
         <label class="form-check">
           <input v-model="props.form.openTo" class="form-check-input" type="radio" name="openTo" value="private" />
@@ -71,7 +71,7 @@ const props = defineProps({
       </div>
     </div>
 
-    <div class="pixiv-row">
+    <div class="upload-row">
       <span class="row-label">Comments</span>
       <div class="row-content d-flex flex-wrap gap-3" role="radiogroup" aria-label="Comments setting">
         <label class="form-check">
@@ -85,7 +85,7 @@ const props = defineProps({
       </div>
     </div>
 
-    <div class="pixiv-row">
+    <div class="upload-row">
       <span class="row-label"></span>
       <div class="row-content d-grid gap-2">
         <label class="form-check mb-0">
@@ -99,7 +99,7 @@ const props = defineProps({
       </div>
     </div>
 
-    <div class="pixiv-row">
+    <div class="upload-row">
       <label for="work-language" class="row-label">Work language</label>
       <div class="row-content">
         <select id="work-language" v-model="props.form.language" class="form-select">
@@ -108,7 +108,7 @@ const props = defineProps({
       </div>
     </div>
 
-    <div class="pixiv-row">
+    <div class="upload-row">
       <span class="row-label">Scheduled post</span>
       <div class="row-content d-grid gap-2">
         <label class="form-check mb-0">
@@ -122,7 +122,7 @@ const props = defineProps({
       </div>
     </div>
 
-    <div v-if="props.isNovel" class="pixiv-row">
+    <div v-if="props.isNovel" class="upload-row">
       <span class="row-label"></span>
       <p class="row-content small text-secondary mb-0">Advanced settings for novel publication are applied from the same visibility and language options.</p>
     </div>
@@ -130,19 +130,19 @@ const props = defineProps({
 </template>
 
 <style scoped>
-.pixiv-card {
+.upload-card {
   border: 1px solid #dce4ee;
   border-radius: 8px;
   background: #fff;
 }
 
-.pixiv-row {
+.upload-row {
   display: grid;
   grid-template-columns: 140px minmax(0, 1fr);
   border-bottom: 1px solid #edf2f8;
 }
 
-.pixiv-row:last-child {
+.upload-row:last-child {
   border-bottom: 0;
 }
 
@@ -158,7 +158,7 @@ const props = defineProps({
 }
 
 @media (max-width: 767px) {
-  .pixiv-row {
+  .upload-row {
     grid-template-columns: 1fr;
   }
 

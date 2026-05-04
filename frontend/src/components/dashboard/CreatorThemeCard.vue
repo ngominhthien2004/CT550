@@ -9,7 +9,7 @@ defineProps({
 
 <template>
   <article class="dash-card theme-card">
-    <header class="dash-card-head">pixiv Today's Theme <i class="fa-regular fa-circle-question" aria-hidden="true"></i></header>
+    <header class="dash-card-head">IlluWrl Today's Theme <i class="fa-regular fa-circle-question" aria-hidden="true"></i></header>
 
     <div class="theme-hero" :style="{ backgroundImage: `url('${imageUrl}')` }">
       <p class="theme-title">collarbone</p>

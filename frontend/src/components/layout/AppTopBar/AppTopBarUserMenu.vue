@@ -1,12 +1,16 @@
 <script setup>
+import { computed } from 'vue'
+
+const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
+
 const props = defineProps({
   userId: {
     type: String,
     required: true,
   },
-  userInitial: {
+  userAvatar: {
     type: String,
-    required: true,
+    default: '',
   },
   userDisplayName: {
     type: String,
@@ -34,6 +38,15 @@ const props = defineProps({
   },
 })
 
+const avatarSrc = computed(() => props.userAvatar || DEFAULT_PROFILE_AVATAR)
+const avatarAlt = computed(() => props.userDisplayName || 'User avatar')
+
+function handleAvatarError(event) {
+  if (event.target?.src !== DEFAULT_PROFILE_AVATAR) {
+    event.target.src = DEFAULT_PROFILE_AVATAR
+  }
+}
+
 defineEmits(['logout'])
 </script>
 
@@ -41,14 +54,14 @@ defineEmits(['logout'])
   <details class="user-menu">
     <summary class="user-menu-trigger" aria-label="Open user menu" title="User menu">
       <router-link to="/account" class="user-avatar-link" aria-label="Go to account" @click.stop>
-        <span class="user-avatar">{{ props.userInitial }}</span>
+        <img class="user-avatar" :src="avatarSrc" :alt="avatarAlt" @error="handleAvatarError" />
       </router-link>
       <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
     </summary>
     <div class="user-menu-panel" role="menu" aria-label="User menu">
       <div class="user-hero">
         <router-link to="/account" class="user-hero-link" aria-label="Go to account">
-          <span class="user-avatar large">{{ props.userInitial }}</span>
+          <img class="user-avatar large" :src="avatarSrc" :alt="avatarAlt" @error="handleAvatarError" />
         </router-link>
         <div class="user-hero-meta">
           <p class="mb-0 fw-bold">{{ props.userDisplayName }}</p>
@@ -169,13 +182,8 @@ defineEmits(['logout'])
   width: 28px;
   height: 28px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #93c5fd, #60a5fa);
-  color: #fff;
-  font-size: 0.82rem;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  object-fit: cover;
+  display: block;
 }
 
 .user-menu-panel {

@@ -49,7 +49,9 @@ onBeforeUnmount(() => {
 
     <section class="main-pane">
       <AppTopBar :site-name="siteName" @toggle-sidebar="$emit('toggle-sidebar')" />
-      <slot />
+      <div class="main-content">
+        <slot />
+      </div>
     </section>
   </div>
 </template>
@@ -63,6 +65,12 @@ onBeforeUnmount(() => {
 
 .main-pane {
   padding: 0.35rem 40px 1rem;
+  display: grid;
+  gap: 0;
+}
+
+.main-content {
+  margin: 0 72px;
   display: grid;
   gap: 0.7rem;
 }
@@ -78,11 +86,19 @@ onBeforeUnmount(() => {
   .main-pane {
     padding-inline: 0.85rem;
   }
+
+  .main-content {
+    margin: 0 40px;
+  }
 }
 
 @media (max-width: 920px) {
   .main-pane {
     padding-inline: 0.65rem;
+  }
+
+  .main-content {
+    margin: 0 18px;
     gap: 0.6rem;
   }
 }
