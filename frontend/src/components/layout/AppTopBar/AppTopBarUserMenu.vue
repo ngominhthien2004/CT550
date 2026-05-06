@@ -157,7 +157,7 @@ defineEmits(['logout'])
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  border: 1px solid #dce3ec;
+  border: none;
   background: #fff;
   border-radius: 999px;
   padding: 0.2rem 0.42rem;

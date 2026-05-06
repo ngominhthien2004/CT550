@@ -102,6 +102,7 @@ export const deleteLike = (likeId) => likeApi.delete(likeId)
 export const userApi = {
   getProfile: (userId) => api.get(`/users/${userId}/profile`),
   updateProfile: (payload) => api.put('/users/profile', payload),
+  deleteCover: () => api.delete('/users/profile/cover'),
   follow: (userId) => api.post(`/users/${userId}/follow`),
   unfollow: (userId) => api.delete(`/users/${userId}/follow`),
   getFollowers: (userId) => api.get(`/users/${userId}/followers`),

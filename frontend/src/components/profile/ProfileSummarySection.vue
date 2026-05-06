@@ -70,7 +70,7 @@ const socialLinks = computed(() => {
   return rows.filter((item) => typeof item.href === 'string' && item.href.trim())
 })
 
-const emit = defineEmits(['toggle-follow', 'edit-profile'])
+const emit = defineEmits(['toggle-follow', 'edit-profile', 'edit-avatar'])
 
 const shareTooltip = ref('')
 
@@ -98,6 +98,9 @@ async function handleShare() {
     <div class="avatar-shell">
       <div class="avatar-wrap">
         <img :src="avatarSrc" :alt="user.displayName || user.username" @error="handleAvatarError" />
+        <div v-if="isOwnProfile" class="avatar-edit-overlay" @click="emit('edit-avatar')" role="button" aria-label="Edit profile picture">
+          <i class="fa-solid fa-camera" aria-hidden="true"></i>
+        </div>
       </div>
     </div>
 
@@ -205,6 +208,24 @@ async function handleShare() {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.avatar-edit-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.avatar-wrap:hover .avatar-edit-overlay {
+  opacity: 1;
 }
 
 .profile-meta {

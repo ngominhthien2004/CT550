@@ -24,11 +24,23 @@ const updateUserProfile = async (req, res, next) => {
 
         if (user) {
             user.displayName = req.body.displayName || user.displayName;
-            user.avatar = req.body.avatar || user.avatar;
-            user.coverImage = req.body.coverImage || user.coverImage;
-            user.bio = req.body.bio || user.bio;
+            user.bio = req.body.bio !== undefined ? req.body.bio : user.bio;
             if (req.body.socialLinks) {
                 user.socialLinks = { ...user.socialLinks, ...req.body.socialLinks };
+            }
+
+            if (req.files) {
+                if (req.files['avatar'] && req.files['avatar'].length > 0) {
+                    const avatarFile = req.files['avatar'][0];
+                    user.avatar = `/uploads/${req.user._id}/profile/${avatarFile.filename}`;
+                }
+                if (req.files['coverImage'] && req.files['coverImage'].length > 0) {
+                    const coverFile = req.files['coverImage'][0];
+                    user.coverImage = `/uploads/${req.user._id}/profile/${coverFile.filename}`;
+                }
+            } else {
+                if (req.body.avatar) user.avatar = req.body.avatar;
+                if (req.body.coverImage) user.coverImage = req.body.coverImage;
             }
 
             const updatedUser = await user.save();
@@ -38,12 +50,38 @@ const updateUserProfile = async (req, res, next) => {
                 username: updatedUser.username,
                 displayName: updatedUser.displayName,
                 avatar: updatedUser.avatar,
+                coverImage: updatedUser.coverImage,
                 bio: updatedUser.bio,
             });
         } else {
             res.status(404);
             next(new Error('User not found'));
         }
+    } catch (error) {
+        next(error);
+    }
+};
+
+const deleteUserCover = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            res.status(404);
+            return next(new Error('User not found'));
+        }
+
+        user.coverImage = '';
+        const updatedUser = await user.save();
+
+        res.json({
+            _id: updatedUser._id,
+            username: updatedUser.username,
+            displayName: updatedUser.displayName,
+            avatar: updatedUser.avatar,
+            coverImage: updatedUser.coverImage,
+            bio: updatedUser.bio,
+        });
     } catch (error) {
         next(error);
     }
@@ -250,6 +288,7 @@ const updateAdminUser = async (req, res, next) => {
 module.exports = {
     getUserProfile,
     updateUserProfile,
+    deleteUserCover,
     followUser,
     unfollowUser,
     getFollowers,
