@@ -81,7 +81,7 @@ defineEmits(['toggle', 'mark-read'])
 .icon-round {
   text-decoration: none;
   color: inherit;
-  border: 1px solid #e2e8f0;
+  border: none;
   background: #fff;
   border-radius: 999px;
   width: 36px;

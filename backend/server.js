@@ -21,27 +21,31 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
 const allowedOrigins = getAllowedOrigins();
+const isLocalDevOrigin = (origin) => /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
 
 getJwtSecret();
 
-const corsOptions = {
-    origin(origin, callback) {
-        if (!origin) {
-            return callback(null, true);
-        }
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
 
-        if (allowedOrigins.includes(origin)) {
-            return callback(null, true);
-        }
+    if (origin && (allowedOrigins.includes(origin) || isLocalDevOrigin(origin))) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    } else if (!origin) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+    } else if (process.env.NODE_ENV !== 'production') {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
 
-        const corsError = new Error('CORS origin not allowed');
-        corsError.statusCode = 403;
-        return callback(corsError);
-    },
-    credentials: true,
-};
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
 
-app.use(cors(corsOptions));
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(204);
+    }
+
+    return next();
+});
 app.use(express.json());
 
 // Connect to MongoDB

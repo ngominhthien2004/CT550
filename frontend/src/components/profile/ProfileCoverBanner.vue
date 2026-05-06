@@ -15,6 +15,8 @@ defineProps({
     default: false,
   },
 })
+
+defineEmits(['edit-cover', 'delete-cover'])
 </script>
 
 <template>
@@ -23,25 +25,25 @@ defineProps({
     :style="coverImage ? { backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, 0.1), rgba(15, 23, 42, 0.28)), url(${coverImage})` } : { background: DEFAULT_COVER }"
     aria-label="Profile cover area"
   >
-    <button v-if="isOwnProfile" type="button" class="cover-edit-btn" aria-label="Edit cover">
-      <i class="fa-solid fa-pen" aria-hidden="true"></i>
-    </button>
-    <div class="cover-copy">
-      <span class="cover-kicker">{{ isOwnProfile ? 'Your profile' : 'Creator profile' }}</span>
-      <p class="cover-hint">{{ user.displayName || user.username }}</p>
+    <div v-if="isOwnProfile" class="cover-actions">
+      <button type="button" class="cover-edit-btn" aria-label="Edit cover" @click="$emit('edit-cover')">
+        <i class="fa-solid fa-pen" aria-hidden="true"></i>
+      </button>
+      <button type="button" class="cover-delete-btn" aria-label="Delete cover" @click="$emit('delete-cover')">
+        <i class="fa-solid fa-trash" aria-hidden="true"></i>
+      </button>
     </div>
   </div>
 </template>
 
 <style scoped>
 .profile-cover {
+  --cover-bleed: 72px;
   height: 300px;
   border-bottom: 1px solid #e5e7eb;
   position: relative;
   margin-inline: -72px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  display: block;
   padding: 1.15rem 1.5rem 1.4rem;
   color: #fff;
   background-position: center;
@@ -57,30 +59,19 @@ defineProps({
   pointer-events: none;
 }
 
-.cover-copy,
-.cover-edit-btn {
+.cover-actions,
+.cover-edit-btn,
+.cover-delete-btn {
   position: relative;
   z-index: 1;
 }
 
-.cover-copy {
-  display: grid;
-  gap: 0.3rem;
-}
-
-.cover-hint {
-  margin: 0;
-  font-size: clamp(1.25rem, 1rem + 1vw, 1.9rem);
-  font-weight: 600;
-  letter-spacing: -0.03em;
-}
-
-.cover-kicker {
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  opacity: 0.9;
+.cover-actions {
+  position: absolute;
+  bottom: 1.5rem;
+  right: calc(1.5rem + var(--cover-bleed));
+  display: flex;
+  gap: 0.5rem;
 }
 
 .cover-edit-btn {
@@ -94,11 +85,28 @@ defineProps({
   backdrop-filter: blur(8px);
 }
 
+.cover-delete-btn {
+  border: none;
+  background: rgba(239, 68, 68, 0.2);
+  color: #fff;
+  font-size: 1.05rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+}
+
 @media (max-width: 820px) {
   .profile-cover {
+    --cover-bleed: 18px;
     height: 220px;
     padding: 1rem 1rem 1.15rem;
     margin-inline: -18px;
+  }
+
+  .cover-actions {
+    right: calc(1rem + var(--cover-bleed));
+    bottom: 1rem;
   }
 }
 </style>

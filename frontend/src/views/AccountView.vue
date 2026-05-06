@@ -9,7 +9,9 @@ import ProfilePrimaryTabs from '../components/profile/ProfilePrimaryTabs.vue'
 import ProfileWorksSection from '../components/profile/ProfileWorksSection.vue'
 import ProfileBookmarksSection from '../components/profile/ProfileBookmarksSection.vue'
 import ProfileLikesSection from '../components/profile/ProfileLikesSection.vue'
+import ProfileCoverModal from '../components/profile/ProfileCoverModal.vue'
 import ProfileEditModal from '../components/profile/ProfileEditModal.vue'
+import ProfileAvatarModal from '../components/profile/ProfileAvatarModal.vue'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
@@ -40,6 +42,8 @@ const activeBookmarkType = ref('')
 const activeLikeType = ref('')
 const followError = ref('')
 const showEditModal = ref(false)
+const showCoverModal = ref(false)
+const showAvatarModal = ref(false)
 
 const queryUserId = computed(() => {
   const id = route.query.user
@@ -329,6 +333,82 @@ async function handleUpdateProfile(formData) {
   }
 }
 
+async function handleUpdateCover(formData) {
+  try {
+    if (!formData?.has?.('coverImage')) {
+      showCoverModal.value = false
+      return
+    }
+
+    const { data } = await userApi.updateProfile(formData)
+
+    if (profileUser.value) {
+      profileUser.value = { ...profileUser.value, ...data }
+    }
+
+    if (isOwnProfile.value) {
+      authStore.user = { ...authStore.user, ...data }
+      localStorage.setItem('authUser', JSON.stringify(authStore.user))
+    }
+
+    showCoverModal.value = false
+    alert('Cover updated successfully!')
+  } catch (err) {
+    alert(err?.response?.data?.message || 'Failed to update cover image')
+  }
+}
+
+async function handleUpdateAvatar(formData) {
+  try {
+    if (!formData?.has?.('avatar')) {
+      showAvatarModal.value = false
+      return
+    }
+
+    const { data } = await userApi.updateProfile(formData)
+
+    if (profileUser.value) {
+      profileUser.value = { ...profileUser.value, ...data }
+    }
+
+    if (isOwnProfile.value) {
+      authStore.user = { ...authStore.user, ...data }
+      localStorage.setItem('authUser', JSON.stringify(authStore.user))
+    }
+
+    showAvatarModal.value = false
+    alert('Avatar updated successfully!')
+  } catch (err) {
+    alert(err?.response?.data?.message || 'Failed to update avatar')
+  }
+}
+
+async function handleDeleteCover() {
+  if (!isOwnProfile.value) {
+    return
+  }
+
+  const confirmed = window.confirm('Remove your cover image?')
+  if (!confirmed) {
+    return
+  }
+
+  try {
+    const { data } = await userApi.deleteCover()
+
+    if (profileUser.value) {
+      profileUser.value = { ...profileUser.value, ...data, coverImage: data.coverImage || '' }
+    }
+
+    if (isOwnProfile.value) {
+      authStore.user = { ...authStore.user, ...data, coverImage: data.coverImage || '' }
+      localStorage.setItem('authUser', JSON.stringify(authStore.user))
+    }
+  } catch (error) {
+    alert(error?.response?.data?.message || 'Failed to remove cover image')
+  }
+}
+
 async function goLogin() {
   await router.push('/login')
 }
@@ -370,7 +450,13 @@ watch(showEditModal, (val) => {
 <template>
   <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
     <section v-if="user" class="profile-page page-block">
-      <ProfileCoverBanner :user="user" :cover-image="profileCoverImage" :is-own-profile="isOwnProfile" />
+      <ProfileCoverBanner
+        :user="user"
+        :cover-image="profileCoverImage"
+        :is-own-profile="isOwnProfile"
+        @edit-cover="showCoverModal = true"
+        @delete-cover="handleDeleteCover"
+      />
 
       <div class="profile-main">
         <ProfileSummarySection
@@ -385,6 +471,7 @@ watch(showEditModal, (val) => {
           :artwork-count="artworks.length"
           @toggle-follow="toggleFollow"
           @edit-profile="showEditModal = true"
+          @edit-avatar="showAvatarModal = true"
         />
         <p v-if="profileLoading" class="text-secondary mb-1">Loading profile...</p>
         <p v-if="profileError" class="text-danger mb-1">{{ profileError }}</p>
@@ -440,6 +527,19 @@ watch(showEditModal, (val) => {
         </section>
       </div>
       <Teleport to="body">
+        <ProfileAvatarModal
+          :show="showAvatarModal"
+          :user="user"
+          @close="showAvatarModal = false"
+          @save="handleUpdateAvatar"
+        />
+        <ProfileCoverModal
+          :show="showCoverModal"
+          :user="user"
+          :cover-image="profileCoverImage"
+          @close="showCoverModal = false"
+          @save="handleUpdateCover"
+        />
         <ProfileEditModal
           :show="showEditModal"
           :user="user"
