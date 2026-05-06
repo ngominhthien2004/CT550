@@ -66,11 +66,11 @@ function handleCoverChange(event) {
     return
   }
 
-  // Validate resolution (4096 x 4096)
+  // Validate resolution (1920 x 960)
   const img = new Image()
   img.onload = () => {
-    if (img.width > 4096 || img.height > 4096) {
-      errorMessage.value = `Resolution exceeds maximum allowed (4096 x 4096). Yours is ${img.width}x${img.height}.`
+    if (img.width > 1920 || img.height > 960) {
+      errorMessage.value = `Resolution exceeds maximum allowed (1920 x 960). Yours is ${img.width}x${img.height}.`
       URL.revokeObjectURL(img.src)
       return
     }
@@ -132,7 +132,7 @@ function handleUpload() {
           </div>
           <div class="spec-item">
             <span class="spec-label">Maximum resolution</span>
-            <span class="spec-value">4096 x 4096</span>
+            <span class="spec-value">1920 x 960</span>
           </div>
           <div class="spec-item">
             <span class="spec-label">Recommended aspect ratio</span>
