@@ -311,32 +311,10 @@ async function toggleFollow() {
     followError.value = error?.response?.data?.message || 'Failed to update follow status'
   }
 }
-async function handleUpdateProfile(formData) {
+async function submitProfileUpdate(formData, { requiredField, modalRef, successMsg }) {
   try {
-    const { data } = await userApi.updateProfile(formData)
-    
-    // Update local profile state
-    if (profileUser.value) {
-      profileUser.value = { ...profileUser.value, ...data }
-    }
-    
-    // Update auth store user if it's our own profile
-    if (isOwnProfile.value) {
-      authStore.user = { ...authStore.user, ...data }
-      localStorage.setItem('authUser', JSON.stringify(authStore.user))
-    }
-    
-    showEditModal.value = false
-    alert('Profile updated successfully!')
-  } catch (err) {
-    alert(err?.response?.data?.message || 'Failed to update profile')
-  }
-}
-
-async function handleUpdateCover(formData) {
-  try {
-    if (!formData?.has?.('coverImage')) {
-      showCoverModal.value = false
+    if (requiredField && !formData?.has?.(requiredField)) {
+      modalRef.value = false
       return
     }
 
@@ -351,37 +329,21 @@ async function handleUpdateCover(formData) {
       localStorage.setItem('authUser', JSON.stringify(authStore.user))
     }
 
-    showCoverModal.value = false
-    alert('Cover updated successfully!')
+    modalRef.value = false
+    alert(successMsg)
   } catch (err) {
-    alert(err?.response?.data?.message || 'Failed to update cover image')
+    alert(err?.response?.data?.message || 'Update failed')
   }
 }
 
-async function handleUpdateAvatar(formData) {
-  try {
-    if (!formData?.has?.('avatar')) {
-      showAvatarModal.value = false
-      return
-    }
+const handleUpdateProfile = (fd) =>
+  submitProfileUpdate(fd, { modalRef: showEditModal, successMsg: 'Profile updated successfully!' })
 
-    const { data } = await userApi.updateProfile(formData)
+const handleUpdateCover = (fd) =>
+  submitProfileUpdate(fd, { requiredField: 'coverImage', modalRef: showCoverModal, successMsg: 'Cover updated successfully!' })
 
-    if (profileUser.value) {
-      profileUser.value = { ...profileUser.value, ...data }
-    }
-
-    if (isOwnProfile.value) {
-      authStore.user = { ...authStore.user, ...data }
-      localStorage.setItem('authUser', JSON.stringify(authStore.user))
-    }
-
-    showAvatarModal.value = false
-    alert('Avatar updated successfully!')
-  } catch (err) {
-    alert(err?.response?.data?.message || 'Failed to update avatar')
-  }
-}
+const handleUpdateAvatar = (fd) =>
+  submitProfileUpdate(fd, { requiredField: 'avatar', modalRef: showAvatarModal, successMsg: 'Avatar updated successfully!' })
 
 async function handleDeleteCover() {
   if (!isOwnProfile.value) {

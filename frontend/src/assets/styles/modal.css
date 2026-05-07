@@ -1,0 +1,219 @@
+/* ===================================================================
+   Shared Modal Primitives
+   Reusable base styles for all modal dialogs (cover, avatar, edit…).
+   Import via: @import '@/assets/styles/modal.css';
+   Then override per-component with scoped <style>.
+   =================================================================== */
+
+/* --- Backdrop --- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.modal-backdrop--top {
+  align-items: flex-start;
+  padding: 40px 20px;
+  overflow-y: auto;
+}
+
+/* --- Card --- */
+.modal-card {
+  width: min(520px, 100%);
+  background: #fff;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-card--scrollable {
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+/* --- Header --- */
+.modal-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.modal-close {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #999;
+  font-size: 1.15rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.modal-close:hover {
+  background: #f1f5f9;
+  color: #333;
+}
+
+/* --- Body --- */
+.modal-body {
+  padding: 24px;
+}
+
+.modal-body--scroll {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* --- Footer --- */
+.modal-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 24px 24px;
+}
+
+.modal-footer--row {
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 1rem 1.25rem 1.25rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* --- Buttons --- */
+.modal-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  font-weight: 700;
+  text-align: center;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-sizing: border-box;
+}
+
+.modal-btn--primary {
+  background: #a3d4f7;
+  color: #fff;
+}
+
+.modal-btn--primary:hover {
+  background: #89cbf5;
+}
+
+.modal-btn--secondary {
+  background: #f1f5f9;
+  color: #333;
+}
+
+.modal-btn--secondary:hover {
+  background: #e2e8f0;
+}
+
+.modal-btn--accent {
+  background: linear-gradient(135deg, #0f172a, #2563eb);
+  color: #fff;
+}
+
+.modal-btn--inline {
+  width: auto;
+  min-width: 120px;
+  height: 44px;
+}
+
+/* --- Upload Overlay (shared between avatar + cover) --- */
+.upload-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.upload-overlay:hover,
+.upload-trigger:hover .upload-overlay {
+  opacity: 1;
+}
+
+.upload-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+}
+
+.upload-overlay-content i {
+  font-size: 1.5rem;
+}
+
+/* --- Error --- */
+.modal-error {
+  color: #ef4444;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+/* --- Info box --- */
+.modal-info-box {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  gap: 12px;
+  color: #666;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.modal-info-box i {
+  margin-top: 2px;
+  color: #999;
+}
+
+/* --- Responsive --- */
+@media (max-width: 640px) {
+  .modal-backdrop {
+    padding: 12px;
+  }
+
+  .modal-backdrop--top {
+    padding: 16px;
+  }
+}
