@@ -16,6 +16,7 @@ const feedRoutes = require('./routes/feed.routes');
 const tagRoutes = require('./routes/tag.routes');
 const notificationRoutes = require('./routes/notification.routes');
 const messageRoutes = require('./routes/message.routes');
+const aiRoutes = require('./routes/ai.routes');
 const path = require('path');
 
 const app = express();
@@ -65,6 +66,7 @@ app.use('/api/feed', feedRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
