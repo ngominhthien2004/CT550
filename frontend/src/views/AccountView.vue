@@ -407,6 +407,82 @@ async function handleDeleteCover() {
   }
 }
 
+async function handleUpdateCover(formData) {
+  try {
+    if (!formData?.has?.('coverImage')) {
+      showCoverModal.value = false
+      return
+    }
+
+    const { data } = await userApi.updateProfile(formData)
+
+    if (profileUser.value) {
+      profileUser.value = { ...profileUser.value, ...data }
+    }
+
+    if (isOwnProfile.value) {
+      authStore.user = { ...authStore.user, ...data }
+      localStorage.setItem('authUser', JSON.stringify(authStore.user))
+    }
+
+    showCoverModal.value = false
+    alert('Cover updated successfully!')
+  } catch (err) {
+    alert(err?.response?.data?.message || 'Failed to update cover image')
+  }
+}
+
+async function handleUpdateAvatar(formData) {
+  try {
+    if (!formData?.has?.('avatar')) {
+      showAvatarModal.value = false
+      return
+    }
+
+    const { data } = await userApi.updateProfile(formData)
+
+    if (profileUser.value) {
+      profileUser.value = { ...profileUser.value, ...data }
+    }
+
+    if (isOwnProfile.value) {
+      authStore.user = { ...authStore.user, ...data }
+      localStorage.setItem('authUser', JSON.stringify(authStore.user))
+    }
+
+    showAvatarModal.value = false
+    alert('Avatar updated successfully!')
+  } catch (err) {
+    alert(err?.response?.data?.message || 'Failed to update avatar')
+  }
+}
+
+async function handleDeleteCover() {
+  if (!isOwnProfile.value) {
+    return
+  }
+
+  const confirmed = window.confirm('Remove your cover image?')
+  if (!confirmed) {
+    return
+  }
+
+  try {
+    const { data } = await userApi.deleteCover()
+
+    if (profileUser.value) {
+      profileUser.value = { ...profileUser.value, ...data, coverImage: data.coverImage || '' }
+    }
+
+    if (isOwnProfile.value) {
+      authStore.user = { ...authStore.user, ...data, coverImage: data.coverImage || '' }
+      localStorage.setItem('authUser', JSON.stringify(authStore.user))
+    }
+  } catch (error) {
+    alert(error?.response?.data?.message || 'Failed to remove cover image')
+  }
+}
+
 async function goLogin() {
   await router.push('/login')
 }
