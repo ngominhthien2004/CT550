@@ -23,6 +23,7 @@ Mục tiêu: theo dõi trạng thái các chức năng đã/đang triển khai t
 | Phase 2: Moderation & Reporting Workflow                               | FE, BE, DB       | gem-orchestrator -> gem-researcher + gem-designer                            | Planned | docs/tasks/phase-2-plan.md                    | -            | pending                                                                                                      | 2026-04-01   |
 | Phase 3: AI Auto-tagging, Captioning, Recommendation                   | FE, BE, DB       | gem-orchestrator -> gem-researcher + gem-reviewer                            | Planned | docs/tasks/phase-3-plan.md                    | -            | pending                                                                                                      | 2026-04-01   |
 | Phase 3: AI Detection Labeling + Art Assistant                         | FE, BE, DB       | gem-orchestrator -> gem-researcher + gem-designer + gem-documentation-writer | Planned | docs/tasks/phase-3-plan.md                    | -            | pending                                                                                                      | 2026-04-01   |
+| Request / Commission Workflow                                          | FE, BE, DB       | Codex                                                                        | Done    | docs/request-feature-prd.md                   | pending      | Backend request validation tests pass; frontend build pass                                                   | 2026-05-11   |
 
 ## Trạng thái chuẩn
 

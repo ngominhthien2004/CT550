@@ -129,6 +129,27 @@ export const notificationApi = {
   markRead: (notificationId) => api.patch(`/notifications/${notificationId}/read`),
 }
 
+export const requestApi = {
+  getTerms: (params = {}) => api.get('/requests/terms', { params }),
+  createTerm: (payload) => api.post('/requests/terms', payload),
+  updateTerm: (termId, payload) => api.patch(`/requests/terms/${termId}`, payload),
+  create: (formData) => api.post('/requests', formData),
+  getMine: (params = {}) => api.get('/requests/mine', { params }),
+  getPublic: (params = {}) => api.get('/requests/public', { params }),
+  getById: (requestId) => api.get(`/requests/${requestId}`),
+  accept: (requestId) => api.post(`/requests/${requestId}/accept`),
+  reject: (requestId, payload = {}) => api.post(`/requests/${requestId}/reject`, payload),
+  start: (requestId) => api.post(`/requests/${requestId}/start`),
+  cancel: (requestId, payload = {}) => api.post(`/requests/${requestId}/cancel`, payload),
+  submitDraft: (requestId, formData) => api.post(`/requests/${requestId}/draft`, formData),
+  createRevision: (requestId, payload) => api.post(`/requests/${requestId}/revisions`, payload),
+  complete: (requestId, formData) => api.post(`/requests/${requestId}/complete`, formData),
+  approve: (requestId) => api.post(`/requests/${requestId}/approve`),
+  getChat: (requestId) => api.get(`/requests/${requestId}/chat`),
+  sendChat: (requestId, formData) => api.post(`/requests/${requestId}/chat`, formData),
+  report: (requestId, payload) => api.post(`/requests/${requestId}/report`, payload),
+}
+
 export const registerAuthUser = (payload) => api.post('/auth/register', payload)
 export const loginAuthUser = (payload) => api.post('/auth/login', payload)
 
@@ -144,5 +165,10 @@ export const markMessageRead = (messageId) => messageApi.markRead(messageId)
 
 export const getMyNotifications = (params = {}) => notificationApi.getMine(params)
 export const markNotificationRead = (notificationId) => notificationApi.markRead(notificationId)
+
+export const getRequestTerms = (params = {}) => requestApi.getTerms(params)
+export const createRequestTerm = (payload) => requestApi.createTerm(payload)
+export const createRequest = (formData) => requestApi.create(formData)
+export const getMyRequests = (params = {}) => requestApi.getMine(params)
 
 export default api

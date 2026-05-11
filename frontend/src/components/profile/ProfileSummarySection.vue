@@ -40,6 +40,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  isAcceptingRequests: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const avatarSrc = computed(() => props.user?.avatar || DEFAULT_PROFILE_AVATAR)
@@ -70,7 +74,7 @@ const socialLinks = computed(() => {
   return rows.filter((item) => typeof item.href === 'string' && item.href.trim())
 })
 
-const emit = defineEmits(['toggle-follow', 'edit-profile', 'edit-avatar'])
+const emit = defineEmits(['toggle-follow', 'edit-profile', 'edit-avatar', 'open-requests'])
 
 const shareTooltip = ref('')
 
@@ -107,6 +111,15 @@ async function handleShare() {
     <div class="profile-meta">
       <h1 class="profile-name">{{ user.displayName || user.username }}</h1>
       <p class="profile-handle">@{{ user.username || 'member' }}</p>
+      <button
+        v-if="isAcceptingRequests"
+        type="button"
+        class="request-badge"
+        @click="emit('open-requests')"
+      >
+        <i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i>
+        Accepting Requests
+      </button>
 
       <div class="profile-stats">
         <router-link :to="`/users/${user._id}/followers`" class="stat-link"><strong>{{ followersCount }}</strong> Followers</router-link>
@@ -144,6 +157,15 @@ async function handleShare() {
 
     <div class="profile-actions">
       <button v-if="isOwnProfile" type="button" class="edit-profile-btn" @click="emit('edit-profile')">Edit profile</button>
+      <button
+        v-if="isAcceptingRequests"
+        type="button"
+        class="request-action-btn"
+        :aria-label="isOwnProfile ? 'Manage requests' : 'Send request'"
+        @click="emit('open-requests')"
+      >
+        {{ isOwnProfile ? 'Manage Request' : 'Request' }}
+      </button>
       <button
         v-else
         type="button"
@@ -298,6 +320,20 @@ async function handleShare() {
   font-size: 0.84rem;
 }
 
+.request-badge {
+  width: fit-content;
+  border: 1px solid #bae6fd;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #0369a1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  padding: 0.38rem 0.66rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
 .profile-socials {
   display: inline-flex;
   align-items: center;
@@ -357,6 +393,16 @@ async function handleShare() {
   padding: 0.7rem 1rem;
   font-size: 0.88rem;
   font-weight: 700;
+}
+
+.request-action-btn {
+  border: 1px solid #14b8a6;
+  border-radius: 999px;
+  background: #0f766e;
+  color: #fff;
+  padding: 0.7rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 800;
 }
 
 .follow-profile-btn {

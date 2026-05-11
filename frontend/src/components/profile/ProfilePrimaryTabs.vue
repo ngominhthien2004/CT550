@@ -13,6 +13,7 @@ const emit = defineEmits(['select'])
   <nav class="profile-tabs" aria-label="Profile sections">
     <button type="button" class="profile-tab" :class="{ active: activeTab === 'home' }" @click="emit('select', 'home')">Home</button>
     <button type="button" class="profile-tab" :class="{ active: activeTab === 'illustrations' }" @click="emit('select', 'illustrations')">Illustrations</button>
+    <button type="button" class="profile-tab" :class="{ active: activeTab === 'requests' }" @click="emit('select', 'requests')">Requests</button>
     <button type="button" class="profile-tab" :class="{ active: activeTab === 'bookmarks' }" @click="emit('select', 'bookmarks')">Bookmarks</button>
     <button type="button" class="profile-tab" :class="{ active: activeTab === 'likes' }" @click="emit('select', 'likes')">Favorites</button>
   </nav>

@@ -9,6 +9,7 @@ import ProfilePrimaryTabs from '../components/profile/ProfilePrimaryTabs.vue'
 import ProfileWorksSection from '../components/profile/ProfileWorksSection.vue'
 import ProfileBookmarksSection from '../components/profile/ProfileBookmarksSection.vue'
 import ProfileLikesSection from '../components/profile/ProfileLikesSection.vue'
+import ProfileRequestsSection from '../components/profile/ProfileRequestsSection.vue'
 import ProfileCoverModal from '../components/profile/ProfileCoverModal.vue'
 import ProfileEditModal from '../components/profile/ProfileEditModal.vue'
 import ProfileAvatarModal from '../components/profile/ProfileAvatarModal.vue'
@@ -17,6 +18,7 @@ import { useAuthStore } from '../stores/auth.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
 import { useLikeStore } from '../stores/like.store'
 import { useFollowStore } from '../stores/follow.store'
+import { useRequestStore } from '../stores/request.store'
 import { getArtworks, userApi } from '../services/api'
 
 const isNavCollapsed = ref(true)
@@ -26,6 +28,7 @@ const authStore = useAuthStore()
 const bookmarkStore = useBookmarkStore()
 const likeStore = useLikeStore()
 const followStore = useFollowStore()
+const requestStore = useRequestStore()
 const profileUser = ref(null)
 const profileLoading = ref(false)
 const profileError = ref('')
@@ -41,6 +44,9 @@ const activeMainTab = ref('home')
 const activeBookmarkType = ref('')
 const activeLikeType = ref('')
 const followError = ref('')
+const requestTerms = ref([])
+const requestTermsLoading = ref(false)
+const requestTermsError = ref('')
 const showEditModal = ref(false)
 const showCoverModal = ref(false)
 const showAvatarModal = ref(false)
@@ -81,6 +87,7 @@ const followLoading = computed(() => {
 })
 
 const profileCoverImage = computed(() => user.value?.coverImage || artworks.value[0]?.image || '')
+const isAcceptingRequests = computed(() => requestTerms.value.some((term) => term.isOpen))
 
 const typeLabelMap = {
   illust: 'Illustration',
@@ -199,6 +206,15 @@ function selectMainTab(tab) {
   activeMainTab.value = tab
 }
 
+function openRequestsTab() {
+  if (isOwnProfile.value) {
+    router.push('/requests/manage')
+    return
+  }
+
+  activeMainTab.value = 'requests'
+}
+
 function showAllWorks() {
   activeMainTab.value = 'illustrations'
 }
@@ -257,6 +273,26 @@ async function loadFollowStats() {
     followStore.fetchFollowing(viewingUserId.value),
     followStore.fetchFollowers(viewingUserId.value),
   ])
+}
+
+async function loadRequestTerms() {
+  if (!viewingUserId.value) {
+    requestTerms.value = []
+    return
+  }
+
+  requestTermsLoading.value = true
+  requestTermsError.value = ''
+
+  try {
+    const data = await requestStore.fetchTerms({ creator: viewingUserId.value, openOnly: isOwnProfile.value ? 'false' : 'true' })
+    requestTerms.value = Array.isArray(data) ? data : requestStore.terms
+  } catch (error) {
+    requestTermsError.value = error?.response?.data?.message || 'Failed to load request plans'
+    requestTerms.value = []
+  } finally {
+    requestTermsLoading.value = false
+  }
 }
 
 async function loadProfile() {
@@ -380,6 +416,8 @@ onMounted(() => {
     activeMainTab.value = 'likes'
   } else if (route.query.tab === 'bookmarks') {
     activeMainTab.value = 'bookmarks'
+  } else if (route.query.tab === 'requests') {
+    activeMainTab.value = 'requests'
   }
 
   loadProfile()
@@ -387,6 +425,7 @@ onMounted(() => {
   loadBookmarks()
   loadLikes()
   loadFollowStats()
+  loadRequestTerms()
 })
 
 watch(
@@ -397,6 +436,7 @@ watch(
     loadBookmarks()
     loadLikes()
     loadFollowStats()
+    loadRequestTerms()
   },
 )
 
@@ -431,9 +471,11 @@ watch(showEditModal, (val) => {
           :follow-loading="followLoading"
           :follow-error="followError"
           :artwork-count="artworks.length"
+          :is-accepting-requests="isAcceptingRequests"
           @toggle-follow="toggleFollow"
           @edit-profile="showEditModal = true"
           @edit-avatar="showAvatarModal = true"
+          @open-requests="openRequestsTab"
         />
         <p v-if="profileLoading" class="text-secondary mb-1">Loading profile...</p>
         <p v-if="profileError" class="text-danger mb-1">{{ profileError }}</p>
@@ -482,6 +524,15 @@ watch(showEditModal, (val) => {
           :loading="likeStore.loading"
           :error="likeStore.error"
           @select-type="selectLikeType"
+        />
+
+        <ProfileRequestsSection
+          v-else-if="activeMainTab === 'requests'"
+          :terms="requestTerms"
+          :creator="user"
+          :is-own-profile="isOwnProfile"
+          :loading="requestTermsLoading"
+          :error="requestTermsError"
         />
 
         <section v-else-if="(activeMainTab === 'bookmarks' || activeMainTab === 'likes') && !isOwnProfile" class="bookmarks-placeholder">
