@@ -3,16 +3,8 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRoute } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import ProfileCoverBanner from '../components/profile/ProfileCoverBanner.vue'
-import ProfileSummarySection from '../components/profile/ProfileSummarySection.vue'
-import ProfilePrimaryTabs from '../components/profile/ProfilePrimaryTabs.vue'
-import ProfileWorksSection from '../components/profile/ProfileWorksSection.vue'
-import ProfileBookmarksSection from '../components/profile/ProfileBookmarksSection.vue'
-import ProfileLikesSection from '../components/profile/ProfileLikesSection.vue'
-import ProfileRequestsSection from '../components/profile/ProfileRequestsSection.vue'
-import ProfileCoverModal from '../components/profile/ProfileCoverModal.vue'
-import ProfileEditModal from '../components/profile/ProfileEditModal.vue'
-import ProfileAvatarModal from '../components/profile/ProfileAvatarModal.vue'
+import AccountProfileSection from '../components/account/AccountProfileSection.vue'
+import AccountLoggedOutPrompt from '../components/account/AccountLoggedOutPrompt.vue'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
@@ -407,81 +399,6 @@ async function handleDeleteCover() {
   }
 }
 
-async function handleUpdateCover(formData) {
-  try {
-    if (!formData?.has?.('coverImage')) {
-      showCoverModal.value = false
-      return
-    }
-
-    const { data } = await userApi.updateProfile(formData)
-
-    if (profileUser.value) {
-      profileUser.value = { ...profileUser.value, ...data }
-    }
-
-    if (isOwnProfile.value) {
-      authStore.user = { ...authStore.user, ...data }
-      localStorage.setItem('authUser', JSON.stringify(authStore.user))
-    }
-
-    showCoverModal.value = false
-    alert('Cover updated successfully!')
-  } catch (err) {
-    alert(err?.response?.data?.message || 'Failed to update cover image')
-  }
-}
-
-async function handleUpdateAvatar(formData) {
-  try {
-    if (!formData?.has?.('avatar')) {
-      showAvatarModal.value = false
-      return
-    }
-
-    const { data } = await userApi.updateProfile(formData)
-
-    if (profileUser.value) {
-      profileUser.value = { ...profileUser.value, ...data }
-    }
-
-    if (isOwnProfile.value) {
-      authStore.user = { ...authStore.user, ...data }
-      localStorage.setItem('authUser', JSON.stringify(authStore.user))
-    }
-
-    showAvatarModal.value = false
-    alert('Avatar updated successfully!')
-  } catch (err) {
-    alert(err?.response?.data?.message || 'Failed to update avatar')
-  }
-}
-
-async function handleDeleteCover() {
-  if (!isOwnProfile.value) {
-    return
-  }
-
-  const confirmed = window.confirm('Remove your cover image?')
-  if (!confirmed) {
-    return
-  }
-
-  try {
-    const { data } = await userApi.deleteCover()
-
-    if (profileUser.value) {
-      profileUser.value = { ...profileUser.value, ...data, coverImage: data.coverImage || '' }
-    }
-
-    if (isOwnProfile.value) {
-      authStore.user = { ...authStore.user, ...data, coverImage: data.coverImage || '' }
-      localStorage.setItem('authUser', JSON.stringify(authStore.user))
-    }
-  } catch (error) {
-    alert(error?.response?.data?.message || 'Failed to remove cover image')
-  }
-}
 
 async function goLogin() {
   await router.push('/login')
@@ -527,152 +444,62 @@ watch(showEditModal, (val) => {
 
 <template>
   <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
-    <section v-if="user" class="profile-page page-block">
-      <ProfileCoverBanner
-        :user="user"
-        :cover-image="profileCoverImage"
-        :is-own-profile="isOwnProfile"
-        @edit-cover="showCoverModal = true"
-        @delete-cover="handleDeleteCover"
-      />
+    <AccountProfileSection
+      v-if="user"
+      :user="user"
+      :profile-cover-image="profileCoverImage"
+      :is-own-profile="isOwnProfile"
+      :following-count="followingCount"
+      :followers-count="followersCount"
+      :profile-location="profileLocation"
+      :is-following-profile="isFollowingProfile"
+      :follow-loading="followLoading"
+      :follow-error="followError"
+      :artworks-count="artworks.length"
+      :is-accepting-requests="isAcceptingRequests"
+      :profile-loading="profileLoading"
+      :profile-error="profileError"
+      :active-main-tab="activeMainTab"
+      :type-tabs="typeTabs"
+      :active-type="activeType"
+      :visible-artworks="visibleArtworks"
+      :loading-artworks="loadingArtworks"
+      :artworks-error="artworksError"
+      :bookmark-type-tabs="bookmarkTypeTabs"
+      :active-bookmark-type="activeBookmarkType"
+      :visible-bookmarks="visibleBookmarks"
+      :bookmark-loading="bookmarkStore.loading"
+      :bookmark-error="bookmarkStore.error"
+      :like-type-tabs="likeTypeTabs"
+      :active-like-type="activeLikeType"
+      :visible-likes="visibleLikes"
+      :like-loading="likeStore.loading"
+      :like-error="likeStore.error"
+      :request-terms="requestTerms"
+      :request-terms-loading="requestTermsLoading"
+      :request-terms-error="requestTermsError"
+      :show-avatar-modal="showAvatarModal"
+      :show-cover-modal="showCoverModal"
+      :show-edit-modal="showEditModal"
+      @edit-cover="showCoverModal = true"
+      @delete-cover="handleDeleteCover"
+      @toggle-follow="toggleFollow"
+      @edit-profile="showEditModal = true"
+      @edit-avatar="showAvatarModal = true"
+      @open-requests="openRequestsTab"
+      @select-main-tab="selectMainTab"
+      @select-type="selectType"
+      @show-all-works="showAllWorks"
+      @select-bookmark-type="selectBookmarkType"
+      @select-like-type="selectLikeType"
+      @close-avatar="showAvatarModal = false"
+      @close-cover="showCoverModal = false"
+      @close-edit="showEditModal = false"
+      @save-avatar="handleUpdateAvatar"
+      @save-cover="handleUpdateCover"
+      @save-profile="handleUpdateProfile"
+    />
 
-      <div class="profile-main">
-        <ProfileSummarySection
-          :user="user"
-          :following-count="followingCount"
-          :followers-count="followersCount"
-          :profile-location="profileLocation"
-          :is-own-profile="isOwnProfile"
-          :is-following="isFollowingProfile"
-          :follow-loading="followLoading"
-          :follow-error="followError"
-          :artwork-count="artworks.length"
-          :is-accepting-requests="isAcceptingRequests"
-          @toggle-follow="toggleFollow"
-          @edit-profile="showEditModal = true"
-          @edit-avatar="showAvatarModal = true"
-          @open-requests="openRequestsTab"
-        />
-        <p v-if="profileLoading" class="text-secondary mb-1">Loading profile...</p>
-        <p v-if="profileError" class="text-danger mb-1">{{ profileError }}</p>
-        <ProfilePrimaryTabs :active-tab="activeMainTab" @select="selectMainTab" />
-
-        <ProfileWorksSection
-          v-if="activeMainTab === 'home'"
-          heading="Illustrations and Manga"
-          :show-featured="true"
-          :tabs="typeTabs"
-          :active-type="activeType"
-          :artworks="visibleArtworks"
-          :loading="loadingArtworks"
-          :error="artworksError"
-          @select-type="selectType"
-          @show-all="showAllWorks"
-        />
-
-        <ProfileWorksSection
-          v-else-if="activeMainTab === 'illustrations'"
-          heading="All works"
-          :show-featured="false"
-          :tabs="typeTabs"
-          :active-type="activeType"
-          :artworks="visibleArtworks"
-          :loading="loadingArtworks"
-          :error="artworksError"
-          @select-type="selectType"
-        />
-
-        <ProfileBookmarksSection
-          v-else-if="activeMainTab === 'bookmarks' && isOwnProfile"
-          :tabs="bookmarkTypeTabs"
-          :active-type="activeBookmarkType"
-          :bookmarks="visibleBookmarks"
-          :loading="bookmarkStore.loading"
-          :error="bookmarkStore.error"
-          @select-type="selectBookmarkType"
-        />
-
-        <ProfileLikesSection
-          v-else-if="activeMainTab === 'likes' && isOwnProfile"
-          :tabs="likeTypeTabs"
-          :active-type="activeLikeType"
-          :likes="visibleLikes"
-          :loading="likeStore.loading"
-          :error="likeStore.error"
-          @select-type="selectLikeType"
-        />
-
-        <ProfileRequestsSection
-          v-else-if="activeMainTab === 'requests'"
-          :terms="requestTerms"
-          :creator="user"
-          :is-own-profile="isOwnProfile"
-          :loading="requestTermsLoading"
-          :error="requestTermsError"
-        />
-
-        <section v-else-if="(activeMainTab === 'bookmarks' || activeMainTab === 'likes') && !isOwnProfile" class="bookmarks-placeholder">
-          This list is only available on your own profile.
-        </section>
-      </div>
-      <Teleport to="body">
-        <ProfileAvatarModal
-          :show="showAvatarModal"
-          :user="user"
-          @close="showAvatarModal = false"
-          @save="handleUpdateAvatar"
-        />
-        <ProfileCoverModal
-          :show="showCoverModal"
-          :user="user"
-          :cover-image="profileCoverImage"
-          @close="showCoverModal = false"
-          @save="handleUpdateCover"
-        />
-        <ProfileEditModal
-          :show="showEditModal"
-          :user="user"
-          @close="showEditModal = false"
-          @save="handleUpdateProfile"
-        />
-      </Teleport>
-    </section>
-
-    <section v-else class="page-block p-3 p-md-4 d-grid gap-2">
-      <h1 class="h4 mb-0">Profile</h1>
-      <p class="text-secondary mb-0">You are not logged in.</p>
-      <button class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
-    </section>
+    <AccountLoggedOutPrompt v-else @go-login="goLogin" />
   </MainLayoutTemplate>
 </template>
-
-<style scoped>
-.profile-page {
-  background: #fff;
-  min-height: calc(100vh - 112px);
-  overflow: hidden;
-}
-
-.profile-main {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 0 1.65rem 3.5rem;
-  position: relative;
-  z-index: 2;
-}
-
-.bookmarks-placeholder {
-  margin-top: 1.25rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 20px;
-  padding: 1rem 1.1rem;
-  color: #64748b;
-  background: #fff;
-}
-
-@media (max-width: 820px) {
-  .profile-main {
-    padding: 0 0.9rem 2rem;
-  }
-}
-</style>
