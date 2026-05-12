@@ -24,7 +24,8 @@ const authStore = useAuthStore()
 const illuWrlStyleSections = computed(() => {
   if (Array.isArray(props.navItems) && props.navItems.length > 0) {
     const manageGroup = [
-      { id: 'requests', label: 'Requests', to: '/messages', icon: 'fa-regular fa-comments' },
+      { id: 'dashboard', label: 'Dashboard', to: '/dashboard', icon: 'fa-solid fa-gauge-high' },
+      { id: 'requests', label: 'Requests', to: '/requests/manage', icon: 'fa-regular fa-comments' },
     ]
 
     if (authStore.user?.role === 'admin') {

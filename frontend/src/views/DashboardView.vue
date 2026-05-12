@@ -18,7 +18,8 @@ const user = computed(() => authStore.user)
 const artworks = ref([])
 const loading = ref(false)
 const error = ref('')
-const onboardingStep = ref(1)
+const onboardingStep = ref(0)
+const onboardingKeyPrefix = 'dashboardOnboardingSeen:'
 
 const latestArtwork = computed(() => artworks.value[0] || null)
 
@@ -73,7 +74,7 @@ async function loadDashboard() {
 
 function nextOnboardingStep() {
   if (onboardingStep.value >= 2) {
-    onboardingStep.value = 0
+    finishOnboarding()
     return
   }
   onboardingStep.value += 1
@@ -81,6 +82,35 @@ function nextOnboardingStep() {
 
 function finishOnboarding() {
   onboardingStep.value = 0
+  if (!user.value?._id) {
+    return
+  }
+  try {
+    localStorage.setItem(`${onboardingKeyPrefix}${user.value._id}`, 'true')
+  } catch (_error) {
+    // Ignore storage errors so the UI remains usable.
+  }
+}
+
+function startOnboarding() {
+  if (!user.value?._id) {
+    return
+  }
+  onboardingStep.value = 1
+}
+
+function initOnboarding() {
+  if (!user.value?._id) {
+    onboardingStep.value = 0
+    return
+  }
+
+  try {
+    const seen = localStorage.getItem(`${onboardingKeyPrefix}${user.value._id}`)
+    onboardingStep.value = seen ? 0 : 1
+  } catch (_error) {
+    onboardingStep.value = 1
+  }
 }
 
 async function goLogin() {
@@ -92,12 +122,14 @@ async function goUpload() {
 }
 
 onMounted(() => {
+  initOnboarding()
   loadDashboard()
 })
 
 watch(
   () => user.value?._id,
   () => {
+    initOnboarding()
     loadDashboard()
   },
 )
@@ -108,7 +140,10 @@ watch(
     <section v-if="user" class="dashboard-page page-block">
       <div class="dashboard-wrap">
         <header class="dashboard-head">
-          <h1>Dashboard</h1>
+          <div class="dashboard-title-row">
+            <h1>Dashboard</h1>
+            <button type="button" class="guide-btn" @click="startOnboarding">Show guide</button>
+          </div>
           <CreatorDashboardTabs />
         </header>
 
@@ -167,6 +202,28 @@ watch(
 .dashboard-head {
   display: grid;
   gap: 0.82rem;
+}
+
+.dashboard-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.guide-btn {
+  border: 1px solid #cbd5f5;
+  background: #f8fafc;
+  color: #1e293b;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.guide-btn:hover {
+  background: #eef2ff;
 }
 
 .dashboard-head h1 {

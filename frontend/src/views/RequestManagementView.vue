@@ -101,7 +101,10 @@ onMounted(loadAll)
           <p class="eyebrow">Creator tools</p>
           <h1>Request Management</h1>
         </div>
-        <router-link to="/account?tab=requests" class="profile-link">View profile plans</router-link>
+        <div class="request-header-actions">
+          <router-link to="/dashboard" class="profile-link">Dashboard</router-link>
+          <router-link to="/account?tab=requests" class="profile-link">View profile plans</router-link>
+        </div>
       </header>
 
       <div class="management-grid">
@@ -231,6 +234,12 @@ onMounted(loadAll)
 .request-header {
   max-width: 1180px;
   margin: 0 auto 1rem;
+  align-items: center;
+}
+
+.request-header-actions {
+  display: flex;
+  gap: 0.75rem;
   align-items: center;
 }
 

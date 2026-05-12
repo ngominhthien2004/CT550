@@ -104,7 +104,7 @@ const userMainLinks = computed(() => {
   const links = [
     { label: 'Dashboard', to: '/dashboard' },
     { label: 'My works', to: '/feed' },
-    { label: 'Manage requests', to: '/messages' },
+    { label: 'Manage requests', to: '/requests/manage' },
   ]
 
   if (currentUser.value?.role === 'admin') {
