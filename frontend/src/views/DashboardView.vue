@@ -19,6 +19,7 @@ const artworks = ref([])
 const loading = ref(false)
 const error = ref('')
 const onboardingStep = ref(0)
+const hasSeenGuide = ref(false)
 const onboardingKeyPrefix = 'dashboardOnboardingSeen:'
 
 const latestArtwork = computed(() => artworks.value[0] || null)
@@ -87,6 +88,7 @@ function finishOnboarding() {
   }
   try {
     localStorage.setItem(`${onboardingKeyPrefix}${user.value._id}`, 'true')
+    hasSeenGuide.value = true
   } catch (_error) {
     // Ignore storage errors so the UI remains usable.
   }
@@ -94,6 +96,10 @@ function finishOnboarding() {
 
 function startOnboarding() {
   if (!user.value?._id) {
+    return
+  }
+  if (onboardingStep.value > 0) {
+    finishOnboarding()
     return
   }
   onboardingStep.value = 1
@@ -108,10 +114,19 @@ function initOnboarding() {
   try {
     const seen = localStorage.getItem(`${onboardingKeyPrefix}${user.value._id}`)
     onboardingStep.value = seen ? 0 : 1
+    hasSeenGuide.value = Boolean(seen)
   } catch (_error) {
     onboardingStep.value = 1
+    hasSeenGuide.value = false
   }
 }
+
+const guideLabel = computed(() => {
+  if (onboardingStep.value > 0) {
+    return 'Hide guide'
+  }
+  return hasSeenGuide.value ? 'Show guide' : 'Start guide'
+})
 
 async function goLogin() {
   await router.push('/login')
@@ -142,7 +157,16 @@ watch(
         <header class="dashboard-head">
           <div class="dashboard-title-row">
             <h1>Dashboard</h1>
-            <button type="button" class="guide-btn" @click="startOnboarding">Show guide</button>
+            <button
+              type="button"
+              class="guide-btn"
+              :class="{ 'is-active': onboardingStep > 0 }"
+              :aria-pressed="onboardingStep > 0"
+              title="Quick walkthrough of dashboard stats"
+              @click="startOnboarding"
+            >
+              {{ guideLabel }}
+            </button>
           </div>
           <CreatorDashboardTabs />
         </header>
@@ -224,6 +248,12 @@ watch(
 
 .guide-btn:hover {
   background: #eef2ff;
+}
+
+.guide-btn.is-active {
+  border-color: #1d4ed8;
+  color: #1d4ed8;
+  background: #e0e7ff;
 }
 
 .dashboard-head h1 {

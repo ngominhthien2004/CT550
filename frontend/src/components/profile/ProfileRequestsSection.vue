@@ -53,8 +53,28 @@ const form = reactive({
 })
 
 const openTerms = computed(() => props.terms.filter((term) => term.isOpen))
+const visibleTerms = computed(() => (props.isOwnProfile ? props.terms : openTerms.value))
 const selectedTerm = computed(() => openTerms.value.find((term) => term._id === selectedTermId.value) || openTerms.value[0] || null)
 const canSubmit = computed(() => Boolean(selectedTerm.value && authStore.isAuthenticated && !props.isOwnProfile))
+const platformFeeRate = 0.12
+const proposedAmountValue = computed(() => Number.parseFloat(form.proposedAmount) || 0)
+const estimatedFeeAmount = computed(() => proposedAmountValue.value * platformFeeRate)
+const estimatedPayoutAmount = computed(() => Math.max(proposedAmountValue.value - estimatedFeeAmount.value, 0))
+
+function formatMoney(amount, currency) {
+  const safeAmount = Number.isFinite(amount) ? amount : 0
+  const safeCurrency = currency || 'USD'
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: safeCurrency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(safeAmount)
+  } catch (_error) {
+    return `${safeCurrency} ${safeAmount.toFixed(2)}`
+  }
+}
 
 function syncTermDefaults(term) {
   if (!term) {
@@ -144,9 +164,9 @@ watch(
     <p v-if="loading" class="state-text">Loading request plans...</p>
     <p v-else-if="error" class="state-text error">{{ error }}</p>
 
-    <div v-if="openTerms.length" class="request-plan-grid">
+    <div v-if="visibleTerms.length" class="request-plan-grid">
       <article
-        v-for="term in openTerms"
+        v-for="term in visibleTerms"
         :key="term._id"
         class="request-plan"
         :class="{ selected: selectedTerm?._id === term._id }"
@@ -155,6 +175,12 @@ watch(
         <div class="plan-topline">
           <h3>{{ term.title }}</h3>
           <span>{{ term.currency || 'USD' }} {{ term.targetPrice }}</span>
+        </div>
+        <div class="plan-badges">
+          <span class="plan-status" :class="term.isOpen ? 'status-open' : 'status-closed'">
+            {{ term.isOpen ? 'Open' : 'Closed' }}
+          </span>
+          <span v-if="term.isOpen" class="plan-status status-accepting">Accepting requests</span>
         </div>
         <p>{{ term.strengths }}</p>
         <div class="plan-tags">
@@ -167,7 +193,10 @@ watch(
     </div>
 
     <div v-else-if="!loading" class="empty-panel">
-      {{ isOwnProfile ? 'Create at least one plan to start accepting Requests.' : 'This creator is not accepting Requests right now.' }}
+      <p class="empty-text">
+        {{ isOwnProfile ? 'Create at least one plan to start accepting Requests.' : 'This creator is not accepting Requests right now.' }}
+      </p>
+      <router-link v-if="isOwnProfile" to="/requests/manage" class="manage-link outline">Create a plan</router-link>
     </div>
 
     <form v-if="!isOwnProfile && openTerms.length" class="request-form" @submit.prevent="submitRequest">
@@ -209,6 +238,17 @@ watch(
         Description
         <textarea v-model="form.description" rows="5" required placeholder="Markdown is OK. Include intent, references, deadline concerns, and usage notes."></textarea>
       </label>
+
+      <div class="escrow-summary">
+        <div>
+          <p class="escrow-title">Escrow estimate</p>
+          <p class="escrow-note">Funds are held until the creator accepts or rejects.</p>
+        </div>
+        <div class="escrow-values">
+          <span>Platform fee (12%): {{ formatMoney(estimatedFeeAmount, selectedTerm?.currency) }}</span>
+          <span>Creator payout: {{ formatMoney(estimatedPayoutAmount, selectedTerm?.currency) }}</span>
+        </div>
+      </div>
 
       <div class="form-grid specifics-grid">
         <label><span>Pose</span><input v-model="form.pose" type="text" /></label>
@@ -309,6 +349,36 @@ watch(
   cursor: pointer;
   display: grid;
   gap: 0.65rem;
+}
+
+.plan-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.plan-status {
+  border-radius: 999px;
+  padding: 0.22rem 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-open {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status-closed {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-accepting {
+  background: #e0f2fe;
+  color: #0369a1;
 }
 
 .request-plan.selected {
@@ -413,6 +483,51 @@ textarea {
   color: #15803d;
 }
 
+.empty-text {
+  margin: 0;
+}
+
+.manage-link.outline {
+  background: #fff;
+  color: #0096fa;
+  border: 1px solid #0096fa;
+  text-align: center;
+}
+
+.escrow-summary {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.escrow-title {
+  margin: 0;
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.escrow-note {
+  margin: 0.2rem 0 0;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.escrow-values {
+  display: grid;
+  gap: 0.2rem;
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
 .submit-request-btn:disabled {
   opacity: 0.55;
 }
@@ -426,6 +541,10 @@ textarea {
 
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .escrow-values {
+    text-align: left;
   }
 }
 </style>

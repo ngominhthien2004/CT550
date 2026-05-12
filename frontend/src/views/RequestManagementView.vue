@@ -114,44 +114,70 @@ onMounted(loadAll)
             <span :class="termForm.isOpen ? 'open' : 'closed'">{{ termForm.isOpen ? 'Open' : 'Closed' }}</span>
           </div>
 
-          <label>Plan title<input v-model="termForm.title" type="text" required /></label>
-          <label>Tier<input v-model="termForm.tier" type="text" /></label>
-
-          <div class="form-grid">
-            <label>Target price<input v-model.number="termForm.targetPrice" type="number" min="1" required /></label>
-            <label>Currency<input v-model="termForm.currency" type="text" maxlength="8" /></label>
-            <label>Estimated days<input v-model.number="termForm.estimatedDays" type="number" min="14" max="60" required /></label>
-            <label>Max open requests<input v-model.number="termForm.maxOpenRequests" type="number" min="1" max="20" required /></label>
+          <div class="form-section">
+            <div class="form-section-head">
+              <h3>Plan basics</h3>
+              <p class="section-hint">Give the plan a name fans can recognize.</p>
+            </div>
+            <div class="form-grid">
+              <label>Plan title<input v-model="termForm.title" type="text" required /></label>
+              <label>Tier<input v-model="termForm.tier" type="text" /></label>
+            </div>
           </div>
 
-          <div class="chip-row" aria-label="Accepted work types">
-            <button
-              v-for="type in workTypes"
-              :key="type"
-              type="button"
-              :class="{ active: termForm.acceptedWorkTypes.includes(type) }"
-              @click="toggleListValue(termForm.acceptedWorkTypes, type)"
-            >
-              {{ type }}
-            </button>
+          <div class="form-section">
+            <div class="form-section-head">
+              <h3>Pricing & capacity</h3>
+              <p class="section-hint">Set minimum price and how many slots you can take.</p>
+            </div>
+            <div class="form-grid">
+              <label>Target price<input v-model.number="termForm.targetPrice" type="number" min="1" required /></label>
+              <label>Currency<input v-model="termForm.currency" type="text" maxlength="8" /></label>
+              <label>Estimated days<input v-model.number="termForm.estimatedDays" type="number" min="14" max="60" required /></label>
+              <label>Max open requests<input v-model.number="termForm.maxOpenRequests" type="number" min="1" max="20" required /></label>
+            </div>
           </div>
 
-          <div class="chip-row" aria-label="Accepted age ratings">
-            <button
-              v-for="rating in ageRatings"
-              :key="rating"
-              type="button"
-              :class="{ active: termForm.acceptedAgeRatings.includes(rating) }"
-              @click="toggleListValue(termForm.acceptedAgeRatings, rating)"
-            >
-              {{ rating }}
-            </button>
+          <div class="form-section">
+            <div class="form-section-head">
+              <h3>Work scope</h3>
+              <p class="section-hint">Choose what types of commissions you accept.</p>
+            </div>
+            <div class="chip-row" aria-label="Accepted work types">
+              <button
+                v-for="type in workTypes"
+                :key="type"
+                type="button"
+                :class="{ active: termForm.acceptedWorkTypes.includes(type) }"
+                @click="toggleListValue(termForm.acceptedWorkTypes, type)"
+              >
+                {{ type }}
+              </button>
+            </div>
+
+            <div class="chip-row" aria-label="Accepted age ratings">
+              <button
+                v-for="rating in ageRatings"
+                :key="rating"
+                type="button"
+                :class="{ active: termForm.acceptedAgeRatings.includes(rating) }"
+                @click="toggleListValue(termForm.acceptedAgeRatings, rating)"
+              >
+                {{ rating }}
+              </button>
+            </div>
           </div>
 
-          <label>Rules<textarea v-model="termForm.rules" rows="4" required></textarea></label>
-          <label>Strengths<textarea v-model="termForm.strengths" rows="4" required></textarea></label>
-          <label>Preferred styles<input v-model="termForm.preferredStyles" type="text" placeholder="soft color, portrait" /></label>
-          <label>Forbidden topics<input v-model="termForm.forbiddenTopics" type="text" placeholder="R-18G, gore, trademarked logos" /></label>
+          <div class="form-section">
+            <div class="form-section-head">
+              <h3>Guidelines</h3>
+              <p class="section-hint">Clarify rules, strengths, and things you avoid.</p>
+            </div>
+            <label>Rules<textarea v-model="termForm.rules" rows="4" required></textarea></label>
+            <label>Strengths<textarea v-model="termForm.strengths" rows="4" required></textarea></label>
+            <label>Preferred styles<input v-model="termForm.preferredStyles" type="text" placeholder="soft color, portrait" /></label>
+            <label>Forbidden topics<input v-model="termForm.forbiddenTopics" type="text" placeholder="R-18G, gore, trademarked logos" /></label>
+          </div>
 
           <label class="inline-check">
             <input v-model="termForm.isOpen" type="checkbox" />
@@ -241,6 +267,34 @@ onMounted(loadAll)
   display: flex;
   gap: 0.75rem;
   align-items: center;
+}
+
+.form-section {
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fbff;
+  padding: 0.9rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.form-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.form-section-head h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.section-hint {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
 .eyebrow {
