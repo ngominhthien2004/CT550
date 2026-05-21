@@ -1,0 +1,309 @@
+plan_id: user-search-2026-05-12
+objective: Check frontend for existing user search UI and related API endpoints.
+focus_area: frontend-user-search
+created_at: "2026-05-12"
+created_by: gem-researcher
+status: completed
+
+tldr: |
+  - Search UI is centered on artworks: AppSearchBar sends queries to /search and SearchResultsView filters artworks client-side.
+  - A user search input exists only in the admin panel, backed by /users/admin/list with q and role filters.
+  - Top bar scope menu includes "user" but no user search route or API usage is wired for public user search.
+  - Docs confirm Search Results is frontend-only using /api/artworks for data.
+
+research_metadata:
+  methodology: "hybrid retrieval: semantic_search + grep_search; file_search; targeted read_file"
+  scope: "frontend search UI, router, services; admin user search UI; backend user/admin list endpoints"
+  confidence: medium
+  coverage: 0.78
+  decision_blockers: 0
+  research_blockers: 0
+
+files_analyzed:
+  - file: SearchResultsView.vue
+    path: frontend/src/views/SearchResultsView.vue
+    purpose: Search results page for artworks using client-side filtering.
+    key_elements:
+      - element: loadSearchItems
+        type: function
+        location: SearchResultsView.vue:272
+        description: Loads artworks, normalizes query params, and filters client-side.
+    language: Vue
+    lines: 260
+  - file: FeedView.vue
+    path: frontend/src/views/FeedView.vue
+    purpose: Feed page with search options and client-side filtering.
+    key_elements:
+      - element: loadFeed
+        type: function
+        location: FeedView.vue:169
+        description: Loads artworks and applies query-based filtering.
+    language: Vue
+    lines: 260
+  - file: AppSearchBar.vue
+    path: frontend/src/components/layout/AppSearchBar.vue
+    purpose: Global search bar UI with search history and submit.
+    key_elements:
+      - element: submitSearch
+        type: function
+        location: AppSearchBar.vue:57
+        description: Pushes to /search with q query and stores history.
+      - element: router.push
+        type: call
+        location: AppSearchBar.vue:64
+        description: Navigation target for search submission.
+    language: Vue
+    lines: 260
+  - file: AppTopBar.vue
+    path: frontend/src/components/layout/AppTopBar/AppTopBar.vue
+    purpose: Top bar container with search scope selection.
+    key_elements:
+      - element: selectedSearchScope
+        type: state
+        location: AppTopBar.vue:35
+        description: Stores current search scope selection.
+      - element: searchScopes
+        type: constant
+        location: AppTopBar.vue:45
+        description: Defines scopes including artworks, novel, and user.
+    language: Vue
+    lines: 260
+  - file: AppTopBarSearchControls.vue
+    path: frontend/src/components/layout/AppTopBar/AppTopBarSearchControls.vue
+    purpose: Search controls UI with scope menu.
+    key_elements:
+      - element: chooseSearchScope
+        type: function
+        location: AppTopBarSearchControls.vue:23
+        description: Emits scope selection from the menu.
+    language: Vue
+    lines: 260
+  - file: SearchOptionsModal.vue
+    path: frontend/src/components/search/SearchOptionsModal.vue
+    purpose: Modal for advanced search options.
+    key_elements:
+      - element: applySearch
+        type: function
+        location: SearchOptionsModal.vue:52
+        description: Emits advanced query options to caller.
+    language: Vue
+    lines: 240
+  - file: index.js
+    path: frontend/src/router/index.js
+    purpose: Frontend routes definition.
+    key_elements:
+      - element: /search route
+        type: route
+        location: index.js:60
+        description: Search results route for artworks.
+    language: JavaScript
+    lines: 220
+  - file: api.js
+    path: frontend/src/services/api.js
+    purpose: Axios client and API wrappers.
+    key_elements:
+      - element: getArtworks
+        type: function
+        location: api.js:67
+        description: GET /artworks used as data source for client-side search.
+      - element: adminApi.getUsers
+        type: function
+        location: api.js:115
+        description: GET /users/admin/list for admin user search.
+    language: JavaScript
+    lines: 260
+  - file: AdminManagementView.vue
+    path: frontend/src/views/AdminManagementView.vue
+    purpose: Admin dashboard with user and artwork management.
+    key_elements:
+      - element: loadUsers
+        type: function
+        location: AdminManagementView.vue:69
+        description: Calls adminApi.getUsers with q and role filters.
+    language: Vue
+    lines: 240
+  - file: AdminUserManagementPanel.vue
+    path: frontend/src/components/admin/AdminUserManagementPanel.vue
+    purpose: Admin user search and filtering UI.
+    key_elements:
+      - element: userQuery input
+        type: UI control
+        location: AdminUserManagementPanel.vue:81
+        description: Search input for username/email in admin panel.
+    language: Vue
+    lines: 220
+  - file: user.routes.js
+    path: backend/routes/user.routes.js
+    purpose: User and admin user management routes.
+    key_elements:
+      - element: GET /admin/list
+        type: route
+        location: user.routes.js:63
+        description: Admin-only user list endpoint with filters.
+    language: JavaScript
+    lines: 120
+  - file: user.controller.js
+    path: backend/controllers/user.controller.js
+    purpose: User controller logic.
+    key_elements:
+      - element: getAdminUsers
+        type: function
+        location: user.controller.js:211
+        description: Supports q (regex on username/displayName/email) and role filters.
+    language: JavaScript
+    lines: 320
+  - file: artwork.routes.js
+    path: backend/routes/artwork.routes.js
+    purpose: Artwork CRUD routes.
+    key_elements:
+      - element: GET /artworks
+        type: route
+        location: artwork.routes.js:62
+        description: Artwork list used by client-side search.
+    language: JavaScript
+    lines: 120
+  - file: user-feature-workflows.md
+    path: docs/user-feature-workflows.md
+    purpose: Workflow documentation for search.
+    key_elements:
+      - element: Search Results (frontend-only)
+        type: documentation
+        location: user-feature-workflows.md:243
+        description: Notes /search uses /api/artworks and client-side filtering.
+    language: Markdown
+    lines: 320
+
+patterns_found:
+  - category: architecture
+    pattern: Client-side search over artworks
+    description: Search results are built by fetching all artworks and filtering locally by query tokens and target fields.
+    examples:
+      - file: frontend/src/views/SearchResultsView.vue
+        location: SearchResultsView.vue:272
+        snippet: "async function loadSearchItems()"
+    prevalence: common
+  - category: structure
+    pattern: Shared search options modal for artwork search
+    description: Feed and SearchResults reuse SearchOptionsModal with query parameters.
+    examples:
+      - file: frontend/src/components/search/SearchOptionsModal.vue
+        location: SearchOptionsModal.vue:52
+        snippet: "function applySearch()"
+    prevalence: common
+  - category: architecture
+    pattern: Admin-only user search
+    description: User search exists in admin management, backed by /users/admin/list with q and role filters.
+    examples:
+      - file: backend/controllers/user.controller.js
+        location: user.controller.js:211
+        snippet: "const getAdminUsers = async (req, res, next) => {"
+    prevalence: occasional
+  - category: UI
+    pattern: Search scope menu includes user scope without implementation
+    description: Search scope menu lists "user" but no public user search route or API usage is wired.
+    examples:
+      - file: frontend/src/components/layout/AppTopBar/AppTopBar.vue
+        location: AppTopBar.vue:45
+        snippet: "{ key: 'user', label: 'User' }"
+    prevalence: common
+
+related_architecture:
+  components_relevant_to_domain:
+    - component: AppSearchBar
+      responsibility: Accepts search input and routes to /search.
+      location: frontend/src/components/layout/AppSearchBar.vue
+      relationship_to_domain: domain depends on this
+    - component: SearchResultsView
+      responsibility: Fetches artworks and filters for search results.
+      location: frontend/src/views/SearchResultsView.vue
+      relationship_to_domain: domain depends on this
+    - component: AdminManagementView
+      responsibility: Admin user list with search filters.
+      location: frontend/src/views/AdminManagementView.vue
+      relationship_to_domain: domain depends on this
+  interfaces_used_by_domain:
+    - interface: userApi/adminApi
+      location: frontend/src/services/api.js
+      usage_pattern: HTTP GET with query params
+  data_flow_involving_domain: "Search input -> /search route -> getArtworks -> client-side filtering -> rendered results; Admin user search -> /users/admin/list -> getAdminUsers -> admin table."
+  key_relationships_to_domain:
+    - from: frontend/src/views/SearchResultsView.vue
+      to: frontend/src/services/api.js
+      relationship: calls
+    - from: frontend/src/views/AdminManagementView.vue
+      to: frontend/src/services/api.js
+      relationship: calls
+    - from: backend/routes/user.routes.js
+      to: backend/controllers/user.controller.js
+      relationship: calls
+
+related_technology_stack:
+  languages_used_in_domain:
+    - JavaScript
+    - Vue
+  frameworks_used_in_domain:
+    - name: Vue 3
+      usage_in_domain: Views and UI components for search
+    - name: Vue Router
+      usage_in_domain: /search route and query params
+    - name: Express
+      usage_in_domain: Admin user list route
+  libraries_used_in_domain:
+    - name: Axios
+      purpose_in_domain: HTTP client for API calls
+  external_apis_used_in_domain: []
+
+related_conventions:
+  naming_patterns_in_domain: "search* components and views; query params q/qall/qany/qnot/target/type/order/age"
+  structure_of_domain: "Search UI in views/components; API wrappers in services/api.js; admin search in admin views"
+  error_handling_in_domain: "Simple try/catch with fallback error messages in views"
+  testing_in_domain: "No explicit tests located in search views"
+  documentation_in_domain: "Search workflow documented in docs/user-feature-workflows.md"
+
+related_dependencies:
+  internal:
+    - component: frontend/src/services/api.js
+      relationship_to_domain: API wrappers for search data
+      direction: outbound
+    - component: backend/controllers/user.controller.js
+      relationship_to_domain: Admin user list query filtering
+      direction: outbound
+  external:
+    - name: axios
+      purpose_for_domain: HTTP requests
+
+domain_security_considerations:
+  sensitive_areas:
+    - area: Admin user search endpoint
+      location: backend/routes/user.routes.js:63
+      concern: Admin-only access via protect/admin middleware
+  authentication_patterns_in_domain: "Admin routes are protected by protect/admin middleware."
+  authorization_patterns_in_domain: "User list access limited to admin role."
+  data_validation_in_domain: "Query params q and role validated by controller logic before DB query."
+
+testing_patterns:
+  framework: "Not found"
+  coverage_areas:
+    - "No search-specific tests located"
+  test_organization: "N/A"
+  mock_patterns: []
+
+open_questions:
+  - question: "Is user search intended to be public or admin-only?"
+    context: "UI scope menu lists user, but only admin list endpoint exists."
+    type: decision_blocker
+    affects: []
+  - question: "Should /search support user results or a separate /users search route?"
+    context: "SearchResultsView is artwork-only and /search route is defined for artworks."
+    type: research
+    affects: []
+
+gaps:
+  - area: Public user search API
+    description: "No public user search endpoint found; only /users/admin/list exists."
+    impact: decision_blocker
+    affects: []
+  - area: User search route/view
+    description: "No user search view or route found; /search is artwork-only."
+    impact: research_blocker
+    affects: []

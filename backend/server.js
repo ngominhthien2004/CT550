@@ -18,6 +18,7 @@ const notificationRoutes = require('./routes/notification.routes');
 const messageRoutes = require('./routes/message.routes');
 const aiRoutes = require('./routes/ai.routes');
 const requestRoutes = require('./routes/request.routes');
+const paymentRoutes = require('./routes/payment.routes');
 const path = require('path');
 
 const app = express();
@@ -69,6 +70,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/requests', requestRoutes);
+app.use('/api/payments', paymentRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 

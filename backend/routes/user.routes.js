@@ -15,6 +15,7 @@ const {
 	getAdminOverview,
 	getAdminUsers,
 	updateAdminUser,
+    searchUsers,
 } = require('../controllers/user.controller');
 const { protect, admin } = require('../middlewares/auth.middleware');
 
@@ -62,6 +63,8 @@ const upload = multer({
 router.get('/admin/overview', protect, admin, getAdminOverview);
 router.get('/admin/list', protect, admin, getAdminUsers);
 router.patch('/admin/:id', protect, admin, updateAdminUser);
+
+router.get('/search', searchUsers);
 
 router.get('/:id/profile', getUserProfile);
 router.put('/profile', protect, upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'coverImage', maxCount: 1 }]), updateUserProfile);

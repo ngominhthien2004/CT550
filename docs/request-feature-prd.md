@@ -137,3 +137,7 @@ All write endpoints require `Authorization: Bearer <token>`.
 - Creator management lives at `/requests/manage` with a compact plan form, queue filters, status badges, and primary lifecycle actions.
 - Chat should be treated as the operational source of truth after acceptance; future UI should place draft, revision, and final delivery controls inside the request detail/chat page.
 - R-18/R-18G choices are explicit in plan and request forms so moderation can enforce creator preference and platform policy.
+
+## 6. Payment Expansion
+
+Detailed escrow/payment design, schemas, endpoints, security notes, and checkout/payout UI guidance are maintained in `docs/request-payment-prd.md`.

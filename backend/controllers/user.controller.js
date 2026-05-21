@@ -249,6 +249,44 @@ const getAdminUsers = async (req, res, next) => {
     }
 };
 
+const searchUsers = async (req, res, next) => {
+    try {
+        const rawPage = parseInt(req.query.page, 10);
+        const rawLimit = parseInt(req.query.limit, 10);
+        const page = Number.isNaN(rawPage) ? 1 : Math.max(rawPage, 1);
+        const limit = Number.isNaN(rawLimit) ? 20 : Math.min(Math.max(rawLimit, 1), 50);
+        const skip = (page - 1) * limit;
+        const q = typeof req.query.q === 'string' ? req.query.q.trim() : '';
+
+        const filter = {};
+        if (q) {
+            filter.$or = [
+                { username: { $regex: q, $options: 'i' } },
+                { displayName: { $regex: q, $options: 'i' } },
+            ];
+        }
+
+        const [users, total] = await Promise.all([
+            User.find(filter)
+                .select('_id username displayName avatar bio')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            User.countDocuments(filter),
+        ]);
+
+        res.json({
+            users,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
+            limit,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const updateAdminUser = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id);
@@ -297,4 +335,5 @@ module.exports = {
     getAdminOverview,
     getAdminUsers,
     updateAdminUser,
+    searchUsers,
 };

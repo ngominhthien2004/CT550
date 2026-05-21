@@ -108,6 +108,7 @@ export const userApi = {
   getFollowers: (userId) => api.get(`/users/${userId}/followers`),
   getFollowing: (userId) => api.get(`/users/${userId}/following`),
   getFollowStatus: (userId) => api.get(`/users/${userId}/follow-status`),
+  searchPublic: (params = {}) => api.get('/users/search', { params }),
 }
 
 export const adminApi = {
@@ -150,6 +151,21 @@ export const requestApi = {
   report: (requestId, payload) => api.post(`/requests/${requestId}/report`, payload),
 }
 
+export const paymentApi = {
+  createIntent: (payload) => api.post('/payments/intents', payload),
+  createQrIntent: (payload) => api.post('/payments/qr-intents', payload),
+  getMine: (params = {}) => api.get('/payments/mine', { params }),
+  releaseEscrow: (paymentId) => api.post(`/payments/${paymentId}/release`),
+  refund: (paymentId, payload = {}) => api.post(`/payments/${paymentId}/refund`, payload),
+  simulateBankConfirm: (paymentId, payload = {}) => api.post(`/payments/${paymentId}/simulate-bank-confirm`, payload),
+  getBalance: () => api.get('/payments/balance'),
+  getTransactions: (params = {}) => api.get('/payments/transactions', { params }),
+  getPayoutMethods: () => api.get('/payments/payout-methods'),
+  createPayoutMethod: (payload) => api.post('/payments/payout-methods', payload),
+  getPayouts: (params = {}) => api.get('/payments/payouts', { params }),
+  requestPayout: (payload) => api.post('/payments/payouts', payload),
+}
+
 export const registerAuthUser = (payload) => api.post('/auth/register', payload)
 export const loginAuthUser = (payload) => api.post('/auth/login', payload)
 
@@ -170,5 +186,9 @@ export const getRequestTerms = (params = {}) => requestApi.getTerms(params)
 export const createRequestTerm = (payload) => requestApi.createTerm(payload)
 export const createRequest = (formData) => requestApi.create(formData)
 export const getMyRequests = (params = {}) => requestApi.getMine(params)
+export const createPaymentIntent = (payload) => paymentApi.createIntent(payload)
+export const createQrPaymentIntent = (payload) => paymentApi.createQrIntent(payload)
+export const getMyPayments = (params = {}) => paymentApi.getMine(params)
+export const getCreatorBalance = () => paymentApi.getBalance()
 
 export default api

@@ -1,0 +1,276 @@
+plan_id: public-user-search-2026-05-12
+objective: Add public user search in frontend with minimal backend endpoint, UI integration, and basic tests/screenshots.
+created_at: "2026-05-12"
+created_by: gem-planner
+status: pending_approval
+research_confidence: low
+
+plan_metrics:
+  wave_1_task_count: 2
+  total_dependencies: 2
+  risk_score: medium
+
+tldr: |
+  Add a public user search API and wire it into the existing /search view as a User tab,
+  reuse FollowUserCard for results, and cover the flow with a Playwright smoke test
+  plus a screenshot artifact.
+open_questions:
+  - Confirm which fields are safe to expose publicly (e.g., bio, follower counts) for search results.
+
+pre_mortem:
+  overall_risk_level: medium
+  critical_failure_modes:
+    - scenario: User tab uses the same query parameters as artworks and ends up mixing filters or breaking the artwork search.
+      likelihood: medium
+      impact: high
+      mitigation: Gate user search logic behind a dedicated tab query (e.g., tab=user) and keep artwork filtering unchanged.
+    - scenario: Public search returns sensitive user data (email, role) because admin list logic is reused.
+      likelihood: medium
+      impact: critical
+      mitigation: Implement a separate controller method that selects only public fields and avoids admin-only filters.
+  assumptions:
+    - The existing /search view is the preferred UI surface for user search.
+    - FollowUserCard can be reused for public search results with minimal adjustments.
+
+implementation_specification:
+  code_structure: |
+    Add a new public user search handler in user.controller.js and expose it via user.routes.js at /api/users/search.
+    Extend frontend SearchResultsView to support a User tab that fetches user results from the new endpoint,
+    reusing FollowUserCard for display and follow.store for follow actions when authenticated.
+  affected_areas:
+    - backend/controllers/user.controller.js
+    - backend/routes/user.routes.js
+    - frontend/src/views/SearchResultsView.vue
+    - frontend/src/services/api.js
+    - frontend/src/components/follow/FollowUserCard.vue
+    - frontend/temp_user_search.spec.js
+    - test-artifacts/screenshots/user-search/
+  component_details:
+    - component: user.controller.getPublicUserSearch
+      responsibility: Return paginated public user results filtered by query string.
+      interfaces:
+        - GET /api/users/search?q=&page=&limit=
+    - component: user.routes
+      responsibility: Route public search requests to the controller.
+      interfaces:
+        - GET /api/users/search
+    - component: SearchResultsView
+      responsibility: Add a User tab that fetches and renders user search results.
+      interfaces:
+        - userApi.searchPublic(params)
+    - component: userApi.searchPublic
+      responsibility: Call the public user search endpoint.
+      interfaces:
+        - api.get('/users/search', { params })
+    - component: FollowUserCard (reuse)
+      responsibility: Display public user result cards consistently.
+      interfaces:
+        - props: user, previews (optional), isAuthenticated, isFollowing, isToggling
+  dependencies:
+    - component: SearchResultsView
+      relationship: Depends on userApi.searchPublic response schema.
+    - component: FollowUserCard
+      relationship: Receives user data from SearchResultsView.
+  integration_points:
+    - SearchResultsView result tabs and result grid rendering
+    - frontend/src/services/api.js userApi export
+
+contracts:
+  - from_task: T1_backend_public_user_search
+    to_task: T2_frontend_user_search_tab
+    interface: Public user search response schema
+    format: |
+      {
+        "users": [
+          {
+            "_id": "string",
+            "username": "string",
+            "displayName": "string",
+            "avatar": "string",
+            "bio": "string"
+          }
+        ],
+        "total": number,
+        "page": number,
+        "pages": number,
+        "limit": number
+      }
+
+tasks:
+  - id: T1_backend_public_user_search
+    title: Add public user search endpoint
+    description: |
+      Implement GET /api/users/search with query params q, page, and limit.
+      Enforce bounds: page >= 1, limit in [1, 50], default limit = 20.
+      Filter by username/displayName (case-insensitive) and return only public fields
+      (exclude email/role/isPremium). Keep pagination consistent with admin list.
+    wave: 1
+    agent: gem-implementer
+    prototype: false
+    covers: [AC-1]
+    priority: high
+    status: pending
+    estimated_lines: 70
+    acceptance_criteria:
+      - Responds on GET /api/users/search with public-only user fields.
+      - Enforces limit bounds and defaults when missing/invalid.
+      - Pagination fields (page, pages, total, limit) are present.
+    verification:
+      - Manual: call /api/users/search?q=test&page=1&limit=20 returns users array and pagination fields.
+      - Manual: call /api/users/search?q=test&page=0&limit=200 clamps to page=1, limit=50.
+    dependencies: []
+    conflicts_with: []
+    context_files:
+      - path: backend/controllers/user.controller.js
+        description: Existing admin user list logic and response shape.
+      - path: backend/routes/user.routes.js
+        description: User routes for adding a public search endpoint.
+
+  - id: T2_frontend_user_search_tab
+    title: Integrate User tab into search view
+    description: |
+      Add a User tab in SearchResultsView that triggers a user search request via userApi.
+      Render user results using FollowUserCard and wire follow actions through follow.store
+      when authenticated. Keep artwork search behavior unchanged.
+    wave: 2
+    agent: gem-implementer
+    prototype: false
+    covers: [AC-2]
+    priority: high
+    status: pending
+    estimated_lines: 110
+    acceptance_criteria:
+      - User tab appears in /search and uses /api/users/search for queries.
+      - User results render with FollowUserCard and do not affect artwork search.
+    verification:
+      - Manual: /search?q=test loads artwork results as before, User tab loads user results.
+      - Manual: switching tabs does not reset artwork filters.
+    dependencies:
+      - T1_backend_public_user_search
+    conflicts_with: []
+    context_files:
+      - path: frontend/src/views/SearchResultsView.vue
+        description: Current search tabs and artwork search flow.
+      - path: frontend/src/components/follow/FollowUserCard.vue
+        description: User card UI to reuse for search results.
+      - path: frontend/src/services/api.js
+        description: Central API client and userApi export.
+      - path: frontend/src/stores/follow.store.js
+        description: Follow toggle and follow status helpers.
+
+  - id: T3_tests_and_screenshot
+    title: Add smoke test and screenshot artifact
+    description: |
+      Add a Playwright smoke test that navigates to /search?q=... and switches to the User tab,
+      then validates that user results or an empty-state message render. Capture a screenshot
+      of the User tab results in test-artifacts/screenshots/user-search/.
+    wave: 3
+    agent: gem-browser-tester
+    prototype: false
+    covers: [AC-3]
+    priority: medium
+    status: pending
+    estimated_lines: 40
+    acceptance_criteria:
+      - Playwright test for user search tab passes.
+      - Screenshot artifact is saved under test-artifacts/screenshots/user-search/.
+    verification:
+      - Run Playwright smoke test and confirm screenshot file exists.
+    dependencies:
+      - T2_frontend_user_search_tab
+    conflicts_with: []
+    context_files:
+      - path: frontend/playwright_check.spec.js
+        description: Existing Playwright test pattern and setup.
+      - path: frontend/temp_request_flow.spec.js
+        description: Existing test scaffolding for temp flows.
+
+  - id: T4_update_prd_and_tracker
+    title: Update PRD and feature tracker
+    description: |
+      Update docs/PRD.yaml to include the public user search scope, routes, and acceptance criteria.
+      Update docs/tasks/feature-tracker.md with status flow Planned -> In Progress for this feature.
+    wave: 1
+    agent: gem-documentation-writer
+    prototype: false
+    covers: [AC-4]
+    priority: medium
+    status: pending
+    estimated_lines: 30
+    acceptance_criteria:
+      - PRD includes public user search in scope and acceptance criteria.
+      - Feature tracker includes a row for public user search.
+    verification:
+      - Review docs/PRD.yaml for the new section.
+      - Review docs/tasks/feature-tracker.md for the added entry.
+    dependencies: []
+    conflicts_with: []
+    context_files:
+      - path: docs/PRD.yaml
+        description: Product requirements to update for public user search.
+      - path: docs/tasks/feature-tracker.md
+        description: Feature tracking table for project status updates.
+
+planning_pass: 1
+planning_history:
+  - pass: 1
+    reason: Initial plan for public user search with minimal backend and frontend changes.
+    timestamp: "2026-05-12"
+    estimated_effort: medium
+    estimated_files: 3
+    estimated_lines: 220
+    focus_area: public user search
+    verification:
+      - GET /api/users/search returns only public fields and paginated results.
+      - User tab renders FollowUserCard entries without breaking artwork search filters.
+      - Playwright smoke test passes and screenshot is saved to the specified folder.
+    acceptance_criteria:
+      - AC-1: A public user search endpoint exists and returns paginated public user data.
+      - AC-2: /search includes a User tab that shows user search results.
+      - AC-3: A Playwright smoke test and screenshot artifact are captured for user search.
+    failure_modes:
+      - scenario: User search accidentally reuses admin endpoint and leaks private data.
+        likelihood: medium
+        impact: high
+        mitigation: Implement separate controller method with explicit select fields.
+      - scenario: User tab changes break artwork search filtering or sorting.
+        likelihood: medium
+        impact: medium
+        mitigation: Keep artwork logic intact and isolate user tab state.
+    tech_stack:
+      - Node.js + Express + Mongoose
+      - Vue 3 + Vite + Pinia + Vue Router
+      - Playwright
+    test_coverage: Smoke test for /search user tab
+
+  - pass: 2
+    reason: Address reviewer feedback: route consistency, pagination bounds, per-task acceptance/verification, PRD/tracker update.
+    timestamp: "2026-05-12"
+    estimated_effort: medium
+    estimated_files: 3
+    estimated_lines: 250
+    focus_area: public user search
+    verification:
+      - GET /api/users/search enforces page/limit bounds and returns limit in response.
+      - /search User tab uses /api/users/search and leaves artwork search unchanged.
+      - PRD and feature tracker include public user search updates.
+      - Playwright smoke test passes with screenshot artifact.
+    acceptance_criteria:
+      - AC-1: Public user search endpoint exists with pagination bounds and public fields only.
+      - AC-2: /search includes a User tab using /api/users/search.
+      - AC-3: Playwright smoke test and screenshot artifact are captured.
+      - AC-4: PRD and feature tracker updated for public user search.
+    failure_modes:
+      - scenario: API route mismatch between backend and frontend (e.g., /users/search vs /api/users/search).
+        likelihood: medium
+        impact: medium
+        mitigation: Set canonical route to /api/users/search and align service call and docs.
+      - scenario: Pagination bounds missing allow huge limits causing slow queries.
+        likelihood: medium
+        impact: medium
+        mitigation: Clamp limit to [1, 50] and default to 20.
+    tech_stack:
+      - Node.js + Express + Mongoose
+      - Vue 3 + Vite + Pinia + Vue Router
+      - Playwright
+    test_coverage: Smoke test for /search user tab

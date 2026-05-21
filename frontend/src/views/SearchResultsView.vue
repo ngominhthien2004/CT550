@@ -2,16 +2,25 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchOptionsModal from '../components/search/SearchOptionsModal.vue'
-import { getArtworks } from '../services/api'
+import { getArtworks, userApi } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
+import FollowUserCard from '../components/follow/FollowUserCard.vue'
 import { navItems } from '../constants/navigation'
+import { useAuthStore } from '../stores/auth.store'
+import { useFollowStore } from '../stores/follow.store'
 
 const route = useRoute()
 const router = useRouter()
+const authStore = useAuthStore()
+const followStore = useFollowStore()
 const isNavCollapsed = ref(true)
 const loading = ref(false)
 const error = ref('')
 const searchItems = ref([])
+const userResults = ref([])
+const userTotal = ref(0)
+const userLoading = ref(false)
+const userError = ref('')
 const sortMode = ref(typeof route.query.order === 'string' ? route.query.order : 'newest')
 const showTags = ref(true)
 const isSearchOptionsOpen = ref(false)
@@ -30,11 +39,13 @@ const keyword = computed(() => {
 
 const activeType = computed(() => (typeof route.query.type === 'string' ? route.query.type : 'illust'))
 const ageFilter = computed(() => (typeof route.query.age === 'string' ? route.query.age : 'all'))
+const isUserSearch = computed(() => activeType.value === 'user')
 
 const searchTypeTabs = [
   { key: 'illust', label: 'Illustrations' },
   { key: 'manga', label: 'Manga' },
   { key: 'novel', label: 'Novels' },
+  { key: 'user', label: 'Users' },
 ]
 
 const currentSearchOptions = computed(() => ({
@@ -121,6 +132,13 @@ const typeCounts = computed(() => {
   return counts
 })
 
+const userCount = computed(() => userTotal.value || userResults.value.length)
+
+const tabCounts = computed(() => ({
+  ...typeCounts.value,
+  user: userCount.value,
+}))
+
 const visibleItems = computed(() => {
   const source = searchItems.value.filter((item) => {
     if (activeType.value && item.type !== activeType.value) {
@@ -145,7 +163,7 @@ const visibleItems = computed(() => {
   }
 })
 
-const resultTotal = computed(() => visibleItems.value.length)
+const resultTotal = computed(() => (isUserSearch.value ? userCount.value : visibleItems.value.length))
 
 const placeholderCount = computed(() => {
   if (loading.value || error.value || !visibleItems.value.length) {
@@ -308,8 +326,56 @@ async function loadSearchItems() {
   }
 }
 
+async function loadUserResults() {
+  if (!isUserSearch.value) {
+    userResults.value = []
+    userTotal.value = 0
+    userError.value = ''
+    userLoading.value = false
+    return
+  }
+
+  userLoading.value = true
+  userError.value = ''
+
+  try {
+    const q = typeof route.query.q === 'string' ? route.query.q.trim() : ''
+    const { data } = await userApi.searchPublic({
+      q: q || undefined,
+      limit: 30,
+    })
+
+    const users = Array.isArray(data?.users) ? data.users : []
+    userResults.value = users
+    userTotal.value = typeof data?.total === 'number' ? data.total : users.length
+
+    if (authStore.isAuthenticated) {
+      await Promise.all(users.map((user) => followStore.fetchFollowStatus(user._id).catch(() => null)))
+    }
+  } catch (fetchError) {
+    userError.value = fetchError?.response?.data?.message || 'Failed to fetch users'
+    userResults.value = []
+    userTotal.value = 0
+  } finally {
+    userLoading.value = false
+  }
+}
+
+async function handleToggleFollow(userId) {
+  if (!authStore.isAuthenticated) {
+    await router.push({
+      name: 'login',
+      query: { redirect: route.fullPath },
+    })
+    return
+  }
+
+  await followStore.toggleFollowByUser(userId)
+}
+
 onMounted(() => {
   loadSearchItems()
+  loadUserResults()
 })
 
 watch(
@@ -323,6 +389,7 @@ watch(
   () => route.query,
   () => {
     loadSearchItems()
+    loadUserResults()
   },
   { deep: true },
 )
@@ -334,12 +401,12 @@ watch(
       <header class="result-header">
         <h1>{{ keyword }}</h1>
         <p class="result-count-head">{{ resultTotal.toLocaleString() }} results</p>
-        <button type="button" class="show-tag-btn" @click="showTags = !showTags">
+        <button v-if="!isUserSearch" type="button" class="show-tag-btn" @click="showTags = !showTags">
           {{ showTags ? 'Hide tag' : 'Show tag' }}
         </button>
       </header>
 
-      <div class="tag-strip" v-if="showTags && displayTags.length">
+      <div class="tag-strip" v-if="!isUserSearch && showTags && displayTags.length">
         <button
           v-for="tag in displayTags"
           :key="tag"
@@ -359,13 +426,12 @@ watch(
           :class="{ active: activeType === tab.key }"
           :to="buildTypeRoute(tab.key)"
         >
-          {{ tab.label }} <span class="tab-count">{{ typeCounts[tab.key].toLocaleString() }}</span>
+          {{ tab.label }} <span class="tab-count">{{ tabCounts[tab.key].toLocaleString() }}</span>
         </router-link>
-        <span class="tab-item tab-muted">User</span>
         <button type="button" class="search-option-note" @click="openSearchOptions">Search option</button>
       </nav>
 
-      <div class="filter-row">
+      <div v-if="!isUserSearch" class="filter-row">
         <label class="order-select">
           <select v-model="sortMode" @change="handleSortChange">
             <option value="newest">Newest</option>
@@ -378,27 +444,47 @@ watch(
         <span class="include-note">Tag match mode: {{ currentSearchOptions.target === 'all' ? 'all fields' : currentSearchOptions.target }}</span>
       </div>
 
-      <p v-if="loading" class="state-note">Loading results...</p>
-      <p v-else-if="error" class="state-note error">{{ error }}</p>
+      <template v-if="isUserSearch">
+        <p v-if="userLoading" class="state-note">Loading users...</p>
+        <p v-else-if="userError" class="state-note error">{{ userError }}</p>
+        <div v-else-if="userResults.length" class="user-result-list">
+          <FollowUserCard
+            v-for="user in userResults"
+            :key="user._id"
+            :user="user"
+            mode="search"
+            :previews="[]"
+            :is-authenticated="authStore.isAuthenticated"
+            :is-following="followStore.isFollowingUser(user._id)"
+            :is-toggling="followStore.isTogglingFollow(user._id)"
+            @toggle-follow="handleToggleFollow"
+          />
+        </div>
+        <p v-else class="state-note">No users found for this search.</p>
+      </template>
+      <template v-else>
+        <p v-if="loading" class="state-note">Loading results...</p>
+        <p v-else-if="error" class="state-note error">{{ error }}</p>
 
-      <p v-else-if="!visibleItems.length" class="state-note">No works found for this filter. Try another tag or switch tab.</p>
+        <p v-else-if="!visibleItems.length" class="state-note">No works found for this filter. Try another tag or switch tab.</p>
 
-      <div v-else class="result-grid-wrap">
-        <article v-for="item in visibleItems" :key="item._id" class="result-card">
-          <router-link :to="`/artworks/${item._id}`" class="thumb-link">
-            <img v-if="item.image" :src="item.image" :alt="item.title" loading="lazy" />
-            <div v-else class="thumb-fallback"></div>
-          </router-link>
-          <router-link :to="`/artworks/${item._id}`" class="title-link">{{ item.title }}</router-link>
-          <p class="author-name">{{ item.user?.displayName || item.user?.username || 'Unknown artist' }}</p>
-        </article>
+        <div v-else class="result-grid-wrap">
+          <article v-for="item in visibleItems" :key="item._id" class="result-card">
+            <router-link :to="`/artworks/${item._id}`" class="thumb-link">
+              <img v-if="item.image" :src="item.image" :alt="item.title" loading="lazy" />
+              <div v-else class="thumb-fallback"></div>
+            </router-link>
+            <router-link :to="`/artworks/${item._id}`" class="title-link">{{ item.title }}</router-link>
+            <p class="author-name">{{ item.user?.displayName || item.user?.username || 'Unknown artist' }}</p>
+          </article>
 
-        <article v-for="idx in placeholderCount" :key="`placeholder-${idx}`" class="result-card placeholder-card">
-          <div class="thumb-placeholder"></div>
-          <div class="line-placeholder long"></div>
-          <div class="line-placeholder short"></div>
-        </article>
-      </div>
+          <article v-for="idx in placeholderCount" :key="`placeholder-${idx}`" class="result-card placeholder-card">
+            <div class="thumb-placeholder"></div>
+            <div class="line-placeholder long"></div>
+            <div class="line-placeholder short"></div>
+          </article>
+        </div>
+      </template>
 
       <SearchOptionsModal
         v-model="isSearchOptionsOpen"
@@ -548,6 +634,11 @@ watch(
 
 .state-note.error {
   color: #dc2626;
+}
+
+.user-result-list {
+  display: grid;
+  gap: 1rem;
 }
 
 .result-grid-wrap {

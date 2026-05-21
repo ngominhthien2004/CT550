@@ -38,3 +38,25 @@ acceptance_criteria:
 assumptions:
   - "Route /signup da ton tai va hoat dong."
   - "Khong can thay doi backend cho trang tinh /premium."
+
+public_user_search:
+  summary: "Cung cấp tìm kiếm người dùng công khai trên /search với tab User và API công khai."
+  routes:
+    - path: "/search"
+      purpose: "Bổ sung tab User để tìm kiếm người dùng công khai."
+    - path: "/api/users/search"
+      purpose: "API tìm kiếm người dùng công khai, chỉ trả về trường công khai."
+  scope:
+    in_scope:
+      - "Tìm kiếm người dùng công khai theo tên người dùng hoặc tên hiển thị."
+      - "Hỗ trợ phân trang với page và limit (giới hạn limit theo cấu hình)."
+      - "Chỉ trả về trường công khai (không có email, role, isPremium)."
+    out_of_scope:
+      - "Tìm kiếm người dùng theo tiêu chí riêng tư hoặc nội bộ."
+      - "Loại bỏ điều hướng hoặc thay đổi logic tìm kiếm tác phẩm hiện tại."
+  acceptance_criteria:
+    - "API /api/users/search hoạt động với q, page, limit và trả về kết quả phân trang."
+    - "Tab User trên /search hiển thị kết quả tìm kiếm người dùng công khai."
+    - "Dữ liệu trả về không bao gồm trường nhạy cảm như email hoặc role."
+  assumptions:
+    - "Trang /search đã tồn tại và đang hoạt động ổn định."

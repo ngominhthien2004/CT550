@@ -144,6 +144,22 @@ const requestSchema = mongoose.Schema({
         type: escrowSchema,
         default: () => ({}),
     },
+    payment: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Payment',
+        default: null,
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['unpaid', 'requires_action', 'held', 'refunded', 'released', 'failed'],
+        default: 'unpaid',
+        index: true,
+    },
+    licenseTier: {
+        type: String,
+        enum: ['personal', 'commercial'],
+        default: 'personal',
+    },
     fanLetter: {
         type: fanLetterSchema,
         default: () => ({}),
