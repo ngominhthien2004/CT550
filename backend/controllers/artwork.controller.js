@@ -42,21 +42,24 @@ function hasTagId(tagIds, tagId) {
 // Create Artwork
 const createArtwork = async (req, res, next) => {
     try {
-        const { title, description, type, ageRating, tags } = req.body;
-        
+        const { title, description, type, ageRating, tags, ugoiraNotes } = req.body;
+
         if (!req.files || req.files.length === 0) {
             res.status(400);
             return next(new Error('Please upload at least one image'));
         }
 
         const publicDir = path.join(__dirname, '..', 'public');
+        const rawType = (type || 'illust').toString().toLowerCase();
+        const artworkType = ['illust', 'manga', 'ugoira', 'novel'].includes(rawType) ? rawType : 'illust';
+
+        // Process all uploaded files (same for all artwork types - illust, manga, ugoira, novel)
         const images = req.files.map((file) => {
             const relativePath = path.relative(publicDir, file.path).replace(/\\/g, '/');
             return `/${relativePath}`;
         });
 
         // Handle tags (simplified for phase 1 - convert strings to Tag IDs or just use what is sent)
-        // For now, let's assume tags are sent as an array of strings or existing IDs
         let tagIds = [];
         if (tags) {
             const rawTagList = Array.isArray(tags) ? tags : [tags];
@@ -85,6 +88,7 @@ const createArtwork = async (req, res, next) => {
             tagged: false,
         };
 
+        // Run AI detection on the primary (first) image
         const primaryFile = req.files[0];
         if (primaryFile && primaryFile.path) {
             const detectionResult = await runAiDetection(primaryFile.path);
@@ -128,17 +132,18 @@ const createArtwork = async (req, res, next) => {
             user: req.user._id,
             title,
             description,
-            type,
+            type: artworkType,
             images,
             tags: tagIds,
-            ageRating
+            ageRating,
+            ugoiraNotes: ugoiraNotes || '',
         });
 
         await createNotification({
             userId: req.user._id,
             artworkId: artwork._id,
             type: 'system',
-            message: `Artwork \"${artwork.title}\" posted successfully.`
+            message: `Artwork "${artwork.title}" posted successfully.`
         });
 
         res.status(201).json({

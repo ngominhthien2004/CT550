@@ -24,7 +24,7 @@ const kindMeta = {
   },
   ugoira: {
     title: 'Ugoira (animation)',
-    hero: 'Upload animation source images and set playback-related notes.',
+    hero: 'Upload a GIF animation or multiple image files for your artwork.',
   },
   novel: {
     title: 'Novels',
@@ -381,6 +381,7 @@ async function submitArtwork() {
       ageRating: form.ageRating,
       tags: form.tags,
       images: isNovel.value ? form.coverImages : form.images,
+      ugoiraNotes: isUgoira.value ? form.ugoiraNotes : undefined,
     })
 
     const responseAiDetection = createdArtwork?.aiDetection
@@ -454,6 +455,7 @@ onBeforeUnmount(() => {
         :current-meta="currentMeta"
         :is-media-page="isMediaPage"
         :is-novel="isNovel"
+        :is-ugoira="isUgoira"
         :media-count="form.images.length"
         :cover-count="form.coverImages.length"
         :preview-url="previewUrl"

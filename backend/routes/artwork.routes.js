@@ -9,11 +9,14 @@ const { getMaxUploadFileSizeBytes } = require('../config/env');
 
 const ALLOWED_ARTWORK_TYPES = new Set(['illust', 'manga', 'ugoira', 'novel']);
 
+// Accepted image formats
+const IMAGE_EXTNAMES = /\.(jpg|jpeg|png|webp|gif)$/i;
+const IMAGE_MIMETYPES = /^image\/(jpeg|png|webp|gif)$/;
+
 function resolveUploadDirectory(req) {
     const userId = req.user?._id?.toString() || 'unknown';
     const rawType = (req.body?.type || 'illust').toString().toLowerCase();
     const artworkType = ALLOWED_ARTWORK_TYPES.has(rawType) ? rawType : 'illust';
-
     return path.join('public', 'uploads', userId, artworkType);
 }
 
@@ -36,16 +39,14 @@ const storage = multer.diskStorage({
     },
 });
 
-function checkFileType(file, cb) {
-    const filetypes = /jpg|jpeg|png|webp/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
+function checkFileType(req, file, cb) {
+    const extname = path.extname(file.originalname).toLowerCase();
 
-    if (extname && mimetype) {
+    if (IMAGE_EXTNAMES.test(extname) && IMAGE_MIMETYPES.test(file.mimetype)) {
         return cb(null, true);
-    } else {
-        cb(new Error('Images only!'));
     }
+
+    cb(new Error('Images only! Accepted formats: jpg, jpeg, png, webp, gif'));
 }
 
 const upload = multer({
@@ -54,9 +55,7 @@ const upload = multer({
         fileSize: getMaxUploadFileSizeBytes(),
         files: 10,
     },
-    fileFilter: function (req, file, cb) {
-        checkFileType(file, cb);
-    },
+    fileFilter: checkFileType,
 });
 
 router.route('/')

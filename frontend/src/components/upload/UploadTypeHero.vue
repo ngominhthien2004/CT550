@@ -16,6 +16,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isUgoira: {
+    type: Boolean,
+    default: false,
+  },
   mediaCount: {
     type: Number,
     default: 0,
@@ -40,6 +44,8 @@ const props = defineProps({
 
 const emit = defineEmits(['media-change', 'cover-change'])
 
+const mediaAccept = '.jpg,.jpeg,.png,.webp,.gif,image/*'
+
 function handleMediaFilesChange(event) {
   emit('media-change', event)
 }
@@ -62,12 +68,12 @@ function handleCoverFilesChange(event) {
     </nav>
 
     <div v-if="props.isMediaPage" class="upload-dropzone">
-      <label for="upload-media" class="form-label text-light mb-2">Upload image files</label>
+      <label for="upload-media" class="form-label text-light mb-2">Upload image or GIF files</label>
       <input
         id="upload-media"
         type="file"
         class="form-control"
-        accept=".jpg,.jpeg,.png,.webp,image/*"
+        accept=".jpg,.jpeg,.png,.webp,.gif,image/*"
         multiple
         aria-describedby="upload-media-help"
         @change="handleMediaFilesChange"
@@ -87,7 +93,7 @@ function handleCoverFilesChange(event) {
           id="upload-cover"
           type="file"
           class="form-control"
-          accept=".jpg,.jpeg,.png,.webp,image/*"
+        accept=".jpg,.jpeg,.png,.webp,.gif,image/*"
           multiple
           aria-describedby="upload-cover-help"
           @change="handleCoverFilesChange"

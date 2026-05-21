@@ -54,7 +54,12 @@ const artworkSchema = mongoose.Schema({
     isDraft: {
         type: Boolean,
         default: false
-    }
+    },
+    ugoiraNotes: {
+        type: String,
+        trim: true,
+        default: ''
+    },
 }, {
     timestamps: true
 });
