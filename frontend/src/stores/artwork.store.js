@@ -69,9 +69,12 @@ export const useArtworkStore = defineStore('artwork', {
         })
 
         const { data } = await createArtwork(formData)
-        this.createdArtwork = data
+        const normalizedData = data && typeof data === 'object'
+          ? { ...data, aiDetection: data.aiDetection || null }
+          : data
+        this.createdArtwork = normalizedData
         this.createSuccess = true
-        return data
+        return normalizedData
       } catch (error) {
         this.createdArtwork = null
         this.createError = error?.response?.data?.message || error?.message || 'Failed to create artwork'

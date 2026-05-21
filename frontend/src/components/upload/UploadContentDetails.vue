@@ -36,97 +36,110 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="upload-card">
-    <div class="upload-row">
-      <label for="upload-title" class="row-label">Title</label>
-      <div class="row-content">
-        <div class="input-with-count">
-          <input
-            id="upload-title"
-            v-model="props.form.title"
-            type="text"
-            class="form-control"
-            :maxlength="props.titleMax"
-            required
-            aria-required="true"
-            placeholder="Artwork title"
-          />
-          <span class="counter">{{ props.titleCount }}/{{ props.titleMax }}</span>
+  <div class="details-container d-grid gap-3">
+    <!-- Single Box for Title and Caption (Premium Pixiv Aesthetic) -->
+    <div class="content-details-card">
+      <div class="title-row-wrap">
+        <input
+          id="upload-title"
+          v-model="props.form.title"
+          type="text"
+          class="title-input-field"
+          :maxlength="props.titleMax"
+          required
+          aria-required="true"
+          placeholder="Title"
+        />
+        <span class="counter-badge">{{ props.titleCount }}/{{ props.titleMax }}</span>
+      </div>
+      <div class="separator-line"></div>
+      <div class="caption-row-wrap">
+        <textarea
+          id="upload-caption"
+          v-model="props.form.caption"
+          class="caption-textarea-field"
+          rows="5"
+          maxlength="3000"
+          placeholder="Caption"
+        ></textarea>
+        <span class="counter-badge bottom-right">{{ props.captionCount }}/3000</span>
+      </div>
+    </div>
+
+    <!-- Manga Series Card -->
+    <div v-if="props.isManga" class="additional-settings-card">
+      <div class="row-left">
+        <span class="placeholder-badge"></span>
+        <span class="row-label">Series</span>
+      </div>
+      <div class="row-center">
+        <div class="row-inline">
+          <input v-model="props.form.mangaSeriesName" type="text" class="form-control custom-input" placeholder="Series name" />
+          <button type="button" class="btn btn-outline-primary btn-sm custom-btn">Create series</button>
         </div>
       </div>
     </div>
 
-    <div class="upload-row">
-      <label for="upload-caption" class="row-label">Caption</label>
-      <div class="row-content">
-        <div class="input-with-count align-top">
-          <textarea
-            id="upload-caption"
-            v-model="props.form.caption"
-            class="form-control"
-            rows="4"
-            maxlength="3000"
-            placeholder="Describe your artwork"
-          ></textarea>
-          <span class="counter">{{ props.captionCount }}/3000</span>
-        </div>
+    <!-- Ugoira Notes Card -->
+    <div v-if="props.isUgoira" class="additional-settings-card">
+      <div class="row-left">
+        <span class="placeholder-badge"></span>
+        <label for="ugoira-notes" class="row-label">Ugoira notes</label>
       </div>
-    </div>
-
-    <div v-if="props.isManga" class="upload-row">
-      <label class="row-label">Series</label>
-      <div class="row-content row-inline">
-        <input v-model="props.form.mangaSeriesName" type="text" class="form-control" placeholder="Series name" />
-        <button type="button" class="btn btn-outline-secondary btn-sm">Create series</button>
-      </div>
-    </div>
-
-    <div v-if="props.isUgoira" class="upload-row">
-      <label for="ugoira-notes" class="row-label">Ugoira notes</label>
-      <div class="row-content">
+      <div class="row-center">
         <textarea
           id="ugoira-notes"
           v-model="props.form.ugoiraNotes"
-          class="form-control"
+          class="form-control custom-textarea"
           rows="3"
           placeholder="Playback notes, frame timing notes, or loop info."
         ></textarea>
       </div>
     </div>
 
-    <div v-if="props.isNovel" class="upload-row">
-      <label class="row-label">Novel format</label>
-      <div class="row-content">
-        <div class="d-flex flex-wrap gap-3" role="radiogroup" aria-label="Novel posting format">
-          <label class="form-check">
-            <input v-model="props.form.novelFormat" class="form-check-input" type="radio" name="novelFormat" value="series" />
-            <span class="form-check-label">Series</span>
+    <!-- Novel Format Card -->
+    <div v-if="props.isNovel" class="additional-settings-card">
+      <div class="row-left">
+        <span class="placeholder-badge"></span>
+        <span class="row-label">Novel format</span>
+      </div>
+      <div class="row-center d-flex flex-column gap-2">
+        <div class="options-group" role="radiogroup" aria-label="Novel posting format">
+          <label class="custom-radio">
+            <input v-model="props.form.novelFormat" type="radio" name="novelFormat" value="series" />
+            <span class="radio-indicator"></span>
+            <span class="radio-label">Series</span>
           </label>
-          <label class="form-check">
-            <input v-model="props.form.novelFormat" class="form-check-input" type="radio" name="novelFormat" value="oneshot" />
-            <span class="form-check-label">One-shot</span>
+          <label class="custom-radio">
+            <input v-model="props.form.novelFormat" type="radio" name="novelFormat" value="oneshot" />
+            <span class="radio-indicator"></span>
+            <span class="radio-label">One-shot</span>
           </label>
         </div>
         <div class="row-inline mt-2">
-          <input v-model="props.form.novelSeriesName" type="text" class="form-control" placeholder="Series name" />
-          <button type="button" class="btn btn-outline-secondary btn-sm">Create series</button>
+          <input v-model="props.form.novelSeriesName" type="text" class="form-control custom-input" placeholder="Series name" />
+          <button type="button" class="btn btn-outline-primary btn-sm custom-btn">Create series</button>
         </div>
       </div>
     </div>
 
-    <div v-if="props.isNovel" class="upload-row">
-      <label for="upload-novel-text" class="row-label">Main novel text</label>
-      <div class="row-content">
-        <div class="input-with-count align-top">
+    <!-- Novel Main Text Card -->
+    <div v-if="props.isNovel" class="additional-settings-card vertical-layout">
+      <div class="row-top">
+        <span class="placeholder-badge"></span>
+        <label for="upload-novel-text" class="row-label">Main novel text</label>
+      </div>
+      <div class="row-bottom">
+        <div class="input-with-count position-relative">
           <textarea
             id="upload-novel-text"
             v-model="props.form.novelText"
-            class="form-control"
+            class="form-control custom-textarea text-area-large"
             rows="10"
             maxlength="300000"
             placeholder="Write your novel here."
           ></textarea>
-          <span class="counter">{{ props.novelTextCount }}/300000</span>
+          <span class="counter-badge bottom-right-textarea">{{ props.novelTextCount }}/300000</span>
         </div>
       </div>
     </div>
@@ -134,75 +147,263 @@ const props = defineProps({
 </template>
 
 <style scoped>
-.upload-card {
-  border: 1px solid #dce4ee;
-  border-radius: 8px;
-  background: #fff;
-}
-
-.upload-row {
+.details-container {
   display: grid;
-  grid-template-columns: 140px minmax(0, 1fr);
-  border-bottom: 1px solid #edf2f8;
+  gap: 0.75rem;
 }
 
-.upload-row:last-child {
-  border-bottom: 0;
+/* Premium Pixiv Style Title & Caption Box */
+.content-details-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+}
+
+.title-row-wrap {
+  position: relative;
+  padding: 0.85rem 4.5rem 0.85rem 1rem;
+}
+
+.title-input-field {
+  width: 100%;
+  border: none;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #1e293b;
+  background: transparent;
+  outline: none;
+  padding: 0.2rem 0;
+}
+
+.title-input-field::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.separator-line {
+  height: 1px;
+  background-color: #edf2f7;
+  width: 100%;
+}
+
+.caption-row-wrap {
+  position: relative;
+  padding: 0.85rem 1rem 2rem 1rem;
+}
+
+.caption-textarea-field {
+  width: 100%;
+  border: none;
+  font-size: 0.95rem;
+  color: #334155;
+  background: transparent;
+  outline: none;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.caption-textarea-field::placeholder {
+  color: #94a3b8;
+}
+
+.counter-badge {
+  position: absolute;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  user-select: none;
+  pointer-events: none;
+}
+
+.title-row-wrap .counter-badge {
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.caption-row-wrap .counter-badge.bottom-right {
+  right: 1rem;
+  bottom: 0.6rem;
+}
+
+/* Additional Settings Cards */
+.additional-settings-card {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.95rem 1.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.additional-settings-card.vertical-layout {
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.row-left, .row-top {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.placeholder-badge {
+  display: inline-block;
+  min-width: 62px;
+  height: 1px;
 }
 
 .row-label {
-  padding: 0.75rem 0.9rem;
-  color: #6b7280;
-  font-size: 0.84rem;
-  border-right: 1px solid #edf2f8;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #334155;
 }
 
-.row-content {
-  padding: 0.55rem 0.8rem;
+.row-center {
+  padding-left: 0.5rem;
 }
 
 .row-inline {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.65rem;
   align-items: center;
 }
 
-.input-with-count {
+.custom-input {
+  max-width: 320px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.88rem;
+  color: #334155;
+  transition: border-color 0.2s;
+}
+
+.custom-input:focus {
+  border-color: #0076ff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 118, 255, 0.15);
+}
+
+.custom-textarea {
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.88rem;
+  color: #334155;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.custom-textarea:focus {
+  border-color: #0076ff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 118, 255, 0.15);
+}
+
+.text-area-large {
+  padding-bottom: 2rem;
+}
+
+.counter-badge.bottom-right-textarea {
+  right: 1rem;
+  bottom: 0.6rem;
+}
+
+.custom-btn {
+  border-radius: 6px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  color: #0076ff;
+  border-color: #0076ff;
+}
+
+.custom-btn:hover {
+  background-color: #0076ff;
+  color: #ffffff;
+}
+
+/* Radio buttons matching settings row */
+.options-group {
   display: flex;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.custom-radio {
+  display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.88rem;
+  color: #334155;
 }
 
-.input-with-count.align-top {
-  align-items: flex-start;
+.custom-radio input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
 }
 
-.counter {
-  color: #9ca3af;
-  font-size: 0.8rem;
-  min-width: 4.8rem;
-  text-align: right;
+.radio-indicator {
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background-color: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 50%;
+  transition: all 0.2s ease-in-out;
 }
 
-@media (max-width: 767px) {
-  .upload-row {
+.custom-radio:hover .radio-indicator {
+  border-color: #3b82f6;
+  background-color: #f8fafc;
+}
+
+.custom-radio input:checked ~ .radio-indicator {
+  border-color: #0076ff;
+  background-color: #ffffff;
+}
+
+.radio-indicator::after {
+  content: "";
+  position: absolute;
+  display: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #0076ff;
+}
+
+.custom-radio input:checked ~ .radio-indicator::after {
+  display: block;
+}
+
+@media (max-width: 991px) {
+  .additional-settings-card {
     grid-template-columns: 1fr;
+    gap: 0.65rem;
+    align-items: flex-start;
   }
 
-  .row-label {
-    border-right: 0;
-    border-bottom: 1px solid #edf2f8;
-    padding-bottom: 0.45rem;
+  .placeholder-badge {
+    display: none;
   }
-
-  .row-inline,
-  .input-with-count {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .counter {
-    text-align: left;
+  
+  .row-inline {
+    flex-wrap: wrap;
   }
 }
 </style>

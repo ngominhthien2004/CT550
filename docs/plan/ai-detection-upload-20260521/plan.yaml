@@ -1,0 +1,289 @@
+plan_id: ai-detection-upload-20260521
+objective: Integrate AI image detection into artwork upload flow with backend-first sequencing and UI warnings.
+created_at: "2026-05-21"
+created_by: gem-planner
+status: pending_approval
+research_confidence: medium
+
+plan_metrics:
+  wave_1_task_count: 1
+  total_dependencies: 3
+  risk_score: medium
+
+tldr: |
+  - Run AI detection pre-submit on the selected file to show a warning under the preview, then re-detect on backend for tagging.
+  - Standardize aiDetection payload (confidence 0-100, error shape) and define primary image handling.
+  - Ensure AI tag upsert and idempotent tagging in the backend.
+
+open_questions: []
+
+pre_mortem:
+  overall_risk_level: medium
+  critical_failure_modes:
+    - scenario: AI detection service fails or times out during upload, blocking artwork creation.
+      likelihood: medium
+      impact: high
+      mitigation: Use a short timeout and continue upload with a non-blocking warning state when detection fails.
+    - scenario: UI cannot show the warning because the upload flow redirects immediately after submit.
+      likelihood: medium
+      impact: medium
+      mitigation: Return detection metadata in the create response and surface warning before redirect or after submit in-place.
+    - scenario: Frontend pre-submit detection and backend re-detection disagree, confusing users.
+      likelihood: medium
+      impact: medium
+      mitigation: Use the same threshold, normalize confidence 0-100, and show copy that clarifies tagging happens on submit.
+  assumptions:
+    - /api/ai/detect-image remains stable and returns confidence/isAI data.
+    - Product allows auto-tagging with a normalized tag name such as "ai" when above threshold.
+    - Upload UI has access to the selected file before submit to call AI detection.
+
+implementation_specification:
+  code_structure: |
+    Keep backend changes within artwork controller/config and existing AI controller. Frontend should reuse the upload view
+    and artwork store, with minimal additions to surface detection warnings.
+  affected_areas:
+    - backend/controllers/artwork.controller.js
+    - backend/config/env.js
+    - backend/.env.example
+    - frontend/src/stores/artwork.store.js
+    - frontend/src/views/UploadArtworkView.vue
+    - frontend/src/services/api.js
+  component_details:
+    - component: createArtwork upload flow
+      responsibility: Re-detect AI for the primary image on submit, apply threshold, upsert AI tag, and include detection
+        metadata in the response.
+      interfaces:
+        - POST /api/artworks response adds aiDetection: { confidence, isAI, threshold, tagged, error }
+    - component: primary image selection
+      responsibility: Define primary image as the first uploaded image; only this file is used for AI detection.
+      interfaces:
+        - createArtwork selects images[0] for detection
+    - component: AI detection config
+      responsibility: Provide a configurable threshold via env/config with default 70%.
+      interfaces:
+        - getAiDetectionThreshold() -> number
+    - component: Upload UI warning
+      responsibility: Run pre-submit detection on selected file and show warning under image preview when above threshold.
+      interfaces:
+        - UploadArtworkView uses aiDetectionPreview state from artworkStore
+        - Warning copy: "Ảnh của bạn được phát hiện là tạo bằng AI, chúng tôi sẽ gắn sẵn tag AI cho bạn. Nếu bạn cho rằng sai, hãy gỡ thủ công tag AI."
+    - component: aiDetection error shape
+      responsibility: Standardize error output for both pre-submit and submit detection.
+      interfaces:
+        - aiDetection.error: { code, message } when detection fails
+    - component: tag upsert/idempotency
+      responsibility: Ensure AI tag is created once and not duplicated on repeated uploads.
+      interfaces:
+        - Tag upsert uses normalized name and avoids duplicate tag assignment
+  dependencies:
+    - component: artwork controller
+      relationship: Depends on ai.controller detection service behavior and env config values.
+    - component: upload UI
+      relationship: Depends on AI detection endpoint and createArtwork response containing aiDetection metadata.
+  integration_points:
+    - backend/routes/artwork.routes.js -> createArtwork
+    - backend/controllers/ai.controller.js -> detectAIImage
+    - frontend UploadArtworkView -> artworkStore.detectAiPreview
+    - frontend UploadArtworkView -> artworkStore.submitArtwork
+
+contracts:
+  - from_task: T1
+    to_task: T2
+    interface: createArtwork returns aiDetection metadata (confidence 0-100, isAI, threshold, tagged, error)
+    format: JSON payload in create artwork response
+
+tasks:
+  - id: T1
+    title: Add backend AI detection to artwork upload
+    description: |
+      Extend createArtwork to call AI detection for the primary image (first uploaded image), apply threshold
+      from config, upsert AI tag idempotently when confidence exceeds threshold, and include aiDetection
+      metadata in the response with confidence scaled 0-100 and error shape.
+    wave: 1
+    agent: gem-implementer
+    prototype: false
+    covers:
+      - AC1
+      - AC2
+      - AC3
+      - AC5
+      - AC6
+    priority: high
+    status: pending
+    dependencies: []
+    conflicts_with: []
+    context_files:
+      - path: backend/controllers/artwork.controller.js
+        description: Artwork creation flow to inject AI detection and tagging.
+      - path: backend/controllers/ai.controller.js
+        description: Existing detectAIImage handler and HF integration.
+      - path: backend/config/env.js
+        description: Config accessor for new AI detection threshold.
+      - path: backend/.env.example
+        description: Document AI detection threshold env var.
+    planning_pass: 1
+    planning_history:
+      - pass: 1
+        reason: Initial backend-first task for AI detection integration.
+        timestamp: "2026-05-21"
+        estimated_effort: medium
+        estimated_files: 3
+        estimated_lines: 220
+        focus_area: backend
+        verification:
+          - Upload an image and confirm createArtwork response includes aiDetection fields.
+          - Verify AI tag upsert and idempotent assignment when above threshold.
+        acceptance_criteria:
+          - AC1
+          - AC2
+          - AC3
+          - AC5
+          - AC6
+        failure_modes:
+          - scenario: AI detection throws and blocks upload.
+            likelihood: medium
+            impact: high
+            mitigation: Catch errors and proceed with upload while returning aiDetection error state.
+        tech_stack:
+          - Node.js
+          - Express
+          - Mongoose
+        test_coverage: null
+
+  - id: T2
+    title: Surface AI detection warning in upload UI
+    description: |
+      Update upload store and view to call AI detection pre-submit on selected file, store
+      aiDetectionPreview, and show the warning copy under the image preview when above threshold.
+      Continue to read submit response aiDetection for post-submit confirmation.
+    wave: 2
+    agent: gem-implementer
+    prototype: false
+    covers:
+      - AC4
+      - AC7
+    priority: medium
+    status: pending
+    dependencies:
+      - T1
+    conflicts_with: []
+    context_files:
+      - path: frontend/src/stores/artwork.store.js
+        description: Receives createArtwork response and exposes aiDetection metadata.
+      - path: frontend/src/views/UploadArtworkView.vue
+        description: Upload UI where warning is displayed.
+    planning_pass: 1
+    planning_history:
+      - pass: 1
+        reason: UI integration dependent on backend response shape.
+        timestamp: "2026-05-21"
+        estimated_effort: small
+        estimated_files: 2
+        estimated_lines: 140
+        focus_area: frontend
+        verification:
+          - Select an image with known AI probability and confirm warning appears under preview before submit.
+        acceptance_criteria:
+          - AC4
+          - AC7
+        failure_modes:
+          - scenario: Warning never shows because the page redirects immediately after submit.
+            likelihood: medium
+            impact: medium
+            mitigation: Display warning before redirect or delay redirect until warning is acknowledged.
+        tech_stack:
+          - Vue 3
+          - Pinia
+        test_coverage: null
+
+  - id: T3
+    title: Validate upload flow and AI detection behavior
+    description: |
+      Run backend and frontend checks to ensure AI detection, auto-tagging, and warnings behave as expected.
+    wave: 3
+    agent: gem-browser-tester
+    prototype: false
+    covers:
+      - AC1
+      - AC2
+      - AC3
+      - AC4
+    priority: medium
+    status: pending
+    dependencies:
+      - T1
+      - T2
+    conflicts_with: []
+    context_files:
+      - path: frontend/src/views/UploadArtworkView.vue
+        description: Warning UI and submission flow.
+      - path: backend/controllers/artwork.controller.js
+        description: AI detection integration logic.
+    planning_pass: 1
+    planning_history:
+      - pass: 1
+        reason: Validation after backend and frontend integration.
+        timestamp: "2026-05-21"
+        estimated_effort: small
+        estimated_files: 2
+        estimated_lines: 40
+        focus_area: validation
+        verification:
+          - Backend: POST /api/artworks with an image returns aiDetection and tags AI when threshold exceeded.
+          - Frontend: Upload page shows warning when aiDetection.threshold is exceeded.
+        acceptance_criteria:
+          - AC1
+          - AC2
+          - AC3
+          - AC4
+          - AC5
+          - AC6
+          - AC7
+        failure_modes:
+          - scenario: Detection returns false positives causing tag spam.
+            likelihood: low
+            impact: medium
+            mitigation: Verify threshold and allow env tuning before production rollout.
+        validation_matrix:
+          - scenario: AI detection above threshold
+            steps:
+              - Upload an image likely to be flagged as AI.
+              - Submit the artwork.
+              - Observe UI warning and created artwork tags.
+            expected_result: Warning appears and AI tag is applied.
+          - scenario: AI detection below threshold
+            steps:
+              - Upload a human-made image.
+              - Submit the artwork.
+            expected_result: No AI warning and no AI tag is applied.
+          - scenario: Pre-submit AI detection warning
+            steps:
+              - Select an image on the upload page without submitting.
+              - Observe the warning under the preview.
+            expected_result: Warning shows with the specified copy when above threshold.
+
+planning_pass: 1
+planning_history:
+  - pass: 1
+    reason: Initial plan from PRD ai_detection_on_upload scope.
+    timestamp: "2026-05-21"
+    estimated_effort: medium
+    estimated_files: 3
+    estimated_lines: 260
+    focus_area: upload-ai-detection
+    verification:
+      - Backend createArtwork integrates detection and threshold configuration.
+      - Frontend upload warns when above threshold.
+    acceptance_criteria:
+      - AC1: Backend upload calls /api/ai/detect-image and receives AI probability.
+      - AC2: Threshold is configurable via env/config.
+      - AC3: Auto-tag AI when above threshold.
+      - AC4: Upload UI shows warning under image when above threshold.
+      - AC5: Backend detection uses the primary image (first uploaded image) only.
+      - AC6: aiDetection payload uses confidence scale 0-100 and error shape { code, message }.
+      - AC7: Upload UI runs AI detection pre-submit on selected file to show warning copy.
+    failure_modes:
+      - scenario: Detection adds too much latency for upload requests.
+        likelihood: medium
+        impact: medium
+        mitigation: Add timeout and return non-blocking warning data.

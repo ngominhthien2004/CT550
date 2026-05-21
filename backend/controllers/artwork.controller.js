@@ -1,6 +1,8 @@
 const Artwork = require('../models/Artwork');
 const Tag = require('../models/Tag');
 const { createNotification } = require('../utils/notification');
+const { detectAIWithHuggingFace } = require('../services/huggingface.service');
+const { getAiDetectionThreshold } = require('../config/env');
 const fs = require('fs');
 const path = require('path');
 
@@ -10,6 +12,32 @@ const normalizeTagName = (rawTagName = '') =>
         .replace(/^#+/, '')
         .replace(/\s+/g, '_')
         .toLowerCase();
+
+const AI_TAG_NAME = normalizeTagName('ai');
+
+async function runAiDetection(primaryImagePath) {
+    try {
+        const imageBuffer = await fs.promises.readFile(primaryImagePath);
+        const base64Image = imageBuffer.toString('base64');
+        const hfResult = await detectAIWithHuggingFace(base64Image);
+
+        if (hfResult.error) {
+            return { success: false, error: hfResult.error };
+        }
+
+        return {
+            success: true,
+            confidence: hfResult.confidence,
+            isAI: hfResult.isAI,
+        };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+function hasTagId(tagIds, tagId) {
+    return tagIds.some((existingId) => String(existingId) === String(tagId));
+}
 
 // Create Artwork
 const createArtwork = async (req, res, next) => {
@@ -49,6 +77,53 @@ const createArtwork = async (req, res, next) => {
             }
         }
 
+        const threshold = getAiDetectionThreshold();
+        const aiDetection = {
+            confidence: null,
+            isAI: false,
+            threshold,
+            tagged: false,
+        };
+
+        const primaryFile = req.files[0];
+        if (primaryFile && primaryFile.path) {
+            const detectionResult = await runAiDetection(primaryFile.path);
+
+            if (detectionResult.success) {
+                const confidence = Number.isFinite(detectionResult.confidence)
+                    ? detectionResult.confidence
+                    : null;
+                const isAI = Boolean(detectionResult.isAI) && typeof confidence === 'number'
+                    ? confidence >= threshold
+                    : false;
+
+                aiDetection.confidence = confidence;
+                aiDetection.isAI = isAI;
+
+                if (isAI) {
+                    const aiTag = await Tag.findOneAndUpdate(
+                        { name: AI_TAG_NAME },
+                        { $setOnInsert: { name: AI_TAG_NAME, usageCount: 0 } },
+                        { new: true, upsert: true }
+                    );
+
+                    if (!hasTagId(tagIds, aiTag._id)) {
+                        tagIds.push(aiTag._id);
+                        await Tag.updateOne(
+                            { _id: aiTag._id },
+                            { $inc: { usageCount: 1 } }
+                        );
+                    }
+
+                    aiDetection.tagged = hasTagId(tagIds, aiTag._id);
+                }
+            } else {
+                aiDetection.error = detectionResult.error;
+            }
+        } else {
+            aiDetection.error = 'Primary image unavailable for detection';
+        }
+
         const artwork = await Artwork.create({
             user: req.user._id,
             title,
@@ -66,7 +141,10 @@ const createArtwork = async (req, res, next) => {
             message: `Artwork \"${artwork.title}\" posted successfully.`
         });
 
-        res.status(201).json(artwork);
+        res.status(201).json({
+            ...artwork.toObject(),
+            aiDetection,
+        });
     } catch (error) {
         next(error);
     }

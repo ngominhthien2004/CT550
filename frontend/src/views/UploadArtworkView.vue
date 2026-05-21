@@ -7,7 +7,7 @@ import UploadTagSelector from '../components/upload/UploadTagSelector.vue'
 import UploadContentDetails from '../components/upload/UploadContentDetails.vue'
 import UploadPublicationSettings from '../components/upload/UploadPublicationSettings.vue'
 import { navItems } from '../constants/navigation'
-import { getTags } from '../services/api'
+import api, { getTags } from '../services/api'
 import { useArtworkStore } from '../stores/artwork.store'
 
 const uploadKinds = ['illust', 'manga', 'ugoira', 'novel']
@@ -42,6 +42,12 @@ const localError = ref('')
 const tagSuggestions = ref([])
 const tagSuggestionLoading = ref(false)
 let tagSuggestionTimer = null
+const previewUrl = ref('')
+const aiDetection = ref(null)
+const aiDetectionError = ref('')
+const aiDetectionLoading = ref(false)
+const detectRequestId = ref(0)
+const defaultAiThreshold = 70
 
 const form = reactive({
   title: '',
@@ -84,6 +90,26 @@ const titleCount = computed(() => form.title.length)
 const captionCount = computed(() => form.caption.length)
 const novelTextCount = computed(() => form.novelText.length)
 const tagsCount = computed(() => form.tags.length)
+const aiThreshold = computed(() => {
+  const value = Number(aiDetection.value?.threshold)
+  return Number.isFinite(value) ? value : defaultAiThreshold
+})
+const showAiWarning = computed(() => {
+  const confidence = Number(aiDetection.value?.confidence)
+  if (!Number.isFinite(confidence)) return false
+  return aiDetection.value?.isAI === true && confidence >= aiThreshold.value
+})
+const aiWarningMessage = computed(() =>
+  showAiWarning.value
+    ? 'Chúng tôi đã bật "Yes" trong mục "AI-generated work" nếu bạn cho là nhầm lẫn có thể tắt thủ công'
+    : '',
+)
+
+watch(showAiWarning, (newValue) => {
+  if (newValue) {
+    form.aiGenerated = 'yes'
+  }
+})
 
 function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
@@ -133,15 +159,76 @@ function resetForm() {
   form.novelSeriesName = ''
   form.images = []
   form.coverImages = []
+  resetPreviewState()
   resetTagSuggestionState()
 }
 
 function handleMediaFilesChange(event) {
   form.images = Array.from(event.target.files || [])
+  handlePrimaryFileChange(form.images[0])
 }
 
 function handleCoverFilesChange(event) {
   form.coverImages = Array.from(event.target.files || [])
+  handlePrimaryFileChange(form.coverImages[0])
+}
+
+function resetPreviewState() {
+  if (previewUrl.value && previewUrl.value.startsWith('blob:')) {
+    URL.revokeObjectURL(previewUrl.value)
+  }
+  previewUrl.value = ''
+  aiDetection.value = null
+  aiDetectionError.value = ''
+  aiDetectionLoading.value = false
+  detectRequestId.value += 1
+}
+
+function handlePrimaryFileChange(file) {
+  resetPreviewState()
+  if (!file) {
+    return
+  }
+  previewUrl.value = URL.createObjectURL(file)
+  runAiDetection(file)
+}
+
+async function runAiDetection(file) {
+  const requestId = (detectRequestId.value += 1)
+  aiDetectionLoading.value = true
+  aiDetectionError.value = ''
+  aiDetection.value = null
+
+  try {
+    const formData = new FormData()
+    formData.append('image', file)
+    const { data } = await api.post('/ai/detect-image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    if (requestId !== detectRequestId.value) return
+    const payload = data?.data ?? data
+    aiDetection.value = {
+      ...payload,
+      isAI: Boolean(payload?.isAI),
+      confidence: Number(payload?.confidence),
+      threshold: Number(payload?.threshold),
+    }
+  } catch (error) {
+    if (requestId !== detectRequestId.value) return
+    aiDetectionError.value = error?.response?.data?.message || 'Failed to analyze image.'
+    aiDetection.value = null
+  } finally {
+    if (requestId === detectRequestId.value) {
+      aiDetectionLoading.value = false
+    }
+  }
+}
+
+function extractCanonicalTag(value) {
+  if (!value) return ''
+  if (typeof value === 'string') return value
+  if (typeof value === 'object' && value.name) return value.name
+  return ''
 }
 
 function commitTag(tagValue, clearInput = true) {
@@ -296,6 +383,12 @@ async function submitArtwork() {
       images: isNovel.value ? form.coverImages : form.images,
     })
 
+    const responseAiDetection = createdArtwork?.aiDetection
+    const canonicalTag = extractCanonicalTag(responseAiDetection?.canonicalTag)
+    if (responseAiDetection?.tagged && canonicalTag) {
+      commitTag(canonicalTag, false)
+    }
+
     const createdArtworkId = createdArtwork?._id || createdArtwork?.id
     if (createdArtworkId) {
       await router.push(`/artworks/${createdArtworkId}`)
@@ -349,6 +442,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   artworkStore.resetCreateState()
   resetTagSuggestionState()
+  resetPreviewState()
 })
 </script>
 
@@ -362,6 +456,9 @@ onBeforeUnmount(() => {
         :is-novel="isNovel"
         :media-count="form.images.length"
         :cover-count="form.coverImages.length"
+        :preview-url="previewUrl"
+        :preview-alt="form.title ? `Preview for ${form.title}` : 'Artwork preview'"
+        :ai-warning="aiWarningMessage"
         @media-change="handleMediaFilesChange"
         @cover-change="handleCoverFilesChange"
       />
@@ -393,7 +490,12 @@ onBeforeUnmount(() => {
           @select-suggestion="handleSelectSuggestion"
         />
 
-        <UploadPublicationSettings :form="form" :is-novel="isNovel" :language-options="languageOptions" />
+        <UploadPublicationSettings
+          :form="form"
+          :is-novel="isNovel"
+          :language-options="languageOptions"
+          :show-ai-warning="showAiWarning"
+        />
 
         <div v-if="localError || artworkStore.createError" class="alert alert-danger mb-0" role="alert" aria-live="assertive">
           {{ localError || artworkStore.createError }}

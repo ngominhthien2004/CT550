@@ -1,0 +1,422 @@
+plan_id: artwork-ai-detection
+objective: Locate artwork upload flow, tag assignment, and /ai route usage to identify integration touchpoints for AI detection and warning messaging.
+focus_area: upload-ai-integration
+created_at: "2026-05-21"
+created_by: gem-researcher
+status: completed
+
+tldr: |
+  - Artwork upload uses multipart /api/artworks with multer disk storage and createArtwork handles image paths and tag normalization.
+  - Tags are normalized to lowercase with underscores, created on demand, and usageCount is incremented during upload.
+  - AI endpoints are mounted at /api/ai with /ai/chat and /ai/detect-image used by the AIView frontend.
+  - Upload UI includes an aiGenerated radio setting in publication settings but current submit payload does not include it.
+  - AI detection service uses HuggingFace inference and returns isAI/confidence/reason for a single image.
+
+research_metadata:
+  methodology: "semantic_search + grep_search + targeted read_file"
+  scope: "backend controllers/routes/models for upload, tags, ai; frontend upload view/store/api; AI view; workflow docs"
+  confidence: medium
+  coverage: 0.7
+  decision_blockers: 1
+  research_blockers: 0
+
+files_analyzed:
+  - file: artwork.controller.js
+    path: backend/controllers/artwork.controller.js
+    purpose: Create and list artworks, including tag handling for uploads.
+    key_elements:
+      - element: normalizeTagName
+        type: function
+        location: backend/controllers/artwork.controller.js:7
+        description: Normalizes tag input to lowercase and underscores.
+      - element: createArtwork
+        type: function
+        location: backend/controllers/artwork.controller.js:15
+        description: Validates files, builds image URLs, resolves tag IDs, and creates Artwork.
+    language: JavaScript
+    lines: 191
+  - file: artwork.routes.js
+    path: backend/routes/artwork.routes.js
+    purpose: Artwork upload routing and multer configuration.
+    key_elements:
+      - element: resolveUploadDirectory
+        type: function
+        location: backend/routes/artwork.routes.js:12
+        description: Builds upload path public/uploads/{userId}/{type}.
+      - element: POST /api/artworks
+        type: route
+        location: backend/routes/artwork.routes.js:63
+        description: protect + upload.array('images', 10) -> createArtwork.
+    language: JavaScript
+    lines: 70
+  - file: Artwork.js
+    path: backend/models/Artwork.js
+    purpose: Artwork schema definition.
+    key_elements:
+      - element: tags
+        type: field
+        location: backend/models/Artwork.js:28
+        description: Array of Tag ObjectIds.
+    language: JavaScript
+    lines: 54
+  - file: Tag.js
+    path: backend/models/Tag.js
+    purpose: Tag schema with usageCount.
+    key_elements:
+      - element: usageCount
+        type: field
+        location: backend/models/Tag.js:15
+        description: Tracks tag usage for suggestions.
+    language: JavaScript
+    lines: 29
+  - file: tag.controller.js
+    path: backend/controllers/tag.controller.js
+    purpose: Tag listing and tag detail endpoints.
+    key_elements:
+      - element: listTags
+        type: function
+        location: backend/controllers/tag.controller.js:11
+        description: Returns tags filtered by query and usageCount.
+      - element: getTagDetail
+        type: function
+        location: backend/controllers/tag.controller.js:33
+        description: Resolves tag and returns artworks for that tag.
+    language: JavaScript
+    lines: 67
+  - file: tag.routes.js
+    path: backend/routes/tag.routes.js
+    purpose: Tag routes mapping.
+    key_elements:
+      - element: GET /api/tags
+        type: route
+        location: backend/routes/tag.routes.js:6
+        description: listTags handler.
+      - element: GET /api/tags/:tagName
+        type: route
+        location: backend/routes/tag.routes.js:7
+        description: getTagDetail handler.
+    language: JavaScript
+    lines: 9
+  - file: ai.controller.js
+    path: backend/controllers/ai.controller.js
+    purpose: AI chat, recommendation, summary, and image detection handlers.
+    key_elements:
+      - element: detectAIImage
+        type: function
+        location: backend/controllers/ai.controller.js:75
+        description: Detects AI image via HuggingFace and returns isAI/confidence.
+    language: JavaScript
+    lines: 119
+  - file: ai.routes.js
+    path: backend/routes/ai.routes.js
+    purpose: AI routes for chat, search, summarize, detect-image.
+    key_elements:
+      - element: POST /api/ai/chat
+        type: route
+        location: backend/routes/ai.routes.js:14
+        description: chat handler.
+      - element: POST /api/ai/detect-image
+        type: route
+        location: backend/routes/ai.routes.js:18
+        description: detectAIImage with memoryStorage single file.
+    language: JavaScript
+    lines: 19
+  - file: huggingface.service.js
+    path: backend/services/huggingface.service.js
+    purpose: AI image detection via HuggingFace API.
+    key_elements:
+      - element: detectAIWithHuggingFace
+        type: function
+        location: backend/services/huggingface.service.js:5
+        description: Calls HF inference API and parses results.
+      - element: detectWithMetadataAnalysis
+        type: function
+        location: backend/services/huggingface.service.js:71
+        description: Heuristic metadata analysis fallback.
+    language: JavaScript
+    lines: 168
+  - file: ai.service.js
+    path: backend/services/ai.service.js
+    purpose: Chat and prompt generation via Ollama API.
+    key_elements:
+      - element: chatWithAI
+        type: function
+        location: backend/services/ai.service.js:14
+        description: Calls /api/chat on Ollama host.
+      - element: generateWithPrompt
+        type: function
+        location: backend/services/ai.service.js:28
+        description: Builds system/user prompt and delegates to chatWithAI.
+    language: JavaScript
+    lines: 41
+  - file: server.js
+    path: backend/server.js
+    purpose: Express app setup and route mounting.
+    key_elements:
+      - element: app.use('/api/ai', aiRoutes)
+        type: route
+        location: backend/server.js:71
+        description: Mounts AI API routes.
+    language: JavaScript
+    lines: 87
+  - file: UploadArtworkView.vue
+    path: frontend/src/views/UploadArtworkView.vue
+    purpose: Artwork upload form and submit flow.
+    key_elements:
+      - element: form.aiGenerated
+        type: field
+        location: frontend/src/views/UploadArtworkView.vue:54
+        description: AI-generated selector state.
+      - element: submitArtwork
+        type: function
+        location: frontend/src/views/UploadArtworkView.vue:278
+        description: Calls artwork store submit with title/description/type/ageRating/tags/images.
+    language: Vue
+    lines: 220
+  - file: UploadPublicationSettings.vue
+    path: frontend/src/components/upload/UploadPublicationSettings.vue
+    purpose: Publication settings UI, including AI-generated radio.
+    key_elements:
+      - element: aiGenerated radio
+        type: ui
+        location: frontend/src/components/upload/UploadPublicationSettings.vue:42
+        description: Radio options Yes/No bound to form.aiGenerated.
+    language: Vue
+    lines: 120
+  - file: UploadTagSelector.vue
+    path: frontend/src/components/upload/UploadTagSelector.vue
+    purpose: Tag input UI and suggestion list.
+    key_elements:
+      - element: suggestion panel
+        type: ui
+        location: frontend/src/components/upload/UploadTagSelector.vue:43
+        description: Displays tag suggestions from API.
+    language: Vue
+    lines: 140
+  - file: UploadContentDetails.vue
+    path: frontend/src/components/upload/UploadContentDetails.vue
+    purpose: Title, caption, and novel detail inputs.
+    key_elements:
+      - element: caption input
+        type: ui
+        location: frontend/src/components/upload/UploadContentDetails.vue:32
+        description: Caption textarea bound to form.caption.
+    language: Vue
+    lines: 120
+  - file: artwork.store.js
+    path: frontend/src/stores/artwork.store.js
+    purpose: Artwork submit logic and state tracking.
+    key_elements:
+      - element: submitArtwork
+        type: function
+        location: frontend/src/stores/artwork.store.js:36
+        description: Builds FormData with title/description/type/ageRating/tags/images and posts /artworks.
+    language: JavaScript
+    lines: 86
+  - file: api.js
+    path: frontend/src/services/api.js
+    purpose: Axios client and API wrappers.
+    key_elements:
+      - element: createArtwork
+        type: function
+        location: frontend/src/services/api.js:69
+        description: POST /artworks with FormData.
+    language: JavaScript
+    lines: 200
+  - file: AIView.vue
+    path: frontend/src/views/AIView.vue
+    purpose: AI test page with chat and image detection UI.
+    key_elements:
+      - element: api.post('/ai/chat')
+        type: call
+        location: frontend/src/views/AIView.vue:127
+        description: Sends chat message to AI endpoint.
+      - element: api.post('/ai/detect-image')
+        type: call
+        location: frontend/src/views/AIView.vue:194
+        description: Sends image to detection endpoint.
+    language: Vue
+    lines: 260
+  - file: user-feature-workflows.md
+    path: docs/user-feature-workflows.md
+    purpose: Backend/Frontend workflow reference for upload.
+    key_elements:
+      - element: Upload artwork workflow
+        type: documentation
+        location: docs/user-feature-workflows.md:101
+        description: Lists steps for upload, tag creation, and image handling.
+    language: Markdown
+    lines: 160
+  - file: user-page-workflows.md
+    path: docs/user-page-workflows.md
+    purpose: Page interaction notes for upload page.
+    key_elements:
+      - element: UploadArtworkView workflow
+        type: documentation
+        location: docs/user-page-workflows.md:214
+        description: Notes AI-generated setting and upload interactions.
+    language: Markdown
+    lines: 260
+  - file: PRD.yaml
+    path: docs/PRD.yaml
+    purpose: PRD metadata (not upload-specific).
+    key_elements: []
+    language: YAML
+    lines: 120
+
+patterns_found:
+  - category: architecture
+    pattern: routes -> controllers -> models
+    description: Express routes map to controllers that read/write Mongoose models.
+    examples:
+      - file: backend/routes/artwork.routes.js
+        location: backend/routes/artwork.routes.js:63
+        snippet: ".post(protect, upload.array('images', 10), createArtwork)"
+    prevalence: common
+  - category: structure
+    pattern: upload path derived from user and type
+    description: Uploads stored under public/uploads/{userId}/{type} and URL normalized to /uploads/... in controller.
+    examples:
+      - file: backend/routes/artwork.routes.js
+        location: backend/routes/artwork.routes.js:12
+        snippet: "return path.join('public', 'uploads', userId, artworkType);"
+    prevalence: common
+  - category: naming
+    pattern: tag normalization
+    description: Tags are normalized by trimming, removing leading #, and replacing whitespace with underscores.
+    examples:
+      - file: backend/controllers/artwork.controller.js
+        location: backend/controllers/artwork.controller.js:7
+        snippet: ".replace(/\s+/g, '_')"
+    prevalence: common
+  - category: architecture
+    pattern: AI detection via dedicated endpoint
+    description: AI detection is exposed as /api/ai/detect-image with memoryStorage and a single image file.
+    examples:
+      - file: backend/routes/ai.routes.js
+        location: backend/routes/ai.routes.js:18
+        snippet: "router.post('/detect-image', upload.single('image'), detectAIImage);"
+    prevalence: occasional
+
+related_architecture:
+  components_relevant_to_domain:
+    - component: UploadArtworkView
+      responsibility: Collects upload data and triggers submit.
+      location: frontend/src/views/UploadArtworkView.vue
+      relationship_to_domain: domain depends on this
+    - component: artwork.store submitArtwork
+      responsibility: Builds FormData and posts /artworks.
+      location: frontend/src/stores/artwork.store.js
+      relationship_to_domain: domain depends on this
+    - component: artwork.routes createArtwork
+      responsibility: Receives upload, stores files, and persists artwork.
+      location: backend/routes/artwork.routes.js
+      relationship_to_domain: domain depends on this
+    - component: ai.routes detect-image
+      responsibility: Accepts image and returns AI detection result.
+      location: backend/routes/ai.routes.js
+      relationship_to_domain: this uses domain outputs
+  interfaces_used_by_domain:
+    - interface: POST /api/artworks
+      location: backend/routes/artwork.routes.js
+      usage_pattern: multipart FormData with images and tag strings
+    - interface: POST /api/ai/detect-image
+      location: backend/routes/ai.routes.js
+      usage_pattern: multipart FormData with image field
+  data_flow_involving_domain: "Upload view -> artwork.store -> api.createArtwork -> /api/artworks -> multer disk storage -> createArtwork -> Tag + Artwork models"
+  key_relationships_to_domain:
+    - from: frontend/src/views/UploadArtworkView.vue
+      to: frontend/src/stores/artwork.store.js
+      relationship: calls
+    - from: frontend/src/stores/artwork.store.js
+      to: frontend/src/services/api.js
+      relationship: calls
+    - from: backend/routes/artwork.routes.js
+      to: backend/controllers/artwork.controller.js
+      relationship: calls
+    - from: backend/controllers/artwork.controller.js
+      to: backend/models/Artwork.js
+      relationship: uses
+    - from: backend/controllers/artwork.controller.js
+      to: backend/models/Tag.js
+      relationship: uses
+    - from: frontend/src/views/AIView.vue
+      to: backend/routes/ai.routes.js
+      relationship: calls
+
+related_technology_stack:
+  languages_used_in_domain:
+    - JavaScript
+    - Vue
+  frameworks_used_in_domain:
+    - name: Express
+      usage_in_domain: Backend routing and middleware for uploads.
+    - name: Vue 3
+      usage_in_domain: Upload UI and AI test view.
+  libraries_used_in_domain:
+    - name: multer
+      purpose_in_domain: Multipart file handling for uploads and AI detection.
+    - name: axios
+      purpose_in_domain: HTTP client in frontend api.js.
+  external_apis_used_in_domain:
+    - name: HuggingFace Inference API
+      integration_point: backend/services/huggingface.service.js
+
+related_conventions:
+  naming_patterns_in_domain: "tags normalized with underscores and lowercase"
+  structure_of_domain: "routes -> controllers -> models; frontend views -> stores -> services/api"
+  error_handling_in_domain: "controllers use try/catch or express-async-handler; errors passed to error middleware"
+  testing_in_domain: "no explicit upload/AI tests found in analyzed files"
+  documentation_in_domain: "docs/user-feature-workflows.md and docs/user-page-workflows.md describe upload flow"
+
+related_dependencies:
+  internal:
+    - component: Tag model
+      relationship_to_domain: tag lookup and usageCount update during upload
+      direction: outbound
+    - component: Artwork model
+      relationship_to_domain: persisted for upload and listing
+      direction: outbound
+  external:
+    - name: multer
+      purpose_for_domain: file upload parsing
+    - name: axios
+      purpose_for_domain: frontend API client
+
+domain_security_considerations:
+  sensitive_areas:
+    - area: artwork upload
+      location: backend/routes/artwork.routes.js
+      concern: protected route with file upload and disk storage
+    - area: AI detection endpoint
+      location: backend/routes/ai.routes.js
+      concern: no auth middleware on /api/ai endpoints
+  authentication_patterns_in_domain: "protect middleware on POST /api/artworks"
+  authorization_patterns_in_domain: "admin middleware on /api/artworks/admin/list"
+  data_validation_in_domain: "multer fileFilter enforces image types; createArtwork validates at least one file"
+
+testing_patterns:
+  framework: "not observed"
+  coverage_areas: []
+  test_organization: "not observed"
+  mock_patterns: []
+
+open_questions:
+  - question: "Should aiGenerated be persisted on Artwork?"
+    context: "Upload UI collects aiGenerated but Artwork schema and createArtwork do not include it."
+    type: decision_blocker
+    affects: ["artwork-ai-detection"]
+  - question: "Should AI detection run synchronously during upload or as a separate step?"
+    context: "AI detection exists only on /api/ai/detect-image and is used by AIView."
+    type: decision_blocker
+    affects: ["artwork-ai-detection"]
+
+gaps:
+  - area: "Frontend integration with AI detection"
+    description: "No upload flow calls /api/ai/detect-image; only AIView uses it."
+    impact: decision_blocker
+    affects: ["artwork-ai-detection"]
+  - area: "Data model for AI labels"
+    description: "Artwork schema has no AI flag or detection fields."
+    impact: decision_blocker
+    affects: ["artwork-ai-detection"]

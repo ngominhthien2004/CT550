@@ -5,42 +5,59 @@ const HF_API_URL = 'https://api-inference.huggingface.co/models';
 async function detectAIWithHuggingFace(imageBase64) {
     const hfToken = process.env.HF_TOKEN;
     
+    let fallbackNeeded = false;
+    let originalError = null;
+
     if (!hfToken || hfToken === 'your_huggingface_token_here') {
-        return {
-            error: 'HF_TOKEN not configured',
-            fallback: true
-        };
+        fallbackNeeded = true;
+        originalError = 'HF_TOKEN not configured';
+    } else {
+        const model = 'umm-maybe/AI-image-detector';
+        try {
+            const response = await axios.post(
+                `https://api-inference.huggingface.co/models/${model}`,
+                { inputs: imageBase64 },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${hfToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    timeout: 30000
+                }
+            );
+
+            console.log('HF Response:', JSON.stringify(response.data));
+
+            if (response.data && response.data[0]) {
+                const results = response.data[0];
+                return processHFResults(results);
+            }
+
+            fallbackNeeded = true;
+            originalError = 'Invalid response';
+        } catch (error) {
+            console.error('HF Error:', error.message);
+            fallbackNeeded = true;
+            originalError = error.message;
+        }
     }
 
-    const model = 'umm-maybe/AI-image-detector';
-    
-    try {
-        const response = await axios.post(
-            `https://api-inference.huggingface.co/models/${model}`,
-            { inputs: imageBase64 },
-            {
-                headers: {
-                    'Authorization': `Bearer ${hfToken}`,
-                    'Content-Type': 'application/json'
-                },
-                timeout: 30000
-            }
-        );
-
-        console.log('HF Response:', JSON.stringify(response.data));
-
-        if (response.data && response.data[0]) {
-            const results = response.data[0];
-            return processHFResults(results);
+    if (fallbackNeeded) {
+        try {
+            console.log('Triggering local metadata analysis fallback due to:', originalError);
+            const imageBuffer = Buffer.from(imageBase64, 'base64');
+            const fallbackResult = await detectWithMetadataAnalysis(imageBuffer);
+            return {
+                ...fallbackResult,
+                hfError: originalError,
+                isFallback: true
+            };
+        } catch (fallbackError) {
+            return {
+                error: originalError || fallbackError.message,
+                fallbackFailed: true
+            };
         }
-
-        return { error: 'Invalid response', fallback: true };
-    } catch (error) {
-        console.error('HF Error:', error.message);
-        return {
-            error: error.message,
-            fallback: true
-        };
     }
 }
 
@@ -48,8 +65,8 @@ function processHFResults(results) {
     const labels = results.map(r => r.label.toLowerCase());
     const scores = results.map(r => r.score);
     
-    const aiIdx = labels.findIndex(l => l.includes('ai') || l.includes('generated') || l.includes('computer'));
-    const realIdx = labels.findIndex(l => l.includes('real') || l.includes('natural') || l.includes('photo'));
+    const aiIdx = labels.findIndex(l => l.includes('ai') || l.includes('generated') || l.includes('computer') || l.includes('artificial') || l.includes('synthetic'));
+    const realIdx = labels.findIndex(l => l.includes('real') || l.includes('natural') || l.includes('photo') || l.includes('human'));
     
     const aiScore = aiIdx >= 0 ? scores[aiIdx] : 0;
     const realScore = realIdx >= 0 ? scores[realIdx] : 0;

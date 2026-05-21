@@ -60,3 +60,29 @@ public_user_search:
     - "Dữ liệu trả về không bao gồm trường nhạy cảm như email hoặc role."
   assumptions:
     - "Trang /search đã tồn tại và đang hoạt động ổn định."
+
+ai_detection_on_upload:
+  summary: "Phát hiện nội dung AI khi tải tác phẩm và cảnh báo trong UI."
+  routes:
+    - path: "/api/ai/detect-image"
+      purpose: "Dùng lại dịch vụ phát hiện AI (HuggingFace qua ai.controller)."
+  scope:
+    in_scope:
+      - "Thực hiện phát hiện AI ở backend trong luồng upload tác phẩm."
+      - "Gọi dịch vụ /api/ai/detect-image hiện có để lấy xác suất AI."
+      - "Ngưỡng cảnh báo cấu hình qua env/config (mặc định 70%)."
+      - "Tự động gắn tag AI cho tác phẩm khi xác suất > 70%."
+      - "Hiển thị cảnh báo dưới ảnh trong giao diện upload khi vượt ngưỡng."
+    out_of_scope:
+      - "Thay đổi mô hình AI hoặc thay đổi nguồn dịch vụ phát hiện."
+      - "Thêm workflow khiếu nại hoặc duyệt lại kết quả AI."
+  acceptance_criteria:
+    - "Backend upload gọi /api/ai/detect-image và nhận được xác suất AI."
+    - "Ngưỡng cảnh báo lấy từ cấu hình và có thể điều chỉnh qua env/config."
+    - "Khi xác suất > 70%, tác phẩm được gắn tag AI tự động."
+    - "UI upload hiển thị cảnh báo dưới ảnh khi vượt ngưỡng."
+  assumptions:
+    - "/api/ai/detect-image đã sẵn có và ổn định."
+
+needs_clarification:
+  - "Thông điệp cảnh báo dưới ảnh trong giao diện upload chưa chốt nội dung."
