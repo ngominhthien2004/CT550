@@ -34,34 +34,29 @@ function getThreadTimestamp(message) {
   return Math.max(getTimestamp(message?.createdAt), getTimestamp(message?.updatedAt), getTimestamp(message?.readAt))
 }
 
-function formatThreadTime(value) {
-  const date = new Date(value || '')
-  if (Number.isNaN(date.getTime())) {
-    return ''
-  }
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+const dayFormatOptions = {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
 }
 
-function formatDayLabel(value) {
-  const date = new Date(value || '')
-  if (Number.isNaN(date.getTime())) {
+const timeFormatOptions = { hour: '2-digit', minute: '2-digit' }
+
+function formatDateValue(value, options) {
+  const timestamp = getTimestamp(value)
+  if (!timestamp) {
     return ''
   }
 
-  return date.toLocaleDateString([], {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
+  return new Date(timestamp).toLocaleString([], options)
 }
 
 function formatMessageTime(value) {
-  const date = new Date(value || '')
-  if (Number.isNaN(date.getTime())) {
-    return ''
-  }
+  return formatDateValue(value, timeFormatOptions)
+}
 
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+function formatDayLabel(value) {
+  return formatDateValue(value, dayFormatOptions)
 }
 
 const allMessages = computed(() => {
@@ -369,7 +364,7 @@ watch(
             <div class="thread-meta">
               <div class="thread-top">
                 <strong>{{ thread.peer?.displayName || thread.peer?.username || 'Unknown user' }}</strong>
-                <small>{{ formatThreadTime(thread.latestMessage.createdAt) }}</small>
+                <small>{{ formatMessageTime(thread.latestMessage.createdAt) }}</small>
               </div>
               <p>{{ thread.latestMessage.content }}</p>
             </div>
