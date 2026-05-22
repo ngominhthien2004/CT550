@@ -9,6 +9,8 @@ import UploadPublicationSettings from '../components/upload/UploadPublicationSet
 import { navItems } from '../constants/navigation'
 import api, { getTags } from '../services/api'
 import { useArtworkStore } from '../stores/artwork.store'
+import { getApiErrorMessage } from '../utils/apiErrors'
+import { toggleNavCollapsed } from '../utils/viewNavigation'
 
 const uploadKinds = ['illust', 'manga', 'ugoira', 'novel']
 const mediaKinds = ['illust', 'manga', 'ugoira']
@@ -49,7 +51,7 @@ const aiDetectionLoading = ref(false)
 const detectRequestId = ref(0)
 const defaultAiThreshold = 70
 
-const form = reactive({
+const createDefaultForm = () => ({
   title: '',
   caption: '',
   novelText: '',
@@ -73,6 +75,8 @@ const form = reactive({
   images: [],
   coverImages: [],
 })
+
+const form = reactive(createDefaultForm())
 
 const currentKind = computed(() => {
   const value = String(route.params.kind || 'illust')
@@ -112,7 +116,7 @@ watch(showAiWarning, (newValue) => {
 })
 
 function toggleLeftNav() {
-  isNavCollapsed.value = !isNavCollapsed.value
+  toggleNavCollapsed(isNavCollapsed)
 }
 
 function normalizeTagName(rawValue) {
@@ -137,41 +141,17 @@ function resetTagSuggestionState() {
 }
 
 function resetForm() {
-  form.title = ''
-  form.caption = ''
-  form.novelText = ''
-  form.tags = []
-  form.tagInput = ''
-  form.allowTagEdit = true
-  form.ageRating = 'all'
-  form.aiGenerated = 'no'
-  form.openTo = 'public'
-  form.comments = 'on'
-  form.allowCollections = true
-  form.isOriginalWork = false
-  form.language = 'English'
-  form.scheduleEnabled = false
-  form.scheduleDate = ''
-  form.scheduleTime = ''
-  form.mangaSeriesName = ''
-  form.ugoiraNotes = ''
-  form.novelFormat = 'oneshot'
-  form.novelSeriesName = ''
-  form.images = []
-  form.coverImages = []
+  Object.assign(form, createDefaultForm())
   resetPreviewState()
   resetTagSuggestionState()
 }
 
-function handleMediaFilesChange(event) {
-  form.images = Array.from(event.target.files || [])
-  handlePrimaryFileChange(form.images[0])
+function handleFilesChange(targetKey, event) {
+  const files = Array.from(event.target.files || [])
+  form[targetKey] = files
+  handlePrimaryFileChange(files[0])
 }
 
-function handleCoverFilesChange(event) {
-  form.coverImages = Array.from(event.target.files || [])
-  handlePrimaryFileChange(form.coverImages[0])
-}
 
 function resetPreviewState() {
   if (previewUrl.value && previewUrl.value.startsWith('blob:')) {
@@ -215,7 +195,7 @@ async function runAiDetection(file) {
     }
   } catch (error) {
     if (requestId !== detectRequestId.value) return
-    aiDetectionError.value = error?.response?.data?.message || 'Failed to analyze image.'
+    aiDetectionError.value = getApiErrorMessage(error, 'Failed to analyze image.')
     aiDetection.value = null
   } finally {
     if (requestId === detectRequestId.value) {
@@ -461,8 +441,8 @@ onBeforeUnmount(() => {
         :preview-url="previewUrl"
         :preview-alt="form.title ? `Preview for ${form.title}` : 'Artwork preview'"
         :ai-warning="aiWarningMessage"
-        @media-change="handleMediaFilesChange"
-        @cover-change="handleCoverFilesChange"
+        @media-change="handleFilesChange('images', $event)"
+        @cover-change="handleFilesChange('coverImages', $event)"
       />
 
       <form class="d-grid gap-3 mt-3" @submit.prevent="submitArtwork" novalidate>
@@ -503,19 +483,15 @@ onBeforeUnmount(() => {
           {{ localError || artworkStore.createError }}
         </div>
 
-        <div v-if="isNovel" class="d-flex flex-wrap gap-2">
-          <button type="button" class="btn btn-outline-secondary" :disabled="artworkStore.createLoading" @click="handleDraftClick">Save draft</button>
-          <button type="button" class="btn btn-outline-secondary" :disabled="artworkStore.createLoading" @click="handlePreviewClick">Preview</button>
+        <div class="d-flex flex-wrap gap-2">
+          <template v-if="isNovel">
+            <button type="button" class="btn btn-outline-secondary" :disabled="artworkStore.createLoading" @click="handleDraftClick">Save draft</button>
+            <button type="button" class="btn btn-outline-secondary" :disabled="artworkStore.createLoading" @click="handlePreviewClick">Preview</button>
+          </template>
           <button type="submit" class="btn btn-primary" :disabled="artworkStore.createLoading" :aria-busy="artworkStore.createLoading">
             {{ artworkStore.createLoading ? 'Posting...' : 'Post' }}
           </button>
-        </div>
-
-        <div v-else class="d-flex flex-wrap gap-2">
-          <button type="submit" class="btn btn-primary" :disabled="artworkStore.createLoading" :aria-busy="artworkStore.createLoading">
-            {{ artworkStore.createLoading ? 'Posting...' : 'Post' }}
-          </button>
-          <button type="button" class="btn btn-outline-secondary" :disabled="artworkStore.createLoading" @click="resetForm">Reset</button>
+          <button v-if="!isNovel" type="button" class="btn btn-outline-secondary" :disabled="artworkStore.createLoading" @click="resetForm">Reset</button>
         </div>
       </form>
     </section>

@@ -12,6 +12,8 @@ import { useLikeStore } from '../stores/like.store'
 import { useFollowStore } from '../stores/follow.store'
 import { useRequestStore } from '../stores/request.store'
 import { getArtworks, userApi } from '../services/api'
+import { getApiErrorMessage } from '../utils/apiErrors'
+import { toggleNavCollapsed } from '../utils/viewNavigation'
 
 const isNavCollapsed = ref(true)
 const router = useRouter()
@@ -88,11 +90,11 @@ const typeLabelMap = {
   ugoira: 'Ugoira',
 }
 
-const typeTabs = computed(() => {
+function buildTypeTabs(items, getType) {
   const bucket = new Map()
 
-  artworks.value.forEach((item) => {
-    const type = String(item.type || '').toLowerCase()
+  items.forEach((item) => {
+    const type = getType(item)
     if (!typeLabelMap[type]) {
       return
     }
@@ -106,70 +108,38 @@ const typeTabs = computed(() => {
       label: typeLabelMap[type],
       count: bucket.get(type) || 0,
     }))
-})
+}
 
-const visibleArtworks = computed(() => {
-  if (!activeType.value) {
-    return artworks.value
+function filterByType(items, selectedType, getType) {
+  if (!selectedType) {
+    return items
   }
-  return artworks.value.filter((item) => String(item.type || '').toLowerCase() === activeType.value)
-})
+  return items.filter((item) => getType(item) === selectedType)
+}
 
-const bookmarkTypeTabs = computed(() => {
-  const bucket = new Map()
+const typeTabs = computed(() =>
+  buildTypeTabs(artworks.value, (item) => String(item.type || '').toLowerCase()),
+)
 
-  bookmarkStore.items.forEach((item) => {
-    const type = String(item?.artwork?.type || '').toLowerCase()
-    if (!typeLabelMap[type]) {
-      return
-    }
-    bucket.set(type, (bucket.get(type) || 0) + 1)
-  })
+const visibleArtworks = computed(() =>
+  filterByType(artworks.value, activeType.value, (item) => String(item.type || '').toLowerCase()),
+)
 
-  return Object.keys(typeLabelMap)
-    .filter((type) => bucket.has(type))
-    .map((type) => ({
-      value: type,
-      label: typeLabelMap[type],
-      count: bucket.get(type) || 0,
-    }))
-})
+const bookmarkTypeTabs = computed(() =>
+  buildTypeTabs(bookmarkStore.items, (item) => String(item?.artwork?.type || '').toLowerCase()),
+)
 
-const visibleBookmarks = computed(() => {
-  if (!activeBookmarkType.value) {
-    return bookmarkStore.items
-  }
+const visibleBookmarks = computed(() =>
+  filterByType(bookmarkStore.items, activeBookmarkType.value, (item) => String(item?.artwork?.type || '').toLowerCase()),
+)
 
-  return bookmarkStore.items.filter((item) => String(item?.artwork?.type || '').toLowerCase() === activeBookmarkType.value)
-})
+const likeTypeTabs = computed(() =>
+  buildTypeTabs(likeStore.items, (item) => String(item?.artwork?.type || '').toLowerCase()),
+)
 
-const likeTypeTabs = computed(() => {
-  const bucket = new Map()
-
-  likeStore.items.forEach((item) => {
-    const type = String(item?.artwork?.type || '').toLowerCase()
-    if (!typeLabelMap[type]) {
-      return
-    }
-    bucket.set(type, (bucket.get(type) || 0) + 1)
-  })
-
-  return Object.keys(typeLabelMap)
-    .filter((type) => bucket.has(type))
-    .map((type) => ({
-      value: type,
-      label: typeLabelMap[type],
-      count: bucket.get(type) || 0,
-    }))
-})
-
-const visibleLikes = computed(() => {
-  if (!activeLikeType.value) {
-    return likeStore.items
-  }
-
-  return likeStore.items.filter((item) => String(item?.artwork?.type || '').toLowerCase() === activeLikeType.value)
-})
+const visibleLikes = computed(() =>
+  filterByType(likeStore.items, activeLikeType.value, (item) => String(item?.artwork?.type || '').toLowerCase()),
+)
 
 function normalizeArtwork(item) {
   return {
@@ -179,7 +149,7 @@ function normalizeArtwork(item) {
 }
 
 function toggleLeftNav() {
-  isNavCollapsed.value = !isNavCollapsed.value
+  toggleNavCollapsed(isNavCollapsed)
 }
 
 function selectType(type) {
@@ -226,7 +196,7 @@ async function loadUserArtworks() {
     artworks.value = Array.isArray(data) ? data.map(normalizeArtwork) : []
     activeType.value = ''
   } catch (error) {
-    artworksError.value = error?.response?.data?.message || 'Failed to load user artworks'
+    artworksError.value = getApiErrorMessage(error, 'Failed to load user artworks')
     artworks.value = []
     activeType.value = ''
   } finally {
@@ -280,7 +250,7 @@ async function loadRequestTerms() {
     const data = await requestStore.fetchTerms({ creator: viewingUserId.value, openOnly: isOwnProfile.value ? 'false' : 'true' })
     requestTerms.value = Array.isArray(data) ? data : requestStore.terms
   } catch (error) {
-    requestTermsError.value = error?.response?.data?.message || 'Failed to load request plans'
+    requestTermsError.value = getApiErrorMessage(error, 'Failed to load request plans')
     requestTerms.value = []
   } finally {
     requestTermsLoading.value = false
@@ -310,7 +280,7 @@ async function loadProfile() {
       await followStore.fetchFollowStatus(viewingUserId.value)
     }
   } catch (error) {
-    profileError.value = error?.response?.data?.message || 'Failed to load profile'
+    profileError.value = getApiErrorMessage(error, 'Failed to load profile')
     profileUser.value = null
   } finally {
     profileLoading.value = false
@@ -336,7 +306,7 @@ async function toggleFollow() {
     await followStore.toggleFollowByUser(viewingUserId.value)
     await loadFollowStats()
   } catch (error) {
-    followError.value = error?.response?.data?.message || 'Failed to update follow status'
+    followError.value = getApiErrorMessage(error, 'Failed to update follow status')
   }
 }
 async function submitProfileUpdate(formData, { requiredField, modalRef, successMsg }) {
@@ -360,7 +330,7 @@ async function submitProfileUpdate(formData, { requiredField, modalRef, successM
     modalRef.value = false
     alert(successMsg)
   } catch (err) {
-    alert(err?.response?.data?.message || 'Update failed')
+    alert(getApiErrorMessage(err, 'Update failed'))
   }
 }
 
@@ -395,7 +365,7 @@ async function handleDeleteCover() {
       localStorage.setItem('authUser', JSON.stringify(authStore.user))
     }
   } catch (error) {
-    alert(error?.response?.data?.message || 'Failed to remove cover image')
+    alert(getApiErrorMessage(error, 'Failed to remove cover image'))
   }
 }
 
@@ -404,7 +374,7 @@ async function goLogin() {
   await router.push('/login')
 }
 
-onMounted(() => {
+function setActiveTabFromRoute() {
   if (route.query.tab === 'likes') {
     activeMainTab.value = 'likes'
   } else if (route.query.tab === 'bookmarks') {
@@ -412,24 +382,26 @@ onMounted(() => {
   } else if (route.query.tab === 'requests') {
     activeMainTab.value = 'requests'
   }
+}
 
+function loadAllProfileData() {
   loadProfile()
   loadUserArtworks()
   loadBookmarks()
   loadLikes()
   loadFollowStats()
   loadRequestTerms()
+}
+
+onMounted(() => {
+  setActiveTabFromRoute()
+  loadAllProfileData()
 })
 
 watch(
   () => viewingUserId.value,
   () => {
-    loadProfile()
-    loadUserArtworks()
-    loadBookmarks()
-    loadLikes()
-    loadFollowStats()
-    loadRequestTerms()
+    loadAllProfileData()
   },
 )
 
