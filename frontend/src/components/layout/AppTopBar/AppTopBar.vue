@@ -85,6 +85,13 @@ const serviceLinks = computed(() => {
     to: '/upload/illust',
     thumbnail: 'https://picsum.photos/seed/ct550-upload/96/96',
   },
+  {
+    key: 'draw',
+    label: 'Vẽ tranh',
+    description: 'Create digital drawings and sketches',
+    to: '/draw',
+    thumbnail: 'https://picsum.photos/seed/ct550-draw/96/96',
+  },
   ]
 
   if (currentUser.value?.role === 'admin') {

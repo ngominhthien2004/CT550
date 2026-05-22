@@ -6,4 +6,5 @@ export const navItems = [
   { id: 'n5', label: 'Rankings', to: '/rankings', icon: 'fa-solid fa-chart-line' },
   { id: 'n6', label: 'Comments', to: '/feed', icon: 'fa-regular fa-comments' },
   { id: 'n7', label: 'Explore', to: '/feed', icon: 'fa-solid fa-magnifying-glass' },
+  { id: 'n-draw', label: 'Vẽ tranh', to: '/draw', icon: 'fa-solid fa-pen-nib' },
 ]

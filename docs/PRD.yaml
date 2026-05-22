@@ -84,5 +84,50 @@ ai_detection_on_upload:
   assumptions:
     - "/api/ai/detect-image đã sẵn có và ổn định."
 
+artist_drawing_page:
+  summary: "Trang vẽ cho nghệ sĩ trong frontend, tập trung vẽ cục bộ và xuất file."
+  routes:
+    - path: "/draw"
+      purpose: "Trang vẽ mới tích hợp trong ứng dụng frontend hiện có."
+  ui_style:
+    reference: "Phong cách tương tự Pixiv Sketch: gọn, tập trung canvas, công cụ tối giản."
+  features:
+    - "Bút/brush với điều chỉnh kích thước."
+    - "Tẩy (eraser)."
+    - "Hoàn tác/khôi phục (undo/redo)."
+    - "Layer cơ bản (thêm/xóa/ẩn/hiện, đổi thứ tự)."
+    - "Nhập ảnh nền/ảnh tham chiếu."
+    - "Xuất PNG/JPG cục bộ."
+    - "Bảng màu + eyedropper."
+    - "Zoom/pan canvas."
+  tech_recommendation:
+    goal: "Ưu tiên thư viện canvas nhẹ, tích hợp nhanh, hỗ trợ layer, export, và tool cơ bản."
+    options:
+      - "Konva.js (ổn định, hỗ trợ layer tốt, API trực quan)."
+      - "Fabric.js (mạnh về object, cần đánh giá khả năng layer/tool phù hợp)."
+    note: "Chưa chốt thư viện, cần quyết định trước khi triển khai."
+  scope:
+    in_scope:
+      - "Chỉ frontend: canvas vẽ cục bộ và xuất file ngay trên trình duyệt."
+      - "Tích hợp trang vẽ vào layout/router hiện có."
+      - "Không phụ thuộc backend hoặc lưu trữ server."
+    out_of_scope:
+      - "Lưu đám mây, đồng bộ tài khoản, hay chia sẻ tác phẩm."
+      - "Collab real-time hoặc chat."
+      - "Tạo API mới hoặc thay đổi database."
+  acceptance_criteria:
+    - "Route /draw hoạt động trong frontend hiện có, điều hướng không lỗi."
+    - "Canvas cho phép vẽ bằng brush, tẩy, đổi kích thước và undo/redo."
+    - "Layer cơ bản hoạt động: thêm/xóa/ẩn/hiện/đổi thứ tự."
+    - "Nhập ảnh nền/ảnh tham chiếu hiển thị đúng trên canvas."
+    - "Xuất PNG/JPG tải về cục bộ thành công."
+    - "Palette và eyedropper chọn màu chính xác."
+    - "Zoom/pan mượt, không làm mất dữ liệu vẽ."
+  assumptions:
+    - "Không yêu cầu backend cho phiên bản đầu."
+    - "Không yêu cầu lưu bản vẽ sau khi đóng trang."
+
 needs_clarification:
   - "Thông điệp cảnh báo dưới ảnh trong giao diện upload chưa chốt nội dung."
+  - "Chọn thư viện canvas chính (Konva.js vs Fabric.js) và lý do ưu tiên."
+  - "Giới hạn kích thước canvas/độ phân giải xuất file (ví dụ: tối đa 4K?)"
