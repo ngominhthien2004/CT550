@@ -26,6 +26,7 @@ Mục tiêu: theo dõi trạng thái các chức năng đã/đang triển khai t
 | Public User Search (Tab User + API)                                    | FE, BE           | gem-implementer                                                              | In Progress | docs/plan/public-user-search-2026-05-12/plan.yaml | -            | pending                                                                                                      | 2026-05-13   |
 | Request / Commission Workflow                                          | FE, BE, DB       | Codex                                                                        | Done        | docs/request-feature-prd.md                       | pending      | Backend request validation tests pass; frontend build pass                                                   | 2026-05-11   |
 | Request Payment / Escrow Expansion                                     | FE, BE, DB, Docs | Codex                                                                        | Done        | docs/request-payment-prd.md                       | pending      | Backend payment/request validation tests pass; frontend build pass; mock QR sandbox added                    | 2026-05-18   |
+| Google OAuth (Passport)                                               | FE, BE, DB       | gem-implementer                                                              | Done        | -            | -            | Backend passport.js, googleCallback, AuthCallbackView tested                                                | 2026-05-25   |
 
 ## Trạng thái chuẩn
 

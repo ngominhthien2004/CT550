@@ -48,10 +48,24 @@ Ghi chú frontend-only:
 2. So sánh password bằng `matchPassword`.
 3. Thành công thì trả về user + JWT token.
 
-### 3.3 OAuth (chưa hoàn tất)
+### 3.3 OAuth (Google)
 
-- API: `POST /api/auth/oauth`
-- Trạng thái: trả `501` (not implemented).
+- API: `GET /api/auth/google` — redirect to Google consent screen
+- API: `GET /api/auth/google/callback` — callback from Google
+- Controller: `googleCallback` in `auth.controller.js`
+- Trạng thái: **Done** — Implemented with Passport Google OAuth 2.0
+- Luồng hoạt động:
+
+1. User click "Continue with Google" trên Login hoặc SignUp page
+2. Frontend redirect đến `GET /api/auth/google`
+3. Backend dùng Passport GoogleStrategy với `scope: ['profile', 'email']`
+4. Sau khi Google consent, Google redirect về `GET /api/auth/google/callback`
+5. Passport callback xử lý:
+   - Nếu user đã tồn tại với `googleId` → update avatar/displayName
+   - Nếu email đã tồn tại nhưng chưa có `googleId` → link Google account
+   - Nếu chưa có user → tạo user mới từ Google profile
+6. JWT token được sinh ra và redirect về `FRONTEND_URL/auth/callback?token=...&_id=...&username=...&email=...&role=...`
+7. `AuthCallbackView.vue` parse query params, gọi `authStore.setSession()`, redirect đến `/account`
 
 ## 4. Hồ sơ người dùng và social graph
 

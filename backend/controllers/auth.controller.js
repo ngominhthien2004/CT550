@@ -59,10 +59,26 @@ const loginUser = async (req, res, next) => {
     }
 };
 
+const googleCallback = (req, res, next) => {
+    // Passport middleware (called before this) puts user data in req.user
+    if (!req.user) {
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        return res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
+    }
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const { _id, username, email, role, token } = req.user;
+
+    // Redirect to frontend callback URL with user data as query params
+    res.redirect(
+        `${frontendUrl}/auth/callback?token=${encodeURIComponent(token)}&_id=${encodeURIComponent(_id)}&username=${encodeURIComponent(username)}&email=${encodeURIComponent(email || '')}&role=${encodeURIComponent(role)}`
+    );
+};
+
+// Deprecated — kept for backward compatibility
 const oauthLogin = async (req, res, next) => {
-    // Placeholder for future OAuth implementation
     res.status(501);
     next(new Error('OAuth logic not implemented yet'));
 };
 
-module.exports = { registerUser, loginUser, oauthLogin };
+module.exports = { registerUser, loginUser, googleCallback, oauthLogin };

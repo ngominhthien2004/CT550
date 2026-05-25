@@ -12,7 +12,7 @@ Mục tiêu: đối chiếu backend API với frontend để theo dõi độ ph�
 | Feature                                       | Backend Status | Frontend Status | Notes                                      |
 | --------------------------------------------- | -------------- | --------------- | ------------------------------------------ |
 | Auth register/login                           | Done           | Done            | `auth.routes` + SignUp/Login views         |
-| OAuth login                                   | Stub (501)     | Chưa tích hợp   | Defer đến social login milestone           |
+| OAuth login (Google)                          | Done           | Done            | Implemented with Passport Google OAuth 2.0 |
 | Artwork CRUD/list/detail                      | Done           | Done            | Upload + Feed + Detail                     |
 | Comment create/list/replies/delete (+sticker) | Done           | Done            | Detail comments flow with threaded replies |
 | Bookmark create/list/delete/status/toggle     | Done           | Done            | Detail + Bookmarks page                    |

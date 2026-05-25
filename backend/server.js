@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+const passport = require('passport');
+require('./config/passport');
+
 const connectDB = require('./config/db');
 const { getAllowedOrigins, getJwtSecret } = require('./config/env');
 const { errorHandler, notFound } = require('./middlewares/error.middleware');
@@ -50,6 +53,7 @@ app.use((req, res, next) => {
     return next();
 });
 app.use(express.json());
+app.use(passport.initialize());
 
 // Connect to MongoDB
 connectDB();

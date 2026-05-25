@@ -36,6 +36,10 @@ async function submitLogin() {
     localState.error = authStore.error || 'Login failed.'
   }
 }
+
+function googleLogin() {
+  window.location.href = '/api/auth/google'
+}
 </script>
 
 <template>
@@ -51,7 +55,7 @@ async function submitLogin() {
 
       <div class="social-icons">
         <button type="button" class="social-icon" aria-label="Apple"><i class="fa-brands fa-apple"></i></button>
-        <button type="button" class="social-icon" aria-label="Google"><i class="fa-brands fa-google"></i></button>
+        <button type="button" class="social-icon" aria-label="Google" @click="googleLogin"><i class="fa-brands fa-google"></i></button>
         <button type="button" class="social-icon" aria-label="X"><i class="fa-brands fa-x-twitter"></i></button>
         <button type="button" class="social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></button>
       </div>

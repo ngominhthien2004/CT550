@@ -17,6 +17,7 @@ import DashboardView from '../views/DashboardView.vue'
 import AdminManagementView from '../views/AdminManagementView.vue'
 import SignUpView from '../views/SignUpView.vue'
 import LoginView from '../views/LoginView.vue'
+import AuthCallbackView from '../views/AuthCallbackView.vue'
 import UploadArtworkView from '../views/UploadArtworkView.vue'
 import FollowingNewestView from '../views/FollowingNewestView.vue'
 import DiscoveryView from '../views/DiscoveryView.vue'
@@ -76,6 +77,7 @@ const routes = [
   { path: '/ai', name: 'ai', component: AIView },
   { path: '/signup', name: 'signup', component: SignUpView },
   { path: '/login', name: 'login', component: LoginView },
+  { path: '/auth/callback', name: 'auth-callback', component: AuthCallbackView },
   {
     path: '/upload',
     name: 'upload',

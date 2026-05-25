@@ -52,9 +52,24 @@ function getAiDetectionThreshold() {
     return Math.min(Math.max(safeValue, 0), 100);
 }
 
+function getGoogleClientId() {
+    return getRequiredEnv('GOOGLE_CLIENT_ID');
+}
+
+function getGoogleClientSecret() {
+    return getRequiredEnv('GOOGLE_CLIENT_SECRET');
+}
+
+function getFrontendUrl() {
+    return process.env.FRONTEND_URL || 'http://localhost:5173';
+}
+
 module.exports = {
     getAllowedOrigins,
     getAiDetectionThreshold,
+    getGoogleClientId,
+    getGoogleClientSecret,
+    getFrontendUrl,
     getJwtSecret,
     getMaxUploadFileSizeBytes,
     getRequiredEnv,
