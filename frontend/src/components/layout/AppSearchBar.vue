@@ -216,7 +216,7 @@ onBeforeUnmount(() => {
           @click="openHistoryPanel"
         />
       </label>
-      <button type="submit" class="search-submit">Search</button>
+      <button v-if="props.variant === 'showcase'" type="submit" class="search-submit">Search</button>
 
       <AppSearchHistoryPanel
         v-if="isHistoryOpen"
@@ -236,18 +236,30 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+/* ========================================
+   Pixiv Charcoal Search Bar Design System
+   ======================================== */
+
 .search-shell {
   position: relative;
   border-radius: 22px;
   overflow: visible;
 }
 
+/* --- Compact Variant (Pixiv-style) --- */
 .search-shell--compact {
-  border: 1px solid #e2e8f0;
-  border-radius: 999px;
-  background: #f8fafc;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  background: #ffffff;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+.search-shell--compact:focus-within {
+  border-color: #0096fa;
+  box-shadow: 0 0 0 3px rgba(0, 150, 250, 0.12);
+}
+
+/* --- Showcase Variant (unchanged hero style) --- */
 .search-shell--showcase {
   border: 1px solid rgba(148, 163, 184, 0.28);
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
@@ -284,6 +296,7 @@ onBeforeUnmount(() => {
   display: none;
 }
 
+/* --- Search Content Layout --- */
 .search-content {
   position: relative;
   z-index: 1;
@@ -293,18 +306,22 @@ onBeforeUnmount(() => {
   padding: 0.55rem;
 }
 
+.search-shell--compact .search-content {
+  padding: 0.3rem 0.5rem;
+}
 
 .search-shell--showcase .search-content {
   padding: 0.9rem;
 }
 
+/* --- Search Field (the input wrapper) --- */
 .search-field {
   flex: 1;
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
   background: rgba(255, 255, 255, 0.92);
-  border-radius: 999px;
+  border-radius: 8px;
   border: 1px solid rgba(203, 213, 225, 0.95);
   padding: 0.42rem 0.8rem;
   color: #475569;
@@ -313,24 +330,42 @@ onBeforeUnmount(() => {
 .search-shell--compact .search-field {
   border: none;
   background: transparent;
-  padding-block: 0.15rem;
+  padding: 0.2rem 0.5rem;
+  gap: 0.4rem;
 }
 
+/* Magnifying glass icon */
+.search-shell--compact .search-field i {
+  color: #858585;
+  font-size: 16px;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* --- Input Element --- */
 .search-field input {
   flex: 1;
   border: none;
   background: transparent;
-  color: #0f172a;
-  font-size: 0.95rem;
+  color: #1f1f1f;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 .search-field input:focus {
   outline: none;
 }
 
+.search-field input::placeholder {
+  color: #858585;
+  opacity: 1;
+}
+
+/* --- Submit Button (showcase only) --- */
 .search-submit {
   border: none;
-  border-radius: 999px;
+  border-radius: 8px;
   padding: 0.46rem 0.95rem;
   background: #1d4ed8;
   color: #fff;
@@ -338,10 +373,7 @@ onBeforeUnmount(() => {
   font-size: 0.9rem;
 }
 
-.search-shell--compact .search-submit {
-  display: none;
-}
-
+/* --- Showcase Caption --- */
 .showcase-caption {
   position: relative;
   z-index: 1;
@@ -370,6 +402,10 @@ onBeforeUnmount(() => {
 
   .search-content {
     padding: 0.5rem;
+  }
+
+  .search-shell--compact .search-content {
+    padding: 0.25rem 0.4rem;
   }
 
   .search-shell--showcase .search-content {

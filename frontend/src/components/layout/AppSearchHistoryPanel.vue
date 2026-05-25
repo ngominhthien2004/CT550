@@ -202,68 +202,80 @@ watch(
 </template>
 
 <style scoped>
+/* ========================================
+   Pixiv Charcoal — Search History Panel
+   ======================================== */
+
 .history-panel {
   position: absolute;
   top: calc(100% + 0.45rem);
   left: 0;
   z-index: 40;
   width: 100%;
-  border: 1px solid #d6deea;
-  border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   max-height: min(72vh, 620px);
   overflow: auto;
   padding: 0.35rem;
 }
 
+/* --- History Header --- */
 .history-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0.45rem 0.55rem;
-  color: #334155;
+  color: #474747;
 }
 
 .history-head strong {
-  font-size: 0.78rem;
-  letter-spacing: 0.02em;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  color: #858585;
 }
 
 .history-head button {
   border: none;
   background: transparent;
-  color: #64748b;
-  font-size: 0.78rem;
+  color: #858585;
+  font-size: 0.72rem;
 }
 
+.history-head button:hover {
+  color: #0096fa;
+}
+
+/* --- Empty State --- */
 .history-empty {
   padding: 0.35rem 0.55rem 0.5rem;
-  color: #64748b;
+  color: #858585;
   font-size: 0.8rem;
   display: grid;
   gap: 0.15rem;
 }
 
+/* --- History Items --- */
 .history-item {
   width: 100%;
   border: none;
-  background: #fff;
-  border-radius: 10px;
-  padding: 0.55rem 0.62rem;
+  background: transparent;
+  border-radius: 6px;
+  padding: 0.45rem 0.55rem;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 0.45rem;
-  color: #334155;
+  color: #474747;
   text-align: left;
-  font-size: 0.86rem;
+  font-size: 0.84rem;
 }
 
 .history-item:hover,
 .history-item:focus-visible {
-  background: #f8fbff;
+  background: #f5f5f5;
 }
 
 .history-item > span:first-child {
@@ -273,55 +285,70 @@ watch(
 }
 
 .history-item i {
-  color: #94a3b8;
+  color: #858585;
 }
 
 .history-remove {
   width: 18px;
   height: 18px;
-  border-radius: 999px;
+  border-radius: 4px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.15s;
 }
 
 .history-remove:hover {
-  background: #eff6ff;
+  background: #f5f5f5;
 }
 
+/* --- Suggestions --- */
 .history-suggestion {
   width: 100%;
   border: none;
   background: transparent;
-  border-radius: 10px;
-  padding: 0.5rem 0.62rem;
+  border-radius: 6px;
+  padding: 0.4rem 0.55rem;
   display: inline-flex;
   align-items: center;
   gap: 0.46rem;
-  color: #475569;
+  color: #858585;
   text-align: left;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
 }
 
 .history-suggestion:hover,
 .history-suggestion:focus-visible {
-  background: #f8fbff;
+  background: #f5f5f5;
 }
 
+.history-suggestion i {
+  font-size: 14px;
+  width: 14px;
+}
+
+/* --- View More --- */
 .history-view-more {
   width: 100%;
   border: none;
   background: transparent;
-  color: #1d4ed8;
-  padding: 0.6rem 0.62rem;
+  color: #3d7699;
+  padding: 0.5rem 0.55rem;
   text-align: center;
-  font-weight: 600;
+  font-weight: 500;
+  font-size: 0.84rem;
+  transition: background 0.15s;
 }
 
+.history-view-more:hover {
+  background: #f5f5f5;
+}
+
+/* --- Panel Sections --- */
 .panel-block {
-  border-top: 1px solid #eef2f7;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
   margin-top: 0.2rem;
-  padding: 0.85rem 0.55rem 0.45rem;
+  padding: 0.75rem 0.55rem 0.45rem;
 }
 
 .panel-block-head {
@@ -332,74 +359,84 @@ watch(
 }
 
 .panel-block-head strong {
-  color: #334155;
-  font-size: 1rem;
+  color: #474747;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .panel-block-head button {
   border: none;
   background: transparent;
-  color: #64748b;
+  color: #858585;
+  font-size: 0.78rem;
 }
 
+.panel-block-head button:hover {
+  color: #0096fa;
+}
+
+/* --- Favorite Tags (Pixiv accent style) --- */
 .favorite-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .favorite-empty {
   margin: 0;
-  color: #94a3b8;
+  color: #858585;
   font-size: 0.78rem;
 }
 
 .favorite-tag {
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  min-width: 92px;
+  border: 1px solid rgba(0, 150, 250, 0.2);
+  background: rgba(0, 150, 250, 0.06);
+  color: #0096fa;
+  border-radius: 6px;
+  min-width: 80px;
   text-align: left;
-  padding: 0.46rem 0.62rem;
+  padding: 0.4rem 0.55rem;
   display: grid;
   line-height: 1.05;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.favorite-tag:hover {
+  background: rgba(0, 150, 250, 0.12);
+  border-color: rgba(0, 150, 250, 0.4);
 }
 
 .favorite-tag span {
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 0.84rem;
 }
 
 .favorite-tag small {
-  opacity: 0.9;
-  font-size: 0.76rem;
+  opacity: 0.7;
+  font-size: 0.72rem;
+  color: #474747;
 }
 
-.favorite-tag:nth-child(3n + 1) {
-  background: #91b866;
-}
-
-.favorite-tag:nth-child(3n + 2) {
-  background: #c07a75;
-}
-
-.favorite-tag:nth-child(3n + 3) {
-  background: #6fa5c7;
-}
-
+/* --- Popular Illust Tags Grid --- */
 .popular-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .popular-item {
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
-  background: #e2e8f0;
+  background: #f5f5f5;
   display: grid;
   padding: 0;
   text-align: left;
+  transition: opacity 0.15s;
+}
+
+.popular-item:hover {
+  opacity: 0.85;
 }
 
 .popular-item img {
@@ -409,35 +446,42 @@ watch(
 }
 
 .popular-item span {
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(0, 0, 0, 0.6);
   color: #fff;
-  font-size: 0.74rem;
-  padding: 0.26rem 0.38rem;
+  font-size: 0.72rem;
+  padding: 0.22rem 0.34rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+/* --- Novel Tags --- */
 .novel-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: 0.4rem;
 }
 
 .novel-tag {
-  border: 1px solid #d7e0ea;
-  background: #f8fafc;
-  color: #334155;
-  border-radius: 999px;
-  padding: 0.3rem 0.62rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: transparent;
+  color: #474747;
+  border-radius: 6px;
+  padding: 0.26rem 0.55rem;
   font-size: 0.78rem;
+  transition: background 0.15s;
 }
 
+.novel-tag:hover {
+  background: #f5f5f5;
+}
+
+/* --- Favorite Tags Modal --- */
 .favorite-modal-overlay {
   position: fixed;
   inset: 0;
   z-index: 140;
-  background: rgba(15, 23, 42, 0.42);
+  background: rgba(0, 0, 0, 0.3);
   display: grid;
   place-items: center;
   padding: 1rem;
@@ -447,10 +491,10 @@ watch(
   width: min(520px, 92vw);
   min-height: 320px;
   max-height: 78vh;
-  border-radius: 22px;
-  border: 1px solid #d8e1ef;
-  background: #fff;
-  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
   padding: 0.85rem 1.15rem 1rem;
   position: relative;
   overflow: auto;
@@ -459,18 +503,18 @@ watch(
 .favorite-modal-card h3 {
   margin: 0;
   text-align: center;
-  font-size: 1.95rem;
+  font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: #0f172a;
+  color: #1f1f1f;
 }
 
 .favorite-count {
   text-align: right;
-  margin: 0.52rem 0 0.3rem;
-  color: #64748b;
-  font-size: 1.2rem;
-  font-weight: 600;
+  margin: 0.4rem 0 0.3rem;
+  color: #858585;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .favorite-modal-close {
@@ -479,8 +523,8 @@ watch(
   right: 0.68rem;
   border: none;
   background: transparent;
-  color: #64748b;
-  font-size: 1.6rem;
+  color: #858585;
+  font-size: 1.4rem;
   line-height: 1;
 }
 
@@ -497,23 +541,27 @@ watch(
 }
 
 .favorite-modal-item strong {
-  color: #1f2937;
-  font-size: 1.1rem;
+  color: #1f1f1f;
+  font-size: 1rem;
   line-height: 1.2;
 }
 
 .favorite-modal-item p {
   margin: 0.1rem 0 0;
-  color: #94a3b8;
-  font-size: 0.9rem;
+  color: #858585;
+  font-size: 0.82rem;
 }
 
 .favorite-modal-item button {
   border: none;
   background: transparent;
-  color: #64748b;
-  font-size: 1.2rem;
+  color: #858585;
+  font-size: 1.1rem;
   padding: 0.1rem 0.24rem;
+}
+
+.favorite-modal-item button:hover {
+  color: #0096fa;
 }
 
 @media (max-width: 920px) {
