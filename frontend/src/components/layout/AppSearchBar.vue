@@ -30,6 +30,10 @@ const props = defineProps({
     type: String,
     default: undefined,
   },
+  searchScope: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits(['history-closed'])
@@ -38,7 +42,15 @@ const router = useRouter()
 const route = useRoute()
 const SEARCH_HISTORY_KEY = 'illuwrl.searchHistory'
 const SEARCH_HISTORY_LIMIT = 8
-const searchValue = ref(typeof route.query.q === 'string' ? route.query.q : '')
+function getRouteSearchValue() {
+  if (typeof route.query.q === 'string') {
+    return route.query.q
+  }
+
+  return typeof route.query.nick === 'string' ? route.query.nick : ''
+}
+
+const searchValue = ref(getRouteSearchValue())
 const featuredArtworks = ref([])
 const activeIndex = ref(0)
 const searchHistory = ref([])
@@ -76,9 +88,31 @@ async function submitSearch() {
   }
 
   closeHistoryPanel()
+  const scopeType = props.searchScope?.trim()
+  const query = {}
+  let path = '/search'
+
+  if (scopeType === 'user') {
+    path = '/search/users'
+    if (normalizedQuery) {
+      query.nick = normalizedQuery
+    }
+    query.s_mode = 's_usr'
+  } else {
+    if (normalizedQuery) {
+      query.q = normalizedQuery
+    }
+    if (scopeType) {
+      query.type = scopeType
+    }
+    if (scopeType === 'novel') {
+      query.s_mode = 'tag_tc'
+    }
+  }
+
   await router.push({
-    path: '/search',
-    query: normalizedQuery ? { q: normalizedQuery } : {},
+    path,
+    query,
   })
 }
 
@@ -190,9 +224,9 @@ function stopRotation() {
 }
 
 watch(
-  () => route.query.q,
-  (value) => {
-    searchValue.value = typeof value === 'string' ? value : ''
+  () => [route.query.q, route.query.nick],
+  () => {
+    searchValue.value = getRouteSearchValue()
   },
 )
 

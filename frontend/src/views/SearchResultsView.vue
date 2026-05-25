@@ -4,10 +4,11 @@ import { useRoute, useRouter } from 'vue-router'
 import SearchOptionsModal from '../components/search/SearchOptionsModal.vue'
 import { getArtworks, userApi } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import FollowUserCard from '../components/follow/FollowUserCard.vue'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
 import { useFollowStore } from '../stores/follow.store'
+
+const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
 const route = useRoute()
 const router = useRouter()
@@ -32,20 +33,29 @@ const searchOptionsDraft = ref({
   type: 'illust',
 })
 
-const keyword = computed(() => {
+const searchKeyword = computed(() => {
   const q = typeof route.query.q === 'string' ? route.query.q.trim() : ''
-  return q || 'discover'
+  const nick = typeof route.query.nick === 'string' ? route.query.nick.trim() : ''
+  return q || nick
 })
 
-const activeType = computed(() => (typeof route.query.type === 'string' ? route.query.type : 'illust'))
+const keyword = computed(() => searchKeyword.value || 'discover')
+const activeType = computed(() => {
+  if (route.path === '/search/users') {
+    return 'user'
+  }
+
+  return typeof route.query.type === 'string' ? route.query.type : 'illust'
+})
 const ageFilter = computed(() => (typeof route.query.age === 'string' ? route.query.age : 'all'))
 const isUserSearch = computed(() => activeType.value === 'user')
+const isNovelSearch = computed(() => activeType.value === 'novel')
 
 const searchTypeTabs = [
   { key: 'illust', label: 'Illustrations' },
   { key: 'manga', label: 'Manga' },
   { key: 'novel', label: 'Novels' },
-  { key: 'user', label: 'Users' },
+  { key: 'user', label: 'User' },
 ]
 
 const currentSearchOptions = computed(() => ({
@@ -58,7 +68,7 @@ const currentSearchOptions = computed(() => ({
 
 const baseSearchQuery = computed(() => {
   const query = {}
-  const q = typeof route.query.q === 'string' ? route.query.q.trim() : ''
+  const q = searchKeyword.value
   const qall = typeof route.query.qall === 'string' ? route.query.qall : ''
   const qany = typeof route.query.qany === 'string' ? route.query.qany : ''
   const qnot = typeof route.query.qnot === 'string' ? route.query.qnot : ''
@@ -165,6 +175,47 @@ const visibleItems = computed(() => {
 
 const resultTotal = computed(() => (isUserSearch.value ? userCount.value : visibleItems.value.length))
 
+const normalizedArtworkItems = computed(() =>
+  searchItems.value.map((item) => ({
+    ...item,
+    image: item.image || item.images?.[0] || '',
+  })),
+)
+
+const userPreviewMap = computed(() => {
+  const bucket = new Map()
+
+  for (const item of normalizedArtworkItems.value) {
+    const userId = item.user?._id
+    if (!userId) {
+      continue
+    }
+
+    if (!bucket.has(userId)) {
+      bucket.set(userId, [])
+    }
+
+    if (bucket.get(userId).length < 4) {
+      bucket.get(userId).push(item)
+    }
+  }
+
+  return bucket
+})
+
+const enrichedUserResults = computed(() =>
+  userResults.value.map((user) => ({
+    ...user,
+    previews: userPreviewMap.value.get(user._id) || [],
+  })),
+)
+
+const novelSortLabel = computed(() => (sortMode.value === 'popular' ? 'Popular novels' : 'Newest novels'))
+
+const searchResultPageClass = computed(() => ({
+  'search-result-page--users': isUserSearch.value,
+}))
+
 const placeholderCount = computed(() => {
   if (loading.value || error.value || !visibleItems.value.length) {
     return 0
@@ -208,11 +259,26 @@ function buildTargetText(item, target) {
 }
 
 function buildTypeRoute(type) {
+  if (type === 'user') {
+    return {
+      path: '/search/users',
+      query: searchKeyword.value
+        ? {
+            nick: searchKeyword.value,
+            s_mode: 's_usr',
+          }
+        : {
+            s_mode: 's_usr',
+          },
+    }
+  }
+
   return {
     path: '/search',
     query: {
       ...baseSearchQuery.value,
       type,
+      s_mode: type === 'novel' ? 'tag_tc' : undefined,
     },
   }
 }
@@ -258,6 +324,33 @@ function openSearchOptions() {
   isSearchOptionsOpen.value = true
 }
 
+function getUserDisplayName(user) {
+  return user?.displayName || user?.username || 'Unknown user'
+}
+
+function getUserName(user) {
+  return user?.username || 'member'
+}
+
+function getUserAvatar(user) {
+  return user?.avatar || DEFAULT_PROFILE_AVATAR
+}
+
+function getShortUserBio(user) {
+  const bio = String(user?.bio || '').trim()
+  if (!bio) {
+    return 'This creator has not added a short bio yet.'
+  }
+
+  return bio.length > 142 ? `${bio.slice(0, 142)}...` : bio
+}
+
+function handleAvatarError(event) {
+  if (event.target?.src !== DEFAULT_PROFILE_AVATAR) {
+    event.target.src = DEFAULT_PROFILE_AVATAR
+  }
+}
+
 async function applySearchOptions(payload) {
   const query = {}
   const currentSimpleQuery = typeof route.query.q === 'string' ? route.query.q.trim() : ''
@@ -292,7 +385,7 @@ async function loadSearchItems() {
   error.value = ''
 
   try {
-    const q = typeof route.query.q === 'string' ? route.query.q : ''
+    const q = searchKeyword.value
     const includeAllRaw = typeof route.query.qall === 'string' ? route.query.qall : ''
     const includeAnyRaw = typeof route.query.qany === 'string' ? route.query.qany : ''
     const excludeRaw = typeof route.query.qnot === 'string' ? route.query.qnot : ''
@@ -339,7 +432,7 @@ async function loadUserResults() {
   userError.value = ''
 
   try {
-    const q = typeof route.query.q === 'string' ? route.query.q.trim() : ''
+    const q = searchKeyword.value
     const { data } = await userApi.searchPublic({
       q: q || undefined,
       limit: 30,
@@ -397,10 +490,16 @@ watch(
 
 <template>
   <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
-    <section class="search-result-page page-block">
+    <section class="search-result-page page-block" :class="searchResultPageClass">
       <header class="result-header">
-        <h1>{{ keyword }}</h1>
-        <p class="result-count-head">{{ resultTotal.toLocaleString() }} results</p>
+        <div class="result-title-stack">
+          <h1>{{ keyword }}</h1>
+          <p class="result-count-head">
+            <strong v-if="isUserSearch">{{ resultTotal.toLocaleString() }}</strong>
+            <template v-else>{{ resultTotal.toLocaleString() }}</template>
+            {{ isUserSearch ? 'Accounts' : isNovelSearch ? 'novels' : 'works' }}
+          </p>
+        </div>
         <button v-if="!isUserSearch" type="button" class="show-tag-btn" @click="showTags = !showTags">
           {{ showTags ? 'Hide tag' : 'Show tag' }}
         </button>
@@ -426,10 +525,21 @@ watch(
           :class="{ active: activeType === tab.key }"
           :to="buildTypeRoute(tab.key)"
         >
-          {{ tab.label }} <span class="tab-count">{{ tabCounts[tab.key].toLocaleString() }}</span>
+          {{ tab.label }} <span v-if="!isUserSearch" class="tab-count">{{ tabCounts[tab.key].toLocaleString() }}</span>
         </router-link>
-        <button type="button" class="search-option-note" @click="openSearchOptions">Search option</button>
+        <button v-if="!isUserSearch" type="button" class="search-option-note" @click="openSearchOptions">Search option</button>
       </nav>
+
+      <div v-if="isUserSearch" class="user-search-filter-row">
+        <div class="user-filter-tabs" aria-label="User search filters">
+          <button type="button" class="user-filter-chip is-active">Creators</button>
+          <button type="button" class="user-filter-link">All accounts</button>
+        </div>
+        <button type="button" class="search-option-note user-search-option" @click="openSearchOptions">
+          <i class="fa-solid fa-list" aria-hidden="true"></i>
+          Search option
+        </button>
+      </div>
 
       <div v-if="!isUserSearch" class="filter-row">
         <label class="order-select">
@@ -447,20 +557,96 @@ watch(
       <template v-if="isUserSearch">
         <p v-if="userLoading" class="state-note">Loading users...</p>
         <p v-else-if="userError" class="state-note error">{{ userError }}</p>
-        <div v-else-if="userResults.length" class="user-result-list">
-          <FollowUserCard
-            v-for="user in userResults"
-            :key="user._id"
-            :user="user"
-            mode="search"
-            :previews="[]"
-            :is-authenticated="authStore.isAuthenticated"
-            :is-following="followStore.isFollowingUser(user._id)"
-            :is-toggling="followStore.isTogglingFollow(user._id)"
-            @toggle-follow="handleToggleFollow"
-          />
-        </div>
+        <section v-else-if="enrichedUserResults.length" class="user-result-section">
+          <h2>User <span>{{ resultTotal.toLocaleString() }}</span></h2>
+
+          <article v-for="user in enrichedUserResults" :key="user._id" class="user-search-row">
+            <div class="user-profile-column">
+              <img :src="getUserAvatar(user)" :alt="getUserDisplayName(user)" class="user-avatar-large" @error="handleAvatarError" />
+              <div class="user-profile-copy">
+                <h3>{{ getUserDisplayName(user) }}</h3>
+                <p class="user-bio">{{ getShortUserBio(user) }}</p>
+                <div class="user-actions">
+                  <button
+                    type="button"
+                    class="follow-btn-large"
+                    :class="{ 'is-following': followStore.isFollowingUser(user._id) }"
+                    :disabled="followStore.isTogglingFollow(user._id)"
+                    @click="handleToggleFollow(user._id)"
+                  >
+                    {{ followStore.isFollowingUser(user._id) ? 'Following' : 'Follow' }}
+                  </button>
+                  <button type="button" class="more-user-btn" :aria-label="`More actions for ${getUserDisplayName(user)}`">
+                    <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="user-preview-rail">
+              <router-link
+                v-for="item in user.previews.slice(0, 4)"
+                :key="item._id"
+                :to="`/artworks/${item._id}`"
+                class="user-preview-card"
+              >
+                <div class="user-preview-thumb">
+                  <img v-if="item.image" :src="item.image" :alt="item.title || 'Artwork preview'" loading="lazy" />
+                  <div v-else class="user-preview-fallback"></div>
+                  <i class="fa-regular fa-heart preview-heart" aria-hidden="true"></i>
+                </div>
+                <strong>{{ item.title || 'Untitled work' }}</strong>
+              </router-link>
+
+              <div v-for="idx in Math.max(0, 4 - user.previews.length)" :key="`empty-preview-${user._id}-${idx}`" class="user-preview-card user-preview-card--empty">
+                <div class="user-preview-thumb user-preview-fallback"></div>
+                <strong>No public work yet</strong>
+              </div>
+            </div>
+          </article>
+        </section>
         <p v-else class="state-note">No users found for this search.</p>
+      </template>
+      <template v-else-if="isNovelSearch">
+        <p v-if="loading" class="state-note">Loading novels...</p>
+        <p v-else-if="error" class="state-note error">{{ error }}</p>
+
+        <p v-else-if="!visibleItems.length" class="state-note">No novels found for this tag. Try another keyword or search option.</p>
+
+        <div v-else class="novel-result-stack">
+          <div class="novel-section-head">
+            <h2>{{ novelSortLabel }}</h2>
+            <span>{{ visibleItems.length.toLocaleString() }} entries</span>
+          </div>
+
+          <article v-for="item in visibleItems" :key="item._id" class="novel-card">
+            <router-link :to="`/artworks/${item._id}`" class="novel-cover">
+              <img v-if="item.image" :src="item.image" :alt="item.title" loading="lazy" />
+              <div v-else class="novel-cover-fallback">
+                <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+              </div>
+            </router-link>
+            <div class="novel-body">
+              <router-link :to="`/artworks/${item._id}`" class="novel-title">{{ item.title }}</router-link>
+              <p class="novel-excerpt">{{ item.description || 'No synopsis has been added for this novel yet.' }}</p>
+              <div class="novel-tags" v-if="item.tags?.length">
+                <button
+                  v-for="tag in item.tags.slice(0, 6)"
+                  :key="tag._id || tag.name"
+                  type="button"
+                  @click="applySearchTag(tag.name)"
+                >
+                  #{{ tag.name }}
+                </button>
+              </div>
+              <footer class="novel-meta">
+                <span>{{ item.user?.displayName || item.user?.username || 'Unknown writer' }}</span>
+                <span>{{ (item.viewCount || 0).toLocaleString() }} views</span>
+                <span>{{ new Date(item.createdAt || Date.now()).toLocaleDateString() }}</span>
+              </footer>
+            </div>
+          </article>
+        </div>
       </template>
       <template v-else>
         <p v-if="loading" class="state-note">Loading results...</p>
@@ -502,11 +688,36 @@ watch(
   padding: 1.05rem 1.15rem 1.25rem;
 }
 
+.search-result-page--users {
+  gap: 1.55rem;
+  width: calc(100% + 144px);
+  margin: 0 -72px;
+  padding: 1.35rem 1.8rem 1.75rem;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: #fff;
+}
+
 .result-header {
   display: flex;
   align-items: center;
   gap: 0.7rem;
   flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.result-title-stack {
+  display: flex;
+  align-items: baseline;
+  gap: 0.72rem;
+  min-width: 0;
+}
+
+.search-result-page--users .result-title-stack {
+  display: grid;
+  align-items: start;
+  gap: 0.48rem;
 }
 
 .result-header h1 {
@@ -516,11 +727,29 @@ watch(
   color: #111827;
 }
 
+.search-result-page--users .result-header h1 {
+  font-size: 1.45rem;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
 .result-count-head {
   margin: 0;
   color: #64748b;
   font-size: 0.9rem;
   font-weight: 700;
+}
+
+.search-result-page--users .result-count-head {
+  color: #6b7280;
+  font-size: 1.08rem;
+  font-weight: 500;
+}
+
+.search-result-page--users .result-count-head strong {
+  color: #334155;
+  font-weight: 800;
 }
 
 .show-tag-btn {
@@ -561,12 +790,48 @@ watch(
   border-bottom: 1px solid #e2e8f0;
 }
 
+.search-result-page--users .result-tabs {
+  width: min(560px, 100%);
+  gap: 3.75rem;
+  border-bottom: none;
+  align-items: stretch;
+  margin-top: -0.35rem;
+}
+
 .tab-item {
   text-decoration: none;
   padding-bottom: 0.62rem;
   color: #64748b;
   font-weight: 700;
   border-bottom: 3px solid transparent;
+}
+
+.search-result-page--users .tab-item {
+  position: relative;
+  padding: 1rem 0 0;
+  min-width: 4.55rem;
+  color: #7a7f87;
+  text-align: center;
+  font-size: 1.08rem;
+  line-height: 1;
+}
+
+.search-result-page--users .tab-item.active {
+  color: #111827;
+  border-bottom-color: transparent;
+}
+
+.search-result-page--users .tab-item.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 6.4rem;
+  max-width: 100%;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #1695f0;
 }
 
 .tab-count {
@@ -590,6 +855,49 @@ watch(
   background: transparent;
   color: #4b5563;
   font-weight: 700;
+}
+
+.user-search-filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.15rem;
+}
+
+.user-filter-tabs {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-filter-chip,
+.user-filter-link {
+  border: none;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.user-filter-chip {
+  min-width: 128px;
+  border-radius: 999px;
+  padding: 0.86rem 1.45rem;
+  background: #f5f5f5;
+  color: #333;
+}
+
+.user-filter-link {
+  background: transparent;
+  color: #70757d;
+}
+
+.user-search-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  margin-left: 0;
+  color: #333;
+  font-size: 0.92rem;
 }
 
 .filter-row {
@@ -638,7 +946,320 @@ watch(
 
 .user-result-list {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+}
+
+.user-result-section {
+  display: grid;
+  gap: 1.8rem;
+  border-bottom: 1px solid #eef0f3;
+  padding-bottom: 1.75rem;
+}
+
+.user-result-section h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  color: #111827;
+  font-size: 1.45rem;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.user-result-section h2 span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.68rem;
+  height: 1.68rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: #a9aeb5;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.user-search-row {
+  display: grid;
+  grid-template-columns: minmax(360px, 32vw) minmax(0, 1fr);
+  gap: 3rem;
+  align-items: start;
+}
+
+.user-profile-column {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  gap: 1.22rem;
+  align-items: start;
+  min-width: 0;
+}
+
+.user-avatar-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 999px;
+  object-fit: cover;
+  background: #edf0f3;
+}
+
+.user-profile-copy {
+  display: grid;
+  gap: 0.68rem;
+  min-width: 0;
+}
+
+.user-profile-copy h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.08rem;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.user-bio {
+  margin: 0;
+  max-width: 360px;
+  color: #2f3540;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 0.2rem;
+}
+
+.follow-btn-large {
+  min-width: 114px;
+  border: none;
+  border-radius: 999px;
+  padding: 0.72rem 1.35rem;
+  background: #1695f0;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.follow-btn-large.is-following {
+  background: #e5e7eb;
+  color: #334155;
+}
+
+.more-user-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #858b93;
+  font-size: 1.05rem;
+}
+
+.user-preview-rail {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 1.9rem;
+  min-width: 0;
+}
+
+.user-preview-card {
+  display: grid;
+  gap: 0.72rem;
+  min-width: 0;
+  color: #111827;
+  text-decoration: none;
+}
+
+.user-preview-thumb {
+  position: relative;
+  aspect-ratio: 1.38 / 1;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f6f6f6;
+}
+
+.user-preview-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-preview-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+}
+
+.preview-heart {
+  position: absolute;
+  right: 0.35rem;
+  bottom: 0.28rem;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: #222;
+  font-size: 1.55rem;
+  filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.65));
+}
+
+.user-preview-card strong {
+  color: #111827;
+  font-size: 0.95rem;
+  line-height: 1.22;
+  font-weight: 800;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.user-preview-card--empty {
+  opacity: 0.72;
+}
+
+.user-search-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.9rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.user-search-card :deep(.follow-user-card) {
+  border-top: none;
+  padding-top: 0;
+}
+
+.user-search-card :deep(.preview-grid) {
+  margin-top: 0.4rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.novel-result-stack {
+  display: grid;
+  gap: 0.8rem;
+  max-width: 920px;
+}
+
+.novel-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.2rem;
+}
+
+.novel-section-head h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.08rem;
+  font-weight: 800;
+}
+
+.novel-section-head span {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.novel-card {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 0.9rem;
+  border-bottom: 1px solid #edf2f7;
+  padding: 0.25rem 0 0.95rem;
+}
+
+.novel-cover {
+  display: block;
+  aspect-ratio: 3 / 4;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #eef2f7;
+  text-decoration: none;
+}
+
+.novel-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.novel-cover-fallback {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #94a3b8;
+  font-size: 1.6rem;
+  background:
+    linear-gradient(135deg, rgba(22, 149, 240, 0.1), rgba(148, 185, 109, 0.14)),
+    #f8fafc;
+}
+
+.novel-body {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.novel-title {
+  color: #111827;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.novel-title:hover {
+  color: #1695f0;
+}
+
+.novel-excerpt {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.novel-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.novel-tags button {
+  border: none;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: #2563eb;
+  padding: 0.22rem 0.42rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.novel-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  color: #94a3b8;
+  font-size: 0.74rem;
+  font-weight: 700;
 }
 
 .result-grid-wrap {
@@ -715,6 +1336,20 @@ watch(
 }
 
 @media (max-width: 1200px) {
+  .search-result-page--users {
+    width: calc(100% + 80px);
+    margin: 0 -40px;
+  }
+
+  .user-search-row {
+    grid-template-columns: minmax(320px, 36vw) minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+
+  .user-preview-rail {
+    gap: 1rem;
+  }
+
   .result-grid-wrap {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -723,6 +1358,58 @@ watch(
 @media (max-width: 920px) {
   .search-result-page {
     padding: 0.86rem;
+  }
+
+  .search-result-page--users {
+    width: calc(100% + 36px);
+    margin: 0 -18px;
+    padding: 1rem 1rem 1.35rem;
+  }
+
+  .result-title-stack {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .user-result-list {
+    grid-template-columns: 1fr;
+  }
+
+  .search-result-page--users .result-tabs {
+    gap: 1.2rem;
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  .user-search-filter-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .user-search-row {
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+  }
+
+  .user-profile-column {
+    grid-template-columns: 74px minmax(0, 1fr);
+    gap: 0.85rem;
+  }
+
+  .user-avatar-large {
+    width: 74px;
+    height: 74px;
+  }
+
+  .user-preview-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+  }
+
+  .novel-card {
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 0.68rem;
   }
 
   .result-grid-wrap {

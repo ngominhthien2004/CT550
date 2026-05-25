@@ -19,10 +19,10 @@ const props = defineProps({
 
 const emit = defineEmits(['select-scope', 'open-search-options'])
 const isSearchScopeOpen = ref(false)
-const selectedScopeLabel = computed(() => {
-  const matchedScope = props.searchScopes.find((scope) => scope.key === props.selectedSearchScope)
-  return matchedScope?.label || 'Media'
-})
+const selectedScope = computed(() => props.searchScopes.find((scope) => scope.key === props.selectedSearchScope))
+const selectedScopeLabel = computed(() => selectedScope.value?.label || 'Media')
+const selectedScopeIcon = computed(() => selectedScope.value?.icon || 'fa-regular fa-image')
+const selectedScopeQueryType = computed(() => selectedScope.value?.queryType || '')
 
 function toggleSearchScopeMenu() {
   isSearchScopeOpen.value = !isSearchScopeOpen.value
@@ -37,7 +37,12 @@ function chooseSearchScope(scopeKey) {
 <template>
   <div class="top-nav-left-right">
     <div class="search-unit">
-      <AppSearchBar class="top-search" :placeholder="props.searchPlaceholder" variant="compact">
+      <AppSearchBar
+        class="top-search"
+        :placeholder="props.searchPlaceholder"
+        variant="compact"
+        :search-scope="selectedScopeQueryType"
+      >
         <template #trailing-control>
           <div class="inline-menu" @keydown.esc="isSearchScopeOpen = false">
             <button
@@ -48,8 +53,7 @@ function chooseSearchScope(scopeKey) {
               :aria-expanded="isSearchScopeOpen"
               @click="toggleSearchScopeMenu"
             >
-              <i class="fa-regular fa-image scope-icon scope-icon-image" aria-hidden="true"></i>
-              <i class="fa-solid fa-chevron-down scope-icon scope-icon-chevron" aria-hidden="true"></i>
+              <i :class="['scope-icon', selectedScopeIcon]" aria-hidden="true"></i>
               <span class="scope-text">{{ selectedScopeLabel }}</span>
             </button>
             <div v-if="isSearchScopeOpen" class="inline-menu-panel" role="menu" aria-label="Search scope menu">
@@ -62,9 +66,8 @@ function chooseSearchScope(scopeKey) {
                 role="menuitem"
                 @click="chooseSearchScope(scope.key)"
               >
-                <i v-if="props.selectedSearchScope === scope.key" class="fa-solid fa-check" aria-hidden="true"></i>
-                <span v-else class="inline-menu-spacer" aria-hidden="true"></span>
-                {{ scope.label }}
+                <i :class="['scope-menu-icon', scope.icon]" aria-hidden="true"></i>
+                <span>{{ scope.label }}</span>
               </button>
             </div>
           </div>
@@ -138,21 +141,9 @@ function chooseSearchScope(scopeKey) {
   margin-left: 0.3rem;
 }
 
-.scope-icon-chevron {
-  display: none;
-}
-
 /* Show text on large screens */
 @media (min-width: 921px) {
   .scope-text {
-    display: inline-block;
-  }
-
-  .scope-icon-image {
-    display: none;
-  }
-
-  .scope-icon-chevron {
     display: inline-block;
   }
 }
@@ -200,8 +191,8 @@ function chooseSearchScope(scopeKey) {
   background: #f5f5f5;
 }
 
-.inline-menu-item i,
-.inline-menu-spacer {
+.scope-icon,
+.scope-menu-icon {
   width: 1rem;
   text-align: center;
   flex-shrink: 0;

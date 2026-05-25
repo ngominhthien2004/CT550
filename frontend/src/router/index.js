@@ -61,6 +61,7 @@ const routes = [
   },
   { path: '/feed', name: 'feed', component: FeedView },
   { path: '/search', name: 'search-results', component: SearchResultsView },
+  { path: '/search/users', name: 'user-search-results', component: SearchResultsView },
   { path: '/discovery', name: 'discovery', component: DiscoveryView },
   { path: '/newest_by_all', name: 'newest-all', component: NewestByAllView },
   { path: '/newest_by_followed', name: 'following-newest', component: FollowingNewestView, meta: { requiresAuth: true } },

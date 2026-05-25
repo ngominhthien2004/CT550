@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import SearchOptionsModal from '../../search/SearchOptionsModal.vue'
 import { useAuthStore } from '../../../stores/auth.store'
 import { useFollowStore } from '../../../stores/follow.store'
@@ -30,6 +30,7 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle-sidebar'])
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 const followStore = useFollowStore()
 const selectedSearchScope = ref('artworks')
@@ -43,9 +44,9 @@ const searchOptionsDraft = ref({
 })
 
 const searchScopes = [
-  { key: 'artworks', label: 'Illustrations and Manga' },
-  { key: 'novel', label: 'Novels' },
-  { key: 'user', label: 'User' },
+  { key: 'artworks', label: 'Illustrations and Manga', icon: 'fa-regular fa-image', queryType: 'illust' },
+  { key: 'novel', label: 'Novels', icon: 'fa-solid fa-book-open', queryType: 'novel' },
+  { key: 'user', label: 'User', icon: 'fa-regular fa-user', queryType: 'user' },
 ]
 
 const serviceLinks = computed(() => {
@@ -182,6 +183,26 @@ watch(
 function chooseSearchScope(scopeKey) {
   selectedSearchScope.value = scopeKey
 }
+
+function syncSearchScopeFromRoute() {
+  if (route.path === '/search/users' || route.query.type === 'user') {
+    selectedSearchScope.value = 'user'
+    return
+  }
+
+  if (route.query.type === 'novel') {
+    selectedSearchScope.value = 'novel'
+    return
+  }
+
+  selectedSearchScope.value = 'artworks'
+}
+
+watch(
+  () => [route.path, route.query.type],
+  syncSearchScopeFromRoute,
+  { immediate: true },
+)
 
 function formatPanelTime(value) {
   if (!value) {
