@@ -53,11 +53,11 @@ function getAiDetectionThreshold() {
 }
 
 function getGoogleClientId() {
-    return getRequiredEnv('GOOGLE_CLIENT_ID');
+    return process.env.GOOGLE_CLIENT_ID || '';
 }
 
 function getGoogleClientSecret() {
-    return getRequiredEnv('GOOGLE_CLIENT_SECRET');
+    return process.env.GOOGLE_CLIENT_SECRET || '';
 }
 
 function getFrontendUrl() {

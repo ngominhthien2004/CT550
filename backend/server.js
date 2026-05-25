@@ -78,6 +78,15 @@ app.use('/api/payments', paymentRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
+// Serve static frontend in production
+if (process.env.NODE_ENV === 'production') {
+    const frontendDist = path.join(__dirname, '../frontend/dist');
+    app.use(express.static(frontendDist));
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(frontendDist, 'index.html'));
+    });
+}
+
 app.use(notFound);
 app.use(errorHandler);
 

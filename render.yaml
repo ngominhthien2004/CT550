@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: CT550
+    env: node
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node index.js
+    healthCheckPath: /api
+    envVarGroups:
+      - name: ct550
+    repo: https://github.com/ngominhthien2004/CT550
+
+  - type: static
+    name: CT550-Frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm install; npm run build
+    staticPublishPath: dist
+    pullRequestPreviewsEnabled: false
+    envVarGroups:
+      - name: ct550-frontend
+    repo: https://github.com/ngominhthien2004/CT550

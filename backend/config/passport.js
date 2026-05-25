@@ -2,7 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-const { getGoogleClientId, getGoogleClientSecret, getJwtSecret } = require('./env');
+const { getGoogleClientId, getGoogleClientSecret, getJwtSecret, getFrontendUrl } = require('./env');
 
 const generateToken = (id) => {
     return jwt.sign({ id }, getJwtSecret(), {
@@ -10,12 +10,22 @@ const generateToken = (id) => {
     });
 };
 
-passport.use(new GoogleStrategy({
-    clientID: getGoogleClientId(),
-    clientSecret: getGoogleClientSecret(),
-    callbackURL: `http://localhost:${process.env.PORT || 5000}/api/auth/google/callback`,
-    proxy: true,
-},
+const googleClientId = getGoogleClientId();
+const googleClientSecret = getGoogleClientSecret();
+const hasGoogleCredentials = Boolean(googleClientId && googleClientSecret);
+
+if (hasGoogleCredentials) {
+    const frontendUrl = getFrontendUrl();
+    const callbackUrl = process.env.GOOGLE_CALLBACK_URL
+        || `${frontendUrl}/api/auth/google/callback`
+        || `http://localhost:${process.env.PORT || 5000}/api/auth/google/callback`;
+
+    passport.use(new GoogleStrategy({
+        clientID: googleClientId,
+        clientSecret: googleClientSecret,
+        callbackURL: callbackUrl,
+        proxy: true,
+    },
 async (accessToken, refreshToken, profile, done) => {
     try {
         const { id: googleId, displayName, emails, photos, username: googleUsername } = profile;
@@ -83,6 +93,7 @@ async (accessToken, refreshToken, profile, done) => {
         return done(error, null);
     }
 }));
+}
 
 // No serialize/deserialize needed — we use JWT, not sessions
 
