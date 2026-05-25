@@ -28,7 +28,7 @@ const tabs = computed(() => {
   const userId = routeUserId.value
   return [
     { key: 'following', label: 'Following', to: `/users/${userId}/following` },
-    { key: 'mypixiv', label: 'My pixiv', to: '#' },
+    { key: 'illuwrl', label: 'IlluWrl', to: '#' },
     { key: 'followers', label: 'Followers', to: `/users/${userId}/followers` },
   ]
 })
@@ -185,9 +185,9 @@ watch(
             v-for="tab in tabs"
             :key="tab.key"
             class="follow-tab"
-            :class="{ active: mode === tab.key, disabled: tab.key === 'mypixiv' }"
+            :class="{ active: mode === tab.key, disabled: tab.key === 'illuwrl' }"
             :to="tab.to"
-            @click.prevent="tab.key === 'mypixiv'"
+            @click.prevent="tab.key === 'illuwrl'"
           >
             {{ tab.label }}
           </router-link>

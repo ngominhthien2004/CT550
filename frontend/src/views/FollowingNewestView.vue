@@ -105,7 +105,7 @@ onMounted(() => {
         <nav class="top-nav-tabs" aria-label="Top level tabs">
           <router-link to="/newest_by_followed" class="top-tab active">Users you are following</router-link>
           <a href="#" class="top-tab disabled">Works on Watchlist</a>
-          <a href="#" class="top-tab disabled">My pixiv</a>
+          <a href="#" class="top-tab disabled">IlluWrl</a>
         </nav>
       </div>
 

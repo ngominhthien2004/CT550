@@ -12,6 +12,8 @@ const {
 	getFollowers,
 	getFollowing,
 	getFollowStatus,
+    createIlluWrlRequest,
+    blockUser,
 	getAdminOverview,
 	getAdminUsers,
 	updateAdminUser,
@@ -72,6 +74,8 @@ router.delete('/profile/cover', protect, deleteUserCover);
 router.post('/:id/follow', protect, followUser);
 router.delete('/:id/follow', protect, unfollowUser);
 router.get('/:id/follow-status', protect, getFollowStatus);
+router.post('/:id/illuwrl-request', protect, createIlluWrlRequest);
+router.post('/:id/block', protect, blockUser);
 router.get('/:id/followers', getFollowers);
 router.get('/:id/following', getFollowing);
 
