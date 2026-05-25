@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import AppSearchBar from '../AppSearchBar.vue'
 
 const props = defineProps({
@@ -19,6 +19,10 @@ const props = defineProps({
 
 const emit = defineEmits(['select-scope', 'open-search-options'])
 const isSearchScopeOpen = ref(false)
+const selectedScopeLabel = computed(() => {
+  const matchedScope = props.searchScopes.find((scope) => scope.key === props.selectedSearchScope)
+  return matchedScope?.label || 'Media'
+})
 
 function toggleSearchScopeMenu() {
   isSearchScopeOpen.value = !isSearchScopeOpen.value
@@ -33,35 +37,39 @@ function chooseSearchScope(scopeKey) {
 <template>
   <div class="top-nav-left-right">
     <div class="search-unit">
-      <AppSearchBar class="top-search" :placeholder="props.searchPlaceholder" variant="compact" />
-      <div class="inline-menu" @keydown.esc="isSearchScopeOpen = false">
-        <button
-          type="button"
-          class="icon-round"
-          aria-label="Media"
-          title="Media"
-          :aria-expanded="isSearchScopeOpen"
-          @click="toggleSearchScopeMenu"
-        >
-          <i class="fa-regular fa-image" aria-hidden="true"></i>
-          <span class="scope-text">Media</span>
-        </button>
-        <div v-if="isSearchScopeOpen" class="inline-menu-panel" role="menu" aria-label="Search scope menu">
-          <button
-            v-for="scope in props.searchScopes"
-            :key="scope.key"
-            type="button"
-            class="inline-menu-item"
-            :class="{ 'is-active': props.selectedSearchScope === scope.key }"
-            role="menuitem"
-            @click="chooseSearchScope(scope.key)"
-          >
-            <i v-if="props.selectedSearchScope === scope.key" class="fa-solid fa-check" aria-hidden="true"></i>
-            <span v-else class="inline-menu-spacer" aria-hidden="true"></span>
-            {{ scope.label }}
-          </button>
-        </div>
-      </div>
+      <AppSearchBar class="top-search" :placeholder="props.searchPlaceholder" variant="compact">
+        <template #trailing-control>
+          <div class="inline-menu" @keydown.esc="isSearchScopeOpen = false">
+            <button
+              type="button"
+              class="icon-round"
+              :aria-label="`Search scope: ${selectedScopeLabel}`"
+              :title="`Search scope: ${selectedScopeLabel}`"
+              :aria-expanded="isSearchScopeOpen"
+              @click="toggleSearchScopeMenu"
+            >
+              <i class="fa-regular fa-image scope-icon scope-icon-image" aria-hidden="true"></i>
+              <i class="fa-solid fa-chevron-down scope-icon scope-icon-chevron" aria-hidden="true"></i>
+              <span class="scope-text">{{ selectedScopeLabel }}</span>
+            </button>
+            <div v-if="isSearchScopeOpen" class="inline-menu-panel" role="menu" aria-label="Search scope menu">
+              <button
+                v-for="scope in props.searchScopes"
+                :key="scope.key"
+                type="button"
+                class="inline-menu-item"
+                :class="{ 'is-active': props.selectedSearchScope === scope.key }"
+                role="menuitem"
+                @click="chooseSearchScope(scope.key)"
+              >
+                <i v-if="props.selectedSearchScope === scope.key" class="fa-solid fa-check" aria-hidden="true"></i>
+                <span v-else class="inline-menu-spacer" aria-hidden="true"></span>
+                {{ scope.label }}
+              </button>
+            </div>
+          </div>
+        </template>
+      </AppSearchBar>
     </div>
 
     <button type="button" class="icon-round" aria-label="More" title="More" @click="emit('open-search-options')">
@@ -130,23 +138,38 @@ function chooseSearchScope(scopeKey) {
   margin-left: 0.3rem;
 }
 
+.scope-icon-chevron {
+  display: none;
+}
+
 /* Show text on large screens */
 @media (min-width: 921px) {
   .scope-text {
+    display: inline-block;
+  }
+
+  .scope-icon-image {
+    display: none;
+  }
+
+  .scope-icon-chevron {
     display: inline-block;
   }
 }
 
 /* --- Scope Menu --- */
 .inline-menu {
-  position: relative;
+  position: static;
 }
 
 .inline-menu-panel {
   position: absolute;
-  left: 0;
+  right: 0;
+  left: auto;
   top: calc(100% + 0.4rem);
-  min-width: 238px;
+  width: min(280px, 100%);
+  max-width: 100%;
+  min-width: 0;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 8px;
   background: #ffffff;

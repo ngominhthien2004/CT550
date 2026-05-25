@@ -61,6 +61,26 @@ public_user_search:
   assumptions:
     - "Trang /search đã tồn tại và đang hoạt động ổn định."
 
+topbar_search_unified:
+  summary: "Hợp nhất ô tìm kiếm và bộ chọn phạm vi trên top bar thành một control duy nhất theo phong cách Pixiv."
+  scope:
+    in_scope:
+      - "Nhúng bộ chọn phạm vi vào trong ô tìm kiếm ở chế độ compact."
+      - "Thống nhất trạng thái hover/focus cho input và nút phạm vi như một control duy nhất."
+      - "Dropdown được neo theo container chung, không lệch vị trí."
+      - "Chỉ cho phép một dropdown mở tại một thời điểm (history hoặc phạm vi)."
+    out_of_scope:
+      - "Thay đổi hành vi tìm kiếm hoặc routing hiện có."
+      - "Thêm API mới hoặc thay đổi backend."
+  acceptance_criteria:
+    - "Top bar hiển thị một control tìm kiếm thống nhất, không còn layout tách rời."
+    - "Nhãn phạm vi hiển thị trên desktop theo mặc định."
+    - "Dropdown phạm vi neo đúng vào container chung và căn thẳng hàng với input."
+    - "History dropdown và phạm vi không mở đồng thời."
+    - "Trạng thái focus/hover nhất quán và hỗ trợ điều hướng bằng bàn phím."
+  assumptions:
+    - "Không cần thay đổi backend cho UI top bar."
+
 ai_detection_on_upload:
   summary: "Phát hiện nội dung AI khi tải tác phẩm và cảnh báo trong UI."
   routes:

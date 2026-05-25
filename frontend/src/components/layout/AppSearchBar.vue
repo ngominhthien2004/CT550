@@ -18,7 +18,21 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  inputAriaControls: {
+    type: String,
+    default: undefined,
+  },
+  inputAriaExpanded: {
+    type: [Boolean, String],
+    default: undefined,
+  },
+  inputAriaHaspopup: {
+    type: String,
+    default: undefined,
+  },
 })
+
+const emit = defineEmits(['history-closed'])
 
 const router = useRouter()
 const route = useRoute()
@@ -30,6 +44,7 @@ const activeIndex = ref(0)
 const searchHistory = ref([])
 const isHistoryOpen = ref(false)
 const searchShellRef = ref(null)
+const searchInputRef = ref(null)
 const defaultSuggestions = ['landscape', 'character design', 'fanart', 'manga panel', 'novel cover']
 let rotationTimer = null
 
@@ -60,7 +75,7 @@ async function submitSearch() {
     rememberSearchQuery(normalizedQuery)
   }
 
-  isHistoryOpen.value = false
+  closeHistoryPanel()
   await router.push({
     path: '/search',
     query: normalizedQuery ? { q: normalizedQuery } : {},
@@ -122,13 +137,22 @@ function openHistoryPanel() {
   }
 }
 
+function closeHistoryPanel() {
+  if (!isHistoryOpen.value) {
+    return
+  }
+
+  isHistoryOpen.value = false
+  emit('history-closed')
+}
+
 function closeHistoryPanelOnOutsideClick(event) {
   if (!searchShellRef.value) {
     return
   }
 
   if (!searchShellRef.value.contains(event.target)) {
-    isHistoryOpen.value = false
+    closeHistoryPanel()
   }
 }
 
@@ -197,6 +221,11 @@ onBeforeUnmount(() => {
   }
   stopRotation()
 })
+
+defineExpose({
+  closeHistory: closeHistoryPanel,
+  focusInput: () => searchInputRef.value?.focus(),
+})
 </script>
 
 <template>
@@ -205,18 +234,44 @@ onBeforeUnmount(() => {
     <div class="search-overlay"></div>
 
     <form v-if="!props.backgroundOnly" class="search-content" @submit.prevent="submitSearch">
-      <label class="search-field" aria-label="Search artworks">
-        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-        <input
-          v-model="searchValue"
-          type="search"
-          :placeholder="props.placeholder"
-          aria-label="Search artworks"
-          @focus="openHistoryPanel"
-          @click="openHistoryPanel"
-        />
-      </label>
-      <button v-if="props.variant === 'showcase'" type="submit" class="search-submit">Search</button>
+      <div v-if="props.variant === 'compact'" class="search-compact-control">
+        <label class="search-field" aria-label="Search artworks">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <input
+            ref="searchInputRef"
+            v-model="searchValue"
+            type="search"
+            :placeholder="props.placeholder"
+            :aria-controls="props.inputAriaControls"
+            :aria-expanded="props.inputAriaExpanded"
+            :aria-haspopup="props.inputAriaHaspopup"
+            aria-label="Search artworks"
+            @focus="openHistoryPanel"
+            @click="openHistoryPanel"
+          />
+        </label>
+        <div v-if="$slots['trailing-control']" class="search-compact-trailing">
+          <slot name="trailing-control" />
+        </div>
+      </div>
+      <template v-else>
+        <label class="search-field" aria-label="Search artworks">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <input
+            ref="searchInputRef"
+            v-model="searchValue"
+            type="search"
+            :placeholder="props.placeholder"
+            :aria-controls="props.inputAriaControls"
+            :aria-expanded="props.inputAriaExpanded"
+            :aria-haspopup="props.inputAriaHaspopup"
+            aria-label="Search artworks"
+            @focus="openHistoryPanel"
+            @click="openHistoryPanel"
+          />
+        </label>
+        <button type="submit" class="search-submit">Search</button>
+      </template>
 
       <AppSearchHistoryPanel
         v-if="isHistoryOpen"
@@ -248,15 +303,7 @@ onBeforeUnmount(() => {
 
 /* --- Compact Variant (Pixiv-style) --- */
 .search-shell--compact {
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 8px;
-  background: #ffffff;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.search-shell--compact:focus-within {
-  border-color: #0096fa;
-  box-shadow: 0 0 0 3px rgba(0, 150, 250, 0.12);
+  border-radius: 4px;
 }
 
 /* --- Showcase Variant (unchanged hero style) --- */
@@ -307,11 +354,33 @@ onBeforeUnmount(() => {
 }
 
 .search-shell--compact .search-content {
-  padding: 0.3rem 0.5rem;
+  padding: 0;
 }
 
 .search-shell--showcase .search-content {
   padding: 0.9rem;
+}
+
+.search-compact-control {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 40px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.08);
+  transition: background-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  position: relative;
+}
+
+.search-compact-control:hover {
+  background-color: rgba(0, 0, 0, 0.0784);
+}
+
+.search-compact-control:focus-within {
+  box-shadow: 0 0 0 3px rgba(0, 150, 250, 0.12);
 }
 
 /* --- Search Field (the input wrapper) --- */
@@ -330,8 +399,8 @@ onBeforeUnmount(() => {
 .search-shell--compact .search-field {
   border: none;
   background: transparent;
-  padding: 0.2rem 0.5rem;
-  gap: 0.4rem;
+  padding: 0.2rem 0.35rem 0.2rem 0.1rem;
+  gap: 0.35rem;
 }
 
 /* Magnifying glass icon */
@@ -343,13 +412,20 @@ onBeforeUnmount(() => {
   flex-shrink: 0;
 }
 
+.search-compact-trailing {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
 /* --- Input Element --- */
 .search-field input {
   flex: 1;
   border: none;
   background: transparent;
-  color: #1f1f1f;
-  font-size: 0.9rem;
+  color: #474747;
+  font-size: 0.875rem;
   line-height: 1.4;
 }
 
@@ -358,8 +434,21 @@ onBeforeUnmount(() => {
 }
 
 .search-field input::placeholder {
-  color: #858585;
+  color: #474747;
   opacity: 1;
+}
+
+.search-compact-trailing :deep(.icon-round) {
+  height: 28px;
+  min-width: 28px;
+  width: auto;
+  padding: 0 10px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.search-compact-trailing :deep(.icon-round:hover) {
+  background: rgba(0, 0, 0, 0.08);
 }
 
 /* --- Submit Button (showcase only) --- */
@@ -405,7 +494,7 @@ onBeforeUnmount(() => {
   }
 
   .search-shell--compact .search-content {
-    padding: 0.25rem 0.4rem;
+    padding: 0;
   }
 
   .search-shell--showcase .search-content {

@@ -1,0 +1,265 @@
+plan_id: ad-hoc
+objective: Research current search bar implementation vs Pixiv target, identify split layout causes, and map edit surfaces.
+focus_area: frontend search bar (AppSearchBar/AppTopBarSearchControls)
+created_at: "2026-05-25"
+created_by: gem-researcher
+status: completed
+
+tldr: |
+  - Search input UI is implemented in AppSearchBar and composed into AppTopBarSearchControls alongside a separate inline scope menu button.
+  - The split appearance is driven by separate DOM blocks (AppSearchBar + inline-menu button) and independent styling (bordered search shell vs icon button).
+  - Search history panel is absolutely positioned inside AppSearchBar and is not part of the split layout; search results page does not alter the top bar search shell.
+  - No global CSS overrides for search bar were found; all styling is scoped in component SFCs.
+
+research_metadata:
+  methodology: "semantic_search + grep_search + targeted read_file; relationship discovery via component usage chain; external docs not retrieved (Context7 tool unavailable)."
+  scope: "frontend/src layout, search components, and search results view relevant to top bar search UI."
+  confidence: medium
+  coverage: 0.68
+  decision_blockers: 1
+  research_blockers: 1
+
+files_analyzed:
+  - file: AppSearchBar.vue
+    path: frontend/src/components/layout/AppSearchBar.vue
+    purpose: Search input shell with variants, history panel, and search submission routing.
+    key_elements:
+      - element: search shell container
+        type: pattern
+        location: AppSearchBar.vue:203
+        description: Root shell with variant and background-only modifiers.
+      - element: search form and input field
+        type: pattern
+        location: AppSearchBar.vue:207
+        description: Search input and submit button (showcase only).
+      - element: compact variant border and focus
+        type: pattern
+        location: AppSearchBar.vue:250
+        description: Compact variant border, background, and focus ring.
+      - element: search content layout
+        type: pattern
+        location: AppSearchBar.vue:300
+        description: Flex layout for input and submit; compact padding changes.
+      - element: search field styling
+        type: pattern
+        location: AppSearchBar.vue:318
+        description: Input wrapper styling and icon behavior.
+    language: Vue SFC
+    lines: 420
+
+  - file: AppTopBarSearchControls.vue
+    path: frontend/src/components/layout/AppTopBar/AppTopBarSearchControls.vue
+    purpose: Compose top bar search UI and scope menu controls.
+    key_elements:
+      - element: search unit container
+        type: pattern
+        location: AppTopBarSearchControls.vue:35
+        description: Flex row containing AppSearchBar and inline scope menu.
+      - element: search bar usage
+        type: component
+        location: AppTopBarSearchControls.vue:36
+        description: AppSearchBar used with compact variant.
+      - element: inline scope menu trigger
+        type: component
+        location: AppTopBarSearchControls.vue:37
+        description: Separate icon button for scope selection labeled Media.
+      - element: search unit styling
+        type: pattern
+        location: AppTopBarSearchControls.vue:91
+        description: Flex layout and width constraints for search bar vs menu.
+      - element: inline menu styling
+        type: pattern
+        location: AppTopBarSearchControls.vue:141
+        description: Absolute dropdown panel next to the scope button.
+    language: Vue SFC
+    lines: 224
+
+  - file: AppTopBar.vue
+    path: frontend/src/components/layout/AppTopBar/AppTopBar.vue
+    purpose: Top navigation bar, including search controls and options modal.
+    key_elements:
+      - element: search scopes data
+        type: variable
+        location: AppTopBar.vue:45
+        description: Defines scopes (artworks, novel, user).
+      - element: selected search scope state
+        type: variable
+        location: AppTopBar.vue:35
+        description: Local state for current scope selection.
+      - element: search controls composition
+        type: component
+        location: AppTopBar.vue:341
+        description: Uses AppTopBarSearchControls and passes scope props.
+    language: Vue SFC
+    lines: 430
+
+  - file: AppSearchHistoryPanel.vue
+    path: frontend/src/components/layout/AppSearchHistoryPanel.vue
+    purpose: Search history and suggestion panel anchored to AppSearchBar.
+    key_elements:
+      - element: history panel container
+        type: pattern
+        location: AppSearchHistoryPanel.vue:77
+        description: Absolute panel positioned below the search shell.
+      - element: history panel styling
+        type: pattern
+        location: AppSearchHistoryPanel.vue:133
+        description: Panel layout and shadowing.
+    language: Vue SFC
+    lines: 260
+
+  - file: SearchResultsView.vue
+    path: frontend/src/views/SearchResultsView.vue
+    purpose: Search results page layout; does not alter top bar search shell.
+    key_elements:
+      - element: search results page container
+        type: pattern
+        location: SearchResultsView.vue:400
+        description: Page body for search results.
+      - element: tabs and filters
+        type: pattern
+        location: SearchResultsView.vue:421
+        description: Result tabs and filter controls.
+    language: Vue SFC
+    lines: 740
+
+  - file: MainLayoutTemplate.vue
+    path: frontend/src/components/layout/MainLayoutTemplate.vue
+    purpose: Layout wrapper that mounts AppTopBar globally.
+    key_elements:
+      - element: AppTopBar mount
+        type: component
+        location: MainLayoutTemplate.vue:28
+        description: Top bar always rendered in layout.
+    language: Vue SFC
+    lines: 120
+
+patterns_found:
+  - category: architecture
+    pattern: "Top bar search controls are composed from two adjacent components"
+    description: AppSearchBar is rendered beside an inline scope menu button inside a flex container, producing a visually split search control.
+    examples:
+      - file: AppTopBarSearchControls.vue
+        location: AppTopBarSearchControls.vue:35
+        snippet: "<div class=\"search-unit\">\n  <AppSearchBar class=\"top-search\" ... />\n  <div class=\"inline-menu\">"
+    prevalence: common
+
+  - category: structure
+    pattern: "Search bar visuals are self-contained in AppSearchBar"
+    description: Borders, background, padding, and focus behavior are all scoped to AppSearchBar; no external CSS overrides were found.
+    examples:
+      - file: AppSearchBar.vue
+        location: AppSearchBar.vue:243
+        snippet: ".search-shell--compact { border: 1px solid rgba(0, 0, 0, 0.08); }"
+    prevalence: common
+
+  - category: structure
+    pattern: "Search history panel anchored to search shell"
+    description: History panel is positioned absolutely under AppSearchBar and does not include the inline scope menu button.
+    examples:
+      - file: AppSearchHistoryPanel.vue
+        location: AppSearchHistoryPanel.vue:77
+        snippet: ".history-panel { position: absolute; top: calc(100% + 0.45rem); }"
+    prevalence: common
+
+related_architecture:
+  components_relevant_to_domain:
+    - component: AppSearchBar
+      responsibility: Search input, history panel, and route navigation on submit.
+      location: frontend/src/components/layout/AppSearchBar.vue
+      relationship_to_domain: domain depends on this
+    - component: AppTopBarSearchControls
+      responsibility: Composes top bar search input with scope menu and options trigger.
+      location: frontend/src/components/layout/AppTopBar/AppTopBarSearchControls.vue
+      relationship_to_domain: domain depends on this
+    - component: AppTopBar
+      responsibility: Owns search scope state and renders search controls.
+      location: frontend/src/components/layout/AppTopBar/AppTopBar.vue
+      relationship_to_domain: domain depends on this
+  interfaces_used_by_domain:
+    - interface: AppSearchHistoryPanel events
+      location: frontend/src/components/layout/AppSearchHistoryPanel.vue
+      usage_pattern: Emits history selection and deletion events to AppSearchBar.
+  data_flow_involving_domain: "AppSearchBar reads route query q and pushes /search with q; AppTopBarSearchControls emits scope selection to AppTopBar local state; scope state is passed back to AppTopBarSearchControls."
+  key_relationships_to_domain:
+    - from: AppTopBar
+      to: AppTopBarSearchControls
+      relationship: composes
+    - from: AppTopBarSearchControls
+      to: AppSearchBar
+      relationship: composes
+    - from: AppSearchBar
+      to: AppSearchHistoryPanel
+      relationship: composes
+
+related_technology_stack:
+  languages_used_in_domain:
+    - Vue SFC (script setup)
+    - CSS (scoped)
+  frameworks_used_in_domain:
+    - name: Vue 3
+      usage_in_domain: Composition API components for search UI and top bar layout.
+    - name: Vue Router
+      usage_in_domain: Search navigation and query parsing in AppSearchBar and SearchResultsView.
+  libraries_used_in_domain:
+    - name: Font Awesome
+      purpose_in_domain: Search, menu, and status icons in search controls.
+  external_apis_used_in_domain: []
+
+related_conventions:
+  naming_patterns_in_domain: "App* components for layout; kebab-case CSS class names; scoped styles in SFCs."
+  structure_of_domain: "Search UI is composed inside AppTopBar; AppSearchBar encapsulates input and history panel."
+  error_handling_in_domain: "Try/catch around localStorage usage in AppSearchBar and AppSearchHistoryPanel."
+  testing_in_domain: "No explicit tests found for search bar components."
+  documentation_in_domain: "Inline comment headers describe Pixiv Charcoal design system in AppSearchBar/AppSearchHistoryPanel."
+
+related_dependencies:
+  internal:
+    - component: AppTopBarSearchControls
+      relationship_to_domain: parent composition of search bar
+      direction: inbound
+    - component: AppSearchHistoryPanel
+      relationship_to_domain: child panel of search bar
+      direction: outbound
+  external:
+    - name: vue
+      purpose_for_domain: Component lifecycle, reactive state, and computed values.
+    - name: vue-router
+      purpose_for_domain: Search route query parsing and navigation.
+
+domain_security_considerations:
+  sensitive_areas:
+    - area: Local storage for search history
+      location: frontend/src/components/layout/AppSearchBar.vue
+      concern: Persists search queries in browser storage under illuwrl.searchHistory.
+  authentication_patterns_in_domain: "None in search bar UI components."
+  authorization_patterns_in_domain: "None in search bar UI components."
+  data_validation_in_domain: "Trims query before route navigation; ignores empty search submissions."
+
+testing_patterns:
+  framework: "None found"
+  coverage_areas: []
+  test_organization: "No direct test files for search components were located."
+  mock_patterns: []
+
+open_questions:
+  - question: "Which Pixiv search bar variant is the target (top nav compact, hero/search landing, or other)?"
+    context: "Current UI has both compact (top bar) and showcase variants, but target reference is not specified."
+    type: decision_blocker
+    affects: ["search-bar-ui"]
+  - question: "Should the scope menu be visually merged with the input shell or remain a separate control?"
+    context: "Split layout is created by AppSearchBar and inline menu as separate DOM blocks."
+    type: decision_blocker
+    affects: ["search-bar-ui"]
+
+questions: []
+
+gaps:
+  - area: Pixiv target reference
+    description: "No target screenshot or spec provided; cannot validate visual parity."
+    impact: decision_blocker
+    affects: ["search-bar-ui"]
+  - area: External design system guidance
+    description: "Context7 documentation retrieval unavailable for UI framework guidance."
+    impact: research_blocker
+    affects: ["search-bar-ui"]
