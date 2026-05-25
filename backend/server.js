@@ -81,10 +81,14 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 // Serve static frontend in production
 if (process.env.NODE_ENV === 'production') {
     const frontendDist = path.join(__dirname, '../frontend/dist');
-    app.use(express.static(frontendDist));
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(frontendDist, 'index.html'));
-    });
+    const fs = require('fs');
+    if (fs.existsSync(frontendDist)) {
+        app.use(express.static(frontendDist));
+        // SPA fallback — Express 5 does not support `app.get('*', ...)`, use app.use
+        app.use((req, res) => {
+            res.sendFile(path.join(frontendDist, 'index.html'));
+        });
+    }
 }
 
 app.use(notFound);
