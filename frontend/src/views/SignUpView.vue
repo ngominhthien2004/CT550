@@ -45,7 +45,8 @@ async function submitSignUp() {
 }
 
 function googleLogin() {
-  window.location.href = '/api/auth/google'
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+  window.location.href = `${baseUrl.replace(/\/+$/, '')}/auth/google'
 }
 </script>
 
