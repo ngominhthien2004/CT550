@@ -1,10 +1,11 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
 import { createMessage, getMyMessages, markMessageRead, userApi } from '../services/api'
+import { emojiCategories } from '../constants/emojis'
 
 const isNavCollapsed = ref(true)
 const selectedThreadId = ref('')
@@ -15,9 +16,16 @@ const error = ref('')
 const sending = ref(false)
 const selectedImages = ref([])
 const threadListRef = ref(null)
+const textareaRef = ref(null)
 
 const inboxMessages = ref([])
 const sentMessages = ref([])
+
+// New reactive states for improved features
+const showEmojiPicker = ref(false)
+const replyingTo = ref(null)
+const isDragging = ref(false)
+const activeEmojiTab = ref(0)
 
 const router = useRouter()
 const route = useRoute()
@@ -228,6 +236,124 @@ async function loadMessages() {
   }
 }
 
+const chatBodyRef = ref(null)
+
+// Synthesize a sweet, gentle notification tone using Web Audio API
+function playNotificationSound() {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+    const osc1 = audioCtx.createOscillator()
+    const osc2 = audioCtx.createOscillator()
+    const gainNode = audioCtx.createGain()
+    
+    osc1.connect(gainNode)
+    osc2.connect(gainNode)
+    gainNode.connect(audioCtx.destination)
+    
+    osc1.type = 'sine'
+    osc1.frequency.setValueAtTime(587.33, audioCtx.currentTime) // D5
+    osc1.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.12) // A5
+    
+    osc2.type = 'triangle'
+    osc2.frequency.setValueAtTime(293.66, audioCtx.currentTime) // D4
+    osc2.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.12) // A4
+    
+    gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime)
+    gainNode.gain.exponentialRampToValueAtTime(0.005, audioCtx.currentTime + 0.22)
+    
+    osc1.start(audioCtx.currentTime)
+    osc2.start(audioCtx.currentTime)
+    osc1.stop(audioCtx.currentTime + 0.22)
+    osc2.stop(audioCtx.currentTime + 0.22)
+  } catch (e) {
+    console.warn('Notification sound blocked or unsupported by browser', e)
+  }
+}
+
+// Handle Auto-Growing textarea heights
+function adjustTextareaHeight() {
+  const el = textareaRef.value
+  if (!el) return
+  el.style.height = 'auto'
+  el.style.height = `${el.scrollHeight}px`
+}
+
+watch(content, () => {
+  nextTick(() => {
+    adjustTextareaHeight()
+  })
+})
+
+// Parse custom quote syntax
+function parseMessageContent(text) {
+  if (!text) return { quote: null, body: '' }
+  const match = text.match(/^>\s\*\*Replying to @([^*]+)\*\*:\s"([\s\S]*?)"\n\n([\s\S]*)$/)
+  if (match) {
+    return {
+      quote: {
+        user: match[1],
+        content: match[2]
+      },
+      body: match[3]
+    }
+  }
+  return { quote: null, body: text }
+}
+
+// Refined cursor-aware emoji injection
+function insertEmoji(emoji) {
+  const textarea = textareaRef.value
+  if (!textarea) {
+    content.value += emoji
+    return
+  }
+
+  const start = textarea.selectionStart
+  const end = textarea.selectionEnd
+  const text = content.value
+
+  content.value = text.slice(0, start) + emoji + text.slice(end)
+  
+  setTimeout(() => {
+    textarea.focus()
+    const newCursorPos = start + emoji.length
+    textarea.setSelectionRange(newCursorPos, newCursorPos)
+    adjustTextareaHeight()
+  }, 0)
+}
+
+// Handlers for image drag-and-drop
+function handleDragOver(e) {
+  e.preventDefault()
+  isDragging.value = true
+}
+
+function handleDragLeave(e) {
+  isDragging.value = false
+}
+
+function handleDrop(e) {
+  e.preventDefault()
+  isDragging.value = false
+  
+  if (!selectedThreadId.value) return
+  
+  const files = Array.from(e.dataTransfer?.files || [])
+  const imageFiles = files.filter(file => file.type.startsWith('image/'))
+  if (imageFiles.length > 0) {
+    selectedImages.value = [...selectedImages.value, ...imageFiles.map(file => file.name)]
+  }
+}
+
+// Elegant smooth scrolling to bottom of conversation
+function scrollChatToBottom() {
+  nextTick(() => {
+    if (chatBodyRef.value) {
+      chatBodyRef.value.scrollTop = chatBodyRef.value.scrollHeight
+    }
+  })
+}
+
 async function sendMessage() {
   const recipientId = activeRecipientId.value
   if (!recipientId) {
@@ -237,11 +363,18 @@ async function sendMessage() {
 
   const trimmedContent = content.value.trim()
   const imageOnlyFallback = selectedImages.value.length ? `[Image] ${selectedImages.value.join(', ')}` : ''
-  const payloadContent = trimmedContent || imageOnlyFallback
+  let payloadContent = trimmedContent || imageOnlyFallback
 
   if (!payloadContent) {
     error.value = 'Please enter a message or choose at least one image'
     return
+  }
+
+  // Prepend reply blockquote if active
+  if (replyingTo.value) {
+    const cleanQuoteContent = replyingTo.value.content.replace(/\r?\n/g, ' ')
+    const peerName = replyingTo.value.sender?.displayName || replyingTo.value.sender?.username || 'user'
+    payloadContent = `> **Replying to @${peerName}**: "${cleanQuoteContent}"\n\n${payloadContent}`
   }
 
   sending.value = true
@@ -260,6 +393,13 @@ async function sendMessage() {
 
     content.value = ''
     selectedImages.value = []
+    replyingTo.value = null
+    showEmojiPicker.value = false
+    
+    nextTick(() => {
+      adjustTextareaHeight()
+      scrollChatToBottom()
+    })
   } catch (sendError) {
     error.value = sendError?.response?.data?.message || 'Failed to send message'
   } finally {
@@ -294,6 +434,10 @@ async function selectThread(peerId) {
   )
 
   await Promise.all(unreadRows.map((item) => markAsRead(item._id)))
+  
+  replyingTo.value = null
+  showEmojiPicker.value = false
+  scrollChatToBottom()
 }
 
 function handleImageSelect(event) {
@@ -323,6 +467,22 @@ watch(threads, () => {
   scrollThreadListToTop()
 })
 
+watch(threadMessages, () => {
+  scrollChatToBottom()
+}, { deep: true })
+
+watch(
+  () => inboxMessages.value.length,
+  (newCount, oldCount) => {
+    if (oldCount !== undefined && newCount > oldCount) {
+      const latestInboxMsg = inboxMessages.value[0]
+      if (latestInboxMsg && String(latestInboxMsg.sender?._id || '') !== currentUserId.value) {
+        playNotificationSound()
+      }
+    }
+  }
+)
+
 watch(
   () => route.query.user,
   async (userId) => {
@@ -332,6 +492,7 @@ watch(
 
     selectedThreadId.value = userId
     await loadProfilePreview(userId)
+    scrollChatToBottom()
   },
 )
 </script>
@@ -348,7 +509,16 @@ watch(
           <router-link to="/account" class="pane-link">Message settings</router-link>
         </header>
 
-        <p v-if="loading" class="pane-note">Loading messages...</p>
+        <!-- Skeleton Loader for Threads List -->
+        <div v-if="loading" class="pane-skeletons" aria-hidden="true">
+          <div v-for="i in 5" :key="i" class="skeleton-thread-item">
+            <div class="skeleton-avatar shimmer"></div>
+            <div class="skeleton-meta">
+              <div class="skeleton-line shimmer short"></div>
+              <div class="skeleton-line shimmer medium"></div>
+            </div>
+          </div>
+        </div>
         <p v-else-if="error" class="pane-note error">{{ error }}</p>
 
         <div v-else-if="threads.length" ref="threadListRef" class="thread-list" role="listbox" aria-label="Conversation threads">
@@ -366,7 +536,7 @@ watch(
                 <strong>{{ thread.peer?.displayName || thread.peer?.username || 'Unknown user' }}</strong>
                 <small>{{ formatMessageTime(thread.latestMessage.createdAt) }}</small>
               </div>
-              <p>{{ thread.latestMessage.content }}</p>
+              <p>{{ parseMessageContent(thread.latestMessage.content).body }}</p>
             </div>
             <span v-if="thread.unreadCount" class="thread-badge">{{ thread.unreadCount }}</span>
           </button>
@@ -375,7 +545,12 @@ watch(
         <p v-else class="pane-note">No messages yet.</p>
       </aside>
 
-      <section class="thread-pane">
+      <section 
+        class="thread-pane"
+        @dragover="handleDragOver"
+        @dragleave="handleDragLeave"
+        @drop="handleDrop"
+      >
         <header class="pane-head thread-head">
           <h2 class="h6 mb-0">{{ headerTitle }}</h2>
           <button
@@ -388,17 +563,61 @@ watch(
           </button>
         </header>
 
-        <div class="thread-body">
-          <div v-if="threadTimeline.length" class="message-flow">
+        <!-- Drag & Drop overlay indicator -->
+        <div v-if="isDragging" class="drag-drop-overlay">
+          <div class="drag-drop-box">
+            <i class="fa-regular fa-image drag-icon"></i>
+            <p>Drop images here to attach</p>
+          </div>
+        </div>
+
+        <div class="thread-body" ref="chatBodyRef">
+          <!-- Skeleton Shimmer Loader for Messages Flow -->
+          <div v-if="loading" class="skeleton-flow" aria-hidden="true">
+            <div v-for="i in 4" :key="i" class="skeleton-bubble-wrap" :class="i % 2 === 0 ? 'outgoing' : 'incoming'">
+              <div class="skeleton-bubble shimmer"></div>
+            </div>
+          </div>
+
+          <div v-else-if="threadTimeline.length" class="message-flow">
             <template v-for="row in threadTimeline" :key="row.key">
               <p v-if="row.type === 'day'" class="day-separator">{{ row.label }}</p>
               <article
                 v-else
                 class="bubble"
-                :class="String(row.item?.sender?._id || '') === currentUserId ? 'outgoing' : 'incoming'"
+                :class="[
+                  String(row.item?.sender?._id || '') === currentUserId ? 'outgoing' : 'incoming',
+                  parseMessageContent(row.item.content).quote ? 'has-quote' : ''
+                ]"
               >
-                <p>{{ row.item.content }}</p>
-                <small>{{ formatMessageTime(row.item.createdAt) }}</small>
+                <!-- Render Quote if present -->
+                <div v-if="parseMessageContent(row.item.content).quote" class="bubble-quote">
+                  <span class="quote-user">
+                    <i class="fa-solid fa-reply"></i> @{{ parseMessageContent(row.item.content).quote.user }}
+                  </span>
+                  <p class="quote-text">{{ parseMessageContent(row.item.content).quote.content }}</p>
+                </div>
+
+                <p class="bubble-body">{{ parseMessageContent(row.item.content).body }}</p>
+                
+                <div class="bubble-footer">
+                  <span v-if="String(row.item?.sender?._id || '') === currentUserId" class="msg-status" :class="{ read: row.item.isRead }">
+                    <i v-if="row.item.isRead" class="fa-solid fa-check-double" title="Read"></i>
+                    <i v-else class="fa-solid fa-check" title="Sent"></i>
+                  </span>
+                  <small class="msg-time">{{ formatMessageTime(row.item.createdAt) }}</small>
+                </div>
+
+                <!-- Hover Reply Trigger -->
+                <button
+                  type="button"
+                  class="bubble-reply-btn"
+                  title="Reply to this message"
+                  @click="replyingTo = row.item"
+                >
+                  <i class="fa-solid fa-reply"></i>
+                </button>
+
                 <button
                   v-if="String(row.item?.recipient?._id || '') === currentUserId && !row.item.isRead"
                   type="button"
@@ -413,22 +632,87 @@ watch(
           <p v-else class="pane-note">No conversation selected. Pick a user from the left to start chatting.</p>
         </div>
 
-        <form class="compose-row" @submit.prevent="sendMessage">
-          <input
-            v-model="content"
-            class="form-control form-control-sm"
-            placeholder="Type a message"
-            :disabled="sending || !selectedThreadId"
-          />
-          <label class="image-picker" :class="{ disabled: !selectedThreadId }" aria-label="Add images">
+        <!-- Replying Context Bar -->
+        <div v-if="replyingTo" class="reply-context-bar">
+          <div class="reply-context-info">
+            <i class="fa-solid fa-reply reply-icon"></i>
+            <div class="reply-context-text">
+              <span class="reply-to-user">Replying to <strong>@{{ replyingTo.sender?.username || 'user' }}</strong></span>
+              <p class="reply-to-snippet">{{ parseMessageContent(replyingTo.content).body }}</p>
+            </div>
+          </div>
+          <button type="button" class="btn-close-reply" @click="replyingTo = null" aria-label="Cancel reply">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Premium Compose Form -->
+        <form class="compose-row-advanced" @submit.prevent="sendMessage">
+          <div class="compose-input-wrapper">
+            <textarea
+              ref="textareaRef"
+              v-model="content"
+              class="compose-textarea"
+              placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
+              rows="1"
+              :disabled="sending || !selectedThreadId"
+              @keydown.enter.prevent="e => { if (!e.shiftKey) sendMessage() }"
+            ></textarea>
+            
+            <button
+              type="button"
+              class="compose-emoji-btn"
+              :class="{ active: showEmojiPicker }"
+              :disabled="!selectedThreadId"
+              @click="showEmojiPicker = !showEmojiPicker"
+              aria-label="Toggle emoji picker"
+            >
+              <i class="fa-regular fa-face-smile"></i>
+            </button>
+
+            <!-- Custom Emoji Drawer inside input wrapper -->
+            <div v-if="showEmojiPicker" class="emoji-drawer-panel">
+              <div class="emoji-drawer-tabs">
+                <button
+                  v-for="(cat, index) in emojiCategories"
+                  :key="cat.name"
+                  type="button"
+                  class="emoji-tab-btn"
+                  :class="{ active: activeEmojiTab === index }"
+                  @click="activeEmojiTab = index"
+                >
+                  {{ cat.name }}
+                </button>
+              </div>
+              <div class="emoji-drawer-list">
+                <button
+                  v-for="emoji in emojiCategories[activeEmojiTab].emojis"
+                  :key="emoji"
+                  type="button"
+                  class="emoji-item-btn"
+                  @click="insertEmoji(emoji)"
+                >
+                  {{ emoji }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <label class="image-picker-advanced" :class="{ disabled: !selectedThreadId }" aria-label="Add images">
             <i class="fa-regular fa-image" aria-hidden="true"></i>
-            <span>Add images</span>
             <input type="file" multiple accept="image/*" :disabled="!selectedThreadId" @change="handleImageSelect" />
           </label>
-          <button class="compose-send" type="submit" :disabled="sending || !selectedThreadId">
-            {{ sending ? 'Sending...' : 'Send' }}
+
+          <button 
+            class="compose-send-advanced" 
+            type="submit" 
+            :disabled="sending || !selectedThreadId || (!content.trim() && !selectedImages.length)"
+          >
+            <i class="fa-regular fa-paper-plane" v-if="!sending"></i>
+            <span v-else class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           </button>
         </form>
+        
         <div v-if="imageSummary" class="image-summary">
           <span>{{ imageSummary }}</span>
           <button type="button" @click="clearSelectedImages">Clear</button>
@@ -444,289 +728,4 @@ watch(
   </MainLayoutTemplate>
 </template>
 
-<style scoped>
-.message-shell {
-  display: grid;
-  grid-template-columns: 340px minmax(0, 1fr);
-  gap: 0;
-  min-height: calc(100vh - 110px);
-  border: 1px solid #e5eaf1;
-  border-radius: 14px;
-  background: #fff;
-  overflow: hidden;
-}
-
-.thread-list-pane {
-  border-right: 1px solid #eef2f7;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-}
-
-.thread-pane {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-}
-
-.pane-head {
-  padding: 0.8rem 0.9rem;
-  border-bottom: 1px solid #eef2f7;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.6rem;
-}
-
-.pane-link {
-  font-size: 0.8rem;
-  text-decoration: none;
-  color: #2563eb;
-}
-
-.pane-note {
-  margin: 0;
-  padding: 0.9rem;
-  color: #64748b;
-}
-
-.pane-note.error {
-  color: #dc2626;
-}
-
-.thread-list {
-  overflow-y: auto;
-  display: block;
-}
-
-.thread-item {
-  border: 0;
-  border-bottom: 1px solid #f2f4f8;
-  background: #fff;
-  padding: 0.65rem 0.75rem;
-  text-align: left;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 0.55rem;
-  align-items: center;
-}
-
-.thread-item + .thread-item {
-  margin-top: 0;
-}
-
-.thread-item:hover {
-  background: #f8fbff;
-}
-
-.thread-item.active {
-  background: #eff6ff;
-}
-
-.thread-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #bfdbfe, #93c5fd);
-  color: #1d4ed8;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-}
-
-.thread-meta {
-  min-width: 0;
-}
-
-.thread-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.thread-top strong {
-  font-size: 0.84rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.thread-top small {
-  font-size: 0.68rem;
-  color: #94a3b8;
-  flex-shrink: 0;
-}
-
-.thread-meta p {
-  margin: 0.15rem 0 0;
-  font-size: 0.76rem;
-  color: #64748b;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.thread-badge {
-  min-width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  background: #ef4444;
-  color: #fff;
-  font-size: 0.68rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 0.3rem;
-}
-
-.thread-body {
-  overflow-y: auto;
-  padding: 1rem 1.1rem;
-  background: #f9fbff;
-}
-
-.message-flow {
-  display: grid;
-  gap: 0.62rem;
-  align-content: start;
-}
-
-.day-separator {
-  margin: 0.55rem auto 0.2rem;
-  color: #8fa1b8;
-  font-size: 0.72rem;
-  text-align: center;
-}
-
-.bubble {
-  max-width: min(78%, 560px);
-  border-radius: 12px;
-  padding: 0.62rem 0.72rem;
-  display: grid;
-  gap: 0.22rem;
-}
-
-.bubble p {
-  margin: 0;
-  font-size: 0.86rem;
-  line-height: 1.35;
-}
-
-.bubble small {
-  color: #94a3b8;
-  font-size: 0.68rem;
-  justify-self: end;
-}
-
-.bubble.incoming {
-  justify-self: start;
-  background: #fff;
-  border: 1px solid #e5eaf1;
-}
-
-.bubble.outgoing {
-  justify-self: end;
-  background: #dbeafe;
-  border: 1px solid #bfdbfe;
-}
-
-.mark-read {
-  border: 0;
-  background: transparent;
-  color: #2563eb;
-  font-size: 0.72rem;
-  font-weight: 600;
-  justify-self: start;
-  padding: 0;
-}
-
-.compose-row {
-  padding: 0.75rem;
-  border-top: 1px solid #eef2f7;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
-  gap: 0.5rem;
-  background: #fff;
-}
-
-.compose-send {
-  border: 1px solid #0d6efd;
-  background: #0d6efd;
-  color: #fff;
-  border-radius: 6px;
-  min-width: 92px;
-  height: 34px;
-  padding: 0 0.85rem;
-  font-size: 0.86rem;
-  font-weight: 600;
-}
-
-.compose-send:disabled {
-  opacity: 0.65;
-}
-
-.image-picker {
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.32rem;
-  border: 1px solid #d3dce8;
-  background: #fff;
-  color: #4b5563;
-  border-radius: 6px;
-  padding: 0 0.62rem;
-  height: 34px;
-  font-size: 0.82rem;
-  cursor: pointer;
-}
-
-.image-picker input {
-  display: none;
-}
-
-.image-picker.disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.image-summary {
-  border-top: 1px solid #eef2f7;
-  padding: 0.42rem 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.76rem;
-  color: #6b7280;
-  background: #fbfdff;
-}
-
-.image-summary button {
-  border: 0;
-  background: transparent;
-  color: #2563eb;
-  font-size: 0.76rem;
-  font-weight: 600;
-}
-
-@media (max-width: 920px) {
-  .message-shell {
-    grid-template-columns: 1fr;
-    min-height: auto;
-  }
-
-  .thread-list-pane {
-    border-right: 0;
-    border-bottom: 1px solid #eef2f7;
-    max-height: 320px;
-  }
-
-  .compose-row {
-    grid-template-columns: 1fr;
-  }
-
-  .bubble {
-    max-width: 92%;
-  }
-}
-</style>
+<style scoped src="./MessagesView.css"></style>

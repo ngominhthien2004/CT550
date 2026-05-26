@@ -1,0 +1,167 @@
+plan_id: messages-wrap-2026-05-26
+objective: Fix messages UI so long unbroken strings wrap and horizontal overflow is hidden in thread. Locate Vue/CSS selectors for message content and thread container.
+focus_area: frontend-messages-ui
+created_at: "2026-05-26"
+created_by: gem-researcher
+status: completed
+
+tldr: |
+  - Message thread markup is in MessagesView.vue with `.thread-body`, `.message-flow`, `.bubble`, `.bubble-quote`, `.quote-text`, and `.bubble-body` elements.
+  - MessagesView.css defines layout for `.thread-body` (overflow-y only) and message bubble styles but does not include explicit word-break/overflow-wrap rules.
+  - Quote content uses line-clamp with overflow hidden, which may interact with long unbroken strings.
+
+research_metadata:
+  methodology: hybrid retrieval (semantic_search + grep_search) with targeted read_file of MessagesView.vue and MessagesView.css
+  scope: messages thread UI in frontend
+  confidence: high
+  coverage: 0.9
+  decision_blockers: 0
+  research_blockers: 0
+
+files_analyzed:
+  - file: MessagesView.vue
+    path: frontend/src/views/MessagesView.vue
+    purpose: Render messages thread UI, including message bubbles and thread container.
+    key_elements:
+      - element: thread-body container
+        type: pattern
+        location: MessagesView.vue:574
+        description: Wrapper for the chat thread body with `ref="chatBodyRef"`.
+      - element: message-flow grid
+        type: pattern
+        location: MessagesView.vue:582
+        description: Container that renders message timeline rows.
+      - element: bubble message item
+        type: pattern
+        location: MessagesView.vue:587
+        description: Message bubble with incoming/outgoing class and optional quote section.
+      - element: bubble-quote
+        type: pattern
+        location: MessagesView.vue:594
+        description: Optional quote block inside a message bubble.
+      - element: quote-text
+        type: pattern
+        location: MessagesView.vue:598
+        description: Quoted message text element.
+      - element: bubble-body
+        type: pattern
+        location: MessagesView.vue:601
+        description: Main message text element.
+    language: Vue (SFC)
+    lines: 740
+
+  - file: MessagesView.css
+    path: frontend/src/views/MessagesView.css
+    purpose: Styles for messages view, including thread layout and message bubbles.
+    key_elements:
+      - element: .thread-body
+        type: pattern
+        location: MessagesView.css:136
+        description: Scroll container for messages with overflow-y enabled.
+      - element: .message-flow
+        type: pattern
+        location: MessagesView.css:142
+        description: Grid layout container for message rows.
+      - element: .bubble
+        type: pattern
+        location: MessagesView.css:155
+        description: Message bubble layout and sizing.
+      - element: .bubble-quote
+        type: pattern
+        location: MessagesView.css:665
+        description: Quote block styling in message bubble.
+      - element: .quote-text
+        type: pattern
+        location: MessagesView.css:692
+        description: Quote text uses line clamp and overflow hidden.
+      - element: .bubble-body
+        type: pattern
+        location: MessagesView.css:713
+        description: Main message text element with margin override.
+    language: CSS
+    lines: 820
+
+patterns_found:
+  - category: structure
+    pattern: Thread layout split into list pane and thread pane with a scrollable body
+    description: The thread UI is organized into a `.thread-body` scroll container and a `.message-flow` grid.
+    examples:
+      - file: frontend/src/views/MessagesView.css
+        location: MessagesView.css:136
+        snippet: ".thread-body { overflow-y: auto; padding: 1rem 1.1rem; background: #f9fbff; }"
+    prevalence: common
+
+  - category: structure
+    pattern: Message content rendered in `.bubble-body` and optional `.quote-text`
+    description: Message text nodes are placed inside dedicated classes in the template.
+    examples:
+      - file: frontend/src/views/MessagesView.vue
+        location: MessagesView.vue:601
+        snippet: "<p class=\"bubble-body\">{{ parseMessageContent(row.item.content).body }}</p>"
+    prevalence: common
+
+  - category: structure
+    pattern: Quote text uses line clamping and hidden overflow
+    description: Quote text is clamped to 2 lines and overflow is hidden by CSS.
+    examples:
+      - file: frontend/src/views/MessagesView.css
+        location: MessagesView.css:692
+        snippet: ".quote-text { -webkit-line-clamp: 2; overflow: hidden; }"
+    prevalence: occasional
+
+related_architecture:
+  components_relevant_to_domain:
+    - component: MessagesView.vue
+      responsibility: Render messages thread UI and message bubbles.
+      location: frontend/src/views/MessagesView.vue
+      relationship_to_domain: domain depends on this
+    - component: MessagesView.css
+      responsibility: Styles for thread layout and bubbles.
+      location: frontend/src/views/MessagesView.css
+      relationship_to_domain: domain depends on this
+  interfaces_used_by_domain: []
+  data_flow_involving_domain: Message timeline rows are rendered into `.message-flow`, each row uses `.bubble` with `.bubble-body` and optional `.bubble-quote`/`.quote-text` content.
+  key_relationships_to_domain:
+    - from: MessagesView.vue
+      to: MessagesView.css
+      relationship: imports (scoped style src)
+
+related_technology_stack:
+  languages_used_in_domain:
+    - Vue SFC
+    - CSS
+  frameworks_used_in_domain:
+    - name: Vue 3
+      usage_in_domain: Single-file component rendering the messages UI.
+  libraries_used_in_domain: []
+  external_apis_used_in_domain: []
+
+related_conventions:
+  naming_patterns_in_domain: CSS classes use kebab-case and are referenced directly in the template.
+  structure_of_domain: Styles are in a dedicated CSS file referenced via `<style scoped src=...>`.
+  error_handling_in_domain: Not applicable to CSS/layout styles.
+  testing_in_domain: Not observed in files analyzed.
+  documentation_in_domain: Not observed in files analyzed.
+
+related_dependencies:
+  internal:
+    - component: MainLayoutTemplate.vue
+      relationship_to_domain: Wraps MessagesView UI in layout
+      direction: outbound
+  external: []
+
+domain_security_considerations: {}
+
+testing_patterns: {}
+
+open_questions:
+  - question: Should wrapping rules apply only to `.bubble-body` or also to `.quote-text`?
+    context: Quote text currently uses line-clamp with overflow hidden and may behave differently with long unbroken strings.
+    type: nice_to_know
+    affects: []
+
+gaps:
+  - area: Global/shared message styles
+    description: No shared message/text wrapping utility classes identified in the messages UI scope.
+    impact: nice_to_know
+    affects: []
