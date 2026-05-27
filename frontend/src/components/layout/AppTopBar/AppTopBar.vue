@@ -5,11 +5,10 @@ import SearchOptionsModal from '../../search/SearchOptionsModal.vue'
 import { useAuthStore } from '../../../stores/auth.store'
 import { useFollowStore } from '../../../stores/follow.store'
 import {
-  getMyMessages,
   getMyNotifications,
-  markMessageRead,
   markNotificationRead,
 } from '../../../services/api'
+import { useMessageStore } from '../../../stores/message.store'
 import AppTopBarPostMenu from './AppTopBarPostMenu.vue'
 import AppTopBarMessagePanel from './AppTopBarMessagePanel.vue'
 import AppTopBarNotificationPanel from './AppTopBarNotificationPanel.vue'
@@ -32,6 +31,7 @@ const emit = defineEmits(['toggle-sidebar'])
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const messageStore = useMessageStore()
 const followStore = useFollowStore()
 const selectedSearchScope = ref('artworks')
 const isSearchOptionsOpen = ref(false)
@@ -148,13 +148,9 @@ const userStats = computed(() => ({
 
 const isMessageMenuOpen = ref(false)
 const isNotificationMenuOpen = ref(false)
-const messagePreviewItems = ref([])
 const notificationPreviewItems = ref([])
-const messagePreviewLoading = ref(false)
 const notificationPreviewLoading = ref(false)
-const messagePreviewError = ref('')
 const notificationPreviewError = ref('')
-const messageUnreadCount = ref(0)
 const notificationUnreadCount = ref(0)
 
 function handleToggleSidebar() {
@@ -217,22 +213,16 @@ function formatPanelTime(value) {
 }
 
 async function loadMessagePreview() {
-  if (!authStore.isAuthenticated) {
-    return
-  }
+  if (!authStore.isAuthenticated) return
 
-  messagePreviewLoading.value = true
-  messagePreviewError.value = ''
+  const now = Date.now()
+  const inboxAge = now - (messageStore.lastFetchedAtInbox || 0)
+  const sentAge = now - (messageStore.lastFetchedAtSent || 0)
+  const stale = inboxAge > 60000 || sentAge > 60000
+  const empty = !messageStore.inboxItems.length && !messageStore.sentItems.length
 
-  try {
-    const { data } = await getMyMessages({ box: 'inbox', limit: 5 })
-    messagePreviewItems.value = data?.messages || []
-    messageUnreadCount.value = Number(data?.unreadCount || 0)
-  } catch (error) {
-    messagePreviewError.value = error?.response?.data?.message || 'Failed to load messages'
-    messagePreviewItems.value = []
-  } finally {
-    messagePreviewLoading.value = false
+  if (stale || empty) {
+    await messageStore.fetchPreview()
   }
 }
 
@@ -274,22 +264,9 @@ function handleNotificationMenuToggle(event) {
 
 async function handleMarkMessageRead(messageId) {
   try {
-    await markMessageRead(messageId)
-    messagePreviewItems.value = messagePreviewItems.value.map((item) => {
-      if (item._id !== messageId) {
-        return item
-      }
-      return {
-        ...item,
-        isRead: true,
-        readAt: new Date().toISOString(),
-      }
-    })
-    if (messageUnreadCount.value > 0) {
-      messageUnreadCount.value -= 1
-    }
-  } catch (error) {
-    messagePreviewError.value = error?.response?.data?.message || 'Failed to mark message as read'
+    await messageStore.readMessage(messageId)
+  } catch {
+    // Error is surfaced through messageStore.error in template binding
   }
 }
 
@@ -374,10 +351,10 @@ async function applySearchOptions(payload) {
       <AppTopBarMessagePanel
         v-if="authStore.isAuthenticated"
         :open="isMessageMenuOpen"
-        :unread-count="messageUnreadCount"
-        :items="messagePreviewItems"
-        :loading="messagePreviewLoading"
-        :error="messagePreviewError"
+        :unread-count="messageStore.inboxUnreadCount"
+        :items="messageStore.previewItems"
+        :loading="messageStore.loading"
+        :error="messageStore.error"
         :format-time="formatPanelTime"
         @toggle="handleMessageMenuToggle"
         @mark-read="handleMarkMessageRead"

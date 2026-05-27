@@ -4,7 +4,8 @@ import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
-import { createMessage, getMyMessages, markMessageRead, userApi } from '../services/api'
+import { getMyMessages, markMessageRead, userApi } from '../services/api'
+import { useMessageStore } from '../stores/message.store'
 import { emojiCategories } from '../constants/emojis'
 
 const isNavCollapsed = ref(true)
@@ -30,6 +31,7 @@ const activeEmojiTab = ref(0)
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const messageStore = useMessageStore()
 
 const currentUserId = computed(() => authStore.user?._id || '')
 
@@ -381,7 +383,7 @@ async function sendMessage() {
   error.value = ''
 
   try {
-    const { data } = await createMessage({
+    const data = await messageStore.sendMessage({
       recipientId,
       content: payloadContent,
     })
