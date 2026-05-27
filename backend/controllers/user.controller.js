@@ -364,6 +364,38 @@ const getAdminUsers = async (req, res, next) => {
     }
 };
 
+// Presence handlers use an in-memory presence store for minimal footprint
+const { setPresence, getPresence } = require('../utils/presence.service');
+
+const postPresence = async (req, res, next) => {
+    try {
+        const targetUserId = req.params.id;
+        // Only allow users to set their own presence
+        if (req.user._id.toString() !== targetUserId) {
+            res.status(403);
+            return next(new Error('Not authorized to set presence for this user'));
+        }
+
+        const typing = !!req.body.typing;
+        setPresence(targetUserId, { typing });
+        res.json({ message: 'Presence updated' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getPresenceHandler = async (req, res, next) => {
+    try {
+        const targetUserId = req.params.id;
+
+        // participant-only check could be added; keep minimal authorization
+        const presence = getPresence(targetUserId);
+        res.json(presence);
+    } catch (error) {
+        next(error);
+    }
+};
+
 const searchUsers = async (req, res, next) => {
     try {
         const rawPage = parseInt(req.query.page, 10);
@@ -453,4 +485,6 @@ module.exports = {
     getAdminUsers,
     updateAdminUser,
     searchUsers,
+    postPresence,
+    getPresenceHandler,
 };

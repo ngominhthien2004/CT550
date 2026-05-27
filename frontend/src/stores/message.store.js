@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth.store'
-import { createMessage, getMyMessages, markMessageRead } from '../services/api'
+import { createMessage, getMyMessages, markMessageRead, messageApi } from '../services/api'
 
 function threadKey(message, currentUserId) {
   if (!message) return null
@@ -118,8 +118,9 @@ export const useMessageStore = defineStore('messages', {
     async sendMessage(payload) {
       this.error = ''
       try {
+        const isFormData = payload instanceof FormData
         const { data } = await createMessage(payload)
-        if (this.activeBox === 'sent') {
+        if (!isFormData && this.activeBox === 'sent') {
           this.items = [data, ...this.items]
         }
         this.sentItems = [data, ...this.sentItems.filter((item) => item._id !== data._id)]
@@ -146,6 +147,26 @@ export const useMessageStore = defineStore('messages', {
         this.inboxUnreadCount = this.inboxItems.filter((item) => !item.isRead).length
       } catch (error) {
         this.error = error?.response?.data?.message || 'Failed to mark message as read'
+        throw error
+      }
+    },
+    async softDelete(messageId) {
+      this.error = ''
+      try {
+        await messageApi.softDelete(messageId)
+
+        // locally mark message as deleted for current user
+        const me = useAuthStore().user?._id
+        const markDeleted = (arr) => arr.map((item) => {
+          if (item._id !== messageId) return item
+          return { ...item, deletedFor: [...(item.deletedFor || []), me] }
+        })
+
+        this.items = markDeleted(this.items)
+        this.inboxItems = markDeleted(this.inboxItems)
+        this.sentItems = markDeleted(this.sentItems)
+      } catch (error) {
+        this.error = error?.response?.data?.message || 'Failed to delete message'
         throw error
       }
     },

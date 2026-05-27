@@ -1,15 +1,18 @@
 <script setup>
-import { computed, onMounted, ref, watch, nextTick } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
-import { getMyMessages, markMessageRead, userApi } from '../services/api'
+import { getMyMessages, markMessageRead, userApi, messageApi } from '../services/api'
 import { useMessageStore } from '../stores/message.store'
 import { emojiCategories } from '../constants/emojis'
 
 const isNavCollapsed = ref(true)
 const selectedThreadId = ref('')
+const threadSearchQuery = ref('')
+const searchResults = ref([])
+const searchActive = ref(false)
 const content = ref('')
 const profilePreviewName = ref('')
 const loading = ref(false)
@@ -18,6 +21,10 @@ const sending = ref(false)
 const selectedImages = ref([])
 const threadListRef = ref(null)
 const textareaRef = ref(null)
+const presenceState = ref({ online: false, typing: false, lastSeen: null })
+let presenceInterval = null
+let typingInterval = null
+let typingTimeout = null
 
 const inboxMessages = ref([])
 const sentMessages = ref([])
@@ -120,6 +127,9 @@ const threadMessages = computed(() => {
     .filter((message) => {
       const senderId = String(message?.sender?._id || '')
       const recipientId = String(message?.recipient?._id || '')
+      // hide messages the current user soft-deleted
+      const deletedFor = Array.isArray(message.deletedFor) ? message.deletedFor.map(String) : []
+      if (deletedFor.includes(String(currentUserId.value))) return false
       return senderId === selectedThreadId.value || recipientId === selectedThreadId.value
     })
     .sort((a, b) => getThreadTimestamp(a) - getThreadTimestamp(b))
@@ -148,6 +158,26 @@ const threadTimeline = computed(() => {
   })
 
   return rows
+})
+
+const displayedTimeline = computed(() => {
+  if (searchActive.value && Array.isArray(searchResults.value) && searchResults.value.length) {
+    // build simple timeline from search results (sorted asc)
+    const rows = []
+    let prevDay = ''
+    const msgs = [...searchResults.value].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+    msgs.forEach((message) => {
+      const day = formatDayLabel(message.createdAt)
+      if (day && day !== prevDay) {
+        rows.push({ type: 'day', key: `day-${day}`, label: day })
+        prevDay = day
+      }
+      rows.push({ type: 'message', key: message._id, item: message })
+    })
+    return rows
+  }
+
+  return threadTimeline.value
 })
 
 const selectedThread = computed(() => threads.value.find((item) => item.peerId === selectedThreadId.value) || null)
@@ -238,6 +268,76 @@ async function loadMessages() {
   }
 }
 
+async function searchWithinThread() {
+  if (!selectedThreadId.value) return
+  const q = String(threadSearchQuery.value || '').trim()
+  if (!q) {
+    searchActive.value = false
+    searchResults.value = []
+    return
+  }
+
+  try {
+    const res = await messageApi.searchThread(selectedThreadId.value, q)
+    searchResults.value = Array.isArray(res.data?.messages) ? res.data.messages : []
+    searchActive.value = true
+  } catch (err) {
+    searchResults.value = []
+    searchActive.value = false
+  }
+}
+
+async function deleteMessage(messageId) {
+  if (!window.confirm('Delete this message for you? This cannot be undone.')) return
+  try {
+    await messageStore.softDelete(messageId)
+    // Remove from local arrays so UI updates immediately without refresh
+    inboxMessages.value = inboxMessages.value.filter(item => item._id !== messageId)
+    sentMessages.value = sentMessages.value.filter(item => item._id !== messageId)
+  } catch (err) {
+    // ignore for now
+  }
+}
+
+function startPresencePolling(peerId) {
+  stopPresencePolling()
+  if (!peerId) return
+  const pollPresence = async () => {
+    try {
+      const res = await userApi.getPresence(peerId)
+      presenceState.value = res.data || { online: false, typing: false }
+    } catch (e) {
+      presenceState.value = { online: false, typing: false }
+    }
+  }
+
+  // initial
+  pollPresence()
+  presenceInterval = setInterval(pollPresence, 30 * 1000)
+  typingInterval = setInterval(pollPresence, 5 * 1000)
+}
+
+function stopPresencePolling() {
+  if (presenceInterval) clearInterval(presenceInterval)
+  if (typingInterval) clearInterval(typingInterval)
+  presenceInterval = null
+  typingInterval = null
+  presenceState.value = { online: false, typing: false }
+}
+
+function onUserTyping() {
+  // send typing signal for self
+  if (typingTimeout) clearTimeout(typingTimeout)
+  const myId = authStore.user?._id
+  if (myId) {
+    userApi.postPresence(myId, { typing: true }).catch(() => {})
+  }
+  typingTimeout = setTimeout(() => {
+    // stop typing after a short idle
+    if (myId) userApi.postPresence(myId, { typing: false }).catch(() => {})
+  }, 2500)
+}
+
 const chatBodyRef = ref(null)
 
 // Synthesize a sweet, gentle notification tone using Web Audio API
@@ -302,6 +402,33 @@ function parseMessageContent(text) {
   return { quote: null, body: text }
 }
 
+function parseMessageBody(text) {
+  if (!text) return { text: '', images: [] }
+  
+  // Find all standalone image URLs in the content
+  const imageUrlRegex = /(https?:\/\/[^\s]+\.(?:jpg|jpeg|png|gif|webp|svg|bmp)(?:\?[^\s]*)?)/gi
+  const images = []
+  let processed = text
+  
+  // Also handle [Image] filename pattern (local files that weren't uploaded)
+  // These can't be displayed since they're not uploaded, so we filter them out
+  processed = processed.replace(/\[Image\][^\n]*/gi, '').trim()
+  
+  // Extract standalone image URLs
+  let match
+  while ((match = imageUrlRegex.exec(text)) !== null) {
+    images.push(match[1])
+  }
+  
+  // Remove image URLs from text display
+  const textWithoutUrls = text.replace(imageUrlRegex, '').replace(/\s+/g, ' ').trim()
+  
+  return {
+    text: textWithoutUrls || processed,
+    images: images,
+  }
+}
+
 // Refined cursor-aware emoji injection
 function insertEmoji(emoji) {
   const textarea = textareaRef.value
@@ -364,29 +491,49 @@ async function sendMessage() {
   }
 
   const trimmedContent = content.value.trim()
-  const imageOnlyFallback = selectedImages.value.length ? `[Image] ${selectedImages.value.join(', ')}` : ''
-  let payloadContent = trimmedContent || imageOnlyFallback
+  const hasFiles = selectedImages.value.length > 0
 
-  if (!payloadContent) {
+  if (!trimmedContent && !hasFiles) {
     error.value = 'Please enter a message or choose at least one image'
     return
   }
+
+  let payloadContent = trimmedContent
 
   // Prepend reply blockquote if active
   if (replyingTo.value) {
     const cleanQuoteContent = replyingTo.value.content.replace(/\r?\n/g, ' ')
     const peerName = replyingTo.value.sender?.displayName || replyingTo.value.sender?.username || 'user'
-    payloadContent = `> **Replying to @${peerName}**: "${cleanQuoteContent}"\n\n${payloadContent}`
+    payloadContent = `> **Replying to @${peerName}**: "${cleanQuoteContent}"\n\n${payloadContent || ''}`
   }
 
   sending.value = true
   error.value = ''
 
   try {
-    const data = await messageStore.sendMessage({
-      recipientId,
-      content: payloadContent,
-    })
+    let data
+
+    if (hasFiles) {
+      // Build FormData with images
+      const formData = new FormData()
+      if (payloadContent) formData.append('content', payloadContent)
+      formData.append('recipientId', recipientId)
+
+      // Get actual File objects from the file input element
+      const fileInput = document.querySelector('.image-picker-advanced input[type="file"]')
+      if (fileInput && fileInput.files) {
+        for (let i = 0; i < fileInput.files.length; i++) {
+          formData.append('images', fileInput.files[i])
+        }
+      }
+
+      data = await messageStore.sendMessage(formData)
+    } else {
+      data = await messageStore.sendMessage({
+        recipientId,
+        content: payloadContent,
+      })
+    }
 
     sentMessages.value = [data, ...sentMessages.value.filter((item) => item._id !== data._id)]
     if (!selectedThreadId.value) {
@@ -397,7 +544,11 @@ async function sendMessage() {
     selectedImages.value = []
     replyingTo.value = null
     showEmojiPicker.value = false
-    
+
+    // Reset file input
+    const fileInput = document.querySelector('.image-picker-advanced input[type="file"]')
+    if (fileInput) fileInput.value = ''
+
     nextTick(() => {
       adjustTextareaHeight()
       scrollChatToBottom()
@@ -497,15 +648,28 @@ watch(
     scrollChatToBottom()
   },
 )
+
+watch(selectedThreadId, (newVal, oldVal) => {
+  if (newVal && newVal !== oldVal) {
+    startPresencePolling(newVal)
+  } else if (!newVal) {
+    stopPresencePolling()
+  }
+})
+
+onUnmounted(() => {
+  stopPresencePolling()
+})
 </script>
 
 <template>
   <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
-    <section v-if="authStore.isAuthenticated" class="message-shell page-block">
+    <section v-if="authStore.isAuthenticated" :class="['message-shell page-block', { 'mobile-chat-open': selectedThreadId }]">
+      
       <aside class="thread-list-pane">
         <header class="pane-head">
           <div>
-            <h1 class="h5 mb-0">Chats</h1>
+              <h1 class="h5 mb-0">Chats</h1>
             <p class="text-secondary mb-0 small">Unread: {{ unreadInboxCount }}</p>
           </div>
           <router-link to="/account" class="pane-link">Message settings</router-link>
@@ -532,13 +696,13 @@ watch(
             :class="{ active: selectedThreadId === thread.peerId }"
             @click="selectThread(thread.peerId)"
           >
-            <div class="thread-avatar">{{ (thread.peer?.username || 'U').charAt(0).toUpperCase() }}</div>
+            <div class="thread-avatar"><img :src="thread.peer?.avatar || 'https://s.pximg.net/common/images/no_profile.png'" alt="avatar" @error="(e) => e.target.src = 'https://s.pximg.net/common/images/no_profile.png'" /></div>
             <div class="thread-meta">
               <div class="thread-top">
                 <strong>{{ thread.peer?.displayName || thread.peer?.username || 'Unknown user' }}</strong>
                 <small>{{ formatMessageTime(thread.latestMessage.createdAt) }}</small>
               </div>
-              <p>{{ parseMessageContent(thread.latestMessage.content).body }}</p>
+              <p>{{ parseMessageBody(thread.latestMessage.content).text || parseMessageContent(thread.latestMessage.content).body }}</p>
             </div>
             <span v-if="thread.unreadCount" class="thread-badge">{{ thread.unreadCount }}</span>
           </button>
@@ -554,15 +718,25 @@ watch(
         @drop="handleDrop"
       >
         <header class="pane-head thread-head">
-          <h2 class="h6 mb-0">{{ headerTitle }}</h2>
-          <button
-            v-if="selectedThreadId"
-            type="button"
-            class="btn btn-sm btn-outline-secondary"
-            @click="selectedThreadId = ''"
-          >
-            New chat
-          </button>
+          <div style="display:flex;align-items:center;gap:0.6rem;width:100%;">
+            <button v-if="selectedThreadId" type="button" class="btn btn-sm btn-outline-secondary mobile-back" @click="selectedThreadId = ''">Back</button>
+            <h2 class="h6 mb-0" style="flex:1;display:flex;align-items:center;gap:0.35rem;">
+              {{ headerTitle }}
+              <span v-if="selectedThreadId && presenceState.online" class="presence-indicator">
+                <span class="presence-dot" :class="{ online: !presenceState.typing, typing: presenceState.typing }"></span>
+                <span class="presence-text">{{ presenceState.typing ? 'typing...' : 'Online' }}</span>
+              </span>
+              <span v-else-if="selectedThreadId && !presenceState.online && presenceState.lastSeen" class="presence-indicator">
+                <span class="presence-dot offline"></span>
+                <span class="presence-text">Offline</span>
+              </span>
+            </h2>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+              <input v-model="threadSearchQuery" placeholder="Search this conversation" class="thread-search-input form-control form-control-sm" style="width:220px" />
+              <button type="button" class="btn btn-sm btn-outline-primary" @click="searchWithinThread">Search</button>
+              <button v-if="searchActive" type="button" class="btn btn-sm btn-outline-secondary" @click="() => { searchActive=false; threadSearchQuery=''; searchResults=[] }">Clear</button>
+            </div>
+          </div>
         </header>
 
         <!-- Drag & Drop overlay indicator -->
@@ -581,8 +755,8 @@ watch(
             </div>
           </div>
 
-          <div v-else-if="threadTimeline.length" class="message-flow">
-            <template v-for="row in threadTimeline" :key="row.key">
+          <div v-else-if="displayedTimeline.length" class="message-flow">
+            <template v-for="row in displayedTimeline" :key="row.key">
               <p v-if="row.type === 'day'" class="day-separator">{{ row.label }}</p>
               <article
                 v-else
@@ -592,6 +766,7 @@ watch(
                   parseMessageContent(row.item.content).quote ? 'has-quote' : ''
                 ]"
               >
+                <img v-if="String(row.item?.sender?._id || '') !== currentUserId" class="msg-avatar" :src="row.item.sender?.avatar || 'https://s.pximg.net/common/images/no_profile.png'" alt="avatar" @error="(e) => e.target.src = 'https://s.pximg.net/common/images/no_profile.png'" />
                 <!-- Render Quote if present -->
                 <div v-if="parseMessageContent(row.item.content).quote" class="bubble-quote">
                   <span class="quote-user">
@@ -600,7 +775,15 @@ watch(
                   <p class="quote-text">{{ parseMessageContent(row.item.content).quote.content }}</p>
                 </div>
 
-                <p class="bubble-body">{{ parseMessageContent(row.item.content).body }}</p>
+                <div class="bubble-body-wrap">
+                  <p v-if="parseMessageBody(row.item.content).text" class="bubble-body">{{ parseMessageBody(row.item.content).text }}</p>
+                  <div v-if="row.item.images && row.item.images.length" class="bubble-images">
+                    <img v-for="(imgUrl, idx) in row.item.images" :key="idx" :src="imgUrl" alt="Message image" class="bubble-image" @error="(e) => e.target.style.display = 'none'" @load="scrollChatToBottom" />
+                  </div>
+                  <div v-else-if="parseMessageBody(row.item.content).images.length" class="bubble-images">
+                    <img v-for="(imgUrl, idx) in parseMessageBody(row.item.content).images" :key="idx" :src="imgUrl" alt="Message image" class="bubble-image" @error="(e) => e.target.style.display = 'none'" @load="scrollChatToBottom" />
+                  </div>
+                </div>
                 
                 <div class="bubble-footer">
                   <span v-if="String(row.item?.sender?._id || '') === currentUserId" class="msg-status" :class="{ read: row.item.isRead }">
@@ -610,15 +793,26 @@ watch(
                   <small class="msg-time">{{ formatMessageTime(row.item.createdAt) }}</small>
                 </div>
 
-                <!-- Hover Reply Trigger -->
-                <button
-                  type="button"
-                  class="bubble-reply-btn"
-                  title="Reply to this message"
-                  @click="replyingTo = row.item"
-                >
-                  <i class="fa-solid fa-reply"></i>
-                </button>
+                <!-- Bubble action buttons (reply + delete) -->
+                <div class="bubble-actions">
+                  <button
+                    type="button"
+                    class="bubble-reply-btn"
+                    title="Reply to this message"
+                    @click="replyingTo = row.item"
+                  >
+                    <i class="fa-solid fa-reply"></i>
+                  </button>
+                  <button
+                    v-if="(String(row.item?.sender?._id || '') === currentUserId) || (String(row.item?.recipient?._id || '') === currentUserId)"
+                    type="button"
+                    class="bubble-delete-btn"
+                    title="Delete for me"
+                    @click.prevent="deleteMessage(row.item._id)"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
 
                 <button
                   v-if="String(row.item?.recipient?._id || '') === currentUserId && !row.item.isRead"
@@ -659,6 +853,7 @@ watch(
               rows="1"
               :disabled="sending || !selectedThreadId"
               @keydown.enter.prevent="e => { if (!e.shiftKey) sendMessage() }"
+              @input="onUserTyping"
             ></textarea>
             
             <button

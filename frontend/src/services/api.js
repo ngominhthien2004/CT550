@@ -111,6 +111,8 @@ export const userApi = {
   sendIlluWrlRequest: (userId, payload = {}) => api.post(`/users/${userId}/illuwrl-request`, payload),
   block: (userId) => api.post(`/users/${userId}/block`),
   searchPublic: (params = {}) => api.get('/users/search', { params }),
+  postPresence: (userId, payload = {}) => api.post(`/users/${userId}/presence`, payload),
+  getPresence: (userId) => api.get(`/users/${userId}/presence`),
 }
 
 export const adminApi = {
@@ -125,6 +127,8 @@ export const messageApi = {
   getMine: (params = {}) => api.get('/messages', { params }),
   create: (payload) => api.post('/messages', payload),
   markRead: (messageId) => api.patch(`/messages/${messageId}/read`),
+  searchThread: (threadId, q) => api.get(`/messages/${threadId}/search`, { params: { q } }),
+  softDelete: (messageId) => api.patch(`/messages/${messageId}/delete`),
 }
 
 export const notificationApi = {

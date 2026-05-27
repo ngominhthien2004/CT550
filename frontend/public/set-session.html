@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Set Session</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script>
+      (function(){
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const token = params.get('token');
+          const user = params.get('user');
+          if (token) localStorage.setItem('token', token);
+          if (user) {
+            try { localStorage.setItem('authUser', JSON.stringify(JSON.parse(decodeURIComponent(user)))); } catch(e) { localStorage.setItem('authUser', user); }
+          }
+          // redirect to home after a moment
+          setTimeout(() => { window.location.href = '/'; }, 300);
+        } catch (e) {
+          document.body.innerText = 'Failed to set session: ' + e.message;
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    Setting session...
+  </body>
+</html>

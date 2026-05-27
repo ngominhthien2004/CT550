@@ -13,9 +13,13 @@ const messageSchema = mongoose.Schema({
     },
     content: {
         type: String,
-        required: true,
+        default: '',
         trim: true,
         maxlength: 2000
+    },
+    images: {
+        type: [String],
+        default: []
     },
     isRead: {
         type: Boolean,
@@ -24,6 +28,12 @@ const messageSchema = mongoose.Schema({
     readAt: {
         type: Date,
         default: null
+    }
+    ,
+    deletedFor: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'User',
+        default: []
     }
 }, {
     timestamps: true

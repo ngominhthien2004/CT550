@@ -21,6 +21,8 @@ const {
 } = require('../controllers/user.controller');
 const { protect, admin } = require('../middlewares/auth.middleware');
 
+const { postPresence, getPresenceHandler } = require('../controllers/user.controller');
+
 const storage = multer.diskStorage({
     destination(req, file, cb) {
         try {
@@ -78,5 +80,8 @@ router.post('/:id/illuwrl-request', protect, createIlluWrlRequest);
 router.post('/:id/block', protect, blockUser);
 router.get('/:id/followers', getFollowers);
 router.get('/:id/following', getFollowing);
+
+router.post('/:id/presence', protect, postPresence);
+router.get('/:id/presence', protect, getPresenceHandler);
 
 module.exports = router;

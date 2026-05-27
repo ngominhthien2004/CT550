@@ -61,11 +61,16 @@ defineEmits(['toggle', 'mark-read'])
           :class="{ unread: !item.isRead }"
         >
           <router-link to="/messages" class="quick-panel-link" role="menuitem">
-            <div class="quick-item-top">
-              <strong>{{ item.sender?.displayName || item.sender?.username || 'Unknown' }}</strong>
-              <small>{{ formatTime(item.createdAt) }}</small>
+            <div class="quick-item-row">
+              <div class="q-avatar"><img :src="item.sender?.avatar || 'https://s.pximg.net/common/images/no_profile.png'" alt="avatar" @error="(e) => e.target.src = 'https://s.pximg.net/common/images/no_profile.png'" /></div>
+              <div class="quick-item-meta">
+                <div class="quick-item-top">
+                  <strong>{{ item.sender?.displayName || item.sender?.username || 'Unknown' }}</strong>
+                  <small>{{ formatTime(item.createdAt) }}</small>
+                </div>
+                <span>{{ item.content }}</span>
+              </div>
             </div>
-            <span>{{ item.content }}</span>
           </router-link>
           <button
             v-if="!item.isRead"
@@ -266,5 +271,34 @@ defineEmits(['toggle', 'mark-read'])
 
 .quick-panel-note.error {
   color: #dc2626;
+}
+
+.quick-item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.q-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.q-avatar img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
+.quick-item-meta {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  gap: 0.2rem;
 }
 </style>
