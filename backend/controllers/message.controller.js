@@ -16,13 +16,27 @@ const getMyMessages = async (req, res, next) => {
         // Exclude messages soft-deleted for the requesting user
         filter.deletedFor = { $ne: req.user._id };
 
+        // Support ?since=<ISO timestamp> for polling new messages only
+        const since = req.query.since;
+        if (since) {
+            const sinceDate = new Date(since);
+            if (!isNaN(sinceDate.getTime())) {
+                filter.createdAt = { $gt: sinceDate };
+            }
+        }
+
+        const query = Message.find(filter)
+            .populate('sender', 'username displayName avatar')
+            .populate('recipient', 'username displayName avatar')
+            .sort({ createdAt: -1 });
+
+        // When since is provided, skip pagination (fetch all new since timestamp)
+        if (!since) {
+            query.skip(skip).limit(limit);
+        }
+
         const [messages, total, unreadCount] = await Promise.all([
-            Message.find(filter)
-                .populate('sender', 'username displayName avatar')
-                .populate('recipient', 'username displayName avatar')
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(limit),
+            query,
             Message.countDocuments(filter),
             Message.countDocuments({ recipient: req.user._id, isRead: false })
         ]);
@@ -31,8 +45,8 @@ const getMyMessages = async (req, res, next) => {
             messages,
             total,
             unreadCount,
-            page,
-            pages: Math.ceil(total / limit),
+            page: since ? 1 : page,
+            pages: since ? 1 : Math.ceil(total / limit),
             box
         });
     } catch (error) {

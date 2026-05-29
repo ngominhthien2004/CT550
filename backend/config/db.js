@@ -1,4 +1,8 @@
 const mongoose = require('mongoose');
+const dns = require('dns');
+
+// Override DNS servers to avoid ECONNREFUSED on SRV lookups from local DNS
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 const connectDB = async () => {
     try {

@@ -25,6 +25,8 @@ const presenceState = ref({ online: false, typing: false, lastSeen: null })
 let presenceInterval = null
 let typingInterval = null
 let typingTimeout = null
+let newMessageInterval = null
+const lastPolledAt = ref('')
 
 const inboxMessages = ref([])
 const sentMessages = ref([])
@@ -259,6 +261,9 @@ async function loadMessages() {
     if (threads.value.length > 0) {
       selectedThreadId.value = threads.value[0].peerId
     }
+
+    // Initialize poll timestamp so subsequent polls get only new messages
+    lastPolledAt.value = new Date().toISOString()
   } catch (fetchError) {
     error.value = fetchError?.response?.data?.message || 'Failed to load messages'
     inboxMessages.value = []
@@ -323,6 +328,59 @@ function stopPresencePolling() {
   presenceInterval = null
   typingInterval = null
   presenceState.value = { online: false, typing: false }
+}
+
+function startMessagePolling() {
+  stopMessagePolling() // ensure no duplicate intervals
+  // Initialize lastPolledAt to now if not set
+  if (!lastPolledAt.value) {
+    lastPolledAt.value = new Date().toISOString()
+  }
+  // Poll every 10 seconds
+  newMessageInterval = setInterval(pollNewMessages, 10 * 1000)
+}
+
+function stopMessagePolling() {
+  if (newMessageInterval) {
+    clearInterval(newMessageInterval)
+    newMessageInterval = null
+  }
+}
+
+async function pollNewMessages() {
+  if (!authStore.isAuthenticated || !lastPolledAt.value) return
+
+  try {
+    const [inboxRes, sentRes] = await Promise.all([
+      getMyMessages({ box: 'inbox', since: lastPolledAt.value, limit: 50 }),
+      getMyMessages({ box: 'sent', since: lastPolledAt.value, limit: 50 }),
+    ])
+
+    // Update lastPolledAt to current time for next poll
+    lastPolledAt.value = new Date().toISOString()
+
+    const newInbox = Array.isArray(inboxRes.data?.messages) ? inboxRes.data.messages : []
+    const newSent = Array.isArray(sentRes.data?.messages) ? sentRes.data.messages : []
+
+    // Get IDs already in the arrays
+    const existingInboxIds = new Set(inboxMessages.value.map(m => m._id))
+    const existingSentIds = new Set(sentMessages.value.map(m => m._id))
+
+    // Prepend only truly new messages (not already present)
+    const freshInbox = newInbox.filter(m => !existingInboxIds.has(m._id))
+    const freshSent = newSent.filter(m => !existingSentIds.has(m._id))
+
+    // Messages from API are sorted newest-first (createdAt: -1),
+    // so prepending maintains the correct order
+    if (freshInbox.length > 0) {
+      inboxMessages.value = [...freshInbox, ...inboxMessages.value]
+    }
+    if (freshSent.length > 0) {
+      sentMessages.value = [...freshSent, ...sentMessages.value]
+    }
+  } catch {
+    // Silently ignore polling errors
+  }
 }
 
 function onUserTyping() {
@@ -652,13 +710,16 @@ watch(
 watch(selectedThreadId, (newVal, oldVal) => {
   if (newVal && newVal !== oldVal) {
     startPresencePolling(newVal)
+    startMessagePolling()
   } else if (!newVal) {
     stopPresencePolling()
+    stopMessagePolling()
   }
 })
 
 onUnmounted(() => {
   stopPresencePolling()
+  stopMessagePolling()
 })
 </script>
 
