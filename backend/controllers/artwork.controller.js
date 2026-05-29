@@ -80,7 +80,11 @@ const createArtwork = async (req, res, next) => {
         // Handle tags (simplified for phase 1 - convert strings to Tag IDs or just use what is sent)
         let tagIds = [];
         if (tags) {
-            const rawTagList = Array.isArray(tags) ? tags : [tags];
+            const rawTagList = Array.isArray(tags)
+                ? tags
+                : typeof tags === 'string'
+                    ? tags.split(',').map(t => t.trim()).filter(Boolean)
+                    : [tags];
             const normalizedTagList = rawTagList
                 .map((tagName) => normalizeTagName(tagName))
                 .filter(Boolean);
