@@ -1,12 +1,14 @@
 const { createRequire } = require('module');
 const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '..', 'backend', '.env') });
+
 const BACKEND_NM = path.resolve(__dirname, '..', 'backend', 'node_modules');
 const req = createRequire(BACKEND_NM);
 
 const mongoose = req('mongoose');
 
 async function main() {
-  const uri = 'mongodb+srv://ngominhthien2004:ngominhthien@ngominhthien22.pd74ikk.mongodb.net/ct550';
+  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/ct550';
   
   
   const dns = req('dns');

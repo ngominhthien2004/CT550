@@ -5,6 +5,7 @@ const { detectAIWithHuggingFace } = require('../services/huggingface.service');
 const { getAiDetectionThreshold } = require('../config/env');
 const fs = require('fs');
 const path = require('path');
+const cloudinary = require('cloudinary').v2;
 
 const normalizeTagName = (rawTagName = '') =>
     String(rawTagName)
@@ -58,6 +59,23 @@ const createArtwork = async (req, res, next) => {
             const relativePath = path.relative(publicDir, file.path).replace(/\\/g, '/');
             return `/${relativePath}`;
         });
+
+        // Upload images to Cloudinary for persistent remote storage
+        const cloudImages = [];
+        for (const file of req.files) {
+            try {
+                const result = await cloudinary.uploader.upload(file.path, {
+                    folder: process.env.CLOUDINARY_FOLDER || 'illuwrl-artworks',
+                    resource_type: 'image',
+                });
+                cloudImages.push(result.secure_url);
+            } catch (err) {
+                console.error('Cloudinary upload failed for', file.path, err.message);
+                // Fallback to local path for this image
+                cloudImages.push(images[cloudImages.length] || '');
+            }
+        }
+        const finalImages = cloudImages.length > 0 ? cloudImages : images;
 
         // Handle tags (simplified for phase 1 - convert strings to Tag IDs or just use what is sent)
         let tagIds = [];
@@ -133,7 +151,7 @@ const createArtwork = async (req, res, next) => {
             title,
             description,
             type: artworkType,
-            images,
+            images: finalImages,
             tags: tagIds,
             ageRating,
             ugoiraNotes: ugoiraNotes || '',
@@ -267,17 +285,35 @@ const deleteArtwork = async (req, res, next) => {
             return next(new Error('User not authorized to delete this artwork'));
         }
 
-        // Delete files from storage
-        artwork.images.forEach(imagePath => {
-            const normalizedImagePath = imagePath.replace(/\\/g, '/').replace(/^\/+/, '');
-            const relativeToUploads = normalizedImagePath.startsWith('uploads/')
-                ? normalizedImagePath.slice('uploads/'.length)
-                : normalizedImagePath;
-            const fullPath = path.join(__dirname, '..', 'public', 'uploads', relativeToUploads);
-            if (fs.existsSync(fullPath)) {
-                fs.unlinkSync(fullPath);
+        // Delete files from storage (Cloudinary or local)
+        for (const imagePath of artwork.images) {
+            // Check if this is a Cloudinary URL
+            if (imagePath.includes('res.cloudinary.com')) {
+                try {
+                    // Extract the public ID from the Cloudinary URL
+                    // URL format: https://res.cloudinary.com/cloud_name/image/upload/v1234567/folder/filename
+                    const urlParts = new URL(imagePath);
+                    const pathSegments = urlParts.pathname.split('/');
+                    const uploadIndex = pathSegments.indexOf('upload');
+                    if (uploadIndex !== -1) {
+                        const publicId = pathSegments.slice(uploadIndex + 2).join('/').replace(/\.[^.]+$/, '');
+                        await cloudinary.uploader.destroy(publicId);
+                    }
+                } catch (err) {
+                    console.error('Cloudinary delete failed for', imagePath, err.message);
+                }
+            } else {
+                // Delete local file
+                const normalizedImagePath = imagePath.replace(/\\/g, '/').replace(/^\/+/, '');
+                const relativeToUploads = normalizedImagePath.startsWith('uploads/')
+                    ? normalizedImagePath.slice('uploads/'.length)
+                    : normalizedImagePath;
+                const fullPath = path.join(__dirname, '..', 'public', 'uploads', relativeToUploads);
+                if (fs.existsSync(fullPath)) {
+                    fs.unlinkSync(fullPath);
+                }
             }
-        });
+        }
 
         await artwork.deleteOne();
         res.json({ message: 'Artwork removed' });
