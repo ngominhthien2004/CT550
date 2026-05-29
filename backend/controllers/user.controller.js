@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const cloudinary = require('cloudinary').v2;
 const Follow = require('../models/Follow');
 const IlluWrlRequest = require('../models/IlluWrlRequest');
 const UserBlock = require('../models/UserBlock');
@@ -34,11 +35,29 @@ const updateUserProfile = async (req, res, next) => {
             if (req.files) {
                 if (req.files['avatar'] && req.files['avatar'].length > 0) {
                     const avatarFile = req.files['avatar'][0];
-                    user.avatar = `/uploads/${req.user._id}/profile/${avatarFile.filename}`;
+                    try {
+                        const result = await cloudinary.uploader.upload(avatarFile.path, {
+                            folder: 'illuwrl-avatars',
+                            resource_type: 'image',
+                        });
+                        user.avatar = result.secure_url;
+                    } catch (err) {
+                        console.error('Cloudinary avatar upload failed:', err.message);
+                        user.avatar = `/uploads/${req.user._id}/profile/${avatarFile.filename}`;
+                    }
                 }
                 if (req.files['coverImage'] && req.files['coverImage'].length > 0) {
                     const coverFile = req.files['coverImage'][0];
-                    user.coverImage = `/uploads/${req.user._id}/profile/${coverFile.filename}`;
+                    try {
+                        const result = await cloudinary.uploader.upload(coverFile.path, {
+                            folder: 'illuwrl-covers',
+                            resource_type: 'image',
+                        });
+                        user.coverImage = result.secure_url;
+                    } catch (err) {
+                        console.error('Cloudinary cover upload failed:', err.message);
+                        user.coverImage = `/uploads/${req.user._id}/profile/${coverFile.filename}`;
+                    }
                 }
             } else {
                 if (req.body.avatar) user.avatar = req.body.avatar;
