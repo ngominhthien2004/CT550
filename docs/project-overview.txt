@@ -31,7 +31,7 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
 - Đăng tải đa dạng nội dung:
   - Illustrations: Ảnh đơn hoặc bộ sưu tập ảnh (Gallery).
   - Manga/Comic: Hỗ trợ xem dạng cuộn hoặc lật trang.
-  - Ugoira: Định dạng ảnh động dựa trên chuỗi khung hình.
+  - GIF: Định dạng ảnh động (GIF) được dùng cho các bài đăng ảnh động.
   - Novels: Trình soạn thảo và đọc truyện chữ với giao diện tùy chỉnh.
 - Hệ thống Tags nâng cao:
   - Gắn thẻ đa ngôn ngữ, gợi ý thẻ thông minh.

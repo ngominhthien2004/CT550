@@ -1,5 +1,5 @@
 plan_id: adhoc-upload-illu-20260406
-objective: Phan tich codebase frontend cho redesign trang upload theo layout anh va mo rong Manga/Ugoira/Novel
+objective: Phan tich codebase frontend cho redesign trang upload theo layout anh va mo rong Manga/GIF/Novel
 focus_area: upload-redesign-pages
 created_at: "2026-04-06T00:00:00Z"
 created_by: gem-researcher
@@ -7,8 +7,8 @@ status: completed
 
 tldr: |
   - Frontend hien co 1 view upload duy nhat, route /upload, topbar nut Post tro truc tiep den /upload.
-  - Upload form hien la generic, chua co tab/page rieng cho Illust/Manga/Ugoira/Novel va chua co post menu dropdown.
-  - Backend contract da ho tro type ugoira o schema/route, nhung frontend UploadArtworkView chua expose option ugoira.
+  - Upload form hien la generic, chua co tab/page rieng cho Illust/Manga/GIF/Novel va chua co post menu dropdown.
+  - Backend contract da ho tro type gif o schema/route, nhung frontend UploadArtworkView chua expose option gif.
   - Chua tim thay artifact anh tham chieu trong workspace, gap phan tich layout chi dua tren code hien tai va yeu cau text.
 
 research_metadata:
@@ -35,7 +35,7 @@ files_analyzed:
   - element: type select
     type: pattern
     location: frontend/src/views/UploadArtworkView.vue:143
-    description: chi co illust/manga/novel, khong co ugoira
+    description: chi co illust/manga/novel, khong co gif
   language: Vue
   lines: 212
 
@@ -90,7 +90,7 @@ files_analyzed:
   - element: type enum
     type: variable
     location: backend/models/Artwork.js:17
-    description: illust/manga/ugoira/novel
+    description: illust/manga/gif/novel
   language: JavaScript
   lines: 58
 
@@ -196,7 +196,7 @@ domain_security_considerations:
   data_validation_in_domain: frontend validate co ban; backend validate req.files > 0
 
 open_questions:
-- question: Anh tham chieu co yeu cau field dac thu ugoira (zip/frame/fps/thumbnail) hay khong?
+- question: Anh tham chieu co yeu cau field dac thu gif (zip/frame/fps/thumbnail) hay khong?
   context: workspace khong co image spec layout de doi chieu chi tiet
   type: decision_blocker
   affects: [upload-redesign-pages]

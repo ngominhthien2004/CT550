@@ -15,6 +15,14 @@ const errorHandler = (err, req, res, next) => {
         res.status(400);
     }
 
+    // Custom upload errors
+    if (err?.message && (
+        err.message.includes('GIF uploads required') ||
+        err.message.includes('ZIP archives are not accepted')
+    )) {
+        res.status(400);
+    }
+
     res.json({
         message: err.message,
         stack: process.env.NODE_ENV === 'production' ? null : err.stack,

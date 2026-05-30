@@ -65,7 +65,7 @@ files_analyzed:
   - element: type enum required
     type: variable
     location: backend/models/Artwork.js:17
-    description: illust|manga|ugoira|novel
+    description: illust|manga|gif|novel
   - element: images required
     type: variable
     location: backend/models/Artwork.js:24

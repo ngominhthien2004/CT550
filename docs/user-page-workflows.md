@@ -27,7 +27,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
 - Nút Post: mở menu chọn loại bài đăng, điều hướng tới:
   - Illustration -> `/upload/illust`
   - Manga -> `/upload/manga`
-  - Ugoira -> `/upload/ugoira`
+  - GIF -> `/upload/gif`
   - Novel -> `/upload/novel`
 - Nút Messages: vào `/messages`.
 - Nút Notifications: vào `/notifications`.
@@ -144,7 +144,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
 
 - Mục tiêu: xem các artwork đã like.
 - Nút/tương tác:
-  - Type tabs (Illustration/Manga/Novel/Ugoira): lọc favorites theo loại.
+  - Type tabs (Illustration/Manga/Novel/GIF): lọc favorites theo loại.
   - Remove ở từng card: bỏ like item đó.
   - Delete latest: xóa item đầu danh sách favorites.
   - Card artwork: vào `/artworks/:id`.
@@ -211,11 +211,11 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
 
 ## 3.15 UploadArtworkView (`/upload/:kind`) [cần đăng nhập]
 
-- Mục tiêu: đăng bài theo 4 loại (illust, manga, ugoira, novel).
+- Mục tiêu: đăng bài theo 4 loại (illust, manga, gif, novel).
 - Nút/tương tác:
   - Type tabs: đổi loại upload và reset form theo loại.
   - Input file upload:
-    - Illust/Manga/Ugoira: upload ảnh bài đăng.
+    - Illust/Manga/GIF: upload ảnh hoặc GIF cho bài đăng.
     - Novel: upload ảnh cover.
   - Tag input + Add + Enter/Comma: thêm tag (tối đa 10), bấm tag-pill để xóa.
   - Các radio/checkbox cài đặt (age rating, AI-generated, visibility, comments, schedule, language).

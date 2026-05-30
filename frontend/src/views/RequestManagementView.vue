@@ -31,7 +31,7 @@ const termForm = reactive({
   isOpen: true,
 })
 
-const workTypes = ['illust', 'manga', 'ugoira', 'novel']
+const workTypes = ['illust', 'manga', 'gif', 'novel']
 const ageRatings = ['all', 'r-18', 'r-18g']
 const requests = computed(() => requestStore.requests)
 const terms = computed(() => requestStore.terms)

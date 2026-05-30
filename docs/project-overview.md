@@ -32,7 +32,7 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
 - **Đăng tải đa dạng nội dung:**
   - **Illustrations:** Ảnh đơn hoặc bộ sưu tập ảnh (Gallery).
   - **Manga/Comic:** Hỗ trợ xem dạng cuộn hoặc lật trang.
-  - **Ugoira:** Định dạng ảnh động dựa trên chuỗi khung hình.
+  - **GIF:** Định dạng ảnh động (GIF) được dùng cho các bài đăng ảnh động.
   - **Novels:** Trình soạn thảo và đọc truyện chữ với giao diện tùy chỉnh.
 - **Hệ thống Tags nâng cao:**
   - Gắn thẻ đa ngôn ngữ, gợi ý thẻ thông minh.
@@ -72,12 +72,12 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
 
 ## 4. Gợi ý Cấu trúc Cơ sở Dữ liệu (Sơ lược)
 
-| Table/Collection | Các trường chính (Fields)                                                           |
-| ---------------- | ----------------------------------------------------------------------------------- |
-| **Users**        | id, username, email, password_hash, bio, avatar_url, role, isPremium                |
-| **Artworks**     | id, user_id, title, description, type (illust/manga/ugoira), view_count, age_rating |
-| **Images**       | id, artwork_id, image_path, page_order (cho manga)                                  |
-| **Tags**         | id, tag_name, usage_count, translations                                             |
-| **Bookmarks**    | user_id, artwork_id, folder_name, is_private                                        |
-| **Follows**      | follower_id, following_id                                                           |
-| **Comments**     | id, artwork_id, user_id, content, created_at                                        |
+| Table/Collection | Các trường chính (Fields)                                                        |
+| ---------------- | -------------------------------------------------------------------------------- |
+| **Users**        | id, username, email, password_hash, bio, avatar_url, role, isPremium             |
+| **Artworks**     | id, user_id, title, description, type (illust/manga/gif), view_count, age_rating |
+| **Images**       | id, artwork_id, image_path, page_order (cho manga)                               |
+| **Tags**         | id, tag_name, usage_count, translations                                          |
+| **Bookmarks**    | user_id, artwork_id, folder_name, is_private                                     |
+| **Follows**      | follower_id, following_id                                                        |
+| **Comments**     | id, artwork_id, user_id, content, created_at                                     |

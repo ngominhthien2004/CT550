@@ -82,7 +82,7 @@ const serviceLinks = computed(() => {
   {
     key: 'upload',
     label: 'Create Artwork',
-    description: 'Post illustration, manga, ugoira, or novel',
+    description: 'Post illustration, manga, GIF, or novel',
     to: '/upload/illust',
     thumbnail: 'https://picsum.photos/seed/ct550-upload/96/96',
   },

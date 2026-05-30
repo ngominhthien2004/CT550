@@ -12,8 +12,8 @@ import { useArtworkStore } from '../stores/artwork.store'
 import { getApiErrorMessage } from '../utils/apiErrors'
 import { toggleNavCollapsed } from '../utils/viewNavigation'
 
-const uploadKinds = ['illust', 'manga', 'ugoira', 'novel']
-const mediaKinds = ['illust', 'manga', 'ugoira']
+const uploadKinds = ['illust', 'manga', 'gif', 'novel']
+const mediaKinds = ['illust', 'manga', 'gif']
 
 const kindMeta = {
   illust: {
@@ -24,8 +24,8 @@ const kindMeta = {
     title: 'Manga',
     hero: 'Upload manga pages in order and prepare your post details.',
   },
-  ugoira: {
-    title: 'Ugoira (animation)',
+  gif: {
+    title: 'GIF (animation)',
     hero: 'Upload a GIF animation or multiple image files for your artwork.',
   },
   novel: {
@@ -69,7 +69,7 @@ const createDefaultForm = () => ({
   scheduleDate: '',
   scheduleTime: '',
   mangaSeriesName: '',
-  ugoiraNotes: '',
+  gifNotes: '',
   novelFormat: 'oneshot',
   novelSeriesName: '',
   images: [],
@@ -86,7 +86,7 @@ const currentKind = computed(() => {
 const currentMeta = computed(() => kindMeta[currentKind.value])
 const isNovel = computed(() => currentKind.value === 'novel')
 const isManga = computed(() => currentKind.value === 'manga')
-const isUgoira = computed(() => currentKind.value === 'ugoira')
+const isGif = computed(() => currentKind.value === 'gif')
 const isMediaPage = computed(() => mediaKinds.includes(currentKind.value))
 
 const titleMax = computed(() => (isNovel.value ? 100 : 32))
@@ -361,7 +361,7 @@ async function submitArtwork() {
       ageRating: form.ageRating,
       tags: form.tags,
       images: isNovel.value ? form.coverImages : form.images,
-      ugoiraNotes: isUgoira.value ? form.ugoiraNotes : undefined,
+      gifNotes: isGif.value ? form.gifNotes : undefined,
       novelContent: isNovel.value ? form.novelText.trim() : undefined,
       novelFormat: isNovel.value ? form.novelFormat : undefined,
       novelSeriesName: isNovel.value ? form.novelSeriesName : undefined,
@@ -438,7 +438,7 @@ onBeforeUnmount(() => {
         :current-meta="currentMeta"
         :is-media-page="isMediaPage"
         :is-novel="isNovel"
-        :is-ugoira="isUgoira"
+        :is-gif="isGif"
         :media-count="form.images.length"
         :cover-count="form.coverImages.length"
         :preview-url="previewUrl"
@@ -452,7 +452,7 @@ onBeforeUnmount(() => {
         <UploadContentDetails
           :form="form"
           :is-manga="isManga"
-          :is-ugoira="isUgoira"
+          :is-gif="isGif"
           :is-novel="isNovel"
           :title-max="titleMax"
           :title-count="titleCount"

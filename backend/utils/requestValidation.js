@@ -1,4 +1,4 @@
-const WORK_TYPES = ['illust', 'manga', 'ugoira', 'novel'];
+const WORK_TYPES = ['illust', 'manga', 'gif', 'novel'];
 const VISIBILITY_VALUES = ['public', 'private'];
 const AGE_RATINGS = ['all', 'r-18', 'r-18g'];
 

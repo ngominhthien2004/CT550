@@ -45,7 +45,7 @@ function hasTagId(tagIds, tagId) {
 // Create Artwork
 const createArtwork = async (req, res, next) => {
     try {
-        const { title, description, type, ageRating, tags, ugoiraNotes, novelContent, novelFormat, novelSeriesName } = req.body;
+        const { title, description, type, ageRating, tags, gifNotes, novelContent, novelFormat, novelSeriesName } = req.body;
 
         if (!req.files || req.files.length === 0) {
             res.status(400);
@@ -54,9 +54,9 @@ const createArtwork = async (req, res, next) => {
 
         const publicDir = path.join(__dirname, '..', 'public');
         const rawType = (type || 'illust').toString().toLowerCase();
-        const artworkType = ['illust', 'manga', 'ugoira', 'novel'].includes(rawType) ? rawType : 'illust';
+        const artworkType = ['illust', 'manga', 'gif', 'novel'].includes(rawType) ? rawType : 'illust';
 
-        // Process all uploaded files (same for all artwork types - illust, manga, ugoira, novel)
+        // Process all uploaded files (same for all artwork types - illust, manga, gif, novel)
         const images = req.files.map((file) => {
             const relativePath = path.relative(publicDir, file.path).replace(/\\/g, '/');
             return `/${relativePath}`;
@@ -160,7 +160,7 @@ const createArtwork = async (req, res, next) => {
             images: finalImages,
             tags: tagIds,
             ageRating,
-            ugoiraNotes: ugoiraNotes || '',
+            gifNotes: gifNotes || '',
         };
 
         // Set novel-specific fields

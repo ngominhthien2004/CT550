@@ -97,7 +97,7 @@ async function run() {
   }
 
   const imageBuffer = await readFile(sampleImagePath)
-  const types = ['illust', 'manga', 'novel', 'ugoira']
+  const types = ['illust', 'manga', 'novel', 'gif']
   const created = []
 
   for (const type of types) {

@@ -18,7 +18,7 @@ const artworkSchema = mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['illust', 'manga', 'ugoira', 'novel'],
+        enum: ['illust', 'manga', 'gif', 'novel'],
         default: 'illust'
     },
     images: [{
@@ -55,7 +55,7 @@ const artworkSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
-    ugoiraNotes: {
+    gifNotes: {
         type: String,
         trim: true,
         default: ''

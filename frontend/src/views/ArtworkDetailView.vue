@@ -477,7 +477,7 @@ watch(
         </div>
       </template>
 
-      <!-- Standard Artwork Detail (for illust, manga, ugoira) -->
+      <!-- Standard Artwork Detail (for illust, manga, gif) -->
       <ArtworkDetailCard
         v-else-if="displayArtwork"
         :artwork="displayArtwork"

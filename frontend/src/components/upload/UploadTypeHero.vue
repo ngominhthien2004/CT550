@@ -16,7 +16,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isUgoira: {
+  isGif: {
     type: Boolean,
     default: false,
   },
@@ -62,7 +62,7 @@ function handleCoverFilesChange(event) {
 
     <nav class="type-tabs" aria-label="Upload type tabs">
       <router-link to="/upload/illust" class="type-tab" :class="{ active: props.currentKind === 'illust' }">Illustrations</router-link>
-      <router-link to="/upload/ugoira" class="type-tab" :class="{ active: props.currentKind === 'ugoira' }">Ugoira (animation)</router-link>
+      <router-link to="/upload/gif" class="type-tab" :class="{ active: props.currentKind === 'gif' }">GIF (animation)</router-link>
       <router-link to="/upload/manga" class="type-tab" :class="{ active: props.currentKind === 'manga' }">Manga</router-link>
       <router-link to="/upload/novel" class="type-tab" :class="{ active: props.currentKind === 'novel' }">Novels</router-link>
     </nav>

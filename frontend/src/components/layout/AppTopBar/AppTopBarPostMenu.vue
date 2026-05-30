@@ -7,7 +7,7 @@
     <div class="post-menu-list" role="menu" aria-label="Post type menu">
       <router-link to="/upload/illust" class="post-menu-item" role="menuitem" aria-label="Post illustration">Illustration</router-link>
       <router-link to="/upload/manga" class="post-menu-item" role="menuitem" aria-label="Post manga">Manga</router-link>
-      <router-link to="/upload/ugoira" class="post-menu-item" role="menuitem" aria-label="Post ugoira animation">Ugoira</router-link>
+      <router-link to="/upload/gif" class="post-menu-item" role="menuitem" aria-label="Post GIF animation">GIF</router-link>
       <router-link to="/upload/novel" class="post-menu-item" role="menuitem" aria-label="Post novel">Novel</router-link>
     </div>
   </details>

@@ -52,7 +52,7 @@ export const useArtworkStore = defineStore('artwork', {
         if (payload.description) formData.append('description', payload.description)
         if (payload.type) formData.append('type', payload.type)
         if (payload.ageRating) formData.append('ageRating', payload.ageRating)
-        if (payload.ugoiraNotes) formData.append('ugoiraNotes', payload.ugoiraNotes)
+        if (payload.gifNotes) formData.append('gifNotes', payload.gifNotes)
         if (payload.novelContent) formData.append('novelContent', payload.novelContent)
         if (payload.novelFormat) formData.append('novelFormat', payload.novelFormat)
         if (payload.novelSeriesName) formData.append('novelSeriesName', payload.novelSeriesName)

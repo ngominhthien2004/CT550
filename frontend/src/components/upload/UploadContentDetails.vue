@@ -8,7 +8,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isUgoira: {
+  isGif: {
     type: Boolean,
     default: false,
   },
@@ -80,19 +80,19 @@ const props = defineProps({
       </div>
     </div>
 
-    <!-- Ugoira Notes Card -->
-    <div v-if="props.isUgoira" class="additional-settings-card">
+    <!-- GIF Notes Card -->
+    <div v-if="props.isGif" class="additional-settings-card">
       <div class="row-left">
         <span class="placeholder-badge"></span>
-        <label for="ugoira-notes" class="row-label">Ugoira notes</label>
+        <label for="gif-notes" class="row-label">GIF notes</label>
       </div>
       <div class="row-center">
         <textarea
-          id="ugoira-notes"
-          v-model="props.form.ugoiraNotes"
+          id="gif-notes"
+          v-model="props.form.gifNotes"
           class="form-control custom-textarea"
           rows="3"
-          placeholder="Playback notes, frame timing notes, or loop info."
+          placeholder="Playback notes or loop info."
         ></textarea>
       </div>
     </div>

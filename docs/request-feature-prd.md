@@ -4,7 +4,7 @@
 
 ### Summary
 
-`Request` is a commission-style workflow that lets fans pay creators to produce a work such as illustration, manga, ugoira, or novel content. The platform holds the payment in escrow while the creator decides whether to accept. Co-request is intentionally excluded.
+`Request` is a commission-style workflow that lets fans pay creators to produce a work such as illustration, manga, gif, or novel content. The platform holds the payment in escrow while the creator decides whether to accept. Co-request is intentionally excluded.
 
 ### Goals
 
@@ -72,7 +72,7 @@ flowchart TD
 - `creator`: User reference.
 - `title`, `tier`: plan naming.
 - `targetPrice`, `currency`.
-- `acceptedWorkTypes`: `illust | manga | ugoira | novel`.
+- `acceptedWorkTypes`: `illust | manga | gif | novel`.
 - `estimatedDays`: 14 to 60.
 - `maxOpenRequests`: capacity cap.
 - `acceptedAgeRatings`: `all | r-18 | r-18g`.

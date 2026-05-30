@@ -13,11 +13,15 @@ const {
 const { protect, admin } = require('../middlewares/auth.middleware');
 const { getMaxUploadFileSizeBytes } = require('../config/env');
 
-const ALLOWED_ARTWORK_TYPES = new Set(['illust', 'manga', 'ugoira', 'novel']);
+const ALLOWED_ARTWORK_TYPES = new Set(['illust', 'manga', 'gif', 'novel']);
 
-// Accepted image formats
+// Accepted image formats (non-animated posts)
 const IMAGE_EXTNAMES = /\.(jpg|jpeg|png|webp|gif)$/i;
 const IMAGE_MIMETYPES = /^image\/(jpeg|png|webp|gif)$/;
+
+// GIF-specific checks for animated posts
+const GIF_EXTNAME = /.gif$/i;
+const GIF_MIMETYPE = /^image\/gif$/i;
 
 function resolveUploadDirectory(req) {
     const userId = req.user?._id?.toString() || 'unknown';
@@ -47,9 +51,24 @@ const storage = multer.diskStorage({
 
 function checkFileType(req, file, cb) {
     const extname = path.extname(file.originalname).toLowerCase();
+    const rawType = (req.body?.type || '').toString().toLowerCase();
 
+    // If the artwork is declared as a GIF post, only accept .gif/mime image/gif
+    if (rawType === 'gif') {
+        if (GIF_EXTNAME.test(extname) && GIF_MIMETYPE.test(file.mimetype)) {
+            return cb(null, true);
+        }
+        return cb(new Error('GIF uploads required for GIF posts. Please upload .gif files (image/gif).'));
+    }
+
+    // For non-GIF artwork types, accept standard image formats only (reject archives like .zip)
     if (IMAGE_EXTNAMES.test(extname) && IMAGE_MIMETYPES.test(file.mimetype)) {
         return cb(null, true);
+    }
+
+    // Explicitly reject common archive types to avoid accepting Pixiv-style ugoira archives
+    if (extname === '.zip' || file.mimetype === 'application/zip') {
+        return cb(new Error('ZIP archives are not accepted. Please upload GIFs for animated posts or standard images for still posts.'));
     }
 
     cb(new Error('Images only! Accepted formats: jpg, jpeg, png, webp, gif'));

@@ -86,7 +86,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/upload/:kind(illust|manga|ugoira|novel)',
+    path: '/upload/:kind(illust|manga|gif|novel)',
     name: 'upload-kind',
     component: UploadArtworkView,
     meta: { requiresAuth: true },

@@ -21,7 +21,7 @@ const typeLabelMap = {
   illust: 'Illustration',
   manga: 'Manga',
   novel: 'Novel',
-  ugoira: 'Ugoira',
+  gif: 'GIF',
 }
 
 const typeTabs = computed(() => {

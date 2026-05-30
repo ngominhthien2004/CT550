@@ -87,7 +87,7 @@ const typeLabelMap = {
   illust: 'Illustration',
   manga: 'Manga',
   novel: 'Novel',
-  ugoira: 'Ugoira',
+  gif: 'GIF',
 }
 
 function buildTypeTabs(items, getType) {

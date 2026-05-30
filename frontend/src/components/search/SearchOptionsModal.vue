@@ -111,7 +111,7 @@ watch(
               <select v-model="formState.type">
                 <option value="illust">Illustration</option>
                 <option value="manga">Manga</option>
-                <option value="ugoira">Ugoira</option>
+                <option value="gif">GIF</option>
                 <option value="novel">Novel</option>
               </select>
             </label>
