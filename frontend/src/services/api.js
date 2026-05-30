@@ -197,4 +197,14 @@ export const createQrPaymentIntent = (payload) => paymentApi.createQrIntent(payl
 export const getMyPayments = (params = {}) => paymentApi.getMine(params)
 export const getCreatorBalance = () => paymentApi.getBalance()
 
+// Chapter APIs
+export const getChapters = (artworkId) => api.get(`/artworks/${artworkId}/chapters`)
+export const getChapter = (artworkId, chapterId) => api.get(`/artworks/${artworkId}/chapters/${chapterId}`)
+export const createChapter = (artworkId, data) => api.post(`/artworks/${artworkId}/chapters`, data)
+export const deleteChapter = (artworkId, chapterId) => api.delete(`/artworks/${artworkId}/chapters/${chapterId}`)
+
+// Reading Progress APIs
+export const getReadingProgress = (artworkId) => api.get(`/artworks/${artworkId}/reading-progress`)
+export const saveReadingProgress = (artworkId, data) => api.post(`/artworks/${artworkId}/reading-progress`, data)
+
 export default api

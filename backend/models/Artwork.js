@@ -60,8 +60,51 @@ const artworkSchema = mongoose.Schema({
         trim: true,
         default: ''
     },
+    // Novel-specific fields
+    novelContent: {
+        type: String,
+        maxlength: 500000,
+        trim: true,
+        default: '',
+    },
+    novelFormat: {
+        type: String,
+        enum: ['oneshot', 'series'],
+        default: 'oneshot',
+    },
+    novelSeriesName: {
+        type: String,
+        trim: true,
+        default: '',
+    },
+    chapterCount: {
+        type: Number,
+        default: 1,
+    },
+    // Real wordCount field (stored, filterable, sortable)
+    wordCount: {
+        type: Number,
+        default: 0,
+    },
 }, {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+});
+
+// Pre-save hook: calculate wordCount from novelContent
+artworkSchema.pre('save', function () {
+    if (this.type === 'novel' && this.novelContent) {
+        const text = this.novelContent.trim();
+        this.wordCount = text ? text.split(/\s+/).filter(Boolean).length : 0;
+    }
+});
+
+// Virtual: estimated reading time based on word count
+artworkSchema.virtual('readingTime').get(function () {
+    const words = this.wordCount || 0;
+    if (words === 0) return 0;
+    return Math.ceil(words / 200);
 });
 
 const Artwork = mongoose.model('Artwork', artworkSchema);

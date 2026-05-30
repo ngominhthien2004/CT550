@@ -362,6 +362,9 @@ async function submitArtwork() {
       tags: form.tags,
       images: isNovel.value ? form.coverImages : form.images,
       ugoiraNotes: isUgoira.value ? form.ugoiraNotes : undefined,
+      novelContent: isNovel.value ? form.novelText.trim() : undefined,
+      novelFormat: isNovel.value ? form.novelFormat : undefined,
+      novelSeriesName: isNovel.value ? form.novelSeriesName : undefined,
     })
 
     const responseAiDetection = createdArtwork?.aiDetection

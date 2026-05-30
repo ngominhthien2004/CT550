@@ -30,6 +30,10 @@ const liveWorks = ref([])
 const liveTags = ref([])
 const recommendedUsers = ref([])
 
+// Novel-specific filter state
+const novelFormatFilter = ref('all')
+const novelSortBy = ref('newest')
+
 const authStore = useAuthStore()
 const followStore = useFollowStore()
 
@@ -47,9 +51,23 @@ const normalizedWorks = computed(() =>
 
 const spotlightWorks = computed(() => normalizedWorks.value.slice(0, 12))
 const feedWorks = computed(() => normalizedWorks.value.slice(12, 26))
+const isNovelPage = computed(() => props.workType === 'novel')
 
 function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
+}
+
+function buildFilterParams() {
+  const params = { limit: 48, type: props.workType }
+  if (props.workType !== 'novel') return params
+
+  if (novelFormatFilter.value !== 'all') {
+    params.novelFormat = novelFormatFilter.value
+  }
+  if (novelSortBy.value !== 'newest') {
+    params.sortBy = novelSortBy.value
+  }
+  return params
 }
 
 function normalizeRecommendedUsers(artworks) {
@@ -107,7 +125,8 @@ function normalizeTags(artworks) {
 async function loadTypedArtworks() {
   isLoading.value = true
   try {
-    const { data } = await getArtworks({ limit: 48, type: props.workType })
+    const params = buildFilterParams()
+    const { data } = await getArtworks(params)
     const source = Array.isArray(data) ? data : []
     const normalizedWorks = source.filter((item) => item?.type === props.workType)
 
@@ -144,6 +163,15 @@ watch(
   },
   { immediate: true },
 )
+
+watch(
+  [novelFormatFilter, novelSortBy],
+  async () => {
+    if (props.workType === 'novel') {
+      await loadTypedArtworks()
+    }
+  },
+)
 </script>
 
 <template>
@@ -151,6 +179,38 @@ watch(
     <section class="typed-home-page">
       <div class="typed-home-main-column">
         <HomeTabs />
+
+        <!-- Novel-specific filter bar -->
+        <div v-if="isNovelPage" class="novel-filter-bar">
+          <div class="novel-filter-tabs">
+            <button
+              type="button"
+              class="nf-tab"
+              :class="{ 'is-active': novelFormatFilter === 'all' }"
+              @click="novelFormatFilter = 'all'"
+            >All</button>
+            <button
+              type="button"
+              class="nf-tab"
+              :class="{ 'is-active': novelFormatFilter === 'oneshot' }"
+              @click="novelFormatFilter = 'oneshot'"
+            >One-shot</button>
+            <button
+              type="button"
+              class="nf-tab"
+              :class="{ 'is-active': novelFormatFilter === 'series' }"
+              @click="novelFormatFilter = 'series'"
+            >Series</button>
+          </div>
+          <label class="nf-sort">
+            <select v-model="novelSortBy">
+              <option value="newest">Newest</option>
+              <option value="views">Most viewed</option>
+              <option value="likes">Most liked</option>
+            </select>
+          </label>
+        </div>
+
         <HomeTagStrip :tags="liveTags" />
         <HomeHeroBanner :slide="heroSlide" />
         <p v-if="isLoading" class="type-loading">Loading {{ pageTitle.toLowerCase() }}...</p>
@@ -189,6 +249,45 @@ watch(
   margin: 0;
   color: #54607b;
   font-weight: 600;
+}
+
+.novel-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.novel-filter-tabs {
+  display: inline-flex;
+  gap: 0.2rem;
+}
+
+.nf-tab {
+  border: none;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.nf-tab.is-active {
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.nf-sort select {
+  border: none;
+  background: #f8fafc;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-weight: 700;
+  color: #374151;
+  font-size: 0.82rem;
 }
 
 .typed-home-feed-layout {

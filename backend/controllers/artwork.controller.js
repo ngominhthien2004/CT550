@@ -1,4 +1,6 @@
 const Artwork = require('../models/Artwork');
+const Chapter = require('../models/Chapter');
+const ReadingProgress = require('../models/ReadingProgress');
 const Tag = require('../models/Tag');
 const { createNotification } = require('../utils/notification');
 const { detectAIWithHuggingFace } = require('../services/huggingface.service');
@@ -43,7 +45,7 @@ function hasTagId(tagIds, tagId) {
 // Create Artwork
 const createArtwork = async (req, res, next) => {
     try {
-        const { title, description, type, ageRating, tags, ugoiraNotes } = req.body;
+        const { title, description, type, ageRating, tags, ugoiraNotes, novelContent, novelFormat, novelSeriesName } = req.body;
 
         if (!req.files || req.files.length === 0) {
             res.status(400);
@@ -150,7 +152,7 @@ const createArtwork = async (req, res, next) => {
             aiDetection.error = 'Primary image unavailable for detection';
         }
 
-        const artwork = await Artwork.create({
+        const artworkData = {
             user: req.user._id,
             title,
             description,
@@ -159,7 +161,30 @@ const createArtwork = async (req, res, next) => {
             tags: tagIds,
             ageRating,
             ugoiraNotes: ugoiraNotes || '',
-        });
+        };
+
+        // Set novel-specific fields
+        if (artworkType === 'novel') {
+            artworkData.novelContent = novelContent || '';
+            artworkData.novelFormat = novelFormat || 'oneshot';
+            artworkData.novelSeriesName = novelSeriesName || '';
+            // For oneshot novels, sync description with novelContent for backward compatibility
+            if (novelFormat !== 'series') {
+                artworkData.description = artworkData.description || (novelContent || '').slice(0, 500);
+            }
+        }
+
+        const artwork = await Artwork.create(artworkData);
+
+        // Auto-create a Chapter for oneshot novels with content
+        if (artworkType === 'novel' && novelFormat !== 'series' && novelContent) {
+            await Chapter.create({
+                artwork: artwork._id,
+                title: title || 'Chapter 1',
+                content: novelContent,
+                chapterNumber: 1,
+            });
+        }
 
         await createNotification({
             userId: req.user._id,
@@ -180,7 +205,10 @@ const createArtwork = async (req, res, next) => {
 // Get All Artworks (with basic filtering)
 const getArtworks = async (req, res, next) => {
     try {
-        const { type, ageRating, user, tag, q, limit: rawLimit } = req.query;
+        const {
+            type, ageRating, user, tag, q, limit: rawLimit,
+            sortBy, novelFormat, minWords, maxWords,
+        } = req.query;
         const query = {};
         const parsedLimit = Number.parseInt(rawLimit, 10);
         const limit = Number.isNaN(parsedLimit) ? 48 : Math.min(Math.max(parsedLimit, 1), 200);
@@ -202,10 +230,44 @@ const getArtworks = async (req, res, next) => {
             }
         }
 
+        // Novel-specific filters (only apply when type is 'novel' or no type filter)
+        if (novelFormat && (!type || type === 'novel')) {
+            query.novelFormat = novelFormat === 'series' ? 'series' : 'oneshot';
+        }
+        if ((minWords || maxWords) && (!type || type === 'novel')) {
+            query.wordCount = {};
+            const minW = Number.parseInt(minWords, 10);
+            const maxW = Number.parseInt(maxWords, 10);
+            if (!Number.isNaN(minW)) query.wordCount.$gte = minW;
+            if (!Number.isNaN(maxW)) query.wordCount.$lte = maxW;
+        }
+
+        // Determine sort order
+        let sortOption = { createdAt: -1 };
+        if (sortBy) {
+            switch (sortBy) {
+                case 'views':
+                    sortOption = { viewCount: -1 };
+                    break;
+                case 'likes':
+                    sortOption = { likeCount: -1 };
+                    break;
+                case 'longest':
+                    sortOption = { wordCount: -1 };
+                    break;
+                case 'shortest':
+                    sortOption = { wordCount: 1 };
+                    break;
+                default:
+                    sortOption = { createdAt: -1 };
+            }
+        }
+
         const artworks = await Artwork.find(query)
+            .select('-novelContent')
             .populate('user', 'username displayName avatar')
             .populate('tags', 'name')
-            .sort({ createdAt: -1 })
+            .sort(sortOption)
             .limit(limit);
 
         res.json(artworks);
@@ -225,7 +287,18 @@ const getArtworkById = async (req, res, next) => {
             // Increment view count
             artwork.viewCount += 1;
             await artwork.save();
-            res.json(artwork);
+
+            // For novels, include chapter count from Chapter model
+            let chapters = [];
+            if (artwork.type === 'novel') {
+                chapters = await Chapter.find({ artwork: artwork._id })
+                    .sort({ chapterNumber: 1 })
+                    .select('title chapterNumber wordCount createdAt');
+            }
+
+            const result = artwork.toObject({ virtuals: true });
+            result.chapters = chapters;
+            res.json(result);
         } else {
             res.status(404);
             next(new Error('Artwork not found'));
@@ -326,10 +399,184 @@ const deleteArtwork = async (req, res, next) => {
     }
 };
 
+// Novel content update
+const updateNovelContent = async (req, res, next) => {
+    try {
+        const { novelContent, novelFormat, novelSeriesName } = req.body;
+        const artwork = await Artwork.findById(req.params.id);
+
+        if (!artwork) {
+            res.status(404);
+            return next(new Error('Artwork not found'));
+        }
+
+        if (artwork.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+            res.status(401);
+            return next(new Error('Not authorized'));
+        }
+
+        if (artwork.type !== 'novel') {
+            res.status(400);
+            return next(new Error('This artwork is not a novel'));
+        }
+
+        artwork.novelContent = novelContent || '';
+        artwork.novelFormat = novelFormat || artwork.novelFormat;
+        artwork.novelSeriesName = novelSeriesName || artwork.novelSeriesName;
+
+        // Sync description for backward compatibility with oneshot novels
+        if (artwork.novelFormat !== 'series' && novelContent) {
+            artwork.description = novelContent.slice(0, 500);
+        }
+
+        await artwork.save();
+        res.json(artwork);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Chapter management
+const getChapters = async (req, res, next) => {
+    try {
+        const chapters = await Chapter.find({ artwork: req.params.id })
+            .sort({ chapterNumber: 1 })
+            .select('-content');
+        res.json(chapters);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getChapter = async (req, res, next) => {
+    try {
+        const chapter = await Chapter.findOne({
+            _id: req.params.chapterId,
+            artwork: req.params.id,
+        });
+        if (!chapter) {
+            res.status(404);
+            return next(new Error('Chapter not found'));
+        }
+        res.json(chapter);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const createChapter = async (req, res, next) => {
+    try {
+        const artwork = await Artwork.findById(req.params.id);
+        if (!artwork) {
+            res.status(404);
+            return next(new Error('Artwork not found'));
+        }
+        if (artwork.user.toString() !== req.user._id.toString()) {
+            res.status(401);
+            return next(new Error('Not authorized'));
+        }
+
+        const { title, content } = req.body;
+
+        // Get next chapter number
+        const lastChapter = await Chapter.findOne({ artwork: req.params.id })
+            .sort({ chapterNumber: -1 });
+        const chapterNumber = lastChapter ? lastChapter.chapterNumber + 1 : 1;
+
+        const chapter = await Chapter.create({
+            artwork: req.params.id,
+            title,
+            content,
+            chapterNumber,
+        });
+
+        // Update chapter count on artwork
+        artwork.chapterCount = chapterNumber;
+        await artwork.save();
+
+        res.status(201).json(chapter);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const deleteChapter = async (req, res, next) => {
+    try {
+        const chapter = await Chapter.findOne({
+            _id: req.params.chapterId,
+            artwork: req.params.id,
+        });
+        if (!chapter) {
+            res.status(404);
+            return next(new Error('Chapter not found'));
+        }
+
+        const artwork = await Artwork.findById(req.params.id);
+        if (artwork.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+            res.status(401);
+            return next(new Error('Not authorized'));
+        }
+
+        await chapter.deleteOne();
+
+        // Recalculate chapter count
+        const count = await Chapter.countDocuments({ artwork: req.params.id });
+        artwork.chapterCount = count;
+        await artwork.save();
+
+        res.json({ message: 'Chapter deleted' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Reading progress
+const saveReadingProgress = async (req, res, next) => {
+    try {
+        const { chapter, progressPercent, scrollPosition } = req.body;
+
+        const progress = await ReadingProgress.findOneAndUpdate(
+            { user: req.user._id, artwork: req.params.id },
+            {
+                user: req.user._id,
+                artwork: req.params.id,
+                chapter: chapter || null,
+                progressPercent: progressPercent || 0,
+                scrollPosition: scrollPosition || 0,
+                lastReadAt: new Date(),
+            },
+            { upsert: true, new: true }
+        );
+
+        res.json(progress);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getReadingProgress = async (req, res, next) => {
+    try {
+        const progress = await ReadingProgress.findOne({
+            user: req.user._id,
+            artwork: req.params.id,
+        });
+        res.json(progress || { progressPercent: 0 });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createArtwork,
     getArtworks,
     getArtworkById,
     getAdminArtworks,
-    deleteArtwork
+    deleteArtwork,
+    updateNovelContent,
+    getChapters,
+    getChapter,
+    createChapter,
+    deleteChapter,
+    saveReadingProgress,
+    getReadingProgress,
 };

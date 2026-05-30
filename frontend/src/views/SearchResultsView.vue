@@ -33,6 +33,12 @@ const blockSubmittingId = ref('')
 const sortMode = ref(typeof route.query.order === 'string' ? route.query.order : 'newest')
 const showTags = ref(true)
 const isSearchOptionsOpen = ref(false)
+
+// Novel-specific filters
+const novelSortBy = ref('newest')
+const novelFormatFilter = ref('all')
+const novelMinWords = ref('')
+const novelMaxWords = ref('')
 const searchOptionsDraft = ref({
   includeAll: '',
   includeAny: '',
@@ -661,6 +667,57 @@ watch(
         <button type="button" class="filter-chip" :class="{ 'is-active': ageFilter === 'r18' }" @click="setAgeFilter('r18')">R-18</button>
         <button type="button" class="filter-chip" :class="{ 'is-active': ageFilter === 'all' }" @click="setAgeFilter('all')">All</button>
         <span class="include-note">Tag match mode: {{ currentSearchOptions.target === 'all' ? 'all fields' : currentSearchOptions.target }}</span>
+
+        <!-- Novel-specific filter controls -->
+        <template v-if="isNovelSearch">
+          <span class="filter-separator" aria-hidden="true"></span>
+          <label class="novel-sort-select">
+            <select v-model="novelSortBy">
+              <option value="newest">Newest</option>
+              <option value="views">Most viewed</option>
+              <option value="likes">Most liked</option>
+              <option value="longest">Longest</option>
+              <option value="shortest">Shortest</option>
+            </select>
+          </label>
+          <div class="novel-format-tabs">
+            <button
+              type="button"
+              class="format-chip"
+              :class="{ 'is-active': novelFormatFilter === 'all' }"
+              @click="novelFormatFilter = 'all'"
+            >All</button>
+            <button
+              type="button"
+              class="format-chip"
+              :class="{ 'is-active': novelFormatFilter === 'oneshot' }"
+              @click="novelFormatFilter = 'oneshot'"
+            >One-shot</button>
+            <button
+              type="button"
+              class="format-chip"
+              :class="{ 'is-active': novelFormatFilter === 'series' }"
+              @click="novelFormatFilter = 'series'"
+            >Series</button>
+          </div>
+          <label class="word-range-label">
+            <input
+              v-model="novelMinWords"
+              type="number"
+              class="word-range-input"
+              placeholder="Min words"
+              min="0"
+            />
+            <span class="word-range-sep">–</span>
+            <input
+              v-model="novelMaxWords"
+              type="number"
+              class="word-range-input"
+              placeholder="Max words"
+              min="0"
+            />
+          </label>
+        </template>
       </div>
 
       <template v-if="isUserSearch">
@@ -746,16 +803,30 @@ watch(
             <span>{{ visibleItems.length.toLocaleString() }} entries</span>
           </div>
 
-          <article v-for="item in visibleItems" :key="item._id" class="novel-card">
+          <article v-for="item in visibleItems" :key="item._id" class="novel-card" style="position:relative;">
             <router-link :to="`/artworks/${item._id}`" class="novel-cover">
               <img v-if="item.image" :src="item.image" :alt="item.title" loading="lazy" />
               <div v-else class="novel-cover-fallback">
                 <i class="fa-solid fa-book-open" aria-hidden="true"></i>
               </div>
+              <!-- Format badge -->
+              <span v-if="item.novelFormat === 'series'" class="novel-cover-badge">Series</span>
+              <span v-else class="novel-cover-badge">One-shot</span>
+              <!-- Word count badge -->
+              <span v-if="item.wordCount > 0" class="novel-word-badge">
+                <i class="fa-regular fa-file-lines" aria-hidden="true"></i>
+                {{ (item.wordCount || 0).toLocaleString() }}
+              </span>
             </router-link>
             <div class="novel-body">
-              <router-link :to="`/artworks/${item._id}`" class="novel-title">{{ item.title }}</router-link>
-              <p class="novel-excerpt">{{ item.description || 'No synopsis has been added for this novel yet.' }}</p>
+              <div class="novel-title-row">
+                <img v-if="item.user" :src="item.user?.avatar || item.user?.profileImage || item.user?.image || ''" alt="author avatar" class="novel-author-avatar" />
+                <router-link :to="`/artworks/${item._id}`" class="novel-title">{{ item.title }}</router-link>
+              </div>
+              <div class="novel-author-row">
+                <router-link :to="`/account?user=${item.user?._id}`" class="novel-author">{{ item.user?.displayName || item.user?.username || 'Unknown writer' }}</router-link>
+              </div>
+              <p class="novel-excerpt">{{ item.description ? item.description.slice(0, 150) + (item.description.length > 150 ? '...' : '') : 'No synopsis has been added for this novel yet.' }}</p>
               <div class="novel-tags" v-if="item.tags?.length">
                 <button
                   v-for="tag in item.tags.slice(0, 6)"
@@ -767,11 +838,31 @@ watch(
                 </button>
               </div>
               <footer class="novel-meta">
-                <span>{{ item.user?.displayName || item.user?.username || 'Unknown writer' }}</span>
-                <span>{{ (item.viewCount || 0).toLocaleString() }} views</span>
+                <span class="novel-meta-stat">
+                  <i class="fa-regular fa-eye" aria-hidden="true"></i>
+                  {{ (item.viewCount || 0).toLocaleString() }}
+                </span>
+                <span class="novel-meta-stat">
+                  <i class="fa-regular fa-heart" aria-hidden="true"></i>
+                  {{ (item.likeCount || 0).toLocaleString() }}
+                </span>
+                <span class="novel-meta-stat">
+                  <i class="fa-regular fa-bookmark" aria-hidden="true"></i>
+                  {{ (item.bookmarkCount || 0).toLocaleString() }}
+                </span>
+                <span v-if="item.wordCount > 0" class="novel-meta-stat">
+                  <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                  {{ Math.ceil((item.wordCount || 0) / 200) }} min read
+                </span>
+                <span v-if="item.novelFormat === 'series'" class="novel-meta-stat">
+                  {{ item.chapterCount || 1 }} {{ (item.chapterCount || 1) > 1 ? 'chapters' : 'chapter' }}
+                </span>
                 <span>{{ new Date(item.createdAt || Date.now()).toLocaleDateString() }}</span>
               </footer>
             </div>
+            <button type="button" class="novel-bookmark-btn" :aria-label="`bookmark-${item._id}`">
+              <i class="fa-regular fa-bookmark"></i>
+            </button>
           </article>
         </div>
       </template>
@@ -1085,6 +1176,70 @@ watch(
 .include-note {
   color: #6b7280;
   font-size: 0.8rem;
+}
+
+.filter-separator {
+  display: inline-block;
+  width: 1px;
+  height: 1.2rem;
+  background: #d1d5db;
+  margin: 0 0.35rem;
+}
+
+.novel-sort-select select {
+  border: none;
+  background: #f8fafc;
+  border-radius: 999px;
+  padding: 0.35rem 0.62rem;
+  font-weight: 700;
+  color: #374151;
+  font-size: 0.78rem;
+}
+
+.novel-format-tabs {
+  display: inline-flex;
+  gap: 0.2rem;
+}
+
+.format-chip {
+  border: none;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 0.78rem;
+  padding: 0.3rem 0.58rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.format-chip.is-active {
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.word-range-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.word-range-input {
+  width: 72px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.28rem 0.45rem;
+  font-size: 0.78rem;
+  color: #374151;
+  background: #fff;
+}
+
+.word-range-input::placeholder {
+  color: #9ca3af;
+}
+
+.word-range-sep {
+  color: #9ca3af;
+  font-size: 0.82rem;
 }
 
 .state-note {
@@ -1496,19 +1651,22 @@ watch(
 
 .novel-card {
   display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
-  gap: 0.9rem;
+  grid-template-columns: 80px minmax(0, 1fr);
+  gap: 0.6rem;
   border-bottom: 1px solid #edf2f7;
-  padding: 0.25rem 0 0.95rem;
+  padding: 0.3rem 0 0.8rem;
+  align-items: start;
 }
 
 .novel-cover {
   display: block;
-  aspect-ratio: 3 / 4;
-  border-radius: 6px;
+  width: 80px;
+  height: 112px;
+  border-radius: 8px;
   overflow: hidden;
   background: #eef2f7;
   text-decoration: none;
+  position: relative;
 }
 
 .novel-cover img {
@@ -1522,25 +1680,27 @@ watch(
   display: grid;
   place-items: center;
   color: #94a3b8;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   background:
-    linear-gradient(135deg, rgba(22, 149, 240, 0.1), rgba(148, 185, 109, 0.14)),
+    linear-gradient(135deg, rgba(22, 149, 240, 0.06), rgba(148, 185, 109, 0.08)),
     #f8fafc;
 }
 
 .novel-body {
   display: grid;
   align-content: start;
-  gap: 0.35rem;
+  gap: 0.25rem;
   min-width: 0;
 }
 
 .novel-title {
   color: #111827;
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 800;
-  line-height: 1.35;
+  line-height: 1.2;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .novel-title:hover {
@@ -1550,12 +1710,61 @@ watch(
 .novel-excerpt {
   margin: 0;
   color: #4b5563;
-  font-size: 0.86rem;
-  line-height: 1.55;
+  font-size: 0.82rem;
+  line-height: 1.35;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.novel-title-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.novel-author-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  flex: 0 0 28px;
+}
+
+.novel-author-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.novel-bookmark-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #111827;
+}
+
+.novel-cover-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1.2;
+  pointer-events: none;
 }
 
 .novel-tags {
@@ -1581,6 +1790,66 @@ watch(
   color: #94a3b8;
   font-size: 0.74rem;
   font-weight: 700;
+}
+
+.novel-meta-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+}
+
+.novel-meta-stat i {
+  font-size: 0.7rem;
+}
+
+.novel-author {
+  color: #2563eb;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.novel-author:hover {
+  text-decoration: underline;
+}
+
+.novel-cover-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.58);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1.3;
+  pointer-events: none;
+}
+
+.novel-word-badge {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.58);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1.3;
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.novel-word-badge i {
+  font-size: 0.6rem;
+}
+
+.novel-cover {
+  position: relative;
 }
 
 .result-grid-wrap {

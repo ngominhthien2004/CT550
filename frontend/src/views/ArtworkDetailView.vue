@@ -2,9 +2,14 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ArtworkDetailCard from '../components/artwork/ArtworkDetailCard.vue'
+import ArtworkDetailSidebar from '../components/artwork/detail/ArtworkDetailSidebar.vue'
+import ArtworkDetailCommentsCard from '../components/artwork/detail/ArtworkDetailCommentsCard.vue'
+import ArtworkDetailRelatedGrid from '../components/artwork/detail/ArtworkDetailRelatedGrid.vue'
+import NovelReader from '../components/novel/NovelReader.vue'
+import ChapterManager from '../components/novel/ChapterManager.vue'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { navItems } from '../constants/navigation'
-import { getArtworks } from '../services/api'
+import { getArtworks, getChapters, getChapter, getReadingProgress, saveReadingProgress } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useArtworkStore } from '../stores/artwork.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
@@ -29,6 +34,10 @@ const likeError = ref('')
 const followError = ref('')
 const artistFollowersCount = ref(0)
 const artistFollowingCount = ref(0)
+const chapters = ref([])
+const novelContent = ref('')
+const currentChapterId = ref(null)
+const readingProgress = ref(0)
 
 const artworkId = computed(() => route.params.id)
 const artwork = computed(() => artworkStore.detail)
@@ -67,6 +76,22 @@ const isOwnArtist = computed(() => {
     return false
   }
   return artistId.value === authStore.user._id
+})
+
+const sameAuthorWorks = computed(() => {
+  if (!artistId.value) {
+    return []
+  }
+  if (!Array.isArray(relatedWorks.value)) {
+    return []
+  }
+  return relatedWorks.value
+    .filter((item) => item?.user?._id === artistId.value)
+    .slice(0, 6)
+})
+
+const artistAvatar = computed(() => {
+  return artwork.value?.user?.avatar || 'https://s.pximg.net/common/images/no_profile.png'
 })
 
 function syncBookmarkCountFromArtwork() {
@@ -150,6 +175,7 @@ async function loadArtwork() {
     await artworkStore.fetchArtworkDetail(artworkId.value)
     syncBookmarkCountFromArtwork()
     syncLikeCountFromArtwork()
+    await loadNovelData()
     await loadBookmarkStatus()
     await loadLikeStatus()
     await loadFollowStatus()
@@ -171,6 +197,59 @@ async function loadRelatedWorks() {
       .slice(0, 24)
   } catch (_error) {
     relatedWorks.value = []
+  }
+}
+
+async function loadNovelData() {
+  if (artwork.value?.type !== 'novel') return
+
+  // Load chapters if series
+  if (artwork.value?.novelFormat === 'series') {
+    try {
+      const { data } = await getChapters(artworkId.value)
+      chapters.value = Array.isArray(data) ? data : []
+    } catch (_err) {
+      chapters.value = []
+    }
+  }
+
+  // Get novel content
+  novelContent.value = artwork.value?.novelContent || artwork.value?.description || ''
+
+  // Load reading progress (if authenticated)
+  if (authStore.isAuthenticated) {
+    try {
+      const { data } = await getReadingProgress(artworkId.value)
+      if (data?.progressPercent) {
+        readingProgress.value = data.progressPercent
+      }
+    } catch (_err) {
+      // Ignore - not critical
+    }
+  }
+}
+
+async function handleSelectChapter(chapterId) {
+  currentChapterId.value = chapterId
+  try {
+    const { data } = await getChapter(artworkId.value, chapterId)
+    if (data?.content) {
+      novelContent.value = data.content
+    }
+  } catch (_err) {
+    // Fallback
+  }
+}
+
+async function handleProgressChange({ progressPercent }) {
+  if (!authStore.isAuthenticated) return
+  try {
+    await saveReadingProgress(artworkId.value, {
+      progressPercent,
+      chapter: currentChapterId.value || null,
+    })
+  } catch (_err) {
+    // Non-critical
   }
 }
 
@@ -317,6 +396,88 @@ watch(
       <p v-if="artworkStore.loading" class="text-secondary mb-0">Loading artwork detail...</p>
       <p v-else-if="artworkStore.error" class="text-danger mb-0">{{ artworkStore.error }}</p>
 
+      <!-- Novel Reader -->
+      <template v-else-if="displayArtwork && artwork?.type === 'novel'">
+        <div class="novel-detail-layout d-grid gap-4 mx-auto">
+          <div class="detail-top">
+            <div class="left-col">
+              <!-- Chapter Manager (only for author of series novels) -->
+              <ChapterManager
+                v-if="isOwnArtist && artwork.novelFormat === 'series'"
+                :artwork-id="artwork._id"
+                :chapters="chapters"
+                :is-own-artwork="isOwnArtist"
+                @chapters-updated="loadNovelData"
+              />
+
+              <NovelReader
+                :artwork="displayArtwork"
+                :novel-content="novelContent"
+                :chapters="chapters"
+                :word-count="displayArtwork.wordCount || 0"
+                :reading-time="displayArtwork.readingTime || 0"
+                :is-liked="isLiked"
+                :is-bookmarked="isBookmarked"
+                :like-loading="likeLoading"
+                :bookmark-loading="bookmarkLoading"
+                @progress-change="handleProgressChange"
+                @select-chapter="handleSelectChapter"
+                @toggle-like="handleLikeToggle"
+                @toggle-bookmark="handleBookmarkToggle"
+              />
+
+              <!-- Pixiv-like In-Content Author Card -->
+              <div v-if="artwork?.user" class="in-content-author-card">
+                <div class="author-card-header">
+                  <img 
+                    :src="artistAvatar" 
+                    :alt="displayAuthor" 
+                    class="author-card-avatar"
+                    @error="(e) => e.target.src = 'https://s.pximg.net/common/images/no_profile.png'"
+                  />
+                  <div class="author-card-meta">
+                    <router-link :to="`/account?user=${artistId}`" class="author-card-name">
+                      {{ displayAuthor }}
+                    </router-link>
+                    <p class="author-card-stats">
+                      Followers {{ artistFollowersCount }} · Following {{ artistFollowingCount }}
+                    </p>
+                  </div>
+                  <button
+                    v-if="!isOwnArtist"
+                    type="button"
+                    class="btn btn-sm author-card-follow-btn"
+                    :class="isFollowing ? 'btn-outline-secondary' : 'btn-primary'"
+                    :disabled="followLoading"
+                    @click="handleFollowToggle"
+                  >
+                    {{ isFollowing ? 'Following' : 'Follow' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <ArtworkDetailSidebar
+              :display-author="displayAuthor"
+              :artist-id="artistId"
+              :artist-avatar="artistAvatar"
+              :is-own-artist="isOwnArtist"
+              :is-following="isFollowing"
+              :follow-loading="followLoading"
+              :follow-error="followError"
+              :artist-followers-count="artistFollowersCount"
+              :artist-following-count="artistFollowingCount"
+              :same-author-works="sameAuthorWorks"
+              @toggle-follow="handleFollowToggle"
+            />
+          </div>
+          <section class="below-shell d-grid gap-3 mt-4">
+            <ArtworkDetailCommentsCard :artwork-id="artwork._id" />
+            <ArtworkDetailRelatedGrid :related-works="relatedWorks" />
+          </section>
+        </div>
+      </template>
+
+      <!-- Standard Artwork Detail (for illust, manga, ugoira) -->
       <ArtworkDetailCard
         v-else-if="displayArtwork"
         :artwork="displayArtwork"
@@ -347,5 +508,108 @@ watch(
 <style scoped>
 .detail-page-content {
   width: 100%;
+  background-color: #f4f6f9; /* Premium soft background */
+  padding: 1.5rem 0 3rem;
+  min-height: 100vh;
+}
+
+.novel-detail-layout {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0;
+}
+
+.novel-detail-layout .detail-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 2.5rem;
+  align-items: start;
+  position: relative;
+}
+
+.novel-detail-layout .left-col {
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.novel-detail-layout .below-shell {
+  margin-top: 1rem;
+}
+
+/* In-Content Author Card style */
+.in-content-author-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  margin-top: 1rem;
+}
+
+.author-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.author-card-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
+}
+
+.author-card-meta {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.author-card-name {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1f2937;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.author-card-name:hover {
+  color: #0096fa;
+}
+
+.author-card-stats {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.author-card-follow-btn {
+  border-radius: 20px;
+  padding: 0.4rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 1200px) {
+  .novel-detail-layout .detail-top {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 1000px) {
+  .novel-detail-layout .detail-top {
+    grid-template-columns: 1fr;
+  }
+  .novel-detail-layout {
+    padding: 0 1rem;
+  }
 }
 </style>

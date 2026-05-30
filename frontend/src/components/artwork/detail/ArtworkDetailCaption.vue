@@ -21,6 +21,17 @@ function formatNumber(value) {
 }
 
 const tagList = computed(() => (Array.isArray(artwork.value?.tags) ? artwork.value.tags : []))
+
+// Novel synopsis truncation
+const truncatedDescription = computed(() => {
+  const desc = artwork.value?.description || ''
+  if (desc.length > 200) {
+    return desc.substring(0, 200)
+  }
+  return desc
+})
+
+const isDescriptionLong = computed(() => (artwork.value?.description || '').length > 200)
 </script>
 
 <template>
@@ -68,7 +79,14 @@ const tagList = computed(() => (Array.isArray(artwork.value?.tags) ? artwork.val
     <p v-if="uploadedAtLabel" class="text-secondary small mb-0">{{ uploadedAtLabel }}</p>
     <p class="text-secondary small mb-0">{{ artwork.type }} · {{ artwork.ageRating }}</p>
 
-    <p v-if="artwork.description" class="description mb-0">{{ artwork.description }}</p>
+    <!-- Novel synopsis (truncated) -->
+    <template v-if="artwork.type === 'novel' && artwork.description">
+      <p class="description mb-0 novel-synopsis">
+        {{ truncatedDescription }}<span v-if="isDescriptionLong" class="read-more-link">... Read more</span>
+      </p>
+    </template>
+    <!-- Normal description for non-novels -->
+    <p v-else-if="artwork.description" class="description mb-0">{{ artwork.description }}</p>
 
     <p v-if="likeError" class="small text-danger mb-0">{{ likeError }}</p>
     <p v-if="bookmarkError" class="small text-danger mb-0">{{ bookmarkError }}</p>
@@ -144,5 +162,16 @@ const tagList = computed(() => (Array.isArray(artwork.value?.tags) ? artwork.val
 
 .stat-button.active {
   color: #f91880; /* Brand like accent */
+}
+
+.novel-synopsis {
+  position: relative;
+}
+
+.read-more-link {
+  color: #3b82f6;
+  font-weight: 500;
+  cursor: default;
+  white-space: nowrap;
 }
 </style>

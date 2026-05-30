@@ -3,7 +3,13 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { createArtwork, getArtworks, getArtworkById, getAdminArtworks, deleteArtwork } = require('../controllers/artwork.controller');
+const {
+    createArtwork, getArtworks, getArtworkById,
+    getAdminArtworks, deleteArtwork,
+    updateNovelContent,
+    getChapters, getChapter, createChapter, deleteChapter,
+    saveReadingProgress, getReadingProgress,
+} = require('../controllers/artwork.controller');
 const { protect, admin } = require('../middlewares/auth.middleware');
 const { getMaxUploadFileSizeBytes } = require('../config/env');
 
@@ -68,5 +74,23 @@ router.route('/admin/list')
 router.route('/:id')
     .get(getArtworkById)
     .delete(protect, deleteArtwork);
+
+// Novel content update
+router.route('/:id/novel-content')
+    .put(protect, updateNovelContent);
+
+// Chapter management
+router.route('/:id/chapters')
+    .get(getChapters)
+    .post(protect, createChapter);
+
+router.route('/:id/chapters/:chapterId')
+    .get(getChapter)
+    .delete(protect, deleteChapter);
+
+// Reading progress
+router.route('/:id/reading-progress')
+    .get(protect, getReadingProgress)
+    .post(protect, saveReadingProgress);
 
 module.exports = router;
