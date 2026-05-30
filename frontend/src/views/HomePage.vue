@@ -74,8 +74,10 @@ async function loadHomeArtworks() {
   try {
     const { data } = await getArtworks({ limit: 48 })
     if (Array.isArray(data) && data.length > 0) {
-      liveWorks.value = data
-      normalizeRecommendedUsers(data)
+      // Filter out novels — novels only show in the Novel tab
+      const filtered = data.filter(item => item?.type !== 'novel')
+      liveWorks.value = filtered
+      normalizeRecommendedUsers(filtered)
 
       if (authStore.isAuthenticated) {
         await Promise.all(

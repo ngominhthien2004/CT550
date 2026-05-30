@@ -96,6 +96,7 @@ const routes = [
   { path: '/users/:id/followers', name: 'followers', component: FollowUsersView },
   { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
   { path: '/admin', name: 'admin-management', component: AdminManagementView, meta: { requiresAuth: true, requiresAdmin: true } },
+  { path: '/novels/:id', name: 'novel-detail', component: ArtworkDetailView },
   { path: '/artworks/:id', name: 'artwork-detail', component: ArtworkDetailView },
   { path: '/artworks/:id/comments', name: 'artwork-comments', component: ArtworkCommentsView },
   { path: '/tags/:tagName', name: 'tag-detail', component: TagDetailView },

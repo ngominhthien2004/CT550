@@ -39,7 +39,7 @@ function shouldShowNovel(item) {
     <div v-else class="work-grid" :class="{ 'is-novel-grid': isNovelGrid }">
       <template v-for="work in works" :key="work._id || work.id">
         <div v-if="shouldShowNovel(work)" class="novel-card-wrapper">
-          <router-link :to="`/artworks/${work._id}`" class="novel-grid-cover">
+          <router-link :to="`/novels/${work._id}`" class="novel-grid-cover">
             <img v-if="work.image" :src="work.image" :alt="work.title" loading="lazy" />
             <div v-else class="novel-grid-fallback">
               <i class="fa-solid fa-book-open" aria-hidden="true"></i>
@@ -51,7 +51,7 @@ function shouldShowNovel(item) {
             </span>
           </router-link>
           <div class="novel-grid-meta">
-            <router-link :to="`/artworks/${work._id}`" class="novel-grid-title">{{ work.title }}</router-link>
+            <router-link :to="`/novels/${work._id}`" class="novel-grid-title">{{ work.title }}</router-link>
             <router-link
               :to="`/account?user=${work.user?._id}`"
               class="novel-grid-author"
