@@ -18,7 +18,7 @@ defineProps({
     </div>
 
     <p class="theme-note">Once you've completed the work, add the tag and post it!</p>
-    <button type="button" class="post-btn">Post your work</button>
+    <button type="button" class="action-pill action-pill--post">Post your work</button>
   </article>
 </template>
 
@@ -73,10 +73,9 @@ defineProps({
   color: #6b7280;
 }
 
-.post-btn {
+.action-pill--post {
   margin-top: 0.5rem;
   border: none;
-  border-radius: 999px;
   width: 100%;
   height: 30px;
   background: #f3f4f6;

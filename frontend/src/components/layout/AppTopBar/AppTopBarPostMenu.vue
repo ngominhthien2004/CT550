@@ -1,6 +1,6 @@
 <template>
   <details class="post-menu">
-    <summary class="post-btn" aria-label="Create new post" title="Create new post">
+    <summary class="action-pill action-pill--post" aria-label="Create new post" title="Create new post">
       Post
       <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
     </summary>
@@ -14,23 +14,8 @@
 </template>
 
 <style scoped>
-.post-btn {
-  list-style: none;
-  border: 1px solid #d5dbe3;
-  border-radius: 999px;
-  padding: 0.42rem 0.72rem;
-  background: #eef2f7;
-  color: #1f2937;
-  font-weight: 700;
-  font-size: 0.88rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.36rem;
-  cursor: pointer;
-}
-
-.post-btn::-webkit-details-marker {
-  display: none;
+.post-menu {
+  position: relative;
 }
 
 .post-menu {

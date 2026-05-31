@@ -1,0 +1,117 @@
+/* Shared button styles for the app - base styles and modifiers */
+.action-pill {
+  list-style: none;
+  border: 1px solid #d5dbe3;
+  border-radius: 999px;
+  padding: 0.42rem 0.72rem;
+    /* background and color intentionally left to modifiers or component variants
+      so Bootstrap color utilities (e.g. .btn-primary) can take precedence */
+  font-weight: 700;
+  font-size: 0.88rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  min-width: 48px;
+}
+
+/* Ensure Bootstrap .btn + action-pill get the pill shape */
+.btn.action-pill {
+  border-radius: 999px;
+  padding: 0.42rem 0.72rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+}
+
+/* Modifier for post-style pill buttons (components may override sizing/colors) */
+.action-pill.action-pill--post {
+  /* Post variant: use a softer blue similar to Follow, but only for solid post pills */
+  background-color: #3b82f6; /* Tailwind blue-500, softer than Bootstrap primary */
+  border-color: #3b82f6;
+  color: var(--bs-white);
+}
+
+.action-pill.action-pill--post:hover,
+.action-pill.action-pill--post:focus {
+  background-color: #2563eb; /* slightly darker on hover */
+  border-color: #2563eb;
+  color: var(--bs-white);
+}
+
+/* Preserve outline-secondary variant (e.g., Reset) so it doesn't become solid blue */
+.btn-outline-secondary.action-pill.action-pill--post {
+  background-color: transparent !important;
+  border-color: var(--bs-btn-border-color, #6c757d) !important;
+  color: var(--bs-btn-color, #6c757d) !important;
+}
+
+/* Also preserve other outline variants if used */
+.btn[class*="btn-outline-"].action-pill.action-pill--post {
+  background-color: transparent !important;
+}
+
+/* For buttons that use bootstrap variants + our modifier, make secondary/primary respect pill shape */
+.btn.action-pill.action-pill--post {
+  /* keep bootstrap colors, but ensure pill sizing */
+  border-radius: 999px;
+}
+
+/* Force pill radius for cases where other styles are more specific */
+.btn.action-pill, .btn.action-pill.action-pill--post {
+  border-radius: 999px !important;
+}
+
+/* Modifier for auth/login pill */
+.action-pill--auth {
+  /* inherits base by default */
+}
+
+/* Remove marker for <summary> when using action-pill on a details/summary */
+.action-pill::-webkit-details-marker {
+  display: none;
+}
+
+/* Icon/button variants */
+.icon-btn {
+  border: none;
+  background: #fff;
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.icon-btn.ghost {
+  background: #f8fafc;
+}
+
+.icon-round {
+  text-decoration: none;
+  color: inherit;
+  border: none;
+  background: #fff;
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ghost-link {
+  border: none;
+  background: transparent;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Small helper for compact pill variant if needed */
+.action-pill--small {
+  padding: 0.32rem 0.5rem;
+  font-size: 0.82rem;
+}

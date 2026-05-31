@@ -55,10 +55,10 @@ function formatDate(value) {
       <p class="updated-at">Views last updated: {{ formatDate(latestArtwork.updatedAt || latestArtwork.createdAt) }}</p>
     </div>
 
-    <div v-else class="recent-empty">
+      <div v-else class="recent-empty">
       <i class="fa-regular fa-images" aria-hidden="true"></i>
       <p>Try posting your work</p>
-      <button type="button" class="post-btn" @click="emit('post')">Post your work</button>
+      <button type="button" class="action-pill action-pill--post" @click="emit('post')">Post your work</button>
     </div>
   </article>
 </template>
@@ -204,9 +204,7 @@ function formatDate(value) {
   color: #a3a3a3;
 }
 
-.post-btn {
-  border: none;
-  border-radius: 999px;
+.action-pill--post {
   background: #f3f4f6;
   color: #374151;
   font-size: 0.86rem;

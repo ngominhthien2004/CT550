@@ -30,7 +30,7 @@ async function submitLogin() {
       email: form.email.trim(),
       password: form.password,
     })
-    const redirectPath = typeof route.query.redirect === 'string' ? route.query.redirect : '/account'
+    const redirectPath = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
     await router.push(redirectPath)
   } catch (_error) {
     localState.error = authStore.error || 'Login failed.'

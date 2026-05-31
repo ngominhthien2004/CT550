@@ -488,13 +488,13 @@ onBeforeUnmount(() => {
 
         <div class="d-flex flex-wrap gap-2">
           <template v-if="isNovel">
-            <button type="button" class="btn btn-outline-secondary" :disabled="artworkStore.createLoading" @click="handleDraftClick">Save draft</button>
-            <button type="button" class="btn btn-outline-secondary" :disabled="artworkStore.createLoading" @click="handlePreviewClick">Preview</button>
+            <button type="button" class="btn btn-outline-secondary action-pill action-pill--post" :disabled="artworkStore.createLoading" @click="handleDraftClick">Save draft</button>
+            <button type="button" class="btn btn-outline-secondary action-pill action-pill--post" :disabled="artworkStore.createLoading" @click="handlePreviewClick">Preview</button>
           </template>
-          <button type="submit" class="btn btn-primary" :disabled="artworkStore.createLoading" :aria-busy="artworkStore.createLoading">
+          <button type="submit" class="btn btn-primary action-pill action-pill--post" :disabled="artworkStore.createLoading" :aria-busy="artworkStore.createLoading">
             {{ artworkStore.createLoading ? 'Posting...' : 'Post' }}
           </button>
-          <button v-if="!isNovel" type="button" class="btn btn-outline-secondary" :disabled="artworkStore.createLoading" @click="resetForm">Reset</button>
+          <button v-if="!isNovel" type="button" class="btn btn-outline-secondary action-pill action-pill--post" :disabled="artworkStore.createLoading" @click="resetForm">Reset</button>
         </div>
       </form>
     </section>

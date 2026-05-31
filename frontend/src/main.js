@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '@fortawesome/fontawesome-free/css/all.min.css'
 import './assets/styles/global.css'
+import './assets/styles/buttons.css'
 import App from './App.vue'
 import router from './router'
 

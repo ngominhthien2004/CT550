@@ -38,7 +38,7 @@ async function submitSignUp() {
       email: form.email.trim(),
       password: form.password,
     })
-    await router.push('/account')
+    await router.push('/')
   } catch (_error) {
     localState.error = authStore.error || 'Sign up failed.'
   }

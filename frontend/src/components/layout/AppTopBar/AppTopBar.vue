@@ -391,7 +391,7 @@ async function applySearchOptions(payload) {
         @logout="handleLogout"
       />
 
-      <router-link v-else to="/login" class="post-btn" aria-label="Go to login" title="Go to login">Log in</router-link>
+      <router-link v-else to="/login" class="action-pill action-pill--auth" aria-label="Go to login" title="Go to login">Log in</router-link>
 
       <AppTopBarServicesMenu :site-label="siteLabel" :service-links="serviceLinks" />
     </div>
@@ -468,22 +468,6 @@ async function applySearchOptions(payload) {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
-
-.post-btn {
-  list-style: none;
-  border: 1px solid #d5dbe3;
-  border-radius: 999px;
-  padding: 0.42rem 0.72rem;
-  background: #eef2f7;
-  color: #1f2937;
-  font-weight: 700;
-  font-size: 0.88rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.36rem;
-  cursor: pointer;
-  text-decoration: none;
 }
 
 @media (max-width: 920px) {

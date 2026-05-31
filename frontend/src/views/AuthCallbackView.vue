@@ -23,7 +23,7 @@ onMounted(() => {
     token,
   })
 
-  const redirectPath = typeof route.query.redirect === 'string' ? route.query.redirect : '/account'
+  const redirectPath = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
   router.replace(redirectPath)
 })
 </script>
