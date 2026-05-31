@@ -204,9 +204,51 @@ const deleteComment = async (req, res, next) => {
     }
 };
 
+const getAdminComments = async (req, res, next) => {
+    try {
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
+        const skip = (page - 1) * limit;
+        const { q, artworkId, userId } = req.query;
+
+        const filter = {};
+
+        if (q) {
+            filter.content = { $regex: String(q).trim(), $options: 'i' };
+        }
+        if (artworkId) {
+            filter.artwork = artworkId;
+        }
+        if (userId) {
+            filter.user = userId;
+        }
+
+        const [comments, total] = await Promise.all([
+            Comment.find(filter)
+                .populate('user', 'username displayName email avatar')
+                .populate('artwork', 'title type')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            Comment.countDocuments(filter),
+        ]);
+
+        res.json({
+            comments,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createComment,
     getComments,
     getReplies,
-    deleteComment
+    deleteComment,
+    getAdminComments,
 };

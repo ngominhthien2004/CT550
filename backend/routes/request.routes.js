@@ -12,6 +12,7 @@ const {
     createRequestChatMessage,
     createRequestTerm,
     createRevision,
+    getAdminReportedRequests,
     getRequestById,
     getRequestChat,
     getRequestEvents,
@@ -21,11 +22,12 @@ const {
     rejectRequest,
     reportRequest,
     requestExtension,
+    resolveReport,
     startRequest,
     submitDraft,
     updateRequestTerm,
 } = require('../controllers/request.controller');
-const { protect } = require('../middlewares/auth.middleware');
+const { protect, admin } = require('../middlewares/auth.middleware');
 const { getMaxUploadFileSizeBytes } = require('../config/env');
 
 const router = express.Router();
@@ -84,6 +86,10 @@ router.get('/mine', protect, listMyRequests);
 
 router.route('/')
     .post(protect, upload.array('referenceImages', 15), createRequest);
+
+// Admin routes
+router.get('/admin/reported', protect, admin, getAdminReportedRequests);
+router.post('/admin/:id/resolve-report', protect, admin, resolveReport);
 
 router.get('/:id', protect, getRequestById);
 router.post('/:id/accept', protect, acceptRequest);

@@ -121,6 +121,23 @@ export const adminApi = {
   updateUser: (userId, payload) => api.patch(`/users/admin/${userId}`, payload),
   getArtworks: (params = {}) => api.get('/artworks/admin/list', { params }),
   deleteArtwork: (artworkId) => api.delete(`/artworks/${artworkId}`),
+
+  // Comment moderation
+  getComments: (params = {}) => api.get('/comments/admin/list', { params }),
+  deleteComment: (commentId) => api.delete(`/comments/${commentId}`),
+
+  // Payment management
+  getPayments: (params = {}) => api.get('/payments/admin/list', { params }),
+
+  // Report review
+  getReportedRequests: (params = {}) => api.get('/requests/admin/reported', { params }),
+  resolveReport: (requestId, payload) => api.post(`/requests/admin/${requestId}/resolve-report`, payload),
+
+  // Tag management
+  getTags: (params = {}) => api.get('/tags/admin/list', { params }),
+  updateTag: (tagId, payload) => api.put(`/tags/admin/${tagId}`, payload),
+  mergeTags: (payload) => api.post('/tags/admin/merge', payload),
+  deleteTag: (tagId) => api.delete(`/tags/admin/${tagId}`),
 }
 
 export const messageApi = {

@@ -6,6 +6,10 @@ import AdminOverviewCards from '../components/admin/AdminOverviewCards.vue'
 import AdminSectionTabs from '../components/admin/AdminSectionTabs.vue'
 import AdminUserManagementPanel from '../components/admin/AdminUserManagementPanel.vue'
 import AdminArtworkModerationPanel from '../components/admin/AdminArtworkModerationPanel.vue'
+import AdminCommentModerationPanel from '../components/admin/AdminCommentModerationPanel.vue'
+import AdminPaymentManagementPanel from '../components/admin/AdminPaymentManagementPanel.vue'
+import AdminReportReviewPanel from '../components/admin/AdminReportReviewPanel.vue'
+import AdminTagManagementPanel from '../components/admin/AdminTagManagementPanel.vue'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
 import { adminApi } from '../services/api'
@@ -20,6 +24,10 @@ const isAdmin = computed(() => authStore.user?.role === 'admin')
 const loadingOverview = ref(false)
 const loadingUsers = ref(false)
 const loadingArtworks = ref(false)
+const loadingComments = ref(false)
+const loadingPayments = ref(false)
+const loadingReports = ref(false)
+const loadingTags = ref(false)
 const mutating = ref(false)
 const error = ref('')
 
@@ -31,17 +39,51 @@ const overview = ref({
   totalComments: 0,
 })
 
+// User management state
 const userQuery = ref('')
 const userRoleFilter = ref('all')
 const users = ref([])
 const userPanelFiltersOpen = ref(true)
 const userPagination = ref({ page: 1, pages: 1, total: 0 })
 
+// Artwork moderation state
 const artworkQuery = ref('')
 const artworks = ref([])
 const artworkPanelFiltersOpen = ref(true)
 const artworkPagination = ref({ page: 1, pages: 1, total: 0 })
+
+// Comment moderation state
+const commentQuery = ref('')
+const comments = ref([])
+const commentPanelFiltersOpen = ref(true)
+const commentPagination = ref({ page: 1, pages: 1, total: 0 })
+
+// Payment management state
+const paymentStatusFilter = ref('all')
+const payments = ref([])
+const paymentPanelFiltersOpen = ref(true)
+const paymentPagination = ref({ page: 1, pages: 1, total: 0 })
+
+// Report review state
+const reports = ref([])
+const reportPagination = ref({ page: 1, pages: 1, total: 0 })
+
+// Tag management state
+const tagQuery = ref('')
+const tags = ref([])
+const tagPanelFiltersOpen = ref(true)
+const tagPagination = ref({ page: 1, pages: 1, total: 0 })
+
 const activeTab = ref('users')
+
+const adminTabs = [
+  { id: 'users', label: 'User management' },
+  { id: 'artworks', label: 'Artwork moderation' },
+  { id: 'comments', label: 'Comment moderation' },
+  { id: 'payments', label: 'Payment management' },
+  { id: 'reports', label: 'Report review' },
+  { id: 'tags', label: 'Tag management' },
+]
 
 function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
@@ -66,23 +108,14 @@ async function loadOverview() {
   }
 }
 
+// --- User management ---
 async function loadUsers(nextPage = 1) {
   loadingUsers.value = true
   error.value = ''
   try {
-    const params = {
-      limit: 20,
-      page: nextPage,
-    }
-
-    if (userQuery.value.trim()) {
-      params.q = userQuery.value.trim()
-    }
-
-    if (userRoleFilter.value !== 'all') {
-      params.role = userRoleFilter.value
-    }
-
+    const params = { limit: 20, page: nextPage }
+    if (userQuery.value.trim()) params.q = userQuery.value.trim()
+    if (userRoleFilter.value !== 'all') params.role = userRoleFilter.value
     const { data } = await adminApi.getUsers(params)
     users.value = data?.users || []
     userPagination.value = {
@@ -99,19 +132,54 @@ async function loadUsers(nextPage = 1) {
   }
 }
 
+async function setUserRole(targetUser, nextRole) {
+  if (mutating.value) return
+  mutating.value = true
+  error.value = ''
+  try {
+    const { data } = await adminApi.updateUser(targetUser._id, { role: nextRole })
+    users.value = users.value.map((item) => (item._id === targetUser._id ? data : item))
+    if (targetUser._id === user.value?._id) {
+      authStore.user = { ...authStore.user, role: data.role }
+      localStorage.setItem('authUser', JSON.stringify(authStore.user))
+    }
+    await loadOverview()
+  } catch (updateError) {
+    error.value = updateError?.response?.data?.message || 'Failed to update user role'
+  } finally {
+    mutating.value = false
+  }
+}
+
+async function togglePremium(targetUser) {
+  if (mutating.value) return
+  mutating.value = true
+  error.value = ''
+  try {
+    const { data } = await adminApi.updateUser(targetUser._id, { isPremium: !targetUser.isPremium })
+    users.value = users.value.map((item) => (item._id === targetUser._id ? data : item))
+    await loadOverview()
+  } catch (updateError) {
+    error.value = updateError?.response?.data?.message || 'Failed to update premium status'
+  } finally {
+    mutating.value = false
+  }
+}
+
+function toggleUserFilters() { userPanelFiltersOpen.value = !userPanelFiltersOpen.value }
+
+async function goToUserPage(nextPage) {
+  if (nextPage < 1 || nextPage > userPagination.value.pages || loadingUsers.value) return
+  await loadUsers(nextPage)
+}
+
+// --- Artwork moderation ---
 async function loadArtworks(nextPage = 1) {
   loadingArtworks.value = true
   error.value = ''
   try {
-    const params = {
-      limit: 20,
-      page: nextPage,
-    }
-
-    if (artworkQuery.value.trim()) {
-      params.q = artworkQuery.value.trim()
-    }
-
+    const params = { limit: 20, page: nextPage }
+    if (artworkQuery.value.trim()) params.q = artworkQuery.value.trim()
     const { data } = await adminApi.getArtworks(params)
     artworks.value = data?.artworks || []
     artworkPagination.value = {
@@ -128,58 +196,12 @@ async function loadArtworks(nextPage = 1) {
   }
 }
 
-async function setUserRole(targetUser, nextRole) {
-  if (mutating.value) return
-  mutating.value = true
-  error.value = ''
-
-  try {
-    const { data } = await adminApi.updateUser(targetUser._id, { role: nextRole })
-    users.value = users.value.map((item) => (item._id === targetUser._id ? data : item))
-
-    if (targetUser._id === user.value?._id) {
-      authStore.user = {
-        ...authStore.user,
-        role: data.role,
-      }
-      localStorage.setItem('authUser', JSON.stringify(authStore.user))
-    }
-
-    await loadOverview()
-  } catch (updateError) {
-    error.value = updateError?.response?.data?.message || 'Failed to update user role'
-  } finally {
-    mutating.value = false
-  }
-}
-
-async function togglePremium(targetUser) {
-  if (mutating.value) return
-  mutating.value = true
-  error.value = ''
-
-  try {
-    const { data } = await adminApi.updateUser(targetUser._id, {
-      isPremium: !targetUser.isPremium,
-    })
-    users.value = users.value.map((item) => (item._id === targetUser._id ? data : item))
-    await loadOverview()
-  } catch (updateError) {
-    error.value = updateError?.response?.data?.message || 'Failed to update premium status'
-  } finally {
-    mutating.value = false
-  }
-}
-
 async function removeArtwork(artworkId) {
   if (mutating.value) return
-
   const shouldDelete = window.confirm('Delete this artwork? This action cannot be undone.')
   if (!shouldDelete) return
-
   mutating.value = true
   error.value = ''
-
   try {
     await adminApi.deleteArtwork(artworkId)
     artworks.value = artworks.value.filter((item) => item._id !== artworkId)
@@ -191,28 +213,194 @@ async function removeArtwork(artworkId) {
   }
 }
 
-function toggleUserFilters() {
-  userPanelFiltersOpen.value = !userPanelFiltersOpen.value
-}
-
-function toggleArtworkFilters() {
-  artworkPanelFiltersOpen.value = !artworkPanelFiltersOpen.value
-}
-
-async function goToUserPage(nextPage) {
-  if (nextPage < 1 || nextPage > userPagination.value.pages || loadingUsers.value) {
-    return
-  }
-  await loadUsers(nextPage)
-}
+function toggleArtworkFilters() { artworkPanelFiltersOpen.value = !artworkPanelFiltersOpen.value }
 
 async function goToArtworkPage(nextPage) {
-  if (nextPage < 1 || nextPage > artworkPagination.value.pages || loadingArtworks.value) {
-    return
-  }
+  if (nextPage < 1 || nextPage > artworkPagination.value.pages || loadingArtworks.value) return
   await loadArtworks(nextPage)
 }
 
+// --- Comment moderation ---
+async function loadComments(nextPage = 1) {
+  loadingComments.value = true
+  error.value = ''
+  try {
+    const params = { limit: 20, page: nextPage }
+    if (commentQuery.value.trim()) params.q = commentQuery.value.trim()
+    const { data } = await adminApi.getComments(params)
+    comments.value = data?.comments || []
+    commentPagination.value = {
+      page: data?.page || nextPage,
+      pages: data?.pages || 1,
+      total: data?.total || 0,
+    }
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to load comments'
+    comments.value = []
+    commentPagination.value = { page: 1, pages: 1, total: 0 }
+  } finally {
+    loadingComments.value = false
+  }
+}
+
+async function removeComment(commentId) {
+  if (mutating.value) return
+  const shouldDelete = window.confirm('Delete this comment? This action cannot be undone.')
+  if (!shouldDelete) return
+  mutating.value = true
+  error.value = ''
+  try {
+    await adminApi.deleteComment(commentId)
+    comments.value = comments.value.filter((item) => item._id !== commentId)
+    await loadOverview()
+  } catch (deleteError) {
+    error.value = deleteError?.response?.data?.message || 'Failed to delete comment'
+  } finally {
+    mutating.value = false
+  }
+}
+
+function toggleCommentFilters() { commentPanelFiltersOpen.value = !commentPanelFiltersOpen.value }
+
+async function goToCommentPage(nextPage) {
+  if (nextPage < 1 || nextPage > commentPagination.value.pages || loadingComments.value) return
+  await loadComments(nextPage)
+}
+
+// --- Payment management ---
+async function loadPayments(nextPage = 1) {
+  loadingPayments.value = true
+  error.value = ''
+  try {
+    const params = { limit: 20, page: nextPage }
+    if (paymentStatusFilter.value !== 'all') params.status = paymentStatusFilter.value
+    const { data } = await adminApi.getPayments(params)
+    payments.value = data?.payments || []
+    paymentPagination.value = {
+      page: data?.page || nextPage,
+      pages: data?.pages || 1,
+      total: data?.total || 0,
+    }
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to load payments'
+    payments.value = []
+    paymentPagination.value = { page: 1, pages: 1, total: 0 }
+  } finally {
+    loadingPayments.value = false
+  }
+}
+
+function togglePaymentFilters() { paymentPanelFiltersOpen.value = !paymentPanelFiltersOpen.value }
+
+async function goToPaymentPage(nextPage) {
+  if (nextPage < 1 || nextPage > paymentPagination.value.pages || loadingPayments.value) return
+  await loadPayments(nextPage)
+}
+
+// --- Report review ---
+async function loadReports(nextPage = 1) {
+  loadingReports.value = true
+  error.value = ''
+  try {
+    const params = { limit: 20, page: nextPage }
+    const { data } = await adminApi.getReportedRequests(params)
+    reports.value = data?.reports || []
+    reportPagination.value = {
+      page: data?.page || nextPage,
+      pages: data?.pages || 1,
+      total: data?.total || 0,
+    }
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to load reports'
+    reports.value = []
+    reportPagination.value = { page: 1, pages: 1, total: 0 }
+  } finally {
+    loadingReports.value = false
+  }
+}
+
+async function resolveReport(requestId) {
+  if (mutating.value) return
+  const shouldResolve = window.confirm('Dismiss all reports for this request?')
+  if (!shouldResolve) return
+  mutating.value = true
+  error.value = ''
+  try {
+    await adminApi.resolveReport(requestId, { action: 'dismiss' })
+    reports.value = reports.value.filter((r) => r.request?._id !== requestId)
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to resolve report'
+  } finally {
+    mutating.value = false
+  }
+}
+
+async function goToReportPage(nextPage) {
+  if (nextPage < 1 || nextPage > reportPagination.value.pages || loadingReports.value) return
+  await loadReports(nextPage)
+}
+
+// --- Tag management ---
+async function loadTags(nextPage = 1) {
+  loadingTags.value = true
+  error.value = ''
+  try {
+    const params = { limit: 30, page: nextPage }
+    if (tagQuery.value.trim()) params.q = tagQuery.value.trim()
+    const { data } = await adminApi.getTags(params)
+    tags.value = data?.tags || []
+    tagPagination.value = {
+      page: data?.page || nextPage,
+      pages: data?.pages || 1,
+      total: data?.total || 0,
+    }
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to load tags'
+    tags.value = []
+    tagPagination.value = { page: 1, pages: 1, total: 0 }
+  } finally {
+    loadingTags.value = false
+  }
+}
+
+async function deleteTag(tagId) {
+  if (mutating.value) return
+  const shouldDelete = window.confirm('Delete this tag? It will be removed from all artworks.')
+  if (!shouldDelete) return
+  mutating.value = true
+  error.value = ''
+  try {
+    await adminApi.deleteTag(tagId)
+    tags.value = tags.value.filter((t) => t._id !== tagId)
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to delete tag'
+  } finally {
+    mutating.value = false
+  }
+}
+
+async function mergeTags({ sourceId, targetId }) {
+  if (mutating.value) return
+  mutating.value = true
+  error.value = ''
+  try {
+    await adminApi.mergeTags({ sourceId, targetId })
+    await loadTags(tagPagination.value.page || 1)
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to merge tags'
+  } finally {
+    mutating.value = false
+  }
+}
+
+function toggleTagFilters() { tagPanelFiltersOpen.value = !tagPanelFiltersOpen.value }
+
+async function goToTagPage(nextPage) {
+  if (nextPage < 1 || nextPage > tagPagination.value.pages || loadingTags.value) return
+  await loadTags(nextPage)
+}
+
+// --- Global ---
 async function refreshAll() {
   await Promise.all([
     loadOverview(),
@@ -231,10 +419,7 @@ function formatDate(dateValue) {
 }
 
 onMounted(async () => {
-  if (!isAdmin.value) {
-    return
-  }
-
+  if (!isAdmin.value) return
   await Promise.all([loadOverview(), loadUsers(1), loadArtworks(1)])
 })
 </script>
@@ -255,7 +440,7 @@ onMounted(async () => {
     <section v-else class="admin-page page-block">
       <header class="admin-head">
         <h1>Admin Management Hub</h1>
-        <p>Manage users, monitor key metrics, and moderate artworks.</p>
+        <p>Manage users, monitor key metrics, and moderate content.</p>
         <button
           class="btn btn-sm btn-admin-refresh"
           :disabled="loadingOverview || loadingUsers || loadingArtworks || mutating"
@@ -269,7 +454,7 @@ onMounted(async () => {
 
       <AdminOverviewCards :overview="overview" :loading-overview="loadingOverview" />
 
-      <AdminSectionTabs :active-tab="activeTab" @change-tab="activeTab = $event" />
+      <AdminSectionTabs :active-tab="activeTab" :tabs="adminTabs" @change-tab="activeTab = $event" />
 
       <AdminUserManagementPanel
         :active-tab="activeTab"
@@ -304,6 +489,64 @@ onMounted(async () => {
         @apply-filters="loadArtworks(1)"
         @remove-artwork="removeArtwork"
         @go-page="goToArtworkPage"
+      />
+
+      <AdminCommentModerationPanel
+        :active-tab="activeTab"
+        :comment-panel-filters-open="commentPanelFiltersOpen"
+        :comment-query="commentQuery"
+        :loading-comments="loadingComments"
+        :mutating="mutating"
+        :comments="comments"
+        :comment-pagination="commentPagination"
+        :format-date="formatDate"
+        @toggle-filters="toggleCommentFilters"
+        @update:comment-query="commentQuery = $event"
+        @apply-filters="loadComments(1)"
+        @delete-comment="removeComment"
+        @go-page="goToCommentPage"
+      />
+
+      <AdminPaymentManagementPanel
+        :active-tab="activeTab"
+        :payment-panel-filters-open="paymentPanelFiltersOpen"
+        :payment-status-filter="paymentStatusFilter"
+        :loading-payments="loadingPayments"
+        :payments="payments"
+        :payment-pagination="paymentPagination"
+        :format-date="formatDate"
+        @toggle-filters="togglePaymentFilters"
+        @update:payment-status-filter="paymentStatusFilter = $event"
+        @apply-filters="loadPayments(1)"
+        @go-page="goToPaymentPage"
+      />
+
+      <AdminReportReviewPanel
+        :active-tab="activeTab"
+        :loading-reports="loadingReports"
+        :mutating="mutating"
+        :reports="reports"
+        :report-pagination="reportPagination"
+        :format-date="formatDate"
+        @resolve-report="resolveReport"
+        @go-page="goToReportPage"
+      />
+
+      <AdminTagManagementPanel
+        :active-tab="activeTab"
+        :tag-panel-filters-open="tagPanelFiltersOpen"
+        :tag-query="tagQuery"
+        :loading-tags="loadingTags"
+        :mutating="mutating"
+        :tags="tags"
+        :tag-pagination="tagPagination"
+        :format-date="formatDate"
+        @toggle-filters="toggleTagFilters"
+        @update:tag-query="tagQuery = $event"
+        @apply-filters="loadTags(1)"
+        @delete-tag="deleteTag"
+        @merge-tags="mergeTags"
+        @go-page="goToTagPage"
       />
     </section>
   </MainLayoutTemplate>

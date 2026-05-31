@@ -682,6 +682,56 @@ const upsertPaymentConfig = async (req, res, next) => {
     }
 };
 
+const getAdminPayments = async (req, res, next) => {
+    try {
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
+        const skip = (page - 1) * limit;
+        const { status, requesterId, creatorId, requestId, startDate, endDate } = req.query;
+
+        const filter = {};
+
+        if (status) {
+            filter.status = status;
+        }
+        if (requesterId) {
+            filter.requester = requesterId;
+        }
+        if (creatorId) {
+            filter.creator = creatorId;
+        }
+        if (requestId) {
+            filter.request = requestId;
+        }
+        if (startDate || endDate) {
+            filter.createdAt = {};
+            if (startDate) filter.createdAt.$gte = new Date(startDate);
+            if (endDate) filter.createdAt.$lte = new Date(endDate);
+        }
+
+        const [payments, total] = await Promise.all([
+            Payment.find(filter)
+                .populate('requester', 'username displayName email')
+                .populate('creator', 'username displayName email')
+                .populate('request', 'title status')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            Payment.countDocuments(filter),
+        ]);
+
+        res.json({
+            payments,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createPaymentIntent,
     createQrPaymentIntent,
@@ -697,4 +747,5 @@ module.exports = {
     requestPayout,
     simulateBankQrConfirmation,
     upsertPaymentConfig,
+    getAdminPayments,
 };

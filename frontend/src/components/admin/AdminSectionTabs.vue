@@ -4,6 +4,17 @@ defineProps({
     type: String,
     required: true,
   },
+  tabs: {
+    type: Array,
+    default: () => [
+      { id: 'users', label: 'User management' },
+      { id: 'artworks', label: 'Artwork moderation' },
+      { id: 'comments', label: 'Comment moderation' },
+      { id: 'payments', label: 'Payment management' },
+      { id: 'reports', label: 'Report review' },
+      { id: 'tags', label: 'Tag management' },
+    ],
+  },
 })
 
 const emit = defineEmits(['change-tab'])
@@ -12,26 +23,17 @@ const emit = defineEmits(['change-tab'])
 <template>
   <div class="admin-tabs" role="tablist" aria-label="Admin sections">
     <button
+      v-for="tab in tabs"
+      :key="tab.id"
       type="button"
       role="tab"
       class="admin-tab"
-      :class="{ 'is-active': activeTab === 'users' }"
-      :aria-selected="activeTab === 'users'"
-      aria-controls="admin-user-panel"
-      @click="emit('change-tab', 'users')"
+      :class="{ 'is-active': activeTab === tab.id }"
+      :aria-selected="activeTab === tab.id"
+      :aria-controls="`admin-panel-${tab.id}`"
+      @click="emit('change-tab', tab.id)"
     >
-      User management
-    </button>
-    <button
-      type="button"
-      role="tab"
-      class="admin-tab"
-      :class="{ 'is-active': activeTab === 'artworks' }"
-      :aria-selected="activeTab === 'artworks'"
-      aria-controls="admin-artwork-panel"
-      @click="emit('change-tab', 'artworks')"
-    >
-      Artwork moderation
+      {{ tab.label }}
     </button>
   </div>
 </template>

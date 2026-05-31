@@ -885,6 +885,121 @@ const reportRequest = async (req, res, next) => {
     }
 };
 
+const getAdminReportedRequests = async (req, res, next) => {
+    try {
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
+        const skip = (page - 1) * limit;
+
+        // Find all requests that have been reported (have a request_reported event)
+        // Group by request to get unique reported requests
+        const pipeline = [
+            { $match: { type: 'request_reported' } },
+            { $sort: { createdAt: -1 } },
+            {
+                $group: {
+                    _id: '$request',
+                    latestEvent: { $first: '$$ROOT' },
+                    reportCount: { $sum: 1 },
+                },
+            },
+            { $sort: { 'latestEvent.createdAt': -1 } },
+        ];
+
+        // Get total count first
+        const countResult = await RequestEvent.aggregate([
+            ...pipeline,
+            { $count: 'total' },
+        ]);
+        const total = countResult.length > 0 ? countResult[0].total : 0;
+
+        // Get paginated results
+        const reportedGroups = await RequestEvent.aggregate([
+            ...pipeline,
+            { $skip: skip },
+            { $limit: limit },
+        ]);
+
+        // Populate request and actor details
+        const requestIds = reportedGroups.map((r) => r._id);
+        const actorIds = [...new Set(reportedGroups.map((r) => r.latestEvent.actor?.toString()).filter(Boolean))];
+
+        const [requests, actors] = await Promise.all([
+            Request.find({ _id: { $in: requestIds } })
+                .populate('requester', 'username displayName email')
+                .populate('creator', 'username displayName email')
+                .lean(),
+            User.find({ _id: { $in: actorIds } })
+                .select('username displayName')
+                .lean(),
+        ]);
+
+        const requestMap = new Map(requests.map((r) => [r._id.toString(), r]));
+        const actorMap = new Map(actors.map((a) => [a._id.toString(), a]));
+
+        const reports = reportedGroups.map((group) => ({
+            request: requestMap.get(group._id.toString()) || null,
+            reportedBy: actorMap.get(group.latestEvent.actor?.toString()) || null,
+            reportCount: group.reportCount,
+            lastReportedAt: group.latestEvent.createdAt,
+        }));
+
+        res.json({
+            reports,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const resolveReport = async (req, res, next) => {
+    try {
+        const { id: requestId } = req.params;
+        const { action, note } = req.body; // action: 'dismiss' | 'warn' | 'ban'
+
+        const request = await Request.findById(requestId);
+        if (!request) {
+            res.status(404);
+            return next(new Error('Request not found'));
+        }
+
+        // Log the resolution event
+        await RequestEvent.create({
+            request: requestId,
+            actor: req.user._id,
+            type: 'report_resolved',
+            metadata: {
+                action: action || 'dismiss',
+                note: note || '',
+                previousReportsResolved: true,
+            },
+        });
+
+        // Create notification for the request participants
+        const participantIds = [request.requester, request.creator].filter(
+            (id) => id.toString() !== req.user._id.toString()
+        );
+
+        await Promise.all(
+            participantIds.map((userId) =>
+                createNotification({
+                    userId,
+                    actorId: req.user._id,
+                    type: 'system',
+                    message: `A report on request #${requestId} has been reviewed and resolved.`,
+                })
+            )
+        );
+
+        res.json({ message: 'Report resolved successfully', requestId });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     acceptRequest,
     approveRequest,
@@ -895,6 +1010,7 @@ module.exports = {
     createRequestChatMessage,
     createRequestTerm,
     createRevision,
+    getAdminReportedRequests,
     getRequestById,
     getRequestChat,
     getRequestEvents,
@@ -904,6 +1020,7 @@ module.exports = {
     rejectRequest,
     reportRequest,
     requestExtension,
+    resolveReport,
     startRequest,
     submitDraft,
     updateRequestTerm,

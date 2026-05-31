@@ -14,6 +14,7 @@ const {
     requestPayout,
     simulateBankQrConfirmation,
     upsertPaymentConfig,
+    getAdminPayments,
 } = require('../controllers/payment.controller');
 const { protect, admin } = require('../middlewares/auth.middleware');
 
@@ -38,5 +39,6 @@ router.route('/payouts')
     .post(protect, requestPayout);
 
 router.put('/admin/config', protect, admin, upsertPaymentConfig);
+router.get('/admin/list', protect, admin, getAdminPayments);
 
 module.exports = router;
