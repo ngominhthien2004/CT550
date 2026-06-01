@@ -1,4 +1,6 @@
 <script setup>
+import ArtworkCard from '../ArtworkCard.vue'
+
 defineProps({
   relatedWorks: {
     type: Array,
@@ -14,27 +16,11 @@ defineProps({
     </header>
 
     <div class="related-grid">
-      <router-link
+      <ArtworkCard
         v-for="item in relatedWorks"
         :key="item._id"
-        :to="`/artworks/${item._id}`"
-        class="related-card text-decoration-none"
-      >
-        <div class="image-wrapper">
-          <img v-if="item.images?.[0]" class="related-cover" :src="item.images[0]" :alt="item.title" loading="lazy" />
-          <div class="overlay-icons">
-            <i class="fa-solid fa-heart shadow-sm"></i>
-          </div>
-        </div>
-        
-        <div class="card-info d-grid gap-1 mt-2">
-          <span class="related-title fw-semibold">{{ item.title }}</span>
-          <div class="author-line d-flex align-items-center gap-2">
-            <div class="author-avatar-mini" aria-hidden="true"></div>
-            <span class="author-name text-secondary">{{ item.user?.username || 'Artist' }}</span>
-          </div>
-        </div>
-      </router-link>
+        :item="item"
+      />
     </div>
 
     <p v-if="!relatedWorks.length" class="text-secondary small mb-0">No related works yet.</p>
@@ -110,6 +96,14 @@ defineProps({
   border-radius: 50%;
   background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.author-avatar-mini img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 .author-name {

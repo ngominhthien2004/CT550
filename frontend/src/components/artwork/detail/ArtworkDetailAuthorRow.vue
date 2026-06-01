@@ -14,7 +14,7 @@ defineProps({
 <template>
   <section class="author-row">
     <div class="d-flex align-items-center gap-2">
-      <img :src="artistAvatar" :alt="displayAuthor" class="avatar-img" @error="(e) => e.target.src = 'https://s.pximg.net/common/images/no_profile.png'" />
+      <img :src="artistAvatar" :alt="displayAuthor" class="avatar avatar--md" @error="(e) => e.target.src = 'https://s.pximg.net/common/images/no_profile.png'" />
       <router-link v-if="artistId" :to="`/account?user=${artistId}`" class="author-name">
         {{ displayAuthor }}
       </router-link>
@@ -47,15 +47,6 @@ defineProps({
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0.25rem 0;
-}
-
-.avatar-img {
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 999px;
-  display: inline-block;
-  object-fit: cover;
-  background: #f0f0f0;
 }
 
 .author-name {

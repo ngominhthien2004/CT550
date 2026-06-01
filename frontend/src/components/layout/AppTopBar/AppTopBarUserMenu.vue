@@ -54,14 +54,14 @@ defineEmits(['logout'])
   <details class="user-menu">
     <summary class="user-menu-trigger" aria-label="Open user menu" title="User menu">
       <router-link to="/account" class="user-avatar-link" aria-label="Go to account" @click.stop>
-        <img class="user-avatar" :src="avatarSrc" :alt="avatarAlt" @error="handleAvatarError" />
+        <img class="avatar avatar--sm user-avatar" :src="avatarSrc" :alt="avatarAlt" @error="handleAvatarError" />
       </router-link>
       <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
     </summary>
     <div class="user-menu-panel" role="menu" aria-label="User menu">
       <div class="user-hero">
         <router-link to="/account" class="user-hero-link" aria-label="Go to account">
-          <img class="user-avatar large" :src="avatarSrc" :alt="avatarAlt" @error="handleAvatarError" />
+          <img class="avatar avatar--lg user-avatar large" :src="avatarSrc" :alt="avatarAlt" @error="handleAvatarError" />
         </router-link>
         <div class="user-hero-meta">
           <p class="mb-0 fw-bold">{{ props.userDisplayName }}</p>
@@ -178,14 +178,6 @@ defineEmits(['logout'])
   display: none;
 }
 
-.user-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  object-fit: cover;
-  display: block;
-}
-
 .user-menu-panel {
   position: absolute;
   right: 0;
@@ -214,12 +206,6 @@ defineEmits(['logout'])
   gap: 0.08rem;
   justify-items: center;
   text-align: center;
-}
-
-.user-avatar.large {
-  width: 64px;
-  height: 64px;
-  font-size: 1rem;
 }
 
 .user-stats {

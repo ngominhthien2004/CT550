@@ -34,7 +34,7 @@ watch(
 )
 
 const currentUserAvatar = computed(() => {
-  return authStore.user?.avatar || '/default-avatar.png'
+  return authStore.user?.avatar || 'https://s.pximg.net/common/images/no_profile.png'
 })
 
 const currentUserId = computed(() => authStore.user?._id || '')
@@ -182,7 +182,7 @@ const getAvatar = (user) => {
   if (user?.avatar) {
     return user.avatar
   }
-  return '/default-avatar.png'
+  return 'https://s.pximg.net/common/images/no_profile.png'
 }
 </script>
 
@@ -192,7 +192,7 @@ const getAvatar = (user) => {
 
     <!-- Input Area -->
     <div class="comment-input-row d-flex gap-3 mb-5">
-      <img :src="currentUserAvatar" alt="User" class="user-avatar" />
+      <img :src="currentUserAvatar" alt="User" class="avatar avatar--sm" />
       <div class="input-wrapper flex-grow-1 position-relative">
         <textarea
           v-model="commentContent"
@@ -230,7 +230,7 @@ const getAvatar = (user) => {
 
     <div v-else class="comment-list d-grid gap-4">
       <div v-for="comment in commentStore.items" :key="comment._id" class="comment-item d-flex gap-3">
-        <img :src="getAvatar(comment.user)" alt="Avatar" class="user-avatar" />
+        <img :src="getAvatar(comment.user)" alt="Avatar" class="avatar avatar--sm" />
         <div class="comment-content flex-grow-1">
           <div class="d-flex justify-content-between align-items-start">
             <div class="author-info flex-grow-1">
@@ -306,7 +306,7 @@ const getAvatar = (user) => {
                 :key="reply._id"
                 class="reply-item d-flex gap-2"
               >
-                <img :src="getAvatar(reply.user)" alt="Reply avatar" class="reply-avatar" />
+                <img :src="getAvatar(reply.user)" alt="Reply avatar" class="avatar avatar--xs" />
                 <div class="flex-grow-1">
                   <div class="d-flex justify-content-between align-items-start gap-2">
                     <span class="user-name">{{ reply.user?.displayName || reply.user?.username }}</span>
@@ -351,14 +351,6 @@ const getAvatar = (user) => {
   font-size: 1.1rem;
   font-weight: 700;
   color: #333;
-}
-
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  background-color: #f0f0f0;
 }
 
 .comment-input-row {
@@ -534,14 +526,6 @@ const getAvatar = (user) => {
 
 .reply-item {
   align-items: flex-start;
-}
-
-.reply-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  object-fit: cover;
-  background-color: #f0f0f0;
 }
 
 @keyframes fadeIn {

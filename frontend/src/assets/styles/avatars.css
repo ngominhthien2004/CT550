@@ -1,0 +1,39 @@
+/* Shared avatar primitives for image-based avatars */
+.avatar {
+  display: block !important;
+  flex-shrink: 0;
+  object-fit: cover;
+  overflow: hidden;
+  background: #f0f0f0;
+  border-radius: 9999px !important;
+  width: var(--avatar-size, 40px) !important;
+  height: var(--avatar-size, 40px) !important;
+  min-width: var(--avatar-size, 40px) !important;
+  min-height: var(--avatar-size, 40px) !important;
+  max-width: var(--avatar-size, 40px) !important;
+  max-height: var(--avatar-size, 40px) !important;
+}
+
+.avatar--circle {
+  --avatar-size: 40px;
+}
+
+.avatar--xs {
+  --avatar-size: 30px;
+}
+
+.avatar--sm {
+  --avatar-size: 40px;
+}
+
+.avatar--md {
+  --avatar-size: 48px;
+}
+
+.avatar--lg {
+  --avatar-size: 64px;
+}
+
+.avatar--xl {
+  --avatar-size: 100px;
+}

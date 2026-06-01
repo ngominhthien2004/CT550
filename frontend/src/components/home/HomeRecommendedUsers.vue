@@ -63,9 +63,7 @@ function handleAvatarError(event) {
     <div v-else class="user-grid">
       <article v-for="item in users" :key="item._id" class="user-card">
         <router-link :to="profileLink(item._id)" class="user-main-link">
-          <span class="user-avatar" aria-hidden="true">
-            <img :src="profileAvatar(item)" :alt="getUserLabel(item)" @error="handleAvatarError" />
-          </span>
+          <img class="avatar avatar--sm user-avatar" :src="profileAvatar(item)" :alt="getUserLabel(item)" @error="handleAvatarError" />
           <div class="user-meta">
             <strong>{{ getUserLabel(item) }}</strong>
             <small>{{ getUserHandle(item) }}</small>
@@ -161,22 +159,6 @@ function handleAvatarError(event) {
   display: flex;
   align-items: center;
   gap: 0.65rem;
-}
-
-.user-avatar {
-  width: 2.2rem;
-  height: 2.2rem;
-  border-radius: 999px;
-  overflow: hidden;
-  background: #d7e4f8;
-  flex-shrink: 0;
-}
-
-.user-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
 }
 
 .user-meta {

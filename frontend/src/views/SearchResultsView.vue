@@ -728,7 +728,7 @@ watch(
 
           <article v-for="user in enrichedUserResults" :key="user._id" class="user-search-row">
             <div class="user-profile-column">
-              <img :src="getUserAvatar(user)" :alt="getUserDisplayName(user)" class="user-avatar-large" @error="handleAvatarError" />
+              <img :src="getUserAvatar(user)" :alt="getUserDisplayName(user)" class="avatar avatar--xl user-avatar-large" @error="handleAvatarError" />
               <div class="user-profile-copy">
                 <h3>{{ getUserDisplayName(user) }}</h3>
                 <p class="user-bio">{{ getShortUserBio(user) }}</p>
@@ -1302,14 +1302,6 @@ watch(
   gap: 1.22rem;
   align-items: start;
   min-width: 0;
-}
-
-.user-avatar-large {
-  width: 100px;
-  height: 100px;
-  border-radius: 999px;
-  object-fit: cover;
-  background: #edf0f3;
 }
 
 .user-profile-copy {

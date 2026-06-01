@@ -26,7 +26,7 @@ const hasSameAuthorWorks = computed(() => Array.isArray(sameAuthorWorks.value) &
     <section class="sidebar-card d-grid gap-2">
       <div class="d-flex align-items-center justify-content-between gap-2">
         <div class="d-flex align-items-center gap-2">
-          <img :src="artistAvatar" :alt="displayAuthor" class="avatar-img" @error="(e) => e.target.src = 'https://s.pximg.net/common/images/no_profile.png'" />
+          <img :src="artistAvatar || '/default-avatar.png'" :alt="displayAuthor" class="avatar avatar--md" @error="(e) => e.target.src = '/default-avatar.png'" />
           <div class="d-grid">
             <router-link v-if="artistId" :to="`/account?user=${artistId}`" class="fw-semibold text-decoration-none text-dark">
               {{ displayAuthor }}
@@ -92,15 +92,6 @@ const hasSameAuthorWorks = computed(() => Array.isArray(sameAuthorWorks.value) &
   padding: 1.25rem;
 }
 
-.avatar-img {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: inline-block;
-  object-fit: cover;
-  background: #f0f0f0;
-}
-
 .x-small {
   font-size: 11px;
   color: #5c5c5c;
@@ -132,12 +123,10 @@ const hasSameAuthorWorks = computed(() => Array.isArray(sameAuthorWorks.value) &
 }
 
 @media (max-width: 1000px) {
-  .sidebar-card {
-    position: static;
-    border: none;
-    border-bottom: 1px solid #e2e8f0;
-    border-radius: 0;
-    padding: 1rem 0;
+  /* Hide the sidebar entirely on smaller screens */
+  :root {}
+  .right-col {
+    display: none;
   }
 }
 </style>
