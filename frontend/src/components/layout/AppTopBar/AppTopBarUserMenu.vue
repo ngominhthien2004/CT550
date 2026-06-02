@@ -161,7 +161,7 @@ defineEmits(['logout'])
   align-items: center;
   gap: 0.4rem;
   border: none;
-  background: #fff;
+  background: var(--surface);
   border-radius: 999px;
   padding: 0.2rem 0.42rem;
   cursor: pointer;
@@ -189,10 +189,10 @@ defineEmits(['logout'])
   max-height: min(76vh, 498px);
   overflow-y: auto;
   padding: 0 0 1.2rem;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.1);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
   z-index: 22;
 }
 
@@ -215,7 +215,7 @@ defineEmits(['logout'])
   display: flex;
   gap: 1rem;
   font-size: 0.76rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .user-stat-link {
@@ -239,7 +239,7 @@ defineEmits(['logout'])
   text-decoration: none;
   border: none;
   background: transparent;
-  color: #1f2937;
+  color: var(--text);
   text-align: left;
   border-radius: 0;
   padding: 0 1rem;
@@ -253,11 +253,11 @@ defineEmits(['logout'])
 
 .user-menu-item:hover,
 .user-menu-item:focus-visible {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--surface-alt);
 }
 
 .user-menu-item.danger {
-  color: #dc2626;
+  color: var(--danger);
 }
 
 .menu-label {
@@ -265,7 +265,7 @@ defineEmits(['logout'])
   padding: 0.28rem 1rem;
   font-size: 0.82rem;
   font-weight: 700;
-  color: #858585;
+  color: var(--muted);
 }
 
 .toggle-row {
@@ -276,7 +276,7 @@ defineEmits(['logout'])
   width: 34px;
   height: 20px;
   border-radius: 999px;
-  background: #d1d5db;
+  background: var(--muted);
   padding: 2px;
   display: inline-flex;
   align-items: center;
@@ -286,11 +286,16 @@ defineEmits(['logout'])
   width: 16px;
   height: 16px;
   border-radius: 999px;
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.24);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease;
 }
 
 .switch.active {
-  background: #3b82f6;
+  background: var(--accent);
+}
+
+.switch.active .switch-knob {
+  transform: translateX(14px);
 }
 </style>

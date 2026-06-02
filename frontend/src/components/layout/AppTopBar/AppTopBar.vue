@@ -431,7 +431,7 @@ async function applySearchOptions(payload) {
   text-decoration: none;
   font-size: 2rem;
   line-height: 1;
-  color: #1695f0;
+  color: var(--accent);
   letter-spacing: -0.01em;
   white-space: nowrap;
 }
@@ -444,7 +444,7 @@ async function applySearchOptions(payload) {
 
 .icon-btn {
   border: none;
-  background: #fff;
+  background: var(--surface);
   border-radius: 10px;
   width: 36px;
   height: 36px;
@@ -453,14 +453,14 @@ async function applySearchOptions(payload) {
 }
 
 .icon-btn.ghost {
-  background: #f8fafc;
+  background: var(--surface-alt);
 }
 
 .icon-round {
   text-decoration: none;
   color: inherit;
   border: none;
-  background: #fff;
+  background: var(--surface);
   border-radius: 999px;
   width: 36px;
   height: 36px;

@@ -202,7 +202,7 @@ async function handleShare() {
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 1.1rem;
   align-items: start;
-  background: #fff;
+  background: var(--surface);
   padding: 0 0 1.1rem;
 }
 
@@ -215,9 +215,9 @@ async function handleShare() {
   width: 94px;
   height: 94px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #dbe5ef, #b9c8d6);
-  border: 4px solid #fff;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  background: linear-gradient(135deg, var(--surface-alt), var(--line));
+  border: 4px solid var(--surface);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
   display: inline-flex;
   align-items: center;
@@ -261,13 +261,13 @@ async function handleShare() {
   margin: 0;
   font-size: clamp(1.7rem, 1.3rem + 1vw, 2.45rem);
   font-weight: 700;
-  color: #1f2937;
+  color: var(--brand);
   line-height: 1.02;
   letter-spacing: -0.04em;
 }
 
 .profile-handle {
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.9rem;
 }
 
@@ -276,7 +276,7 @@ async function handleShare() {
   align-items: center;
   flex-wrap: wrap;
   gap: 0.9rem 1.15rem;
-  color: #334155;
+  color: var(--text);
   font-size: 0.92rem;
 }
 
@@ -286,17 +286,17 @@ async function handleShare() {
 
 .stat-link {
   text-decoration: none;
-  color: #334155;
+  color: var(--text);
 }
 
 .stat-link:hover,
 .stat-link:focus-visible {
-  color: #1695f0;
+  color: var(--accent);
 }
 
 .profile-bio {
   max-width: 760px;
-  color: #334155;
+  color: var(--text);
   font-size: 0.92rem;
   line-height: 1.6;
 }
@@ -310,22 +310,22 @@ async function handleShare() {
 
 .profile-subtle {
   margin: 0;
-  color: #6b7280;
+  color: var(--muted);
   font-size: 0.88rem;
 }
 
 .profile-status {
   margin: 0;
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.84rem;
 }
 
 .request-badge {
   width: fit-content;
-  border: 1px solid #bae6fd;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: #eff6ff;
-  color: #0369a1;
+  background: var(--surface-alt);
+  color: var(--muted);
   display: inline-flex;
   align-items: center;
   gap: 0.38rem;
@@ -347,35 +347,35 @@ async function handleShare() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #dbe4ef;
-  background: #fff;
-  color: #475569;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
   text-decoration: none;
   font-size: 0.82rem;
 }
 
 .social-icon-btn:hover,
 .social-icon-btn:focus-visible {
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--surface-alt);
+  color: var(--accent-hover);
 }
 
 .profile-error {
   margin: 0;
-  color: #dc2626;
+  color: var(--danger);
   font-size: 0.78rem;
 }
 
 .profile-link {
   text-decoration: none;
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.88rem;
   font-weight: 600;
 }
 
 .profile-link:hover,
 .profile-link:focus-visible {
-  color: #3b82f6;
+  color: var(--accent);
 }
 
 .profile-link-btn {
@@ -395,18 +395,18 @@ async function handleShare() {
 .edit-profile-btn {
   border: none;
   border-radius: 999px;
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--surface-alt);
+  color: var(--text);
   padding: 0.7rem 1rem;
   font-size: 0.88rem;
   font-weight: 700;
 }
 
 .request-action-btn {
-  border: 1px solid #14b8a6;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: #0f766e;
-  color: #fff;
+  background: var(--surface-alt);
+  color: var(--text);
   padding: 0.7rem 1rem;
   font-size: 0.88rem;
   font-weight: 800;
@@ -421,15 +421,15 @@ async function handleShare() {
 }
 
 .follow-profile-btn.is-not-following {
-  border: 1px solid #0096fa;
-  background: #0096fa;
+  border: 1px solid var(--accent);
+  background: var(--accent);
   color: #fff;
 }
 
 .follow-profile-btn.is-following {
-  border: 1px solid #cbd5e1;
-  background: #fff;
-  color: #475569;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
 }
 
 .share-btn {
@@ -438,7 +438,7 @@ async function handleShare() {
   border: none;
   border-radius: 999px;
   background: transparent;
-  color: #6b7280;
+  color: var(--muted);
   font-size: 1rem;
   cursor: pointer;
 }
@@ -447,9 +447,9 @@ async function handleShare() {
   width: 38px;
   height: 38px;
   border-radius: 999px;
-  border: 1px solid #dbe4ef;
-  background: #fff;
-  color: #475569;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -459,13 +459,13 @@ async function handleShare() {
 
 .message-btn:hover,
 .message-btn:focus-visible {
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--surface-alt);
+  color: var(--accent-hover);
 }
 
 .share-btn:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--surface-alt);
+  color: var(--text);
 }
 
 .share-wrap {
