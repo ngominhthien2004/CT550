@@ -46,7 +46,7 @@ defineProps({
   text-decoration: none;
   color: inherit;
   border: none;
-  background: #fff;
+  background: var(--surface);
   border-radius: 999px;
   width: 36px;
   height: 36px;
@@ -75,7 +75,7 @@ defineProps({
   width: 4px;
   height: 4px;
   border-radius: 999px;
-  background: #6b7280;
+  background: var(--muted);
 }
 
 .services-panel {
@@ -85,10 +85,10 @@ defineProps({
   width: 292px;
   max-height: min(76vh, 500px);
   overflow-y: auto;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
   z-index: 22;
   padding: 0.45rem;
   display: grid;
@@ -100,12 +100,12 @@ defineProps({
   padding: 0.35rem 0.42rem;
   font-size: 0.8rem;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .services-item {
   text-decoration: none;
-  color: #1f2937;
+  color: var(--text);
   border-radius: 10px;
   padding: 0.46rem;
   display: flex;
@@ -115,7 +115,7 @@ defineProps({
 
 .services-item:hover,
 .services-item:focus-visible {
-  background: #f1f5f9;
+  background: var(--surface-alt);
 }
 
 .services-thumb {
@@ -134,13 +134,13 @@ defineProps({
 .services-copy strong {
   font-size: 0.86rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--brand);
   line-height: 1.25;
 }
 
 .services-copy small {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--muted);
   line-height: 1.25;
 }
 </style>
