@@ -12,6 +12,34 @@
   --ring: #ffd27f;
 }
 
+:root.dark-theme {
+  --bg: #0f1318;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --line: #2d3748;
+  --brand: #f1f5f9;
+  --surface: #1a202c;
+  --surface-alt: #2d3748;
+  --ring: #eab308;
+}
+
+:root.dark-theme body {
+  background:
+    radial-gradient(circle at 20% 0%, #1a1a2e 0%, transparent 35%),
+    radial-gradient(circle at 100% 20%, #16213e 0%, transparent 40%),
+    var(--bg);
+}
+
+:root.dark-theme #app {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(6px);
+}
+
+:root.dark-theme .page-block {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -82,4 +110,26 @@ a {
     border-radius: 0;
     border: none;
   }
+}
+
+/* Dark Theme - Links in sections */
+:root.dark-theme .section-head a {
+  color: #60a5fa;
+}
+
+/* Dark Theme - Selection */
+:root.dark-theme ::selection {
+  background: #3b82f6;
+  color: #fff;
+}
+
+/* Dark Theme - Scrollbar */
+:root.dark-theme ::-webkit-scrollbar-track {
+  background: #1a202c;
+}
+:root.dark-theme ::-webkit-scrollbar-thumb {
+  background: #4a5568;
+}
+:root.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background: #718096;
 }

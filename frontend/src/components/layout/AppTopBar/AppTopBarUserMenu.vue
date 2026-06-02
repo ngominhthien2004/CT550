@@ -1,5 +1,8 @@
 <script setup>
 import { computed } from 'vue'
+import { useTheme } from '../../../composables/useTheme'
+
+const { isDark, toggle } = useTheme()
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
@@ -123,9 +126,9 @@ defineEmits(['logout'])
 
       <p class="menu-label" role="presentation">Language</p>
       <button type="button" class="user-menu-item" role="menuitem">English</button>
-      <button type="button" class="user-menu-item toggle-row" role="menuitem" aria-label="Toggle dark theme">
+      <button type="button" class="user-menu-item toggle-row" role="menuitem" aria-label="Toggle dark theme" @click="toggle">
         Dark Theme
-        <span class="switch" aria-hidden="true">
+        <span class="switch" :class="{ active: isDark }" aria-hidden="true">
           <span class="switch-knob"></span>
         </span>
       </button>
@@ -285,5 +288,9 @@ defineEmits(['logout'])
   border-radius: 999px;
   background: #fff;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.24);
+}
+
+.switch.active {
+  background: #3b82f6;
 }
 </style>
