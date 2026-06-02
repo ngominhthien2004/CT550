@@ -82,7 +82,7 @@ defineEmits(['toggle', 'mark-read'])
   text-decoration: none;
   color: inherit;
   border: none;
-  background: #fff;
+  background: var(--surface);
   border-radius: 999px;
   width: 36px;
   height: 36px;
@@ -109,14 +109,21 @@ defineEmits(['toggle', 'mark-read'])
   height: 18px;
   border-radius: 999px;
   padding: 0 0.25rem;
-  background: #ef4444;
+  background: var(--danger);
   color: #fff;
   font-size: 0.68rem;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #fff;
+  border: 2px solid var(--surface);
+}
+
+.alert-dot.is-dot-only {
+  min-width: 10px;
+  width: 10px;
+  height: 10px;
+  padding: 0;
 }
 
 .quick-panel-box {
@@ -126,10 +133,10 @@ defineEmits(['toggle', 'mark-read'])
   width: 352px;
   max-height: min(72vh, 430px);
   overflow-y: auto;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--line);
   border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.16);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
   z-index: 24;
 }
 
@@ -138,7 +145,7 @@ defineEmits(['toggle', 'mark-read'])
   align-items: center;
   justify-content: space-between;
   padding: 0.7rem 0.85rem;
-  border-bottom: 1px solid #eceff3;
+  border-bottom: 1px solid var(--line);
 }
 
 .quick-panel-title {
@@ -147,12 +154,12 @@ defineEmits(['toggle', 'mark-read'])
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: #334155;
+  color: var(--text);
 }
 
 .quick-view-all {
   font-size: 0.78rem;
-  color: #3b82f6;
+  color: var(--accent);
   text-decoration: none;
 }
 
@@ -165,24 +172,24 @@ defineEmits(['toggle', 'mark-read'])
 }
 
 .quick-panel-item {
-  border-bottom: 1px solid #f0f2f5;
+  border-bottom: 1px solid var(--line);
   padding: 0.58rem 0.85rem;
   display: grid;
   gap: 0.35rem;
 }
 
 .quick-panel-item.unread {
-  background: #fbfdff;
+  background: var(--surface-alt);
 }
 
 .quick-panel-item:hover,
 .quick-panel-item:focus-within {
-  background: #f6f8fb;
+  background: var(--surface-alt);
 }
 
 .quick-panel-link {
   text-decoration: none;
-  color: #1f2937;
+  color: var(--text);
   display: grid;
   gap: 0.2rem;
 }
@@ -201,7 +208,7 @@ defineEmits(['toggle', 'mark-read'])
 }
 
 .quick-panel-link span {
-  color: #475569;
+  color: var(--muted);
   font-size: 0.79rem;
   line-height: 1.3;
   display: -webkit-box;
@@ -212,15 +219,15 @@ defineEmits(['toggle', 'mark-read'])
 }
 
 .quick-panel-link small {
-  color: #94a3b8;
+  color: var(--muted);
   font-size: 0.71rem;
   flex-shrink: 0;
 }
 
 .quick-action {
-  border: 1px solid #dbe4ef;
-  background: #fff;
-  color: #2563eb;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--accent-hover);
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 600;
@@ -230,17 +237,17 @@ defineEmits(['toggle', 'mark-read'])
 
 .quick-action:hover,
 .quick-action:focus-visible {
-  background: #eef4ff;
+  background: var(--surface-alt);
 }
 
 .quick-panel-note {
   margin: 0;
   padding: 0.8rem;
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.82rem;
 }
 
 .quick-panel-note.error {
-  color: #dc2626;
+  color: var(--danger);
 }
 </style>
