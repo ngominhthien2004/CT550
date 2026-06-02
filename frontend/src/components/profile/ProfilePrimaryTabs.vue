@@ -4,6 +4,10 @@ defineProps({
     type: String,
     default: 'home',
   },
+  isOwnProfile: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const emit = defineEmits(['select'])
@@ -14,8 +18,8 @@ const emit = defineEmits(['select'])
     <button type="button" class="profile-tab" :class="{ active: activeTab === 'home' }" @click="emit('select', 'home')">Home</button>
     <button type="button" class="profile-tab" :class="{ active: activeTab === 'illustrations' }" @click="emit('select', 'illustrations')">Illustrations</button>
     <button type="button" class="profile-tab" :class="{ active: activeTab === 'requests' }" @click="emit('select', 'requests')">Requests</button>
-    <button type="button" class="profile-tab" :class="{ active: activeTab === 'bookmarks' }" @click="emit('select', 'bookmarks')">Bookmarks</button>
-    <button type="button" class="profile-tab" :class="{ active: activeTab === 'likes' }" @click="emit('select', 'likes')">Favorites</button>
+    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'bookmarks' }" @click="emit('select', 'bookmarks')">Bookmarks</button>
+    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'likes' }" @click="emit('select', 'likes')">Favorites</button>
   </nav>
 </template>
 

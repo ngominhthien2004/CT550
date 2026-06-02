@@ -28,6 +28,13 @@ const updateUserProfile = async (req, res, next) => {
         if (user) {
             user.displayName = req.body.displayName || user.displayName;
             user.bio = req.body.bio !== undefined ? req.body.bio : user.bio;
+            user.gender = req.body.gender || user.gender;
+            user.location = req.body.location || user.location;
+            user.website = req.body.website || user.website;
+            if (req.body.birthYear) user.birthYear = parseInt(req.body.birthYear, 10);
+            if (req.body.birthdayMonth) user.birthdayMonth = parseInt(req.body.birthdayMonth, 10);
+            if (req.body.birthdayDay) user.birthdayDay = parseInt(req.body.birthdayDay, 10);
+            user.occupation = req.body.occupation || user.occupation;
             if (req.body.socialLinks) {
                 user.socialLinks = { ...user.socialLinks, ...req.body.socialLinks };
             }
@@ -73,6 +80,16 @@ const updateUserProfile = async (req, res, next) => {
                 avatar: updatedUser.avatar,
                 coverImage: updatedUser.coverImage,
                 bio: updatedUser.bio,
+                gender: updatedUser.gender,
+                location: updatedUser.location,
+                website: updatedUser.website,
+                birthYear: updatedUser.birthYear,
+                birthdayMonth: updatedUser.birthdayMonth,
+                birthdayDay: updatedUser.birthdayDay,
+                occupation: updatedUser.occupation,
+                socialLinks: updatedUser.socialLinks,
+                role: updatedUser.role,
+                isPremium: updatedUser.isPremium,
             });
         } else {
             res.status(404);

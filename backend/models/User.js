@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const socialLinksSchema = mongoose.Schema({
-    twitter: { type: String, default: '' },
+    x: { type: String, default: '' },
+    facebook: { type: String, default: '' },
     instagram: { type: String, default: '' },
-    portfolio: { type: String, default: '' }
 }, { _id: false });
 
 const userSchema = mongoose.Schema({
@@ -33,6 +33,13 @@ const userSchema = mongoose.Schema({
     avatar: { type: String, default: '' },
     coverImage: { type: String, default: '' },
     bio: { type: String, default: '' },
+    gender: { type: String, enum: ['male', 'female', 'rather_not_say'], default: 'rather_not_say' },
+    location: { type: String, default: '' },
+    birthYear: { type: Number, default: null },
+    birthdayMonth: { type: Number, default: null },
+    birthdayDay: { type: Number, default: null },
+    occupation: { type: String, default: '' },
+    website: { type: String, default: '' },
     socialLinks: { type: socialLinksSchema, default: () => ({}) },
 
     role: {

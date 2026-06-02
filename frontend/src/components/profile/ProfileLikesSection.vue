@@ -23,13 +23,23 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  hasMore: {
+    type: Boolean,
+    default: false,
+  },
+  limit: {
+    type: Number,
+    default: 24,
+  },
 })
 
-const emit = defineEmits(['select-type'])
+const emit = defineEmits(['select-type', 'load-more'])
 
 const totalCount = computed(() => {
   return props.tabs.reduce((sum, tab) => sum + tab.count, 0)
 })
+
+const filteredLikes = computed(() => props.likes.filter(l => l && l.artwork))
 </script>
 
 <template>
@@ -64,14 +74,24 @@ const totalCount = computed(() => {
     <p v-if="loading" class="bm-note">Loading favorites...</p>
     <p v-else-if="error" class="bm-note error">{{ error }}</p>
 
-    <div v-else-if="likes.length" class="like-grid">
-      <ArtworkCard v-for="like in likes" :key="like._id" :item="like.artwork" />
+    <div v-else-if="filteredLikes.length" class="like-grid">
+      <ArtworkCard v-for="like in filteredLikes" :key="like._id" :item="like.artwork" />
     </div>
 
     <div v-else class="like-empty">
       <i class="fa-solid fa-heart" aria-hidden="true"></i>
       <p>No favorites found.</p>
     </div>
+
+    <button
+      v-if="likes.length >= limit && hasMore"
+      type="button"
+      class="load-more-btn"
+      :disabled="loading"
+      @click="emit('load-more')"
+    >
+      {{ loading ? 'Loading...' : 'Load More' }}
+    </button>
   </section>
 </template>
 
@@ -137,6 +157,29 @@ const totalCount = computed(() => {
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
+}
+
+.load-more-btn {
+  width: min(620px, 100%);
+  margin: 0.55rem auto 0;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  background: #fff;
+  color: #374151;
+  padding: 0.8rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.load-more-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.load-more-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 @media (max-width: 1240px) {

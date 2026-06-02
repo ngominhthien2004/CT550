@@ -18,7 +18,7 @@ const props = defineProps({
   },
   profileLocation: {
     type: String,
-    default: 'Japan (Private)',
+    default: '',
   },
   isOwnProfile: {
     type: Boolean,
@@ -134,7 +134,7 @@ async function handleShare() {
           <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
           {{ profileLocation }}
         </p>
-        <router-link :to="`/account?user=${user._id}`" class="profile-link">View profile</router-link>
+        <button v-if="isOwnProfile" type="button" class="profile-link profile-link-btn" @click="emit('edit-profile')">Change</button>
         <div v-if="socialLinks.length" class="profile-socials" aria-label="Social media links">
           <a
             v-for="social in socialLinks"
@@ -167,7 +167,7 @@ async function handleShare() {
         {{ isOwnProfile ? 'Manage Request' : 'Request' }}
       </button>
       <button
-        v-else
+        v-else-if="!isOwnProfile"
         type="button"
         class="follow-profile-btn"
         :class="isFollowing ? 'is-following' : 'is-not-following'"
@@ -376,6 +376,13 @@ async function handleShare() {
 .profile-link:hover,
 .profile-link:focus-visible {
   color: #3b82f6;
+}
+
+.profile-link-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 .profile-actions {

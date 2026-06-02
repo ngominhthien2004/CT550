@@ -11,9 +11,10 @@ import { useBookmarkStore } from '../stores/bookmark.store'
 import { useLikeStore } from '../stores/like.store'
 import { useFollowStore } from '../stores/follow.store'
 import { useRequestStore } from '../stores/request.store'
-import { getArtworks, userApi } from '../services/api'
+import { getArtworks, getMyBookmarks, getMyLikes, userApi } from '../services/api'
 import { getApiErrorMessage } from '../utils/apiErrors'
 import { toggleNavCollapsed } from '../utils/viewNavigation'
+import { useToast } from '../composables/useToast'
 
 const isNavCollapsed = ref(true)
 const router = useRouter()
@@ -23,11 +24,12 @@ const bookmarkStore = useBookmarkStore()
 const likeStore = useLikeStore()
 const followStore = useFollowStore()
 const requestStore = useRequestStore()
+const { showSuccess, showError, showInfo } = useToast()
 const profileUser = ref(null)
 const profileLoading = ref(false)
 const profileError = ref('')
 
-const profileLocation = computed(() => 'Japan (Private)')
+const profileLocation = computed(() => user.value?.location || '')
 const followingCount = computed(() => followStore.followingCount)
 const followersCount = computed(() => followStore.followersCount)
 const artworks = ref([])
@@ -44,6 +46,21 @@ const requestTermsError = ref('')
 const showEditModal = ref(false)
 const showCoverModal = ref(false)
 const showAvatarModal = ref(false)
+const confirmDeleteCover = ref(false)
+
+// Pagination state
+const ARTWORKS_PER_PAGE = 24
+const BOOKMARKS_PER_PAGE = 24
+const LIKES_PER_PAGE = 24
+
+const artworksPage = ref(1)
+const worksHasMore = ref(true)
+
+const bookmarkPage = ref(1)
+const bookmarkHasMore = ref(true)
+
+const likePage = ref(1)
+const likeHasMore = ref(true)
 
 const queryUserId = computed(() => {
   const id = route.query.user
@@ -181,7 +198,7 @@ function showAllWorks() {
   activeMainTab.value = 'illustrations'
 }
 
-async function loadUserArtworks() {
+async function loadUserArtworks(append = false) {
   if (!viewingUserId.value) {
     artworks.value = []
     activeType.value = ''
@@ -191,10 +208,24 @@ async function loadUserArtworks() {
   loadingArtworks.value = true
   artworksError.value = ''
 
-  try {
-    const { data } = await getArtworks({ user: viewingUserId.value, limit: 120 })
-    artworks.value = Array.isArray(data) ? data.map(normalizeArtwork) : []
+  if (!append) {
     activeType.value = ''
+  }
+
+  try {
+    const page = append ? artworksPage.value : 1
+    const { data } = await getArtworks({ user: viewingUserId.value, page, limit: ARTWORKS_PER_PAGE })
+    const items = Array.isArray(data) ? data.map(normalizeArtwork) : []
+
+    if (append) {
+      artworks.value = [...artworks.value, ...items]
+      artworksPage.value++
+    } else {
+      artworks.value = items
+      artworksPage.value = 2
+    }
+
+    worksHasMore.value = items.length >= ARTWORKS_PER_PAGE
   } catch (error) {
     artworksError.value = getApiErrorMessage(error, 'Failed to load user artworks')
     artworks.value = []
@@ -204,26 +235,102 @@ async function loadUserArtworks() {
   }
 }
 
-async function loadBookmarks() {
+async function loadBookmarks(append = false) {
   if (!isOwnProfile.value || !authStore.user?._id) {
     bookmarkStore.items = []
     activeBookmarkType.value = ''
     return
   }
 
-  await bookmarkStore.fetchMyBookmarks({ limit: 120 })
-  activeBookmarkType.value = ''
+  bookmarkStore.loading = true
+  bookmarkStore.error = ''
+
+  if (!append) {
+    activeBookmarkType.value = ''
+  }
+
+  try {
+    const page = append ? bookmarkPage.value : 1
+    const { data } = await getMyBookmarks({ page, limit: BOOKMARKS_PER_PAGE })
+    const items = data.bookmarks || []
+
+    if (append) {
+      bookmarkStore.items = [...bookmarkStore.items, ...items]
+      bookmarkPage.value++
+    } else {
+      bookmarkStore.items = items
+      bookmarkPage.value = 2
+    }
+
+    bookmarkHasMore.value = items.length >= BOOKMARKS_PER_PAGE
+  } catch (error) {
+    bookmarkStore.error = getApiErrorMessage(error, 'Failed to load bookmarks')
+    if (!append) bookmarkStore.items = []
+  } finally {
+    bookmarkStore.loading = false
+  }
 }
 
-async function loadLikes() {
+async function loadLikes(append = false) {
   if (!isOwnProfile.value || !authStore.user?._id) {
     likeStore.items = []
     activeLikeType.value = ''
     return
   }
 
-  await likeStore.fetchMyLikes({ limit: 120 })
-  activeLikeType.value = ''
+  likeStore.loading = true
+  likeStore.error = ''
+
+  if (!append) {
+    activeLikeType.value = ''
+  }
+
+  try {
+    const page = append ? likePage.value : 1
+    const { data } = await getMyLikes({ page, limit: LIKES_PER_PAGE })
+    const items = data.likes || []
+
+    // Pre-populate statusByArtwork so ArtworkCard shows red hearts immediately
+    items.forEach((item) => {
+      const artworkId = item?.artwork?._id || item?.artwork
+      if (artworkId) {
+        likeStore.statusByArtwork[artworkId] = true
+      }
+    })
+
+    if (append) {
+      likeStore.items = [...likeStore.items, ...items]
+      likePage.value++
+    } else {
+      likeStore.items = items
+      likePage.value = 2
+    }
+
+    likeHasMore.value = items.length >= LIKES_PER_PAGE
+  } catch (error) {
+    likeStore.error = getApiErrorMessage(error, 'Failed to load likes')
+    if (!append) likeStore.items = []
+  } finally {
+    likeStore.loading = false
+  }
+}
+
+function loadMoreWorks() {
+  if (!loadingArtworks.value && worksHasMore.value) {
+    loadUserArtworks(true)
+  }
+}
+
+function loadMoreBookmarks() {
+  if (!bookmarkStore.loading && bookmarkHasMore.value) {
+    loadBookmarks(true)
+  }
+}
+
+function loadMoreLikes() {
+  if (!likeStore.loading && likeHasMore.value) {
+    loadLikes(true)
+  }
 }
 
 async function loadFollowStats() {
@@ -328,9 +435,9 @@ async function submitProfileUpdate(formData, { requiredField, modalRef, successM
     }
 
     modalRef.value = false
-    alert(successMsg)
+    showSuccess(successMsg)
   } catch (err) {
-    alert(getApiErrorMessage(err, 'Update failed'))
+    showError(getApiErrorMessage(err, 'Update failed'))
   }
 }
 
@@ -348,10 +455,14 @@ async function handleDeleteCover() {
     return
   }
 
-  const confirmed = window.confirm('Remove your cover image?')
-  if (!confirmed) {
+  if (!confirmDeleteCover.value) {
+    confirmDeleteCover.value = true
+    showInfo('Click delete again to confirm')
+    setTimeout(() => { confirmDeleteCover.value = false }, 3000)
     return
   }
+
+  confirmDeleteCover.value = false
 
   try {
     const { data } = await userApi.deleteCover()
@@ -364,8 +475,10 @@ async function handleDeleteCover() {
       authStore.user = { ...authStore.user, ...data, coverImage: data.coverImage || '' }
       localStorage.setItem('authUser', JSON.stringify(authStore.user))
     }
+
+    showSuccess('Cover image removed successfully.')
   } catch (error) {
-    alert(getApiErrorMessage(error, 'Failed to remove cover image'))
+    showError(getApiErrorMessage(error, 'Failed to remove cover image'))
   }
 }
 
@@ -453,6 +566,15 @@ watch(showEditModal, (val) => {
       :show-avatar-modal="showAvatarModal"
       :show-cover-modal="showCoverModal"
       :show-edit-modal="showEditModal"
+      :works-has-more="worksHasMore"
+      :works-limit="ARTWORKS_PER_PAGE"
+      :bookmark-has-more="bookmarkHasMore"
+      :bookmark-limit="BOOKMARKS_PER_PAGE"
+      :like-has-more="likeHasMore"
+      :like-limit="LIKES_PER_PAGE"
+      @load-more-works="loadMoreWorks"
+      @load-more-bookmarks="loadMoreBookmarks"
+      @load-more-likes="loadMoreLikes"
       @edit-cover="showCoverModal = true"
       @delete-cover="handleDeleteCover"
       @toggle-follow="toggleFollow"

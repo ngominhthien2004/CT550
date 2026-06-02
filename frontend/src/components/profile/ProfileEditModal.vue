@@ -12,13 +12,18 @@ const form = reactive({
   displayName: '',
   bio: '',
   website: '',
+  socialLinks: { x: '', facebook: '', instagram: '' },
   gender: 'rather_not_say',
   location: '',
-  birthYear: 1996,
+  birthYear: null,
   birthdayMonth: 1,
   birthdayDay: 1,
   occupation: '',
-  socialMedia: { handle: '', platform: 'X' },
+  visibilityGender: 'Public',
+  visibilityLocation: 'Public',
+  visibilityBirthYear: 'Public',
+  visibilityBirthday: 'Public',
+  visibilityOccupation: 'Public',
 })
 
 const genderOptions = [
@@ -34,17 +39,33 @@ const months = [
   { value: 10, label: 'Oct' }, { value: 11, label: 'Nov' }, { value: 12, label: 'Dec' },
 ]
 
-const years = Array.from({ length: 100 }, (_, i) => 2024 - i)
+const currentYear = new Date().getFullYear()
+const years = Array.from({ length: 100 }, (_, i) => currentYear - i)
 const days = Array.from({ length: 31 }, (_, i) => i + 1)
+
+function getDaySuffix(day) {
+  if (day >= 11 && day <= 13) return 'th'
+  switch (day % 10) {
+    case 1: return 'st'
+    case 2: return 'nd'
+    case 3: return 'rd'
+    default: return 'th'
+  }
+}
 
 watch(() => props.user, (u) => {
   if (!u) return
   form.displayName = u.displayName || u.username || ''
   form.bio = u.bio || ''
   form.website = u.website || ''
+  form.socialLinks = {
+    x: u.socialLinks?.x || u.socialLinks?.twitter || '',
+    facebook: u.socialLinks?.facebook || '',
+    instagram: u.socialLinks?.instagram || '',
+  }
   form.gender = u.gender || 'rather_not_say'
   form.location = u.location || ''
-  form.birthYear = u.birthYear || 1996
+  form.birthYear = u.birthYear || null
   form.birthdayMonth = u.birthdayMonth || 1
   form.birthdayDay = u.birthdayDay || 1
   form.occupation = u.occupation || ''
@@ -55,9 +76,10 @@ function handleSave() {
   fd.append('displayName', form.displayName)
   fd.append('bio', form.bio)
   fd.append('website', form.website)
+  fd.append('socialLinks', JSON.stringify(form.socialLinks))
   fd.append('gender', form.gender)
   fd.append('location', form.location)
-  fd.append('birthYear', form.birthYear)
+  if (form.birthYear) fd.append('birthYear', form.birthYear)
   fd.append('birthdayMonth', form.birthdayMonth)
   fd.append('birthdayDay', form.birthdayDay)
   fd.append('occupation', form.occupation)
@@ -102,16 +124,22 @@ function handleSave() {
           <label class="field-label">Social media</label>
           <div class="social-row">
             <div class="social-input-wrap">
-              <span class="social-prefix">@</span>
-              <input type="text" v-model="form.socialMedia.handle" class="social-input" placeholder="username">
+              <i class="fa-brands fa-x-twitter social-icon"></i>
+              <input type="text" v-model="form.socialLinks.x" class="social-input" placeholder="X username">
             </div>
-            <select v-model="form.socialMedia.platform" class="social-select">
-              <option value="X">X</option>
-              <option value="Facebook">Facebook</option>
-              <option value="Instagram">Instagram</option>
-            </select>
           </div>
-          <button type="button" class="add-media-btn">Add media</button>
+          <div class="social-row">
+            <div class="social-input-wrap">
+              <i class="fa-brands fa-facebook social-icon"></i>
+              <input type="text" v-model="form.socialLinks.facebook" class="social-input" placeholder="Facebook username">
+            </div>
+          </div>
+          <div class="social-row">
+            <div class="social-input-wrap">
+              <i class="fa-brands fa-instagram social-icon"></i>
+              <input type="text" v-model="form.socialLinks.instagram" class="social-input" placeholder="Instagram username">
+            </div>
+          </div>
         </div>
 
         <!-- Gender -->
@@ -124,7 +152,7 @@ function handleSave() {
                 <span class="radio-text">{{ opt.label }}</span>
               </label>
             </div>
-            <select class="visibility-select">
+            <select v-model="form.visibilityGender" class="visibility-select">
               <option>Public</option>
               <option>Private</option>
             </select>
@@ -141,7 +169,7 @@ function handleSave() {
               <option value="Japan">Japan</option>
               <option value="USA">USA</option>
             </select>
-            <select class="visibility-select">
+            <select v-model="form.visibilityLocation" class="visibility-select">
               <option>Public</option>
               <option>Private</option>
             </select>
@@ -155,7 +183,7 @@ function handleSave() {
             <select v-model="form.birthYear" class="form-select full-width">
               <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
             </select>
-            <select class="visibility-select">
+            <select v-model="form.visibilityBirthYear" class="visibility-select">
               <option>Public</option>
               <option>Private</option>
             </select>
@@ -174,7 +202,7 @@ function handleSave() {
                 <option v-for="d in days" :key="d" :value="d">{{ d }}{{ getDaySuffix(d) }}</option>
               </select>
             </div>
-            <select class="visibility-select">
+            <select v-model="form.visibilityBirthday" class="visibility-select">
               <option>Public</option>
               <option>Private</option>
             </select>
@@ -191,7 +219,7 @@ function handleSave() {
               <option value="Designer">Designer</option>
               <option value="Student">Student</option>
             </select>
-            <select class="visibility-select">
+            <select v-model="form.visibilityOccupation" class="visibility-select">
               <option>Public</option>
               <option>Private</option>
             </select>
@@ -214,18 +242,6 @@ function handleSave() {
     </div>
   </div>
 </template>
-
-<script>
-function getDaySuffix(day) {
-  if (day >= 11 && day <= 13) return 'th'
-  switch (day % 10) {
-    case 1: return 'st'
-    case 2: return 'nd'
-    case 3: return 'rd'
-    default: return 'th'
-  }
-}
-</script>
 
 <style scoped>
 @import '../../assets/styles/modal.css';
@@ -298,33 +314,16 @@ function getDaySuffix(day) {
   overflow: hidden;
 }
 
-.social-prefix {
-  padding-left: 12px;
-  color: #999;
+.social-icon {
+  width: 36px;
+  text-align: center;
+  color: #666;
+  font-size: 1rem;
 }
 
 .social-input {
   border: none;
   background: transparent;
-}
-
-.social-select {
-  width: 120px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 0 8px;
-  background: #f8f9fa;
-}
-
-.add-media-btn {
-  background: #f0f0f0;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #444;
-  cursor: pointer;
 }
 
 .split-row {

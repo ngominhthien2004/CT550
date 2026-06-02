@@ -34,6 +34,9 @@ export const useAuthStore = defineStore('auth', {
         username: payload.username,
         email: payload.email,
         role: payload.role,
+        avatar: payload.avatar || '',
+        displayName: payload.displayName || '',
+        location: payload.location || '',
       }
       this.token = payload.token || ''
       localStorage.setItem(TOKEN_KEY, this.token)

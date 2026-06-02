@@ -2,9 +2,7 @@
 import ProfileCoverBanner from '../profile/ProfileCoverBanner.vue'
 import ProfileSummarySection from '../profile/ProfileSummarySection.vue'
 import ProfilePrimaryTabs from '../profile/ProfilePrimaryTabs.vue'
-import ProfileWorksSection from '../profile/ProfileWorksSection.vue'
-import ProfileBookmarksSection from '../profile/ProfileBookmarksSection.vue'
-import ProfileLikesSection from '../profile/ProfileLikesSection.vue'
+import ArtworkGridSection from '../profile/ArtworkGridSection.vue'
 import ProfileRequestsSection from '../profile/ProfileRequestsSection.vue'
 import ProfileCoverModal from '../profile/ProfileCoverModal.vue'
 import ProfileEditModal from '../profile/ProfileEditModal.vue'
@@ -46,6 +44,12 @@ defineProps({
   showEditModal: { type: Boolean, default: false },
   showCoverModal: { type: Boolean, default: false },
   showAvatarModal: { type: Boolean, default: false },
+  worksHasMore: { type: Boolean, default: false },
+  worksLimit: { type: Number, default: 24 },
+  bookmarkHasMore: { type: Boolean, default: false },
+  bookmarkLimit: { type: Number, default: 24 },
+  likeHasMore: { type: Boolean, default: false },
+  likeLimit: { type: Number, default: 24 },
 })
 
 const emit = defineEmits([
@@ -66,6 +70,9 @@ const emit = defineEmits([
   'save-avatar',
   'save-cover',
   'save-profile',
+  'load-more-works',
+  'load-more-bookmarks',
+  'load-more-likes',
 ])
 </script>
 
@@ -98,51 +105,71 @@ const emit = defineEmits([
       />
       <p v-if="profileLoading" class="text-secondary mb-1">Loading profile...</p>
       <p v-if="profileError" class="text-danger mb-1">{{ profileError }}</p>
-      <ProfilePrimaryTabs :active-tab="activeMainTab" @select="emit('select-main-tab', $event)" />
+      <ProfilePrimaryTabs :active-tab="activeMainTab" :is-own-profile="isOwnProfile" @select="emit('select-main-tab', $event)" />
 
-      <ProfileWorksSection
+      <ArtworkGridSection
         v-if="activeMainTab === 'home'"
         heading="Illustrations and Manga"
-        :show-featured="true"
+        show-featured
+        :preview-limit="8"
         :tabs="typeTabs"
         :active-type="activeType"
-        :artworks="visibleArtworks"
+        :items="visibleArtworks"
         :loading="loadingArtworks"
         :error="artworksError"
+        :has-more="worksHasMore"
+        :limit="worksLimit"
         @select-type="emit('select-type', $event)"
         @show-all="emit('show-all-works')"
+        @load-more="emit('load-more-works')"
       />
 
-      <ProfileWorksSection
+      <ArtworkGridSection
         v-else-if="activeMainTab === 'illustrations'"
         heading="All works"
-        :show-featured="false"
         :tabs="typeTabs"
         :active-type="activeType"
-        :artworks="visibleArtworks"
+        :items="visibleArtworks"
         :loading="loadingArtworks"
         :error="artworksError"
+        :has-more="worksHasMore"
+        :limit="worksLimit"
         @select-type="emit('select-type', $event)"
+        @load-more="emit('load-more-works')"
       />
 
-      <ProfileBookmarksSection
+      <ArtworkGridSection
         v-else-if="activeMainTab === 'bookmarks' && isOwnProfile"
+        heading="Bookmarks"
         :tabs="bookmarkTypeTabs"
         :active-type="activeBookmarkType"
-        :bookmarks="visibleBookmarks"
+        :items="visibleBookmarks"
         :loading="bookmarkLoading"
         :error="bookmarkError"
+        :has-more="bookmarkHasMore"
+        :limit="bookmarkLimit"
+        nested-field="artwork"
+        empty-icon="fa-regular fa-bookmark"
+        empty-text="No bookmark found."
         @select-type="emit('select-bookmark-type', $event)"
+        @load-more="emit('load-more-bookmarks')"
       />
 
-      <ProfileLikesSection
+      <ArtworkGridSection
         v-else-if="activeMainTab === 'likes' && isOwnProfile"
+        heading="Favorites"
         :tabs="likeTypeTabs"
         :active-type="activeLikeType"
-        :likes="visibleLikes"
+        :items="visibleLikes"
         :loading="likeLoading"
         :error="likeError"
+        :has-more="likeHasMore"
+        :limit="likeLimit"
+        nested-field="artwork"
+        empty-icon="fa-solid fa-heart"
+        empty-text="No favorites found."
         @select-type="emit('select-like-type', $event)"
+        @load-more="emit('load-more-likes')"
       />
 
       <ProfileRequestsSection
