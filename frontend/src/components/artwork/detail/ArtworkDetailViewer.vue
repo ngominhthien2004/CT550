@@ -110,7 +110,7 @@ watch(
   max-width: 100%;
   max-height: 85vh; /* Larger limit like IlluWrl */
   object-fit: contain; /* Avoid cropping artwork */
-  background: #f0f0f0;
+  background: var(--surface-alt);
   cursor: zoom-in;
 }
 
@@ -120,7 +120,7 @@ watch(
   align-items: center;
   gap: 1.5rem;
   padding: 1rem 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--line);
   margin-bottom: 0.5rem;
 }
 
@@ -129,22 +129,22 @@ watch(
   height: 2.5rem;
   border-radius: 50%;
   border: 1px solid transparent;
-  background: #f0f2f5;
+  background: var(--surface-alt);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #1a1a1a;
+  color: var(--text);
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .icon-btn:hover:not(:disabled) {
-  background: #e4e6eb;
+  background: var(--line);
 }
 
 .icon-btn.active {
-  color: #fff;
+  color: var(--surface);
   background: #f91880; /* Consistent with caption */
   border-color: #f91880;
 }
@@ -164,7 +164,7 @@ watch(
   border: 1px solid transparent;
   border-radius: 4px;
   padding: 0;
-  background: #f8fafc;
+  background: var(--surface-alt);
   overflow: hidden;
   transition: border-color 0.2s;
 }
@@ -176,6 +176,6 @@ watch(
 }
 
 .thumb-button.active {
-  border-color: #3b82f6;
+  border-color: var(--accent);
 }
 </style>

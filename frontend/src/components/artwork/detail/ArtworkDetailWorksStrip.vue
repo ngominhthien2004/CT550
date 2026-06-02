@@ -29,8 +29,8 @@ defineProps({
   width: 84px;
   border-radius: 0.75rem;
   overflow: hidden;
-  border: 1px solid #e2e8f0;
-  background: #fff;
+  border: 1px solid var(--line);
+  background: var(--surface);
 }
 
 .strip-item img {
@@ -51,6 +51,6 @@ defineProps({
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(226, 232, 240, 0.9);
-  color: #0f172a;
+  color: var(--text);
 }
 </style>

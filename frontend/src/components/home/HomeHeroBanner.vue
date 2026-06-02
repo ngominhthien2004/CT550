@@ -90,8 +90,8 @@ defineProps({
 }
 
 .primary-link {
-  background: #fff;
-  color: #0f172a;
+  background: var(--surface);
+  color: var(--text);
 }
 
 .secondary-link {

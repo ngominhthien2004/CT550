@@ -97,7 +97,7 @@ function toggleFollow() {
 
 <style scoped>
 .follow-user-card {
-  border-top: 1px solid #edf2f7;
+  border-top: 1px solid var(--line);
   padding-top: 0.9rem;
   display: grid;
   gap: 0.6rem;
@@ -123,7 +123,7 @@ function toggleFollow() {
   border-radius: 999px;
   object-fit: cover;
   flex-shrink: 0;
-  background: #e2e8f0;
+  background: var(--line);
 }
 
 .identity-text {
@@ -133,27 +133,27 @@ function toggleFollow() {
 .identity-text h3 {
   margin: 0;
   font-size: 0.88rem;
-  color: #0f172a;
+  color: var(--brand);
   font-weight: 700;
 }
 
 .identity-text p {
   margin: 0.15rem 0 0;
-  color: #94a3b8;
+  color: var(--muted);
   font-size: 0.73rem;
   line-height: 1.35;
 }
 
 .identity-text .bio {
   margin-top: 0.25rem;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .follow-btn {
   border: none;
   border-radius: 999px;
-  background: #1695f0;
-  color: #fff;
+  background: var(--accent);
+  color: var(--surface);
   font-size: 0.72rem;
   font-weight: 700;
   padding: 0.34rem 0.66rem;
@@ -161,8 +161,8 @@ function toggleFollow() {
 }
 
 .follow-btn.is-following {
-  background: #e5e7eb;
-  color: #334155;
+  background: var(--line);
+  color: var(--text);
 }
 
 .preview-grid {
@@ -175,7 +175,7 @@ function toggleFollow() {
   display: block;
   border-radius: 8px;
   overflow: hidden;
-  background: #e2e8f0;
+  background: var(--line);
   aspect-ratio: 4 / 3;
 }
 
@@ -194,11 +194,11 @@ function toggleFollow() {
 .preview-empty {
   grid-column: 1 / -1;
   border-radius: 8px;
-  border: 1px dashed #dbe4ee;
-  color: #64748b;
+  border: 1px dashed var(--line);
+  color: var(--muted);
   font-size: 0.74rem;
   padding: 0.48rem 0.56rem;
-  background: #f8fafc;
+  background: var(--surface-alt);
 }
 
 @media (max-width: 920px) {

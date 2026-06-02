@@ -52,7 +52,7 @@ defineProps({
 .author-name {
   font-weight: 700;
   text-decoration: none;
-  color: #0f172a;
+  color: var(--brand);
 }
 
 .author-name:hover {

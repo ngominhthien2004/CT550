@@ -350,7 +350,7 @@ const getAvatar = (user) => {
 .section-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #333;
+  color: var(--brand);
 }
 
 .comment-input-row {
@@ -358,7 +358,7 @@ const getAvatar = (user) => {
 }
 
 .input-wrapper {
-  background-color: #f2f4f6;
+  background-color: var(--surface-alt);
   border-radius: 8px;
   padding: 10px 12px;
   min-height: 44px;
@@ -368,7 +368,7 @@ const getAvatar = (user) => {
 }
 
 .input-wrapper:focus-within {
-  background-color: #ebedef;
+  background-color: var(--surface-alt);
 }
 
 .comment-textarea {
@@ -387,7 +387,7 @@ const getAvatar = (user) => {
   right: 12px;
   border: none;
   background: transparent;
-  color: #777;
+  color: var(--muted);
   font-size: 1.1rem;
   cursor: pointer;
   display: flex;
@@ -395,8 +395,8 @@ const getAvatar = (user) => {
 }
 
 .send-btn {
-  background-color: #0096fa;
-  color: white;
+  background-color: var(--accent);
+  color: var(--surface);
   border: none;
   border-radius: 24px;
   padding: 8px 24px;
@@ -409,7 +409,7 @@ const getAvatar = (user) => {
 }
 
 .send-btn:hover:not(:disabled) {
-  background-color: #007bd0;
+  background-color: var(--accent-hover);
 }
 
 .send-btn:disabled {
@@ -421,14 +421,14 @@ const getAvatar = (user) => {
 .user-name {
   font-weight: 700;
   font-size: 0.95rem;
-  color: #333;
+  color: var(--brand);
   display: block;
 }
 
 .comment-text {
   font-size: 0.95rem;
   line-height: 1.6;
-  color: #1f1f1f;
+  color: var(--text);
   white-space: pre-wrap;
   margin: 0;
 }
@@ -442,15 +442,15 @@ const getAvatar = (user) => {
   max-height: 180px;
   border-radius: 8px;
   object-fit: cover;
-  border: 1px solid #e6e9ed;
+  border: 1px solid var(--line);
 }
 
 .comment-date {
-  color: #777;
+  color: var(--muted);
 }
 
 .btn-reply {
-  color: #3d7699;
+  color: var(--accent);
   font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
@@ -468,7 +468,7 @@ const getAvatar = (user) => {
 }
 
 .btn-delete {
-  color: #b42318;
+  color: var(--danger);
   font-size: 0.85rem;
   font-weight: 700;
 }
@@ -479,8 +479,8 @@ const getAvatar = (user) => {
 
 .btn-display-replies {
   border: none;
-  background-color: #f2f4f6;
-  color: #333;
+  background-color: var(--surface-alt);
+  color: var(--brand);
   font-weight: 700;
   font-size: 0.85rem;
   border-radius: 16px;
@@ -489,7 +489,7 @@ const getAvatar = (user) => {
 }
 
 .btn-display-replies:hover {
-  background-color: #e6e9ed;
+  background-color: var(--line);
 }
 
 .comment-item {
@@ -497,14 +497,14 @@ const getAvatar = (user) => {
 }
 
 .reply-input-block {
-  background-color: #f7f8fa;
+  background-color: var(--surface-alt);
   border-radius: 8px;
   padding: 10px;
 }
 
 .btn-reply-action {
-  border: 1px solid #d0d7de;
-  background: #fff;
+  border: 1px solid var(--line);
+  background: var(--surface);
   border-radius: 14px;
   font-size: 0.8rem;
   padding: 4px 10px;
@@ -521,7 +521,7 @@ const getAvatar = (user) => {
 
 .replies-wrap {
   padding-left: 10px;
-  border-left: 2px solid #eff1f3;
+  border-left: 2px solid var(--line);
 }
 
 .reply-item {

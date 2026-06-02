@@ -38,14 +38,14 @@ const activeTab = computed(() => {
   display: flex;
   gap: 1.35rem;
   padding: 0;
-  border-bottom: 1px solid #e3e8ef;
+  border-bottom: 1px solid var(--line);
   width: 100%;
   overflow-x: auto;
 }
 
 .tabs a {
   text-decoration: none;
-  color: #64748b;
+  color: var(--muted);
   font-weight: 700;
   padding: 0.78rem 0.1rem 0.9rem;
   font-size: 0.9rem;
@@ -54,8 +54,8 @@ const activeTab = computed(() => {
 }
 
 .tabs .active {
-  color: #0f172a;
-  border-bottom-color: #0096fa;
+  color: var(--brand);
+  border-bottom-color: var(--accent);
 }
 
 @media (max-width: 920px) {

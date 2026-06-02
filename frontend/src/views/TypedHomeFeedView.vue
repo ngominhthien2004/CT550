@@ -247,7 +247,7 @@ watch(
 
 .type-loading {
   margin: 0;
-  color: #54607b;
+  color: var(--muted);
   font-weight: 600;
 }
 
@@ -266,8 +266,8 @@ watch(
 .nf-tab {
   border: none;
   border-radius: 999px;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--surface-alt);
+  color: var(--muted);
   font-size: 0.82rem;
   padding: 0.35rem 0.7rem;
   font-weight: 700;
@@ -276,17 +276,17 @@ watch(
 }
 
 .nf-tab.is-active {
-  color: #2563eb;
+  color: var(--accent);
   background: #eff6ff;
 }
 
 .nf-sort select {
   border: none;
-  background: #f8fafc;
+  background: var(--surface-alt);
   border-radius: 999px;
   padding: 0.35rem 0.7rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--text);
   font-size: 0.82rem;
 }
 

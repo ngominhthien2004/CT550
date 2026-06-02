@@ -114,7 +114,7 @@ function chooseSearchScope(scopeKey) {
 
 .icon-round {
   text-decoration: none;
-  color: #474747;
+  color: var(--text);
   border: none;
   background: transparent;
   border-radius: 8px;
@@ -130,7 +130,7 @@ function chooseSearchScope(scopeKey) {
 }
 
 .icon-round:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--surface-alt);
 }
 
 /* Scope text - hide on small screens, show on large screens */
@@ -161,10 +161,10 @@ function chooseSearchScope(scopeKey) {
   width: min(280px, 100%);
   max-width: 100%;
   min-width: 0;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: #ffffff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
   z-index: 24;
   padding: 0.35rem;
   display: grid;
@@ -174,7 +174,7 @@ function chooseSearchScope(scopeKey) {
 .inline-menu-item {
   border: none;
   background: transparent;
-  color: #474747;
+  color: var(--text);
   border-radius: 6px;
   font-size: 0.9rem;
   line-height: 1.2;
@@ -188,7 +188,7 @@ function chooseSearchScope(scopeKey) {
 .inline-menu-item:hover,
 .inline-menu-item:focus-visible,
 .inline-menu-item.is-active {
-  background: #f5f5f5;
+  background: var(--surface-alt);
 }
 
 .scope-icon,

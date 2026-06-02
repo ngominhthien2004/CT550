@@ -86,15 +86,15 @@ const hasSameAuthorWorks = computed(() => Array.isArray(sameAuthorWorks.value) &
 }
 
 .sidebar-card {
-  background: #fff;
+  background: var(--surface);
   border-radius: 4px; /* Flatter look */
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--line);
   padding: 1.25rem;
 }
 
 .x-small {
   font-size: 11px;
-  color: #5c5c5c;
+  color: var(--muted);
 }
 
 .mini-grid {
@@ -107,7 +107,7 @@ const hasSameAuthorWorks = computed(() => Array.isArray(sameAuthorWorks.value) &
   display: block;
   border-radius: 2px;
   overflow: hidden;
-  background: #f8fafc;
+  background: var(--surface-alt);
 }
 
 .mini-cover img {

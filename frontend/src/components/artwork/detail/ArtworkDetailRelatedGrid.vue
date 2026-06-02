@@ -54,8 +54,8 @@ defineProps({
   aspect-ratio: 1 / 1;
   border-radius: 8px;
   overflow: hidden;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
 }
 
 .related-cover {
@@ -80,7 +80,7 @@ defineProps({
 
 .related-title {
   font-size: 0.85rem;
-  color: #1a1a1a;
+  color: var(--text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

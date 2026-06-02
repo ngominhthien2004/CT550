@@ -75,12 +75,12 @@ function shouldShowNovel(item) {
   border-radius: 18px;
   padding: 0.9rem;
   color: var(--muted);
-  background: #fff;
+  background: var(--surface);
 }
 
 .section-copy {
   margin-top: 0.16rem;
-  color: #68758c;
+  color: var(--muted);
   font-size: 0.84rem;
 }
 
@@ -115,7 +115,7 @@ function shouldShowNovel(item) {
   aspect-ratio: 3 / 4;
   border-radius: 10px;
   overflow: hidden;
-  background: #eef2f7;
+  background: var(--surface-alt);
   text-decoration: none;
 }
 
@@ -136,11 +136,11 @@ function shouldShowNovel(item) {
   height: 100%;
   display: grid;
   place-items: center;
-  color: #94a3b8;
+  color: var(--muted);
   font-size: 2rem;
   background:
     linear-gradient(135deg, rgba(22, 149, 240, 0.1), rgba(148, 185, 109, 0.14)),
-    #f8fafc;
+    var(--surface-alt);
 }
 
 .novel-grid-badge {
@@ -181,7 +181,7 @@ function shouldShowNovel(item) {
 .novel-grid-title {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--brand);
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
@@ -195,7 +195,7 @@ function shouldShowNovel(item) {
 
 .novel-grid-author {
   font-size: 0.7rem;
-  color: #2563eb;
+  color: var(--accent);
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;

@@ -103,11 +103,11 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1.4;
-  color: #1a1a1a;
+  color: var(--brand);
 }
 
 .description {
-  color: #1a1a1a;
+  color: var(--text);
   line-height: 1.6;
   white-space: pre-wrap;
   font-size: 0.95rem;
@@ -122,7 +122,7 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
 
 .tag-link {
   text-decoration: none;
-  color: #3b82f6;
+  color: var(--accent);
   font-weight: 400;
   font-size: 0.875rem;
 }
@@ -137,7 +137,7 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
   gap: 1rem;
   align-items: center;
   margin-top: 0.5rem;
-  color: #5c5c5c;
+  color: var(--muted);
 }
 
 .stat-inline {
@@ -157,7 +157,7 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
 }
 
 .stat-button:hover {
-  color: #1a1a1a;
+  color: var(--text);
 }
 
 .stat-button.active {
@@ -169,7 +169,7 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
 }
 
 .read-more-link {
-  color: #3b82f6;
+  color: var(--accent);
   font-weight: 500;
   cursor: default;
   white-space: nowrap;
