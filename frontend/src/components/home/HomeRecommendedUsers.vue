@@ -99,9 +99,9 @@ function handleAvatarError(event) {
 .recommend-users {
   display: grid;
   gap: 0.75rem;
-  border: 1px solid #e3e8ef;
+  border: 1px solid var(--line);
   border-radius: 18px;
-  background: #fff;
+  background: var(--surface);
   padding: 1rem;
   max-height: calc(100vh - 1rem);
   overflow: auto;
@@ -120,13 +120,13 @@ function handleAvatarError(event) {
 }
 
 .head-note {
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.8rem;
 }
 
 .head-link {
   text-decoration: none;
-  color: #0096fa;
+  color: var(--accent);
   font-size: 0.84rem;
   font-weight: 700;
 }
@@ -136,7 +136,7 @@ function handleAvatarError(event) {
   border-radius: 12px;
   padding: 0.9rem;
   color: var(--muted);
-  background: #fff;
+  background: var(--surface);
 }
 
 .user-grid {
@@ -150,7 +150,7 @@ function handleAvatarError(event) {
   padding: 0.75rem;
   display: grid;
   gap: 0.65rem;
-  background: #f8fbff;
+  background: var(--surface-alt);
 }
 
 .user-main-link {
@@ -168,7 +168,7 @@ function handleAvatarError(event) {
 
 .user-meta strong {
   font-size: 0.9rem;
-  color: #1f2937;
+  color: var(--brand);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -176,12 +176,12 @@ function handleAvatarError(event) {
 
 .user-meta small {
   font-size: 0.77rem;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .user-stats {
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .follow-btn {
@@ -193,15 +193,15 @@ function handleAvatarError(event) {
 }
 
 .follow-btn.not-following {
-  border: 1px solid #3b82f6;
-  background: #3b82f6;
+  border: 1px solid var(--accent);
+  background: var(--accent);
   color: #fff;
 }
 
 .follow-btn.following {
-  border: 1px solid #cbd5e1;
-  background: #fff;
-  color: #475569;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
 }
 
 @media (max-width: 1120px) {

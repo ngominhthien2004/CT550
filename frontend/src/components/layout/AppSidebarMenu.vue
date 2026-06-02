@@ -90,7 +90,7 @@ const illuWrlStyleSections = computed(() => {
   height: 100vh;
   overflow: auto;
   transition: transform 0.22s ease;
-  background: #f4f6fa;
+  background: var(--surface-alt);
   border-right: 1px solid var(--line);
   transform: translateX(0%);
 }
@@ -108,7 +108,7 @@ const illuWrlStyleSections = computed(() => {
 
 .brand {
   text-decoration: none;
-  color: #1695f0;
+  color: var(--accent);
   font-weight: 800;
   font-size: 3rem;
   line-height: 1;
@@ -119,9 +119,9 @@ const illuWrlStyleSections = computed(() => {
   width: 2.1rem;
   height: 2.1rem;
   border-radius: 999px;
-  border: 1px solid #d7dfea;
-  background: #fff;
-  color: #7a808c;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
 }
 
 .left-nav nav {
@@ -140,7 +140,7 @@ const illuWrlStyleSections = computed(() => {
 
 .nav-link-item {
   text-decoration: none;
-  color: #374151;
+  color: var(--text);
   padding: 0.58rem 0.9rem;
   border-radius: 10px;
   font-weight: 500;
@@ -153,21 +153,21 @@ const illuWrlStyleSections = computed(() => {
 .nav-link-item i {
   width: 1.15rem;
   text-align: center;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .nav-link-item:hover {
-  background: #eceff5;
+  background: var(--surface-alt);
 }
 
 .nav-link-item.router-link-active {
-  background: #dce8f7;
-  color: #1f4fa3;
+  background: var(--surface-alt);
+  color: var(--accent);
   font-weight: 700;
 }
 
 .nav-link-item.router-link-active i {
-  color: #1f4fa3;
+  color: var(--accent);
 }
 
 .nav-ghost {
@@ -176,9 +176,9 @@ const illuWrlStyleSections = computed(() => {
   text-align: center;
   margin-top: 1.1rem;
   width: 100%;
-  border: 1px dashed #b8d8f5;
-  background: #f3f8ff;
-  color: #1d4ed8;
+  border: 1px dashed var(--accent);
+  background: var(--surface-alt);
+  color: var(--accent);
   border-radius: 10px;
   padding: 0.62rem 0.7rem;
   font-weight: 700;

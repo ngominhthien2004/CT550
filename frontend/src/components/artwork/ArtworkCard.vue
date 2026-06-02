@@ -114,7 +114,7 @@ function getImageCount(item) {
   position: relative;
   border-radius: 14px;
   overflow: hidden;
-  background: #f3f4f6;
+  background: var(--surface-alt);
   text-decoration: none;
 }
 
@@ -135,7 +135,7 @@ function getImageCount(item) {
 .card-placeholder {
   width: 100%;
   aspect-ratio: 1 / 1;
-  background: linear-gradient(135deg, #e4e4e7, #f4f4f5);
+  background: linear-gradient(135deg, var(--surface-alt), var(--surface));
 }
 
 /* Badges / overlays */
@@ -163,20 +163,20 @@ function getImageCount(item) {
   height: 1.95rem;
   border-radius: 999px;
   border: none;
-  background: rgba(255, 255, 255, 0.92);
-  color: #111827;
+  background: var(--surface);
+  color: var(--text);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: transform 0.15s, background 0.15s, color 0.15s;
-  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.16);
+  box-shadow: var(--shadow-md);
   font-size: 0.88rem;
 }
 
 .btn-like:hover {
   transform: scale(1.05);
-  background: #fff;
+  background: var(--surface);
 }
 
 .btn-like.is-liked {
@@ -194,7 +194,7 @@ function getImageCount(item) {
 .card-title {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--brand);
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
@@ -211,13 +211,13 @@ function getImageCount(item) {
   align-items: center;
   gap: 5px;
   text-decoration: none;
-  color: #6b7280;
+  color: var(--muted);
   font-size: 0.78rem;
   min-width: 0;
 }
 
 .card-author:hover {
-  color: #0096fa;
+  color: var(--accent);
 }
 
 .author-avatar {
@@ -226,7 +226,7 @@ function getImageCount(item) {
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
-  background: #d4d4d8;
+  background: var(--surface-alt);
 }
 
 .card-author span {

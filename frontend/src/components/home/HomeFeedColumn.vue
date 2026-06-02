@@ -140,25 +140,25 @@ function handleAvatarError(event) {
 }
 
 .feed-head p {
-  color: #69758a;
+  color: var(--muted);
   font-size: 0.85rem;
   margin-top: 0.18rem;
 }
 
 .feed-head a {
   text-decoration: none;
-  color: #0096fa;
+  color: var(--accent);
   font-size: 0.88rem;
   font-weight: 700;
   white-space: nowrap;
 }
 
 .empty-state {
-  border: 1px dashed #d4dbe7;
+  border: 1px dashed var(--line);
   border-radius: 18px;
-  background: #fff;
+  background: var(--surface);
   padding: 1rem;
-  color: #5f6b82;
+  color: var(--muted);
 }
 
 .feed-list {
@@ -167,13 +167,13 @@ function handleAvatarError(event) {
 }
 
 .feed-card {
-  border: 1px solid #e5e9f0;
+  border: 1px solid var(--line);
   border-radius: 22px;
-  background: #fff;
+  background: var(--surface);
   padding: 0.85rem;
   display: grid;
   gap: 0.7rem;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .feed-card-head {
@@ -197,7 +197,7 @@ function handleAvatarError(event) {
   height: 2.35rem;
   border-radius: 999px;
   overflow: hidden;
-  background: #d7e4f8;
+  background: var(--surface-alt);
   flex-shrink: 0;
 }
 
@@ -222,11 +222,11 @@ function handleAvatarError(event) {
 
 .author-meta strong {
   font-size: 0.94rem;
-  color: #182133;
+  color: var(--brand);
 }
 
 .author-meta small {
-  color: #77839a;
+  color: var(--muted);
   font-size: 0.77rem;
 }
 
@@ -235,8 +235,8 @@ function handleAvatarError(event) {
   height: 2rem;
   border: none;
   border-radius: 999px;
-  background: #f1f5fb;
-  color: #556177;
+  background: var(--surface-alt);
+  color: var(--muted);
 }
 
 .feed-cover {
@@ -254,7 +254,7 @@ function handleAvatarError(event) {
   object-fit: cover;
   border-radius: 16px;
   display: block;
-  background: #ebf0f7;
+  background: var(--surface-alt);
 }
 
 .feed-cover.is-single {
@@ -335,13 +335,13 @@ function handleAvatarError(event) {
 
 .feed-title {
   text-decoration: none;
-  color: #192337;
+  color: var(--brand);
   font-size: 0.94rem;
   font-weight: 700;
 }
 
 .feed-description {
-  color: #68758c;
+  color: var(--muted);
   font-size: 0.82rem;
   line-height: 1.5;
   display: -webkit-box;
@@ -359,10 +359,10 @@ function handleAvatarError(event) {
 .heart-btn {
   width: 2.15rem;
   height: 2.15rem;
-  border: 1px solid #dbe2ec;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: #fff;
-  color: #334155;
+  background: var(--surface);
+  color: var(--text);
   display: inline-flex;
   align-items: center;
   justify-content: center;
