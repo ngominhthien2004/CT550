@@ -24,6 +24,10 @@ const requestRoutes = require('./routes/request.routes');
 const paymentRoutes = require('./routes/payment.routes');
 const path = require('path');
 
+// Force IPv4 DNS resolution to avoid timeout issues with IPv6 (e.g., HuggingFace API)
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 const allowedOrigins = getAllowedOrigins();

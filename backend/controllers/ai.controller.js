@@ -91,7 +91,7 @@ const detectAIImage = asyncHandler(async (req, res) => {
         result = {
             success: false,
             error: hfResult.error,
-            method: 'huggingface',
+            method: hfResult.isFallback ? 'huggingface-fallback' : 'huggingface',
             imageSize,
             imageType
         };
@@ -101,10 +101,12 @@ const detectAIImage = asyncHandler(async (req, res) => {
             isAI: hfResult.isAI,
             confidence: hfResult.confidence,
             reason: hfResult.reason,
-            model: hfResult.model,
-            method: 'huggingface',
+            model: hfResult.model || 'unknown',
+            method: hfResult.isFallback ? 'huggingface-fallback' : 'huggingface',
             imageSize,
-            imageType
+            imageType,
+            hfError: hfResult.hfError || null,
+            isFallback: hfResult.isFallback || false
         };
     }
 

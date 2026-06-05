@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const HF_API_URL = 'https://api-inference.huggingface.co/models';
+const HF_API_URL = 'https://router.huggingface.co/hf-inference/models';
 
 async function detectAIWithHuggingFace(imageBase64) {
     const hfToken = process.env.HF_TOKEN;
@@ -11,32 +11,49 @@ async function detectAIWithHuggingFace(imageBase64) {
     if (!hfToken || hfToken === 'your_huggingface_token_here') {
         fallbackNeeded = true;
         originalError = 'HF_TOKEN not configured';
+        console.log('HF_TOKEN not configured, skipping HuggingFace API call');
     } else {
         const model = 'umm-maybe/AI-image-detector';
+        
+        // Try JSON format first
         try {
+            console.log(`Calling HuggingFace API with model: ${model}`);
+            
             const response = await axios.post(
-                `https://api-inference.huggingface.co/models/${model}`,
+                `${HF_API_URL}/${model}`,
                 { inputs: imageBase64 },
                 {
                     headers: {
                         'Authorization': `Bearer ${hfToken}`,
                         'Content-Type': 'application/json'
                     },
-                    timeout: 30000
+                    timeout: 60000 // increased timeout for cold model start
                 }
             );
 
-            console.log('HF Response:', JSON.stringify(response.data));
+            console.log('HF Response status:', response.status);
+            console.log('HF Response data:', JSON.stringify(response.data).substring(0, 500));
 
-            if (response.data && response.data[0]) {
-                const results = response.data[0];
+            if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+                const results = response.data;
+                console.log('HF API success, processing results');
                 return processHFResults(results);
+            } else if (response.data && response.data.error) {
+                // Model is loading or other API error
+                console.log('HF API returned error in response:', response.data.error);
+                fallbackNeeded = true;
+                originalError = response.data.error;
+            } else {
+                console.log('HF API returned unexpected response format', typeof response.data);
+                fallbackNeeded = true;
+                originalError = 'Invalid response format from HF API';
             }
-
-            fallbackNeeded = true;
-            originalError = 'Invalid response';
         } catch (error) {
-            console.error('HF Error:', error.message);
+            console.error('HF API Error:', error.message);
+            if (error.response) {
+                console.error('HF API status:', error.response.status);
+                console.error('HF API response data:', JSON.stringify(error.response.data));
+            }
             fallbackNeeded = true;
             originalError = error.message;
         }

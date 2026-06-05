@@ -1,4 +1,18 @@
-const ollamaHost = process.env.OLLAMA_HOST || 'http://localhost:11434';
+function normalizeOllamaHost(raw) {
+  if (!raw) return 'http://localhost:11434';
+  let host = raw.trim();
+  if (!host.startsWith('http://') && !host.startsWith('https://')) {
+    // Nếu là IP hoặc hostname không có protocol, thêm http:// và port mặc định
+    if (!host.includes(':')) {
+      host = `http://${host}:11434`;
+    } else {
+      host = `http://${host}`;
+    }
+  }
+  return host.replace(/\/+$/, ''); // xóa trailing slash
+}
+
+const ollamaHost = normalizeOllamaHost(process.env.OLLAMA_HOST);
 const defaultModel = process.env.OLLAMA_MODEL || 'qwen2.5-coder:32b';
 
 async function checkOllamaStatus() {
