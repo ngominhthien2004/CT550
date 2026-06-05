@@ -28,7 +28,7 @@ const hasSameAuthorWorks = computed(() => Array.isArray(sameAuthorWorks.value) &
         <div class="d-flex align-items-center gap-2">
           <img :src="artistAvatar || '/default-avatar.png'" :alt="displayAuthor" class="avatar avatar--md" @error="(e) => e.target.src = '/default-avatar.png'" />
           <div class="d-grid">
-            <router-link v-if="artistId" :to="`/account?user=${artistId}`" class="fw-semibold text-decoration-none text-dark">
+            <router-link v-if="artistId" :to="`/account?user=${artistId}`" class="fw-semibold text-decoration-none" style="color: var(--brand)">
               {{ displayAuthor }}
             </router-link>
             <span v-else class="fw-semibold">{{ displayAuthor }}</span>
@@ -39,7 +39,7 @@ const hasSameAuthorWorks = computed(() => Array.isArray(sameAuthorWorks.value) &
       <button
         v-if="!isOwnArtist"
         type="button"
-        class="btn btn-sm w-100"
+        class="btn btn-sm w-100 btn-follow"
         :class="isFollowing ? 'btn-outline-secondary' : 'btn-primary'"
         :disabled="followLoading"
         :aria-label="isFollowing ? 'Unfollow artist' : 'Follow artist'"
@@ -73,6 +73,7 @@ const hasSameAuthorWorks = computed(() => Array.isArray(sameAuthorWorks.value) &
           :title="item.title"
         >
           <img v-if="item.images?.[0]" :src="item.images[0]" :alt="item.title" loading="lazy" />
+          <span v-if="item.images?.length > 1" class="page-badge">{{ item.images.length }}</span>
         </router-link>
       </div>
     </section>
@@ -92,6 +93,13 @@ const hasSameAuthorWorks = computed(() => Array.isArray(sameAuthorWorks.value) &
   padding: 1.25rem;
 }
 
+.btn-follow {
+  border-radius: 20px;
+  padding: 0.4rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
 .x-small {
   font-size: 11px;
   color: var(--muted);
@@ -105,6 +113,7 @@ const hasSameAuthorWorks = computed(() => Array.isArray(sameAuthorWorks.value) &
 
 .mini-cover {
   display: block;
+  position: relative;
   border-radius: 2px;
   overflow: hidden;
   background: var(--surface-alt);
@@ -120,6 +129,20 @@ const hasSameAuthorWorks = computed(() => Array.isArray(sameAuthorWorks.value) &
 
 .mini-cover img:hover {
   opacity: 0.8;
+}
+
+.page-badge {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 999px;
+  line-height: 1.2;
+  pointer-events: none;
 }
 
 @media (max-width: 1000px) {

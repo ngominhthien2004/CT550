@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useCommentStore } from '../../../stores/comment.store.js'
 import { useAuthStore } from '../../../stores/auth.store.js'
 
@@ -8,6 +8,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  artworkOwnerId: {
+    type: String,
+    default: '',
+  },
 })
 
 const commentStore = useCommentStore()
@@ -15,6 +19,7 @@ const authStore = useAuthStore()
 const commentContent = ref('')
 const stickerUrl = ref('')
 const showStickerInput = ref(false)
+const stickerPresets = ['❤️', '😊', '👍', '🔥', '🎉', '💛', '💜', '✨', '💪', '🙌', '🌈', '⭐']
 const isSubmitting = ref(false)
 const expandedRepliesByCommentId = ref({})
 const showReplyInputByCommentId = ref({})
@@ -22,6 +27,9 @@ const replyContentByCommentId = ref({})
 const replyStickerUrlByCommentId = ref({})
 const showReplyStickerInputByCommentId = ref({})
 const submittingReplyByCommentId = ref({})
+
+const confirmDeleteId = ref(null)
+const textareaRef = ref(null)
 
 watch(
   () => props.artworkId,
@@ -42,7 +50,9 @@ const isAdmin = computed(() => authStore.user?.role === 'admin')
 
 const canDeleteComment = (comment) => {
   if (!currentUserId.value) return false
-  return isAdmin.value || comment?.user?._id === currentUserId.value
+  return isAdmin.value 
+    || comment?.user?._id === currentUserId.value 
+    || props.artworkOwnerId === currentUserId.value
 }
 
 const handleSubmit = async () => {
@@ -61,6 +71,9 @@ const handleSubmit = async () => {
     commentContent.value = ''
     stickerUrl.value = ''
     showStickerInput.value = false
+    if (textareaRef.value) {
+      textareaRef.value.style.height = 'auto'
+    }
   } catch (_error) {
   } finally {
     isSubmitting.value = false
@@ -69,6 +82,12 @@ const handleSubmit = async () => {
 
 const toggleStickerInput = () => {
   showStickerInput.value = !showStickerInput.value
+}
+
+function selectSticker(url) {
+  stickerUrl.value = url
+  showStickerInput.value = false
+  handleSubmit()
 }
 
 const toggleReplyInput = (commentId) => {
@@ -163,11 +182,43 @@ const handleReplySubmit = async (commentId) => {
 }
 
 const handleDelete = async (commentId) => {
+  if (confirmDeleteId.value !== commentId) {
+    confirmDeleteId.value = commentId
+    return
+  }
+
+  confirmDeleteId.value = null
   try {
     await commentStore.removeComment(commentId)
   } catch (_error) {
   }
 }
+
+function autoResize() {
+  nextTick(() => {
+    const el = textareaRef.value
+    if (el) {
+      el.style.height = 'auto'
+      el.style.height = el.scrollHeight + 'px'
+    }
+  })
+}
+
+function onClickOutsideDelete(event) {
+  if (confirmDeleteId.value) {
+    if (!event.target.closest('.btn-delete')) {
+      confirmDeleteId.value = null
+    }
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', onClickOutsideDelete)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', onClickOutsideDelete)
+})
 
 const formatDate = (dateString) => {
   const date = new Date(dateString)
@@ -196,13 +247,15 @@ const getAvatar = (user) => {
       <div class="input-wrapper flex-grow-1 position-relative">
         <textarea
           v-model="commentContent"
+          ref="textareaRef"
           class="comment-textarea"
           placeholder="Leave a comment"
           rows="1"
           @keydown.enter.ctrl="handleSubmit"
+          @input="autoResize"
         ></textarea>
-        <button class="emoji-btn" aria-label="Toggle sticker URL" title="Toggle sticker URL" @click="toggleStickerInput">
-          <i class="far fa-image" aria-hidden="true"></i>
+        <button class="emoji-btn" aria-label="Toggle sticker picker" title="Toggle sticker picker" @click="toggleStickerInput">
+          <i class="far fa-laugh" aria-hidden="true"></i>
         </button>
       </div>
       <button 
@@ -214,13 +267,17 @@ const getAvatar = (user) => {
       </button>
     </div>
 
-    <div v-if="showStickerInput" class="sticker-url-row mb-4">
-      <input
-        v-model="stickerUrl"
-        class="form-control form-control-sm"
-        type="url"
-        placeholder="Sticker image URL (optional)"
-      />
+    <div v-if="showStickerInput" class="sticker-picker-row mb-4">
+      <div class="sticker-grid">
+        <button
+          v-for="(sticker, i) in stickerPresets"
+          :key="i"
+          class="sticker-option"
+          @click="selectSticker(sticker)"
+        >
+          <span class="sticker-emoji">{{ sticker }}</span>
+        </button>
+      </div>
     </div>
 
     <!-- Comment List -->
@@ -232,30 +289,26 @@ const getAvatar = (user) => {
       <div v-for="comment in commentStore.items" :key="comment._id" class="comment-item d-flex gap-3">
         <img :src="getAvatar(comment.user)" alt="Avatar" class="avatar avatar--sm" />
         <div class="comment-content flex-grow-1">
-          <div class="d-flex justify-content-between align-items-start">
-            <div class="author-info flex-grow-1">
+          <div>
+            <div class="author-info">
               <span class="user-name">{{ comment.user?.displayName || comment.user?.username }}</span>
-              <p v-if="comment.content" class="comment-text mt-1 mb-2">{{ comment.content }}</p>
-              <img
-                v-if="comment.stickerUrl"
-                :src="comment.stickerUrl"
-                alt="Comment sticker"
-                class="comment-sticker mt-1 mb-2"
-              />
+              <p v-if="comment.content" class="comment-text comment-content mt-1 mb-2">{{ comment.content }}</p>
+              <span v-if="comment.stickerUrl" class="comment-sticker comment-content sticker-display mt-1 mb-2">{{ comment.stickerUrl }}</span>
               <div class="comment-meta d-flex align-items-center gap-3">
                 <span class="comment-date text-muted">{{ formatDate(comment.createdAt) }}</span>
                 <button class="btn-reply p-0 border-0 bg-transparent" @click="toggleReplyInput(comment._id)">
                   Reply
                 </button>
+                <button
+                  v-if="canDeleteComment(comment)"
+                  class="btn-delete p-0 border-0 bg-transparent"
+                  :class="{ 'confirming': confirmDeleteId === comment._id }"
+                  @click="handleDelete(comment._id)"
+                >
+                  {{ confirmDeleteId === comment._id ? 'Confirm?' : 'Delete' }}
+                </button>
               </div>
             </div>
-            <button
-              v-if="canDeleteComment(comment)"
-              class="btn-delete p-0 border-0 bg-transparent"
-              @click="handleDelete(comment._id)"
-            >
-              Delete
-            </button>
           </div>
 
           <div v-if="showReplyInputByCommentId[comment._id]" class="reply-input-block mt-3">
@@ -272,7 +325,7 @@ const getAvatar = (user) => {
                 title="Toggle reply sticker URL"
                 @click="toggleReplyStickerInput(comment._id)"
               >
-                <i class="far fa-image" aria-hidden="true"></i>
+          <i class="far fa-image" aria-hidden="true"></i>
               </button>
               <button
                 class="btn-reply-action btn-reply-send"
@@ -308,24 +361,22 @@ const getAvatar = (user) => {
               >
                 <img :src="getAvatar(reply.user)" alt="Reply avatar" class="avatar avatar--xs" />
                 <div class="flex-grow-1">
-                  <div class="d-flex justify-content-between align-items-start gap-2">
+                  <div class="author-info">
                     <span class="user-name">{{ reply.user?.displayName || reply.user?.username }}</span>
-                    <button
-                      v-if="canDeleteComment(reply)"
-                      class="btn-delete p-0 border-0 bg-transparent"
-                      @click="handleDelete(reply._id)"
-                    >
-                      Delete
-                    </button>
+                    <p v-if="reply.content" class="comment-text comment-content mt-1 mb-2">{{ reply.content }}</p>
+                    <span v-if="reply.stickerUrl" class="comment-sticker comment-content sticker-display mt-1 mb-2">{{ reply.stickerUrl }}</span>
+                    <div class="comment-meta d-flex align-items-center gap-3">
+                      <span class="comment-date text-muted">{{ formatDate(reply.createdAt) }}</span>
+                      <button
+                        v-if="canDeleteComment(reply)"
+                        class="btn-delete p-0 border-0 bg-transparent"
+                        :class="{ 'confirming': confirmDeleteId === reply._id }"
+                        @click="handleDelete(reply._id)"
+                      >
+                        {{ confirmDeleteId === reply._id ? 'Confirm?' : 'Delete' }}
+                      </button>
+                    </div>
                   </div>
-                  <p v-if="reply.content" class="comment-text mt-1 mb-2">{{ reply.content }}</p>
-                  <img
-                    v-if="reply.stickerUrl"
-                    :src="reply.stickerUrl"
-                    alt="Reply sticker"
-                    class="comment-sticker mt-1 mb-2"
-                  />
-                  <span class="comment-date text-muted">{{ formatDate(reply.createdAt) }}</span>
                 </div>
               </div>
               <div v-if="repliesFor(comment._id).length === 0" class="small text-muted">No replies yet.</div>
@@ -378,7 +429,7 @@ const getAvatar = (user) => {
   outline: none;
   font-size: 0.95rem;
   resize: none;
-  padding-right: 35px;
+  padding-right: 48px;
   line-height: 1.4;
 }
 
@@ -413,7 +464,8 @@ const getAvatar = (user) => {
 }
 
 .send-btn:disabled {
-  background-color: #92d3ff;
+  background-color: var(--accent);
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -433,16 +485,20 @@ const getAvatar = (user) => {
   margin: 0;
 }
 
+.comment-content {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
 .comment-meta {
   font-size: 0.85rem;
 }
 
-.comment-sticker {
-  max-width: 180px;
-  max-height: 180px;
-  border-radius: 8px;
-  object-fit: cover;
-  border: 1px solid var(--line);
+.comment-sticker.sticker-display {
+  font-size: 3rem;
+  line-height: 1.2;
+  display: inline-block;
 }
 
 .comment-date {
@@ -477,6 +533,17 @@ const getAvatar = (user) => {
   text-decoration: underline;
 }
 
+.btn-delete.confirming {
+  color: #ff4444;
+  font-weight: 800;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
 .btn-display-replies {
   border: none;
   background-color: var(--surface-alt);
@@ -493,6 +560,7 @@ const getAvatar = (user) => {
 }
 
 .comment-item {
+  min-width: 0;
   animation: fadeIn 0.3s ease-out;
 }
 
@@ -526,6 +594,46 @@ const getAvatar = (user) => {
 
 .reply-item {
   align-items: flex-start;
+}
+
+.sticker-picker {
+  margin-bottom: 1rem;
+}
+
+.sticker-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sticker-emoji {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.sticker-option {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  padding: 4px;
+  cursor: pointer;
+  background: var(--surface-alt);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sticker-option:hover {
+  border-color: var(--accent);
+  background: var(--surface);
+  transform: scale(1.1);
+}
+
+.sticker-option.active {
+  border-color: var(--accent);
+  background: var(--accent);
 }
 
 @keyframes fadeIn {

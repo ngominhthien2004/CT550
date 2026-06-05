@@ -14,6 +14,7 @@ import { toggleNavCollapsed } from '../utils/viewNavigation'
 
 const uploadKinds = ['illust', 'manga', 'gif', 'novel']
 const mediaKinds = ['illust', 'manga', 'gif']
+const maxArtworkImages = 50
 
 const kindMeta = {
   illust: {
@@ -45,6 +46,8 @@ const tagSuggestions = ref([])
 const tagSuggestionLoading = ref(false)
 let tagSuggestionTimer = null
 const previewUrl = ref('')
+const mediaPreviewItems = ref([])
+const coverPreviewItems = ref([])
 const aiDetection = ref(null)
 const aiDetectionError = ref('')
 const aiDetectionLoading = ref(false)
@@ -143,15 +146,43 @@ function resetTagSuggestionState() {
 function resetForm() {
   Object.assign(form, createDefaultForm())
   resetPreviewState()
+  clearPreviewItems(mediaPreviewItems)
+  clearPreviewItems(coverPreviewItems)
   resetTagSuggestionState()
 }
 
 function handleFilesChange(targetKey, event) {
   const files = Array.from(event.target.files || [])
+  if (files.length > maxArtworkImages) {
+    localError.value = `You can upload up to ${maxArtworkImages} images in one artwork.`
+    event.target.value = ''
+    return
+  }
+
+  localError.value = ''
   form[targetKey] = files
+  setPreviewItems(targetKey, files)
   handlePrimaryFileChange(files[0])
 }
 
+function clearPreviewItems(itemsRef) {
+  itemsRef.value.forEach((item) => {
+    if (item.url?.startsWith('blob:')) {
+      URL.revokeObjectURL(item.url)
+    }
+  })
+  itemsRef.value = []
+}
+
+function setPreviewItems(targetKey, files) {
+  const itemsRef = targetKey === 'coverImages' ? coverPreviewItems : mediaPreviewItems
+  clearPreviewItems(itemsRef)
+  itemsRef.value = files.map((file, index) => ({
+    id: `${file.name}-${file.lastModified}-${index}`,
+    name: file.name,
+    url: URL.createObjectURL(file),
+  }))
+}
 
 function resetPreviewState() {
   if (previewUrl.value && previewUrl.value.startsWith('blob:')) {
@@ -331,6 +362,10 @@ function validateForm() {
     return 'Please upload at least one image file.'
   }
 
+  if (!isNovel.value && form.images.length > maxArtworkImages) {
+    return `You can upload up to ${maxArtworkImages} images in one artwork.`
+  }
+
   return ''
 }
 
@@ -427,6 +462,8 @@ onBeforeUnmount(() => {
   artworkStore.resetCreateState()
   resetTagSuggestionState()
   resetPreviewState()
+  clearPreviewItems(mediaPreviewItems)
+  clearPreviewItems(coverPreviewItems)
 })
 </script>
 
@@ -441,6 +478,9 @@ onBeforeUnmount(() => {
         :is-gif="isGif"
         :media-count="form.images.length"
         :cover-count="form.coverImages.length"
+        :max-media-files="maxArtworkImages"
+        :media-previews="mediaPreviewItems"
+        :cover-previews="coverPreviewItems"
         :preview-url="previewUrl"
         :preview-alt="form.title ? `Preview for ${form.title}` : 'Artwork preview'"
         :ai-warning="aiWarningMessage"

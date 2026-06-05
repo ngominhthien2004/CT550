@@ -471,9 +471,9 @@ watch(
             />
           </div>
           <section class="below-shell d-grid gap-3 mt-4">
-            <ArtworkDetailCommentsCard :artwork-id="artwork._id" />
-            <ArtworkDetailRelatedGrid :related-works="relatedWorks" />
+            <ArtworkDetailCommentsCard :artwork-id="artwork._id" :artwork-owner-id="artwork.user?._id" />
           </section>
+          <ArtworkDetailRelatedGrid class="mt-5" :related-works="relatedWorks" />
         </div>
       </template>
 
@@ -508,7 +508,7 @@ watch(
 <style scoped>
 .detail-page-content {
   width: 100%;
-  background-color: #f4f6f9; /* Premium soft background */
+  background-color: var(--bg); /* Premium soft background */
   padding: 1.5rem 0 3rem;
   min-height: 100vh;
 }
@@ -521,7 +521,7 @@ watch(
 
 .novel-detail-layout .detail-top {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
+  grid-template-columns: minmax(0, 1fr) 290px;
   gap: 2.5rem;
   align-items: start;
   position: relative;
@@ -542,11 +542,11 @@ watch(
 
 /* In-Content Author Card style */
 .in-content-author-card {
-  background: #ffffff;
+  background: var(--surface);
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--line);
   padding: 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-md);
   margin-top: 1rem;
 }
 
@@ -561,7 +561,7 @@ watch(
   height: 54px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--line);
 }
 
 .author-card-meta {
@@ -575,18 +575,18 @@ watch(
   font-family: 'Outfit', 'Inter', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--brand);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .author-card-name:hover {
-  color: #0096fa;
+  color: var(--accent);
 }
 
 .author-card-stats {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--muted);
   margin: 0;
 }
 

@@ -38,6 +38,11 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
   <figcaption class="caption-card d-grid gap-2">
     <h1 class="h4 mb-0 title">{{ artwork.title }}</h1>
 
+    <!-- Unified description for all artwork types -->
+    <p v-if="artwork.description" class="description mb-0">
+      {{ truncatedDescription }}<span v-if="isDescriptionLong" class="read-more-link">... Read more</span>
+    </p>
+
     <div v-if="tagList.length" class="tag-row">
       <router-link
         v-for="tag in tagList"
@@ -78,15 +83,6 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
 
     <p v-if="uploadedAtLabel" class="text-secondary small mb-0">{{ uploadedAtLabel }}</p>
     <p class="text-secondary small mb-0">{{ artwork.type }} · {{ artwork.ageRating }}</p>
-
-    <!-- Novel synopsis (truncated) -->
-    <template v-if="artwork.type === 'novel' && artwork.description">
-      <p class="description mb-0 novel-synopsis">
-        {{ truncatedDescription }}<span v-if="isDescriptionLong" class="read-more-link">... Read more</span>
-      </p>
-    </template>
-    <!-- Normal description for non-novels -->
-    <p v-else-if="artwork.description" class="description mb-0">{{ artwork.description }}</p>
 
     <p v-if="likeError" class="small text-danger mb-0">{{ likeError }}</p>
     <p v-if="bookmarkError" class="small text-danger mb-0">{{ bookmarkError }}</p>
@@ -162,10 +158,6 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
 
 .stat-button.active {
   color: #f91880; /* Brand like accent */
-}
-
-.novel-synopsis {
-  position: relative;
 }
 
 .read-more-link {

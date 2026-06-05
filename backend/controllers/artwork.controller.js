@@ -17,6 +17,7 @@ const normalizeTagName = (rawTagName = '') =>
         .toLowerCase();
 
 const AI_TAG_NAME = normalizeTagName('ai');
+const MAX_ARTWORK_IMAGES = 50;
 
 async function runAiDetection(primaryImagePath) {
     try {
@@ -50,6 +51,11 @@ const createArtwork = async (req, res, next) => {
         if (!req.files || req.files.length === 0) {
             res.status(400);
             return next(new Error('Please upload at least one image'));
+        }
+
+        if (req.files.length > MAX_ARTWORK_IMAGES) {
+            res.status(400);
+            return next(new Error(`Please upload no more than ${MAX_ARTWORK_IMAGES} images for one artwork`));
         }
 
         const publicDir = path.join(__dirname, '..', 'public');

@@ -197,11 +197,13 @@ const artistAvatar = computed(() => {
       />
     </section>
 
-    <!-- Corrected: Related works and Comments now span the full width below the main content -->
-    <section class="below-shell d-grid gap-3 mt-4">
-      <ArtworkDetailCommentsCard :artwork-id="artwork._id" />
-      <ArtworkDetailRelatedGrid :related-works="relatedWorks" />
+    <section class="detail-top mt-4">
+      <div class="left-col" style="gap: 1.5rem;">
+        <ArtworkDetailCommentsCard :artwork-id="artwork._id" :artwork-owner-id="artwork.user?._id" />
+      </div>
+      <div></div>
     </section>
+    <ArtworkDetailRelatedGrid class="mt-5" :related-works="relatedWorks" />
   </article>
 </template>
 
@@ -214,7 +216,7 @@ const artistAvatar = computed(() => {
 
 .detail-top {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
+  grid-template-columns: minmax(0, 1fr) 290px;
   gap: 2.5rem; /* Increased gap for better IlluWrl feel */
   align-items: start;
   position: relative;
@@ -229,13 +231,10 @@ const artistAvatar = computed(() => {
   gap: 1.5rem;
 }
 
-.below-shell {
-  margin-top: 1rem;
-}
 
 @media (max-width: 1200px) {
   .detail-top {
-    grid-template-columns: minmax(0, 1fr) 300px;
+    grid-template-columns: minmax(0, 1fr) 250px;
     gap: 1rem;
   }
 }

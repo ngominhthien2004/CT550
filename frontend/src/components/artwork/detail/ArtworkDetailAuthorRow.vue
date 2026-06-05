@@ -25,7 +25,7 @@ defineProps({
       <button
         v-if="!isOwnArtist"
         type="button"
-        class="btn btn-sm author-follow"
+        class="btn btn-sm btn-follow"
         :class="isFollowing ? 'btn-outline-secondary' : 'btn-primary'"
         :disabled="followLoading"
         :aria-label="isFollowing ? 'Unfollow artist' : 'Follow artist'"
@@ -57,6 +57,14 @@ defineProps({
 
 .author-name:hover {
   text-decoration: underline;
+}
+
+.btn-follow {
+  border-radius: 20px;
+  padding: 0.35rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s;
 }
 
 .view-all {

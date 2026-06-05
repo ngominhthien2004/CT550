@@ -94,7 +94,7 @@ defineProps({
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  background: var(--surface-alt);
   flex-shrink: 0;
   overflow: hidden;
 }

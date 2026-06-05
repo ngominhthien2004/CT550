@@ -28,6 +28,18 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  maxMediaFiles: {
+    type: Number,
+    default: 50,
+  },
+  mediaPreviews: {
+    type: Array,
+    default: () => [],
+  },
+  coverPreviews: {
+    type: Array,
+    default: () => [],
+  },
   previewUrl: {
     type: String,
     default: '',
@@ -78,11 +90,25 @@ function handleCoverFilesChange(event) {
         aria-describedby="upload-media-help"
         @change="handleMediaFilesChange"
       />
-      <p id="upload-media-help" class="small text-light-emphasis mt-2 mb-0" aria-live="polite">{{ props.mediaCount }} file(s) selected</p>
+      <p id="upload-media-help" class="small text-light-emphasis mt-2 mb-0" aria-live="polite">
+        {{ props.mediaCount }} file(s) selected for one artwork. Up to {{ props.maxMediaFiles }} images.
+      </p>
     </div>
 
-    <div v-if="props.isMediaPage && props.previewUrl" class="upload-preview">
-      <img :src="props.previewUrl" :alt="props.previewAlt" class="preview-image" />
+    <div v-if="props.isMediaPage && props.mediaPreviews.length" class="upload-preview">
+      <div class="preview-heading">
+        <span>Artwork pages</span>
+        <strong>{{ props.mediaPreviews.length }}</strong>
+      </div>
+      <div class="page-preview-grid" aria-label="Selected artwork pages">
+        <figure v-for="(item, index) in props.mediaPreviews" :key="item.id || `${item.name}-${index}`" class="page-preview-card">
+          <img :src="item.url" :alt="`Selected page ${index + 1}: ${item.name}`" class="preview-image" />
+          <figcaption>
+            <span>{{ index + 1 }}</span>
+            <p>{{ item.name }}</p>
+          </figcaption>
+        </figure>
+      </div>
       <p v-if="props.aiWarning" class="ai-warning" role="alert">{{ props.aiWarning }}</p>
     </div>
 
@@ -188,12 +214,76 @@ function handleCoverFilesChange(event) {
   gap: 0.6rem;
 }
 
+.preview-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: #eff4ff;
+  font-weight: 700;
+}
+
+.preview-heading strong {
+  min-width: 2rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: #3d7eff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+}
+
+.page-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 0.6rem;
+}
+
+.page-preview-card {
+  margin: 0;
+  min-width: 0;
+  border: 1px solid #334052;
+  border-radius: 0.55rem;
+  overflow: hidden;
+  background: #0f1724;
+}
+
 .preview-image {
   width: 100%;
-  max-height: 220px;
+  aspect-ratio: 1 / 1;
   object-fit: contain;
-  border-radius: 0.5rem;
   background: #0f1724;
+}
+
+.page-preview-card figcaption {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem;
+  color: #cad6ef;
+  font-size: 0.76rem;
+}
+
+.page-preview-card figcaption span {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  background: #263246;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+}
+
+.page-preview-card figcaption p {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cover-preview-image {

@@ -14,6 +14,7 @@ const { protect, admin } = require('../middlewares/auth.middleware');
 const { getMaxUploadFileSizeBytes } = require('../config/env');
 
 const ALLOWED_ARTWORK_TYPES = new Set(['illust', 'manga', 'gif', 'novel']);
+const MAX_ARTWORK_IMAGES = 50;
 
 // Accepted image formats (non-animated posts)
 const IMAGE_EXTNAMES = /\.(jpg|jpeg|png|webp|gif)$/i;
@@ -78,13 +79,13 @@ const upload = multer({
     storage,
     limits: {
         fileSize: getMaxUploadFileSizeBytes(),
-        files: 10,
+        files: MAX_ARTWORK_IMAGES,
     },
     fileFilter: checkFileType,
 });
 
 router.route('/')
-    .post(protect, upload.array('images', 10), createArtwork)
+    .post(protect, upload.array('images', MAX_ARTWORK_IMAGES), createArtwork)
     .get(getArtworks);
 
 router.route('/admin/list')
