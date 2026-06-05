@@ -380,7 +380,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 │  ┌──────────────────────────────────────────────────────┐ │
 │  │ .detail-page-content (display: grid, gap: 3)         │ │
 │  │                                                       │ │
-│  │  ┌─ .detail-top (2-column grid: 1fr 290px) ────────┐ │ │
+  │  │  ┌─ .detail-main (2-column grid: 1fr 290px) ───────┐ │ │
 │  │  │  ├── .left-col (flex, column)                    │ │ │
 │  │  │  │    ├── <ArtworkDetailViewer>                  │ │ │
 │  │  │  │    │    (overlay viewer cho ảnh/manga)        │ │ │
@@ -411,7 +411,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 │  │ .detail-page-content (display: grid, gap: 3)         │ │
 │  │                                                       │ │
 │  │  ┌─ .novel-detail-layout (max-width: 1120px) ──────┐ │ │
-│  │  │  └── .detail-top (2-column grid: 1fr 290px)     │ │ │
+  │  │  │  └── .detail-main (2-column grid: 1fr 290px)    │ │ │
 │  │  │       ├── .left-col                              │ │ │
 │  │  │       │    ├── <ChapterManager>                  │ │ │
 │  │  │       │    │    (quản lý chapter)                │ │ │
@@ -433,7 +433,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
 **Đặc điểm chung:**
 
-- Cả 2 biến thể đều dùng grid 2 cột cho `detail-top`: nội dung chính (`1fr`) và sidebar (`290px`).
+- Cả 2 biến thể đều dùng grid 2 cột cho `detail-main`: nội dung chính (`1fr`) và sidebar (`290px`).
 - Có `<ArtworkDetailRelatedGrid>` full-width ở cuối trang.
 - Novel được bọc thêm `.novel-detail-layout` với `max-width: 1120px`.
 

@@ -399,7 +399,7 @@ watch(
       <!-- Novel Reader -->
       <template v-else-if="displayArtwork && artwork?.type === 'novel'">
         <div class="novel-detail-layout d-grid gap-4 mx-auto">
-          <div class="detail-top">
+          <div class="detail-main">
             <div class="left-col">
               <!-- Chapter Manager (only for author of series novels) -->
               <ChapterManager
@@ -519,7 +519,7 @@ watch(
   margin: 0;
 }
 
-.novel-detail-layout .detail-top {
+.novel-detail-layout .detail-main {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 290px;
   gap: 2.5rem;
@@ -598,14 +598,14 @@ watch(
 }
 
 @media (max-width: 1200px) {
-  .novel-detail-layout .detail-top {
+  .novel-detail-layout .detail-main {
     grid-template-columns: minmax(0, 1fr) 300px;
     gap: 1rem;
   }
 }
 
 @media (max-width: 1000px) {
-  .novel-detail-layout .detail-top {
+  .novel-detail-layout .detail-main {
     grid-template-columns: 1fr;
   }
   .novel-detail-layout {

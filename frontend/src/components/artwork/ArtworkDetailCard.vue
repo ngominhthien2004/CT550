@@ -147,7 +147,7 @@ const artistAvatar = computed(() => {
 
 <template>
   <article class="artwork-detail-template d-grid gap-4 mx-auto">
-    <section class="detail-top">
+    <section class="detail-main">
       <div class="left-col">
         <ArtworkDetailViewer
           :artwork="artwork"
@@ -197,7 +197,7 @@ const artistAvatar = computed(() => {
       />
     </section>
 
-    <section class="detail-top mt-4">
+    <section class="detail-main mt-4">
       <div class="left-col" style="gap: 1.5rem;">
         <ArtworkDetailCommentsCard :artwork-id="artwork._id" :artwork-owner-id="artwork.user?._id" />
       </div>
@@ -214,7 +214,7 @@ const artistAvatar = computed(() => {
   margin: 0;
 }
 
-.detail-top {
+.detail-main {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 290px;
   gap: 2.5rem; /* Increased gap for better IlluWrl feel */
