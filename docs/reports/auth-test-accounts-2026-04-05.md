@@ -66,8 +66,6 @@ The following accounts were created via automated test runs on the local dev env
 
 ### Batch A — QA-style usernames (deleted)
 
-These QA-style accounts (`qa_mpny2dtq_*`) were removed from the database on 2026-05-27 as requested and therefore are no longer listed here.
-
 ### Batch B — Human-style usernames (30 accounts)
 
 | Username        | Email                     | Password   |    Register | Login      | Role |
@@ -102,3 +100,24 @@ These QA-style accounts (`qa_mpny2dtq_*`) were removed from the database on 2026
 | daniel.owusu    | daniel.owusu@gmail.com    | Test12345! | 201 Created | Not tested | user |
 | sofia.andersen  | sofia.andersen@gmail.com  | Test12345! | 201 Created | Not tested | user |
 | igor.volkov     | igor.volkov@gmail.com     | Test12345! | 201 Created | Not tested | user |
+
+---
+
+## Admin Account
+
+| Field    | Value                                       | value                      |
+| -------- | ------------------------------------------- | -------------------------- |
+| Username | `qa_admin_20260417`                         |                            |
+| Email    | `qa_admin_20260417@example.com`             | ngominhthien2004@gmail.com |
+| Password | `QaAdmin!2026`                              | ngominhthien               |
+| Role     | `admin`                                     |                            |
+| User ID  | `69e219233bf90aec30555500`                  |                            |
+| Created  | 2026-04-17 (verified working on 2026-06-05) |                            |
+
+Notes:
+
+- This account was originally created for the Admin Management UI smoke test (`admin-management-ui-smoke-2026-04-17.md`).
+- Verified operational on 2026-06-05 — login returned 200 OK with role `admin`.
+- This is the only admin account currently in the system.
+- Used for managing feature toggles (AI detection on/off), user management, and content moderation.
+- Intended for local dev environment only — do NOT use in production.

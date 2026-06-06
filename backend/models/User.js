@@ -53,7 +53,11 @@ const userSchema = mongoose.Schema({
     },
     premiumUntil: {
         type: Date
-    }
+    },
+    aiDetectionEnabled: {
+        type: Boolean,
+        default: true
+    },
 }, {
     timestamps: true
 });

@@ -10,6 +10,7 @@ import AdminCommentModerationPanel from '../components/admin/AdminCommentModerat
 import AdminPaymentManagementPanel from '../components/admin/AdminPaymentManagementPanel.vue'
 import AdminReportReviewPanel from '../components/admin/AdminReportReviewPanel.vue'
 import AdminTagManagementPanel from '../components/admin/AdminTagManagementPanel.vue'
+import AdminAISettingsPanel from '../components/admin/AdminAISettingsPanel.vue'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
 import { adminApi } from '../services/api'
@@ -83,6 +84,7 @@ const adminTabs = [
   { id: 'payments', label: 'Payment management' },
   { id: 'reports', label: 'Report review' },
   { id: 'tags', label: 'Tag management' },
+  { id: 'ai', label: 'AI Settings' },
 ]
 
 function toggleLeftNav() {
@@ -547,6 +549,10 @@ onMounted(async () => {
         @delete-tag="deleteTag"
         @merge-tags="mergeTags"
         @go-page="goToTagPage"
+      />
+
+      <AdminAISettingsPanel
+        :active-tab="activeTab"
       />
     </section>
   </MainLayoutTemplate>

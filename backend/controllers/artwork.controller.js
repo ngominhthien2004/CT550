@@ -1,4 +1,5 @@
 const Artwork = require('../models/Artwork');
+const User = require('../models/User');
 const Chapter = require('../models/Chapter');
 const ReadingProgress = require('../models/ReadingProgress');
 const Tag = require('../models/Tag');
@@ -21,6 +22,21 @@ const MAX_ARTWORK_IMAGES = 50;
 
 async function runAiDetection(primaryImagePath) {
     try {
+        // Check if AI detection is enabled by admin
+        let aiEnabled = true;
+        try {
+            const adminSettings = await User.findOne({ role: 'admin' }).select('aiDetectionEnabled');
+            if (adminSettings) {
+                aiEnabled = adminSettings.aiDetectionEnabled;
+            }
+        } catch (_) {
+            // If query fails, default to enabled
+        }
+
+        if (!aiEnabled) {
+            return { success: false, error: 'AI detection disabled by admin', disabled: true };
+        }
+
         const imageBuffer = await fs.promises.readFile(primaryImagePath);
         const base64Image = imageBuffer.toString('base64');
         const hfResult = await detectAIWithHuggingFace(base64Image);

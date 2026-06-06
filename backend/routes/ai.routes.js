@@ -7,14 +7,15 @@ const {
     summarizeArtwork,
     detectAIImage,
 } = require('../controllers/ai.controller.js');
+const { protect } = require('../middlewares/auth.middleware');
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-router.post('/chat', chat);
-router.post('/recommend', recommendArtworks);
-router.post('/search', searchByAI);
-router.post('/summarize/:artworkId', summarizeArtwork);
-router.post('/detect-image', upload.single('image'), detectAIImage);
+router.post('/chat', protect, chat);
+router.post('/recommend', protect, recommendArtworks);
+router.post('/search', protect, searchByAI);
+router.post('/summarize/:artworkId', protect, summarizeArtwork);
+router.post('/detect-image', protect, upload.single('image'), detectAIImage);
 
 module.exports = router;

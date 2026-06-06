@@ -138,6 +138,10 @@ export const adminApi = {
   updateTag: (tagId, payload) => api.put(`/tags/admin/${tagId}`, payload),
   mergeTags: (payload) => api.post('/tags/admin/merge', payload),
   deleteTag: (tagId) => api.delete(`/tags/admin/${tagId}`),
+
+  // AI settings
+  getAiSettings: () => api.get('/users/admin/ai-settings'),
+  updateAiSettings: (payload) => api.patch('/users/admin/ai-settings', payload),
 }
 
 export const messageApi = {

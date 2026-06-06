@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const { chatWithAI, generateWithPrompt } = require('../services/ai.service.js');
 const { detectAIWithHuggingFace, detectWithMetadataAnalysis } = require('../services/huggingface.service.js');
+const User = require('../models/User');
 
 const chat = asyncHandler(async (req, res) => {
     const { message, history } = req.body;
@@ -82,6 +83,20 @@ const detectAIImage = asyncHandler(async (req, res) => {
     const imageSize = imageBuffer.length;
     const imageType = req.file.mimetype;
     const base64Image = imageBuffer.toString('base64');
+
+    // Check if AI detection is enabled (admin toggle)
+    try {
+        const adminSettings = await User.findOne({ role: 'admin' }).select('aiDetectionEnabled');
+        if (adminSettings && !adminSettings.aiDetectionEnabled) {
+            res.status(403);
+            throw new Error('AI detection is currently disabled by admin');
+        }
+    } catch (checkError) {
+        if (checkError.message === 'AI detection is currently disabled by admin') {
+            throw checkError;
+        }
+        // ignore other errors (e.g., no admin user found)
+    }
 
     const hfResult = await detectAIWithHuggingFace(base64Image);
 
