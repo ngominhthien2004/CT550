@@ -2,8 +2,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import NovelEditorialSection from '../components/novelToppage/NovelEditorialSection.vue'
-import NovelCreatorRail from '../components/novelToppage/NovelCreatorRail.vue'
+import NovelSection from '../components/novel/NovelSection.vue'
+import NovelCreators from '../components/novel/NovelCreators.vue'
 import HomeTabs from '../components/home/HomeTabs.vue'
 import HomeHeroBanner from '../components/home/HomeHeroBanner.vue'
 import HomeTagStrip from '../components/home/HomeTagStrip.vue'
@@ -313,7 +313,7 @@ onMounted(loadNovelTopPage)
       <p v-else-if="loading && !normalizedNovels.length" class="novel-page-state">Loading novels...</p>
 
       <section v-else class="novel-editorial-stack">
-        <NovelEditorialSection
+        <NovelSection
           v-for="section in editorialSections"
           :key="section.id"
           :section-id="section.id"
@@ -325,7 +325,7 @@ onMounted(loadNovelTopPage)
         />
       </section>
 
-      <NovelCreatorRail
+      <NovelCreators
         v-if="creatorRows.length"
         :creators="creatorRows"
         :is-authenticated="authStore.isAuthenticated"

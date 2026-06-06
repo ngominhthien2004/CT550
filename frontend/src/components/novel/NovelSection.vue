@@ -1,5 +1,5 @@
 <script setup>
-import NovelCompactNovelCard from './NovelTopPageNovelCard.vue'
+import NovelCard from './NovelCard.vue'
 
 defineProps({
   sectionId: {
@@ -43,7 +43,7 @@ defineProps({
     <p v-if="!items.length" class="novel-editorial-empty">{{ emptyText }}</p>
 
     <div v-else class="novel-editorial-list">
-      <NovelCompactNovelCard
+      <NovelCard
         v-for="(item, index) in items"
         :key="item._id || index"
         :item="item"
@@ -56,14 +56,14 @@ defineProps({
 <style scoped>
 .novel-editorial-section {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .novel-editorial-head {
   display: flex;
-  align-items: flex-end;
+  align-items: start;
   justify-content: space-between;
-  gap: 0.8rem;
+  gap: 0.65rem;
 }
 
 .novel-editorial-copy {
@@ -74,8 +74,8 @@ defineProps({
 
 .novel-editorial-copy h3 {
   margin: 0;
-  font-size: 1.08rem;
-  line-height: 1.25;
+  font-size: 1rem;
+  line-height: 1.3;
 }
 
 .novel-editorial-copy p {
@@ -87,9 +87,9 @@ defineProps({
 
 .novel-editorial-link {
   flex: 0 0 auto;
-  color: var(--brand);
+  color: var(--accent);
   text-decoration: none;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 0.84rem;
 }
 
@@ -109,12 +109,5 @@ defineProps({
 .novel-editorial-list {
   display: grid;
   gap: 0.72rem;
-}
-
-@media (max-width: 700px) {
-  .novel-editorial-head {
-    align-items: start;
-    flex-direction: column;
-  }
 }
 </style>

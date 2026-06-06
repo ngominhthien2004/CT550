@@ -47,6 +47,15 @@ const authorLink = computed(() => {
 
   return `/account?user=${props.item.userId}`
 })
+
+function buildTagLink(tag) {
+  const label = String(tag?.label || tag?.name || '').replace(/^#/, '').trim().toLowerCase()
+  if (!label) {
+    return ''
+  }
+
+  return { path: '/search', query: { type: 'novel', q: label } }
+}
 </script>
 
 <template>
@@ -81,8 +90,9 @@ const authorLink = computed(() => {
       <div v-if="item.tags?.length" class="novel-compact-tags">
         <router-link
           v-for="tag in item.tags.slice(0, 4)"
-          :key="tag.label"
-          :to="tag.to"
+          :key="tag.label || tag.name"
+          :to="buildTagLink(tag)"
+          v-if="buildTagLink(tag)"
         >
           {{ tag.label }}
         </router-link>
