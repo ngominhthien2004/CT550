@@ -27,7 +27,6 @@ function shouldShowNovel(item) {
     <header class="section-head">
       <div>
         <h3>Recommended works</h3>
-        <p class="section-copy">A denser artwork strip, closer to the Pixiv thumbnail rhythm.</p>
       </div>
       <router-link to="/discovery">View all</router-link>
     </header>

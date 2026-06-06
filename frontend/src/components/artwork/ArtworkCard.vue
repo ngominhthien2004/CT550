@@ -112,7 +112,7 @@ function getImageCount(item) {
 .card-cover-link {
   display: block;
   position: relative;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
   background: var(--surface-alt);
   text-decoration: none;
@@ -124,11 +124,21 @@ function getImageCount(item) {
   height: auto;
   object-fit: cover;
   display: block;
-  transition: transform 0.2s ease;
 }
 
-.card-cover-link:hover img {
-  transform: scale(1.05);
+.card-cover-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.08);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.card-cover-link:hover::after {
+  opacity: 1;
 }
 
 /* Placeholder when no image */

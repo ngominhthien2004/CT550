@@ -4,6 +4,38 @@ defineProps({
     type: Object,
     required: true,
   },
+  kickerText: {
+    type: String,
+    default: 'Home',
+  },
+  description: {
+    type: String,
+    default: 'Discover featured illustrations, manga, and creator highlights in a denser editorial layout.',
+  },
+  primaryLink: {
+    type: [String, Object],
+    default: '/discovery',
+  },
+  primaryLabel: {
+    type: String,
+    default: 'Explore now',
+  },
+  secondaryLink: {
+    type: [String, Object],
+    default: '/rankings',
+  },
+  secondaryLabel: {
+    type: String,
+    default: 'View rankings',
+  },
+  showNovelStats: {
+    type: Boolean,
+    default: false,
+  },
+  novelStats: {
+    type: Array,
+    default: () => [],
+  },
 })
 </script>
 
@@ -11,12 +43,20 @@ defineProps({
   <article class="banner">
     <img :src="slide.image" :alt="slide.title" loading="lazy" />
     <div class="banner-overlay">
-      <span class="banner-kicker">Home</span>
+      <span class="banner-kicker">{{ kickerText }}</span>
       <h1>{{ slide.title }}</h1>
-      <p>Discover featured illustrations, manga, and creator highlights in a denser editorial layout.</p>
+      <p>{{ description }}</p>
+
+      <div v-if="showNovelStats && novelStats.length" class="banner-stats">
+        <div v-for="stat in novelStats" :key="stat.label" class="banner-stat">
+          <span class="banner-stat-label">{{ stat.label }}</span>
+          <span class="banner-stat-value">{{ stat.value }}</span>
+        </div>
+      </div>
+
       <div class="banner-actions">
-        <router-link to="/discovery" class="primary-link">Explore now</router-link>
-        <router-link to="/rankings" class="secondary-link">View rankings</router-link>
+        <router-link :to="primaryLink" class="primary-link">{{ primaryLabel }}</router-link>
+        <router-link :to="secondaryLink" class="secondary-link">{{ secondaryLabel }}</router-link>
       </div>
     </div>
   </article>
@@ -78,6 +118,42 @@ defineProps({
   display: flex;
   flex-wrap: wrap;
   gap: 0.38rem;
+}
+
+.banner-stats {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.banner-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.08rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 10px;
+  background: rgba(7, 13, 31, 0.58);
+  backdrop-filter: blur(6px);
+}
+
+.banner-stat-label {
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.68);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.banner-stat-value {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+@media (max-width: 920px) {
+  .banner-stats {
+    display: none;
+  }
 }
 
 .primary-link,

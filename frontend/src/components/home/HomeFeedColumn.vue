@@ -60,7 +60,6 @@ function handleAvatarError(event) {
     <header class="feed-head">
       <div>
         <h3>Recommended for you</h3>
-        <p>Fresh artwork cards with a denser, Pixiv-like reading rhythm.</p>
       </div>
       <router-link to="/discovery">See more</router-link>
     </header>
@@ -136,7 +135,7 @@ function handleAvatarError(event) {
 }
 
 .feed-head h3 {
-  font-size: 1.05rem;
+  font-size: 1.6rem;
 }
 
 .feed-head p {
