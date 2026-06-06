@@ -1,0 +1,6 @@
+export { default as HomeHeroBanner } from './HomeHeroBanner.vue'
+export { default as HomeTagStrip } from './HomeTagStrip.vue'
+export { default as HomeRecommendedUsers } from './HomeRecommendedUsers.vue'
+export { default as HomeFeedColumn } from './HomeFeedColumn.vue'
+export { default as HomeArtworkGrid } from './HomeArtworkGrid.vue'
+export { default as HomeTabs } from './HomeTabs.vue'

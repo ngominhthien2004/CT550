@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { getFeed } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import ArtworkCard from '../components/artwork/ArtworkCard.vue'
+import { ArtworkCard } from '@/components/artwork'
 import { navItems } from '../constants/navigation'
 
 const artworks = ref([])

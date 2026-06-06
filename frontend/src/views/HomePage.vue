@@ -1,12 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import HomeArtworkGrid from '../components/home/HomeArtworkGrid.vue'
-import HomeFeedColumn from '../components/home/HomeFeedColumn.vue'
-import HomeHeroBanner from '../components/home/HomeHeroBanner.vue'
-import HomeRecommendedUsers from '../components/home/HomeRecommendedUsers.vue'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import HomeTabs from '../components/home/HomeTabs.vue'
-import HomeTagStrip from '../components/home/HomeTagStrip.vue'
+import { HomeArtworkGrid, HomeFeedColumn, HomeHeroBanner, HomeRecommendedUsers, HomeTabs, HomeTagStrip } from '@/components/home'
 import { getArtworks, getTags } from '../services/api'
 import { navItems } from '../constants/navigation'
 import heroImage from '../assets/hero.png'

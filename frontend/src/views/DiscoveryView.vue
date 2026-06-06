@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { getDiscovery } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import ArtworkCard from '../components/artwork/ArtworkCard.vue'
+import { ArtworkCard } from '@/components/artwork'
 import { navItems } from '../constants/navigation'
 
 const artworks = ref([])
@@ -16,7 +16,7 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 
 const subTabsLeft = [
-  { id: 'all', label: 'Illustrations and Manga' }, // Pixiv groups these
+  { id: 'all', label: 'Illustrations and Manga' },
   { id: 'novel', label: 'Novels' },
 ]
 

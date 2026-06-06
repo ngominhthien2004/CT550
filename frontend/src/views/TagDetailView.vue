@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import HomeArtworkGrid from '../components/home/HomeArtworkGrid.vue'
+import { HomeArtworkGrid } from '@/components/home'
 import { navItems } from '../constants/navigation'
 import { useTagStore } from '../stores/tag.store'
 import { useAuthStore } from '../stores/auth.store'

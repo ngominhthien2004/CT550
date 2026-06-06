@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { getDiscovery } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import ArtworkCard from '../components/artwork/ArtworkCard.vue'
+import { ArtworkCard } from '@/components/artwork'
 import { navItems } from '../constants/navigation'
 
 const artworks = ref([])

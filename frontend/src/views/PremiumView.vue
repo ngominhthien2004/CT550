@@ -1,10 +1,5 @@
 <script setup>
-import PremiumBenefits from '../components/premium/PremiumBenefits.vue'
-import PremiumCompare from '../components/premium/PremiumCompare.vue'
-import PremiumCreatorTools from '../components/premium/PremiumCreatorTools.vue'
-import PremiumFinalCta from '../components/premium/PremiumFinalCta.vue'
-import PremiumHero from '../components/premium/PremiumHero.vue'
-import PremiumTopBar from '../components/premium/PremiumTopBar.vue'
+import { PremiumBenefits, PremiumCompare, PremiumCreatorTools, PremiumFinalCta, PremiumHero, PremiumTopBar } from '@/components/premium'
 import { compareRows, premiumFeatures, premiumMoments, premiumPerks } from '../constants/premium'
 </script>
 

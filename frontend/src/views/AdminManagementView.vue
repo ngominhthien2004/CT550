@@ -2,15 +2,13 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import AdminOverviewCards from '../components/admin/AdminOverviewCards.vue'
-import AdminSectionTabs from '../components/admin/AdminSectionTabs.vue'
-import AdminUserManagementPanel from '../components/admin/AdminUserManagementPanel.vue'
-import AdminArtworkModerationPanel from '../components/admin/AdminArtworkModerationPanel.vue'
-import AdminCommentModerationPanel from '../components/admin/AdminCommentModerationPanel.vue'
-import AdminPaymentManagementPanel from '../components/admin/AdminPaymentManagementPanel.vue'
-import AdminReportReviewPanel from '../components/admin/AdminReportReviewPanel.vue'
-import AdminTagManagementPanel from '../components/admin/AdminTagManagementPanel.vue'
-import AdminAISettingsPanel from '../components/admin/AdminAISettingsPanel.vue'
+import {
+  AdminOverviewCards, AdminSectionTabs,
+  AdminUserManagementPanel, AdminArtworkModerationPanel,
+  AdminCommentModerationPanel, AdminPaymentManagementPanel,
+  AdminReportReviewPanel, AdminTagManagementPanel,
+  AdminAISettingsPanel,
+} from '@/components/admin'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
 import { adminApi } from '../services/api'
