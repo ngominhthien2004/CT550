@@ -52,6 +52,15 @@ const routes = [
     },
   },
   {
+    path: '/gifs',
+    name: 'gifs',
+    component: TypedHomeFeedView,
+    props: {
+      workType: 'gif',
+      pageTitle: 'GIF',
+    },
+  },
+  {
     path: '/novels',
     name: 'novels',
     component: NovelTopPageView,

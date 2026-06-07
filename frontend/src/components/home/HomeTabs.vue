@@ -8,12 +8,14 @@ const tabItems = [
   { key: 'home', label: 'Home', to: { path: '/' } },
   { key: 'illust', label: 'Illustrations', to: { path: '/illustrations' } },
   { key: 'manga', label: 'Manga', to: { path: '/manga' } },
+  { key: 'gif', label: 'GIF', to: { path: '/gifs' } },
   { key: 'novel', label: 'Novels', to: { path: '/novels' } },
 ]
 
 const activeTab = computed(() => {
   if (route.path === '/illustrations') return 'illust'
   if (route.path === '/manga') return 'manga'
+  if (route.path === '/gifs') return 'gif'
   if (route.path === '/novels') return 'novel'
 
   return 'home'
