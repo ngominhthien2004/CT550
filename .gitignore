@@ -29,6 +29,7 @@ tmp-chrome-user-data/
 tmp-chrome-user-date/
 .playwright-mcp/
 tmp-pixiv-check.js
+crawled_images/
 backend/.env
 backend/public/uploads/
 frontend/temp_*

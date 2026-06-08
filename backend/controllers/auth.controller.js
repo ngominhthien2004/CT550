@@ -26,6 +26,9 @@ const registerUser = async (req, res, next) => {
                 username: user.username,
                 email: user.email,
                 role: user.role,
+                avatar: user.avatar || '',
+                displayName: user.displayName || '',
+                location: user.location || '',
                 token: generateToken(user._id),
             });
         } else {
@@ -48,6 +51,9 @@ const loginUser = async (req, res, next) => {
                 username: user.username,
                 email: user.email,
                 role: user.role,
+                avatar: user.avatar || '',
+                displayName: user.displayName || '',
+                location: user.location || '',
                 token: generateToken(user._id),
             });
         } else {

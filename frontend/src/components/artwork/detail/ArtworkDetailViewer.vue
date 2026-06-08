@@ -311,7 +311,7 @@ watch(
   gap: 0.5rem;
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.24);
   cursor: pointer;
-  z-index: 2;
+  z-index: 4;
 }
 
 .show-all-button:hover {
