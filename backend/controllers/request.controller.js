@@ -273,10 +273,6 @@ const createRequest = async (req, res, next) => {
             isAnonymous: normalizeBoolean(req.body.isAnonymous),
             ageRating: payload.ageRating,
             referenceImages: payload.referenceImages,
-            escrow: {
-                status: 'held',
-                platformFeeRate: 0.12,
-            },
         });
 
         await logRequestEvent({
@@ -284,7 +280,6 @@ const createRequest = async (req, res, next) => {
             actorId: req.user._id,
             type: 'request_submitted',
             toStatus: REQUEST_STATUSES.PENDING,
-            metadata: { escrowStatus: 'held' },
         });
 
         await createNotification({
@@ -423,9 +418,6 @@ const rejectRequest = async (req, res, next) => {
             res.status(403);
             return next(new Error('Only the creator can reject this request'));
         }
-
-        request.escrow.status = 'refunded';
-        request.escrow.refundedAt = new Date();
         await transitionRequest({
             request,
             actorId: req.user._id,
@@ -437,7 +429,7 @@ const rejectRequest = async (req, res, next) => {
             userId: request.requester,
             actorId: req.user._id,
             type: 'request',
-            message: `Your Request "${request.title}" was declined and refunded.`,
+            message: `Your Request "" was declined.`,
         });
 
         res.json(await populateRequest(Request.findById(request._id)));
@@ -484,9 +476,6 @@ const cancelRequest = async (req, res, next) => {
             res.status(403);
             return next(new Error('Only request participants can cancel this request'));
         }
-
-        request.escrow.status = 'refunded';
-        request.escrow.refundedAt = new Date();
         request.chatClosedAt = new Date();
         await transitionRequest({
             request,
@@ -614,21 +603,14 @@ const completeRequest = async (req, res, next) => {
             res.status(400);
             return next(new Error('At least one final file is required'));
         }
-
-        const fee = Math.round(request.proposedAmount * request.escrow.platformFeeRate * 100) / 100;
         request.finalFiles = finalFiles;
         request.giftFiles = filesFor(req, 'giftFiles');
-        request.escrow.platformFeeAmount = fee;
-        request.escrow.creatorPayoutAmount = Math.max(request.proposedAmount - fee, 0);
-        request.escrow.status = 'released';
-        request.escrow.releasedAt = new Date();
         request.chatClosedAt = new Date();
         await transitionRequest({
             request,
             actorId: req.user._id,
             toStatus: REQUEST_STATUSES.COMPLETED,
             type: 'request_completed',
-            metadata: { platformFeeAmount: fee },
         });
 
         await createNotification({
@@ -661,12 +643,6 @@ const approveRequest = async (req, res, next) => {
             res.status(400);
             return next(new Error('Request can only be approved after draft submission'));
         }
-
-        const fee = Math.round(request.proposedAmount * request.escrow.platformFeeRate * 100) / 100;
-        request.escrow.platformFeeAmount = fee;
-        request.escrow.creatorPayoutAmount = Math.max(request.proposedAmount - fee, 0);
-        request.escrow.status = 'released';
-        request.escrow.releasedAt = new Date();
         request.chatClosedAt = new Date();
         await transitionRequest({
             request,

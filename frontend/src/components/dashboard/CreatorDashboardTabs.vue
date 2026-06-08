@@ -49,16 +49,5 @@ const tabs = [
   background: #f1f5f9;
 }
 
-.premium-chip {
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #f59e0b;
-  color: #fff;
-  font-size: 0.56rem;
-  font-weight: 800;
-}
+
 </style>

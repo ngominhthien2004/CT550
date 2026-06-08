@@ -10,7 +10,6 @@ defineProps({
       { id: 'users', label: 'User management' },
       { id: 'artworks', label: 'Artwork moderation' },
       { id: 'comments', label: 'Comment moderation' },
-      { id: 'payments', label: 'Payment management' },
       { id: 'reports', label: 'Report review' },
       { id: 'tags', label: 'Tag management' },
     ],

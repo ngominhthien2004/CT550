@@ -5,7 +5,7 @@ import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import {
   AdminOverviewCards, AdminSectionTabs,
   AdminUserManagementPanel, AdminArtworkModerationPanel,
-  AdminCommentModerationPanel, AdminPaymentManagementPanel,
+  AdminCommentModerationPanel,
   AdminReportReviewPanel, AdminTagManagementPanel,
   AdminAISettingsPanel,
 } from '@/components/admin'
@@ -24,7 +24,6 @@ const loadingOverview = ref(false)
 const loadingUsers = ref(false)
 const loadingArtworks = ref(false)
 const loadingComments = ref(false)
-const loadingPayments = ref(false)
 const loadingReports = ref(false)
 const loadingTags = ref(false)
 const mutating = ref(false)
@@ -79,7 +78,6 @@ const adminTabs = [
   { id: 'users', label: 'User management' },
   { id: 'artworks', label: 'Artwork moderation' },
   { id: 'comments', label: 'Comment moderation' },
-  { id: 'payments', label: 'Payment management' },
   { id: 'reports', label: 'Report review' },
   { id: 'tags', label: 'Tag management' },
   { id: 'ai', label: 'AI Settings' },
@@ -505,20 +503,6 @@ onMounted(async () => {
         @apply-filters="loadComments(1)"
         @delete-comment="removeComment"
         @go-page="goToCommentPage"
-      />
-
-      <AdminPaymentManagementPanel
-        :active-tab="activeTab"
-        :payment-panel-filters-open="paymentPanelFiltersOpen"
-        :payment-status-filter="paymentStatusFilter"
-        :loading-payments="loadingPayments"
-        :payments="payments"
-        :payment-pagination="paymentPagination"
-        :format-date="formatDate"
-        @toggle-filters="togglePaymentFilters"
-        @update:payment-status-filter="paymentStatusFilter = $event"
-        @apply-filters="loadPayments(1)"
-        @go-page="goToPaymentPage"
       />
 
       <AdminReportReviewPanel

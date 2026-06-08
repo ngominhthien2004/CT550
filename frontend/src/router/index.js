@@ -24,11 +24,9 @@ import FollowingNewestView from '../views/FollowingNewestView.vue'
 import DiscoveryView from '../views/DiscoveryView.vue'
 import NewestByAllView from '../views/NewestByAllView.vue'
 import FollowUsersView from '../views/FollowUsersView.vue'
-import PremiumView from '../views/PremiumView.vue'
 import AIView from '../views/AIView.vue'
 import DrawingView from '../views/DrawingView.vue'
 import RequestManagementView from '../views/RequestManagementView.vue'
-import PaymentSandboxView from '../views/PaymentSandboxView.vue'
 import { useAuthStore } from '../stores/auth.store'
 
 const routes = [
@@ -77,9 +75,7 @@ const routes = [
   { path: '/rankings', name: 'rankings', component: RankingsView },
   { path: '/messages', name: 'messages', component: MessagesView, meta: { requiresAuth: true } },
   { path: '/notifications', name: 'notifications', component: NotificationsView, meta: { requiresAuth: true } },
-  { path: '/premium', name: 'premium', component: PremiumView },
   { path: '/requests/manage', name: 'request-management', component: RequestManagementView, meta: { requiresAuth: true } },
-  { path: '/payments/sandbox', name: 'payment-sandbox', component: PaymentSandboxView, meta: { requiresAuth: true } },
   { path: '/draw', name: 'draw', component: DrawingView, meta: { requiresAuth: true } },
   { path: '/ai', name: 'ai', component: AIView },
   { path: '/signup', name: 'signup', component: SignUpView },

@@ -101,7 +101,6 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
 - ✅ **Quản lý thẻ (Admin):** Sửa tên/bản dịch/isLocked, gộp thẻ, xóa thẻ
 - ⚠️ **Tối ưu hóa CDN:** Cloudinary cho upload artwork và avatar/cover (có fallback local)
 - ❌ **Sự kiện/Cuộc thi (Contests):** Đã có `CreatorContestCard.vue` trong dashboard nhưng chưa có hệ thống cuộc thi hoàn chỉnh
-- ✅ **Hệ thống Thanh toán (Payments):** Mock payment với Stripe intent/bank QR, escrow, refund, payout, invoice — đầy đủ sandbox
 - ✅ **Báo cáo (Report):** Xử lý báo cáo vi phạm request — backend + `AdminReportReviewPanel.vue`
 - ✅ **Triển khai (Deployment):** Cấu hình Render.com (`render.yaml`), Cloudflare (`wrangler.*`)
 - ✅ **Kiểm thử đơn vị:** 2 file test (paymentValidation, requestValidation) — 10 test cases
@@ -119,13 +118,11 @@ Những chức năng dưới đây đã được code nhưng chưa có trong tà
 - ✅ **AI Chat:** Chatbot tư vấn ý tưởng nghệ thuật
 - ✅ **AI Search:** Tìm kiếm ngữ nghĩa bằng AI
 - ✅ **AI Summarize:** Tóm tắt tác phẩm
-- ✅ **Premium UI:** Trang giới thiệu premium + giao diện so sánh
-- ✅ **Payment System:** Thanh toán mô phỏng (Stripe + QR), escrow, refund, payout, invoice
 - ✅ **Search History:** Component lưu lịch sử tìm kiếm
 
 ## 4. Cấu trúc Cơ sở Dữ liệu (thực tế — 25 models)
 
-> Cơ sở dữ liệu thực tế đã phát triển vượt xa thiết kế ban đầu. Dưới đây là danh sách đầy đủ 25 models Mongoose đã được code:
+> Cơ sở dữ liệu thực tế đã phát triển vượt xa thiết kế ban đầu. Dưới đây là danh sách đầy đủ 18 models Mongoose đã được code:
 
 | Model | Mô tả |
 |-------|-------|
@@ -142,15 +139,8 @@ Những chức năng dưới đây đã được code nhưng chưa có trong tà
 | **Chapter** | artwork, title, content, chapterNumber, wordCount |
 | **ReadingProgress** | user, artwork, chapter, progressPercent, scrollPosition |
 | **RequestTerm** | creator, title, tier, targetPrice, workTypes[], rules, isOpen |
-| **Request** | term, creator, requester, title, description, status, escrow, payment, revisionCount |
+| **Request** | term, creator, requester, title, description, status, revisionCount |
 | **RequestChatMessage** | request, sender, content, isSystem |
 | **RequestEvent** | request, actor, type, fromStatus, toStatus |
 | **RequestRevision** | request, requester, round, notes, status |
 | **IlluWrlRequest** | requester, recipient, message, status |
-| **Payment** | request, amount, currency, gateway, status, providerPaymentIntentId |
-| **PaymentConfig** | key, platformFeeRate, campaignName, isActive |
-| **Invoice** | payment, request, invoiceNumber, subtotalAmount, platformFee, totalAmount |
-| **Payout** | creator, payoutMethod, amount, currency, status |
-| **PayoutMethod** | creator, method, settlementCurrency, country, isDefault |
-| **EscrowTransaction** | payment, request, walletOwner, type, amount, balanceAfter |
-| **CreatorBalance** | creator, currency, pendingAmount, availableAmount, lifetimeEarned |

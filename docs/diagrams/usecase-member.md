@@ -8,9 +8,18 @@
 
 Biểu đồ dưới đây tập trung vào tác nhân **Thành viên (Member)** — người dùng đã đăng nhập.
 Member kế thừa tất cả quyền của Guest và có thêm các quyền: quản lý hồ sơ, quản lý tác phẩm,
-tương tác xã hội, ủy thác & thanh toán, tính năng AI, công cụ vẽ và Premium.
+tương tác xã hội, ủy thác, tính năng AI và công cụ vẽ.
 
 ```mermaid
+---
+title: Sơ đồ Use Case - Thành viên (Member)
+---
+---
+config:
+  useMaxWidth: true
+  layoutControls:
+    lineLength: 25
+---
 %% Actors
 actor "Thành viên\n(Member)" as Member
 
@@ -18,23 +27,27 @@ actor "Thành viên\n(Member)" as Member
 actor "Khách vãng lai\n(Guest)" as Guest
 Guest <|-- Member
 
-%% ===== Xác thực & Tài khoản =====
-usecase "UC04" as "Đăng xuất"
-usecase "UC15" as "Chỉnh sửa hồ sơ"
-usecase "UC16" as "Quản lý avatar/ảnh bìa"
-usecase "UC17" as "Quản lý liên kết MXH"
+%% === Authentication ===
+rectangle "Xác thực & Tài khoản" {
+  usecase "UC04" as "Đăng xuất"
+  usecase "UC15" as "Chỉnh sửa hồ sơ"
+  usecase "UC16" as "Quản lý avatar/ảnh bìa"
+  usecase "UC17" as "Quản lý liên kết MXH"
+}
 
 Member --> UC04
 Member --> UC15
 Member --> UC16
 Member --> UC17
 
-%% ===== Nhóm Tác phẩm =====
-usecase "UC18" as "Đăng tải tác phẩm"
-usecase "UC19" as "Chỉnh sửa tác phẩm"
-usecase "UC20" as "Xóa tác phẩm"
-usecase "UC21" as "Quản lý chương (novel)"
-usecase "UC22" as "Xem Dashboard sáng tác"
+%% === Artwork ===
+rectangle "Nhóm Tác phẩm" {
+  usecase "UC18" as "Đăng tải tác phẩm"
+  usecase "UC19" as "Chỉnh sửa tác phẩm"
+  usecase "UC20" as "Xóa tác phẩm"
+  usecase "UC21" as "Quản lý chương (novel)"
+  usecase "UC22" as "Xem Dashboard sáng tác"
+}
 
 Member --> UC18
 Member --> UC19
@@ -42,17 +55,19 @@ Member --> UC20
 Member --> UC21
 Member --> UC22
 
-%% ===== Nhóm Tương tác =====
-usecase "UC23" as "Thích/Bỏ thích"
-usecase "UC24" as "Bookmark tác phẩm"
-usecase "UC25" as "Bình luận"
-usecase "UC26" as "Trả lời bình luận"
-usecase "UC27" as "Xóa bình luận"
-usecase "UC28" as "Theo dõi/Hủy theo dõi"
-usecase "UC29" as "Xem feed following"
-usecase "UC30" as "Nhắn tin trực tiếp"
-usecase "UC31" as "Chặn người dùng"
-usecase "UC32" as "Xem thông báo"
+%% === Social ===
+rectangle "Nhóm Tương tác" {
+  usecase "UC23" as "Thích/Bỏ thích"
+  usecase "UC24" as "Bookmark tác phẩm"
+  usecase "UC25" as "Bình luận"
+  usecase "UC26" as "Trả lời bình luận"
+  usecase "UC27" as "Xóa bình luận"
+  usecase "UC28" as "Theo dõi/Hủy theo dõi"
+  usecase "UC29" as "Xem feed following"
+  usecase "UC30" as "Nhắn tin trực tiếp"
+  usecase "UC31" as "Chặn người dùng"
+  usecase "UC32" as "Xem thông báo"
+}
 
 Member --> UC23
 Member --> UC24
@@ -65,49 +80,44 @@ Member --> UC30
 Member --> UC31
 Member --> UC32
 
-%% ===== Nhóm Ủy thác & Thanh toán =====
-usecase "UC33" as "Tạo Request Term"
-usecase "UC34" as "Đặt hàng Request"
-usecase "UC35" as "Quản lý Request"
-usecase "UC36" as "Thanh toán (Escrow/Refund)"
-usecase "UC37" as "Gửi Fan Letter"
-usecase "UC38" as "Chat trong Request"
+%% === Commission ===
+rectangle "Nhóm Ủy thác" {
+  usecase "UC33" as "Tạo Request Term"
+  usecase "UC34" as "Đặt hàng Request"
+  usecase "UC35" as "Quản lý Request"
+  usecase "UC36" as "Gửi Fan Letter"
+  usecase "UC37" as "Chat trong Request"
+}
 
 Member --> UC33
 Member --> UC34
 Member --> UC35
 Member --> UC36
 Member --> UC37
-Member --> UC38
 
 %% Tạo Request Term liên quan đến Đặt hàng Request
 UC33 ..> UC34 : <<include>>
-UC34 ..> UC36 : <<include>>
-UC35 ..> UC38 : <<include>>
+UC35 ..> UC37 : <<include>>
 
-%% ===== Nhóm AI & Công cụ =====
-usecase "UC39" as "Chat AI Assistant"
-usecase "UC40" as "Tìm kiếm AI"
-usecase "UC41" as "Tóm tắt AI"
-usecase "UC43" as "Vẽ online"
-usecase "UC44" as "Xuất ảnh"
+%% === AI & Tools ===
+rectangle "Nhóm AI & Công cụ" {
+  usecase "UC38" as "Chat AI Assistant"
+  usecase "UC39" as "Tìm kiếm AI"
+  usecase "UC40" as "Tóm tắt AI"
+  usecase "UC41" as "Vẽ online"
+  usecase "UC42" as "Xuất ảnh"
+}
 
+Member --> UC38
 Member --> UC39
 Member --> UC40
 Member --> UC41
-Member --> UC43
-Member --> UC44
+Member --> UC42
 
-%% ===== Nhóm Premium =====
-usecase "UC45" as "Xem thông tin Premium"
-usecase "UC46" as "Đăng ký Premium"
-
-Member --> UC45
-Member --> UC46
 
 %% Quan hệ giữa các use case bổ sung
-UC39 ..> UC41 : <<extend>>
-UC43 ..> UC44 : <<extend>>
+UC38 ..> UC40 : <<extend>>
+UC41 ..> UC42 : <<extend>>
 ```
 
 ## Bảng Mô tả Use Case Chi Tiết
@@ -136,13 +146,9 @@ UC43 ..> UC44 : <<extend>>
 | UC33 | Tạo Request Term | Người sáng tác thiết lập các gói request (price, content type, terms) | Member | ✅ |
 | UC34 | Đặt hàng Request | Người đặt tạo request commission dựa trên term của người sáng tác | Member | ✅ |
 | UC35 | Quản lý Request | Theo dõi và cập nhật trạng thái request (pending/accepted/rejected/cancelled/completed) | Member | ✅ |
-| UC36 | Thanh toán (Escrow/Refund) | Thanh toán qua escrow, giải ngân khi hoàn thành, yêu cầu hoàn tiền | Member | ⚠️ |
-| UC37 | Gửi Fan Letter | Gửi tin nhắn hỗ trợ kèm tip (donation) cho người sáng tác | Member | ✅ |
-| UC38 | Chat trong Request | Trao đổi trực tiếp giữa người đặt và người sáng tác trong request | Member | ✅ |
-| UC39 | Chat với AI Assistant | Trò chuyện với AI assistant để được hỗ trợ về hệ thống, gợi ý nội dung | Member | ✅ |
-| UC40 | Tìm kiếm bằng AI | Tìm kiếm tác phẩm bằng ngôn ngữ tự nhiên, AI hiểu ngữ cảnh và intent | Member | ✅ |
-| UC41 | Tóm tắt nội dung AI | AI tự động tóm tắt nội dung novel hoặc mô tả tác phẩm | Member | ✅ |
-| UC43 | Vẽ online | Sử dụng công cụ vẽ tích hợp (Konva.js canvas) để vẽ trực tiếp trên web | Member | ✅ |
-| UC44 | Xuất ảnh | Xuất tác phẩm từ công cụ vẽ dưới định dạng PNG hoặc JPG | Member | ✅ |
-| UC45 | Xem thông tin Premium | Xem trang thông tin gói Premium, quyền lợi và bảng giá | Member | ✅ |
-| UC46 | Đăng ký Premium | Đăng ký gói Premium (chức năng đã lên kế hoạch, chưa triển khai) | Member | ❌ |
+| UC37 | Chat trong Request | Trao đổi trực tiếp giữa người đặt và người sáng tác trong request | Member | ✅ |
+| UC38 | Chat với AI Assistant | Trò chuyện với AI assistant để được hỗ trợ về hệ thống, gợi ý nội dung | Member | ✅ |
+| UC39 | Tìm kiếm bằng AI | Tìm kiếm tác phẩm bằng ngôn ngữ tự nhiên, AI hiểu ngữ cảnh và intent | Member | ✅ |
+| UC40 | Tóm tắt nội dung AI | AI tự động tóm tắt nội dung novel hoặc mô tả tác phẩm | Member | ✅ |
+| UC41 | Vẽ online | Sử dụng công cụ vẽ tích hợp (Konva.js canvas) để vẽ trực tiếp trên web | Member | ✅ |
+| UC42 | Xuất ảnh | Xuất tác phẩm từ công cụ vẽ dưới định dạng PNG hoặc JPG | Member | ✅ |

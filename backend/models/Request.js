@@ -13,32 +13,6 @@ const requestFileSchema = mongoose.Schema({
     size: { type: Number, default: 0 },
 }, { _id: false });
 
-const escrowSchema = mongoose.Schema({
-    status: {
-        type: String,
-        enum: ['held', 'released', 'refunded'],
-        default: 'held',
-    },
-    platformFeeRate: {
-        type: Number,
-        default: 0.12,
-        min: 0,
-        max: 0.5,
-    },
-    platformFeeAmount: {
-        type: Number,
-        default: 0,
-        min: 0,
-    },
-    creatorPayoutAmount: {
-        type: Number,
-        default: 0,
-        min: 0,
-    },
-    releasedAt: { type: Date, default: null },
-    refundedAt: { type: Date, default: null },
-}, { _id: false });
-
 const fanLetterSchema = mongoose.Schema({
     rating: { type: Number, min: 1, max: 5 },
     message: { type: String, trim: true, maxlength: 2000, default: '' },
@@ -140,21 +114,6 @@ const requestSchema = mongoose.Schema({
     extensionRequestedAt: { type: Date, default: null },
     extensionDays: { type: Number, default: 0, min: 0, max: 30 },
     chatClosedAt: { type: Date, default: null },
-    escrow: {
-        type: escrowSchema,
-        default: () => ({}),
-    },
-    payment: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Payment',
-        default: null,
-    },
-    paymentStatus: {
-        type: String,
-        enum: ['unpaid', 'requires_action', 'held', 'refunded', 'released', 'failed'],
-        default: 'unpaid',
-        index: true,
-    },
     licenseTier: {
         type: String,
         enum: ['personal', 'commercial'],

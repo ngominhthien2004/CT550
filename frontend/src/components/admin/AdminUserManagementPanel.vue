@@ -112,11 +112,6 @@ function onRoleFilterChange(event) {
                 {{ row.role }}
               </span>
             </td>
-            <td>
-              <span class="badge" :class="row.isPremium ? 'bg-warning-subtle text-warning-emphasis' : 'bg-light text-dark'">
-                {{ row.isPremium ? 'Premium' : 'Standard' }}
-              </span>
-            </td>
             <td>{{ formatDate(row.createdAt) }}</td>
             <td class="actions-cell">
               <button
@@ -133,13 +128,10 @@ function onRoleFilterChange(event) {
               >
                 Make user
               </button>
-              <button class="btn btn-sm btn-outline-warning" :disabled="mutating" @click="emit('toggle-premium', row)">
-                {{ row.isPremium ? 'Remove premium' : 'Grant premium' }}
-              </button>
             </td>
           </tr>
           <tr v-if="users.length === 0">
-            <td colspan="6" class="text-center text-muted py-3">No users found.</td>
+            <td colspan="5" class="text-center text-muted py-3">No users found.</td>
           </tr>
         </tbody>
       </table>

@@ -1,6 +1,0 @@
-export { default as PremiumBenefits } from './PremiumBenefits.vue'
-export { default as PremiumCompare } from './PremiumCompare.vue'
-export { default as PremiumCreatorTools } from './PremiumCreatorTools.vue'
-export { default as PremiumFinalCta } from './PremiumFinalCta.vue'
-export { default as PremiumHero } from './PremiumHero.vue'
-export { default as PremiumTopBar } from './PremiumTopBar.vue'

@@ -11,16 +11,25 @@ Guest có thể đăng ký tài khoản, đăng nhập (email hoặc Google OAut
 và thực hiện tìm kiếm cơ bản. Sau khi đăng nhập/đăng ký, Guest trở thành Member.
 
 ```mermaid
+---
+title: Sơ đồ Use Case - Khách vãng lai (Guest)
+---
+---
+config:
+  useMaxWidth: true
+---
 actor "Khách vãng lai\n(Guest)" as Guest
 
 %% Generalization: Guest mở rộng thành Member
 actor "Thành viên\n(Member)" as Member
 Guest <|-- Member
 
-%% ===== Xác thực (Authentication) =====
-usecase "UC01" as "Đăng ký tài khoản"
-usecase "UC02" as "Đăng nhập (Email + JWT)"
-usecase "UC03" as "Đăng nhập Google OAuth"
+%% === PACKAGE: Authentication ===
+rectangle "Xác thực (Authentication)" {
+  usecase "UC01" as "Đăng ký tài khoản"
+  usecase "UC02" as "Đăng nhập (Email + JWT)"
+  usecase "UC03" as "Đăng nhập Google OAuth"
+}
 
 Guest --> UC01
 Guest --> UC02
@@ -29,13 +38,15 @@ Guest --> UC03
 %% Member extends từ Guest sau khi đăng ký
 UC01 ..> Member : <<extend>>
 
-%% ===== Duyệt & Khám phá (Browse & Discover) =====
-usecase "UC04" as "Xem trang chủ"
-usecase "UC05" as "Xem danh sách tác phẩm"
-usecase "UC06" as "Xem chi tiết tác phẩm"
-usecase "UC07" as "Xem bảng xếp hạng"
-usecase "UC08" as "Xem trang khám phá"
-usecase "UC09" as "Xem hồ sơ người dùng"
+%% === PACKAGE: Browse & Discover ===
+rectangle "Duyệt & Khám phá (Browse & Discover)" {
+  usecase "UC04" as "Xem trang chủ"
+  usecase "UC05" as "Xem danh sách tác phẩm"
+  usecase "UC06" as "Xem chi tiết tác phẩm"
+  usecase "UC07" as "Xem bảng xếp hạng"
+  usecase "UC08" as "Xem trang khám phá"
+  usecase "UC09" as "Xem hồ sơ người dùng"
+}
 
 Guest --> UC04
 Guest --> UC05
@@ -44,10 +55,12 @@ Guest --> UC07
 Guest --> UC08
 Guest --> UC09
 
-%% ===== Tìm kiếm (Search) =====
-usecase "UC10" as "Tìm kiếm tác phẩm"
-usecase "UC11" as "Tìm kiếm theo thẻ (tag)"
-usecase "UC12" as "Tìm kiếm người dùng"
+%% === PACKAGE: Search ===
+rectangle "Tìm kiếm (Search)" {
+  usecase "UC10" as "Tìm kiếm tác phẩm"
+  usecase "UC11" as "Tìm kiếm theo thẻ (tag)"
+  usecase "UC12" as "Tìm kiếm người dùng"
+}
 
 Guest --> UC10
 Guest --> UC11

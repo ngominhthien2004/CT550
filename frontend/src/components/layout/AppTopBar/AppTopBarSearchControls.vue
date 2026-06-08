@@ -198,6 +198,62 @@ function chooseSearchScope(scopeKey) {
   flex-shrink: 0;
 }
 
+@media (min-width: 921px) {
+  .scope-text {
+    display: inline-block;
+  }
+}
+
+/* --- Scope Menu --- */
+.inline-menu {
+  position: static;
+}
+
+.inline-menu-panel {
+  position: absolute;
+  right: 0;
+  left: auto;
+  top: calc(100% + 0.4rem);
+  width: min(280px, 100%);
+  max-width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  z-index: 24;
+  padding: 0.35rem;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.inline-menu-item {
+  border: none;
+  background: transparent;
+  color: var(--text);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.46rem;
+  padding: 0.4rem 0.5rem;
+}
+
+.inline-menu-item:hover,
+.inline-menu-item:focus-visible,
+.inline-menu-item.is-active {
+  background: var(--surface-alt);
+}
+
+.scope-icon,
+.scope-menu-icon {
+  width: 1rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
 /* --- Premium Link (less prominent) --- */
 .premium-pill {
   text-decoration: none;

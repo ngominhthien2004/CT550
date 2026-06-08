@@ -56,25 +56,8 @@ const openTerms = computed(() => props.terms.filter((term) => term.isOpen))
 const visibleTerms = computed(() => (props.isOwnProfile ? props.terms : openTerms.value))
 const selectedTerm = computed(() => openTerms.value.find((term) => term._id === selectedTermId.value) || openTerms.value[0] || null)
 const canSubmit = computed(() => Boolean(selectedTerm.value && authStore.isAuthenticated && !props.isOwnProfile))
-const platformFeeRate = 0.12
-const proposedAmountValue = computed(() => Number.parseFloat(form.proposedAmount) || 0)
-const estimatedFeeAmount = computed(() => proposedAmountValue.value * platformFeeRate)
-const estimatedPayoutAmount = computed(() => Math.max(proposedAmountValue.value - estimatedFeeAmount.value, 0))
 
-function formatMoney(amount, currency) {
-  const safeAmount = Number.isFinite(amount) ? amount : 0
-  const safeCurrency = currency || 'USD'
-  try {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: safeCurrency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(safeAmount)
-  } catch (_error) {
-    return `${safeCurrency} ${safeAmount.toFixed(2)}`
-  }
-}
+
 
 function syncTermDefaults(term) {
   if (!term) {
@@ -238,17 +221,6 @@ watch(
         Description
         <textarea v-model="form.description" rows="5" required placeholder="Markdown is OK. Include intent, references, deadline concerns, and usage notes."></textarea>
       </label>
-
-      <div class="escrow-summary">
-        <div>
-          <p class="escrow-title">Escrow estimate</p>
-          <p class="escrow-note">Funds are held until the creator accepts or rejects.</p>
-        </div>
-        <div class="escrow-values">
-          <span>Platform fee (12%): {{ formatMoney(estimatedFeeAmount, selectedTerm?.currency) }}</span>
-          <span>Creator payout: {{ formatMoney(estimatedPayoutAmount, selectedTerm?.currency) }}</span>
-        </div>
-      </div>
 
       <div class="form-grid specifics-grid">
         <label><span>Pose</span><input v-model="form.pose" type="text" /></label>
@@ -494,57 +466,13 @@ textarea {
   text-align: center;
 }
 
-.escrow-summary {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background: #f8fafc;
-  padding: 0.85rem 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
 
-.escrow-title {
-  margin: 0;
-  font-weight: 800;
-  color: #1f2937;
-}
 
-.escrow-note {
-  margin: 0.2rem 0 0;
-  color: #64748b;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
 
-.escrow-values {
-  display: grid;
-  gap: 0.2rem;
-  color: #0f172a;
-  font-weight: 800;
-  font-size: 0.9rem;
-  text-align: right;
-}
+
 
 .submit-request-btn:disabled {
   opacity: 0.55;
 }
-
-@media (max-width: 720px) {
-  .request-section-head,
-  .form-title-row {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .escrow-values {
-    text-align: left;
-  }
-}
 </style>
+
