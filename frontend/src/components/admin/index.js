@@ -6,3 +6,5 @@ export { default as AdminCommentModerationPanel } from './AdminCommentModeration
 export { default as AdminReportReviewPanel } from './AdminReportReviewPanel.vue'
 export { default as AdminTagManagementPanel } from './AdminTagManagementPanel.vue'
 export { default as AdminAISettingsPanel } from './AdminAISettingsPanel.vue'
+export { default as AdminArtworkReportPanel } from './AdminArtworkReportPanel.vue'
+export { default as AdminHiddenArtworksPanel } from './AdminHiddenArtworksPanel.vue'

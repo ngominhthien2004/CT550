@@ -51,6 +51,7 @@ const artworkSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    reportCount: { type: Number, default: 0 },
     isDraft: {
         type: Boolean,
         default: false
@@ -86,6 +87,11 @@ const artworkSchema = mongoose.Schema({
         type: Number,
         default: 0,
     },
+    // Moderation fields
+    isHidden: { type: Boolean, default: false },
+    hiddenBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+    hiddenAt: { type: Date, default: null },
+    hiddenReason: { type: String, trim: true, default: '' },
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

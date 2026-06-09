@@ -127,6 +127,7 @@ rectangle "Tương tác Xã hội (Social Interaction)" {
   usecase "UC30" as UC_DIRECT_MSG
   usecase "UC31" as UC_BLOCK_USER
   usecase "UC32" as UC_NOTIFICATIONS
+  usecase "UC55" as UC_REPORT_ARTWORK
 }
 
 Member --> UC_LIKE
@@ -139,6 +140,7 @@ Member --> UC_FEED
 Member --> UC_DIRECT_MSG
 Member --> UC_BLOCK_USER
 Member --> UC_NOTIFICATIONS
+Member --> UC_REPORT_ARTWORK
 
 %% === PACKAGE: Commission & Payment ===
 rectangle "Ủy thác & Thanh toán (Commission & Payment)" {
@@ -207,6 +209,8 @@ rectangle "Quản trị (Administration)" {
   usecase "UC52" as UC_MANAGE_PAYMENT
   usecase "UC53" as UC_HANDLE_REPORT
   usecase "UC54" as UC_CONFIG_AI
+  usecase "UC56" as UC_HIDE_ARTWORK
+  usecase "UC57" as UC_UNHIDE_ARTWORK
 }
 
 Admin --> UC_ADMIN_DASHBOARD
@@ -217,6 +221,8 @@ Admin --> UC_MANAGE_TAG
 Admin --> UC_MANAGE_PAYMENT
 Admin --> UC_HANDLE_REPORT
 Admin --> UC_CONFIG_AI
+Admin --> UC_HIDE_ARTWORK
+Admin --> UC_UNHIDE_ARTWORK
 \`\`\`
 
 ## Bảng Mô tả Use Case Chi Tiết
@@ -277,6 +283,9 @@ Admin --> UC_CONFIG_AI
 | UC52 | Quản lý thanh toán | Xem lịch sử, cấu hình phí, quản lý campaign | Admin |
 | UC53 | Xử lý báo cáo vi phạm | Review và resolve các báo cáo từ người dùng | Admin |
 | UC54 | Cấu hình AI | Điều chỉnh ngưỡng phát hiện AI, cấu hình model | Admin |
+| UC55 | Báo cáo tác phẩm | Người dùng gửi báo cáo vi phạm cho một tác phẩm | Member |
+| UC56 | Ẩn tác phẩm | Admin ẩn tác phẩm vi phạm khỏi hiển thị công khai | Admin |
+| UC57 | Bỏ ẩn tác phẩm | Admin khôi phục hiển thị cho tác phẩm đã bị ẩn | Admin |
 `;
 
 // ============================================================
@@ -441,6 +450,7 @@ rectangle "Nhóm Tương tác" {
   usecase "UC30" as "Nhắn tin trực tiếp"
   usecase "UC31" as "Chặn người dùng"
   usecase "UC32" as "Xem thông báo"
+  usecase "UC55" as "Báo cáo tác phẩm"
 }
 
 Member --> UC23
@@ -453,6 +463,7 @@ Member --> UC29
 Member --> UC30
 Member --> UC31
 Member --> UC32
+Member --> UC55
 
 %% === Commission ===
 rectangle "Nhóm Ủy thác & Thanh toán" {
@@ -541,6 +552,7 @@ UC43 ..> UC44 : <<extend>>
 | UC44 | Xuất ảnh | Xuất tác phẩm từ công cụ vẽ dưới định dạng PNG hoặc JPG | Member | ✅ |
 | UC45 | Xem thông tin Premium | Xem trang thông tin gói Premium, quyền lợi và bảng giá | Member | ✅ |
 | UC46 | Đăng ký Premium | Đăng ký gói Premium (chức năng đã lên kế hoạch, chưa triển khai) | Member | ❌ |
+| UC55 | Báo cáo tác phẩm | Gửi báo cáo vi phạm cho một tác phẩm kèm lý do và mô tả | Member | ✅ |
 `;
 
 // ============================================================
@@ -588,6 +600,8 @@ rectangle "Quản trị (Administration)" {
   usecase "UC52" as "Quản lý thanh toán"
   usecase "UC53" as "Xử lý báo cáo vi phạm"
   usecase "UC54" as "Cấu hình AI"
+  usecase "UC56" as "Ẩn tác phẩm"
+  usecase "UC57" as "Bỏ ẩn tác phẩm"
 }
 
 Admin --> UC47
@@ -598,6 +612,8 @@ Admin --> UC51
 Admin --> UC52
 Admin --> UC53
 Admin --> UC54
+Admin --> UC56
+Admin --> UC57
 
 %% Quan hệ giữa các use case
 UC48 ..> UC53 : <<include>>
@@ -617,6 +633,8 @@ UC50 ..> UC53 : <<include>>
 | UC52 | Quản lý thanh toán | Xem lịch sử giao dịch, cấu hình phí hệ thống, quản lý campaign khuyến mãi | Admin | ⚠️ |
 | UC53 | Xử lý báo cáo vi phạm | Review báo cáo từ người dùng, xác minh hành vi vi phạm, áp dụng biện pháp (cảnh cáo/xóa nội dung/khóa tài khoản) và resolve báo cáo | Admin | ✅ |
 | UC54 | Cấu hình AI | Điều chỉnh threshold phát hiện AI (AI detection score), cấu hình model AI search, quản lý prompt template | Admin | ✅ |
+| UC56 | Ẩn tác phẩm | Ẩn tác phẩm vi phạm khỏi hiển thị công khai, tự động giải quyết các báo cáo liên quan và thông báo cho chủ sở hữu | Admin | ✅ |
+| UC57 | Bỏ ẩn tác phẩm | Khôi phục hiển thị cho tác phẩm đã bị ẩn, thông báo cho chủ sở hữu | Admin | ✅ |
 `;
 
 // ============================================================
@@ -755,6 +773,9 @@ Member có tất cả quyền của Guest.
 | UC52 | Quản lý thanh toán | — | — | ✅ |
 | UC53 | Xử lý báo cáo vi phạm | — | — | ✅ |
 | UC54 | Cấu hình AI | — | — | ✅ |
+| UC55 | Báo cáo tác phẩm | — | ✅ | ✅ |
+| UC56 | Ẩn tác phẩm | — | — | ✅ |
+| UC57 | Bỏ ẩn tác phẩm | — | — | ✅ |
 
 > **Ghi chú**: UC42 (Phát hiện AI) là use case tự động — Hệ thống AI thực hiện khi người dùng upload tác phẩm. Không có actor người kích hoạt trực tiếp.
 
@@ -858,7 +879,15 @@ Member có tất cả quyền của Guest.
 | UC45 | Xem thông tin Premium | Xem trang giới thiệu Premium: quyền lợi, bảng giá, so sánh. | Member / Admin | — |
 | UC46 | Đăng ký Premium | Đăng ký gói Premium (chưa triển khai — planned). | Member / Admin | — |
 
-### 4.11 Nhóm: Quản trị (Administration)
+### 4.11 Nhóm: Báo cáo & Kiểm duyệt (Reporting & Moderation)
+
+| Mã số | Tên | Mô tả | Actor | Phụ thuộc |
+|-------|-----|-------|-------|-----------|
+| UC55 | Báo cáo tác phẩm | Người dùng gửi báo cáo cho tác phẩm kèm lý do (spam, nội dung không phù hợp, vi phạm bản quyền, quấy rối, thiếu phân loại độ tuổi) và mô tả tùy chọn | Member / Admin | UC07 |
+| UC56 | Ẩn tác phẩm | Admin ẩn tác phẩm khỏi hiển thị công khai, tự động giải quyết các báo cáo liên quan, gửi thông báo cho chủ sở hữu | Admin | UC55 |
+| UC57 | Bỏ ẩn tác phẩm | Admin khôi phục hiển thị cho tác phẩm đã bị ẩn, gửi thông báo cho chủ sở hữu | Admin | UC56 |
+
+### 4.12 Nhóm: Quản trị (Administration)
 
 | Mã số | Tên | Mô tả | Actor | Phụ thuộc |
 |-------|-----|-------|-------|-----------|
@@ -902,6 +931,7 @@ Member có tất cả quyền của Guest.
 | UC48 (Quản lý user) | UC53 (Xử lý báo cáo) | Xử lý báo cáo có thể dẫn đến quản lý user |
 | UC49 (Kiểm duyệt art) | UC53 (Xử lý báo cáo) | Kiểm duyệt art thường từ báo cáo |
 | UC50 (Kiểm duyệt comment) | UC53 (Xử lý báo cáo) | Kiểm duyệt comment thường từ báo cáo |
+| UC53 (Xử lý báo cáo) | UC56 (Ẩn tác phẩm) | Xử lý báo cáo có thể dẫn đến ẩn tác phẩm |
 
 ### 5.4 Sơ đồ quan hệ tổng thể
 
@@ -920,6 +950,7 @@ UC35 (Manage) --include--> UC38 (Chat)
 UC48 (User Mgmt) --include--> UC53 (Report)
 UC49 (Art Mod) --include--> UC53 (Report)
 UC50 (Comment Mod) --include--> UC53 (Report)
+UC53 (Report) --include--> UC56 (Hide Artwork)
 \`\`\`
 
 ---
@@ -933,21 +964,21 @@ Hệ thống **IlluWrl** được mô hình hóa với:
 | Thành phần | Số lượng |
 |------------|:--------:|
 | Actors | **4** (Guest, Member, Admin, AI System) |
-| Use cases | **54** |
+| Use cases | **57** |
 | Nhóm chức năng | **11** (Authentication, Browse, Search, Profile, Artwork, Social, Commission, AI, Drawing, Premium, Admin) |
 
 ### 6.2 Phân bố use case theo mức độ ưu tiên
 
 | Mức độ | Số lượng | Mô tả |
 |--------|:--------:|-------|
-| ✅ **Đã triển khai** | 52 | Hầu hết các use case đã được implement |
+| ✅ **Đã triển khai** | 55 | Hầu hết các use case đã được implement |
 | ⚠️ **Triển khai một phần** | 1 | UC36 (Thanh toán Escrow) — chức năng cốt lõi nhưng chưa đầy đủ |
 | ❌ **Chưa triển khai** | 1 | UC46 (Đăng ký Premium) — đã lên kế hoạch |
 
 ### 6.3 Kết quả đạt được
 
-1. **Bao phủ toàn diện**: 54 use case bao phủ tất cả chức năng từ xác thực, duyệt nội dung,
-   tương tác xã hội, đến quản trị và AI.
+1. **Bao phủ toàn diện**: 57 use case bao phủ tất cả chức năng từ xác thực, duyệt nội dung,
+   tương tác xã hội, báo cáo & kiểm duyệt, đến quản trị và AI.
 
 2. **Phân quyền rõ ràng**: Quan hệ kế thừa (generalization) 3 tầng Guest → Member → Admin
    đảm bảo phân quyền chính xác.
@@ -958,7 +989,7 @@ Hệ thống **IlluWrl** được mô hình hóa với:
 4. **Quy trình nghiệp vụ**: Commission/Payment được mô hình hóa với chuỗi include/extend
    rõ ràng: Term → Order → Payment → Request → Chat.
 
-5. **Hỗ trợ báo cáo**: 54 use case mỗi use case có mã số duy nhất, mô tả chi tiết,
+5. **Hỗ trợ báo cáo**: 57 use case mỗi use case có mã số duy nhất, mô tả chi tiết,
    trạng thái triển khai và phụ thuộc, thuận tiện cho việc theo dõi tiến độ dự án.
 
 ### 6.4 Hướng phát triển

@@ -2,7 +2,7 @@
 
 > **Môn học:** CT550 - Công nghệ phần mềm  
 > **Hệ thống:** IlluWrl - Nền tảng chia sẻ tranh vẽ và manga (Pixiv-clone)  
-> **Ngày:** 2026-06-08
+> **Ngày:** 2026-06-09
 
 ## Tổng Quan
 
@@ -37,8 +37,11 @@ rectangle "Quản trị (Administration)" {
   usecase "UC49" as "Kiểm duyệt tác phẩm"
   usecase "UC50" as "Kiểm duyệt bình luận"
   usecase "UC51" as "Quản lý thẻ (tag)"
-  usecase "UC52" as "Xử lý báo cáo vi phạm"
-  usecase "UC52" as "Cấu hình AI"
+  usecase "UC52" as "Quản lý thanh toán"
+  usecase "UC53" as "Xử lý báo cáo vi phạm"
+  usecase "UC54" as "Cấu hình AI"
+  usecase "UC56" as "Ẩn tác phẩm"
+  usecase "UC57" as "Bỏ ẩn tác phẩm"
 }
 
 Admin --> UC47
@@ -47,21 +50,28 @@ Admin --> UC49
 Admin --> UC50
 Admin --> UC51
 Admin --> UC52
-Admin --> UC52
+Admin --> UC53
+Admin --> UC54
+Admin --> UC56
+Admin --> UC57
 
 %% Quan hệ giữa các use case
-UC48 ..> UC52 : <<include>>
-UC49 ..> UC52 : <<include>>
-UC50 ..> UC52 : <<include>>
+UC48 ..> UC53 : <<include>>
+UC49 ..> UC53 : <<include>>
+UC50 ..> UC53 : <<include>>
 ```
 
 ## Bảng Mô tả Use Case Chi Tiết
 
 | Mã số | Tên Use Case | Mô tả ngắn | Actor chính | Trạng thái |
 |-------|-------------|------------|-------------|------------|
-| UC47 | Xem Dashboard tổng quan | Xem bảng KPI tổng quan: số người dùng, tác phẩm, request, báo cáo đang chờ xử lý | Admin | ✅ |
+| UC47 | Xem Dashboard tổng quan | Xem bảng KPI tổng quan: số người dùng, tác phẩm, doanh thu, request, báo cáo đang chờ xử lý | Admin | ✅ |
 | UC48 | Quản lý người dùng | Xem danh sách, tìm kiếm người dùng; chỉnh sửa role (member/admin), isPremium status; khóa/mở khóa tài khoản | Admin | ✅ |
 | UC49 | Kiểm duyệt tác phẩm | Xem danh sách tác phẩm (có bộ lọc), xem chi tiết, xóa tác phẩm vi phạm điều khoản | Admin | ✅ |
 | UC50 | Kiểm duyệt bình luận | Xem danh sách bình luận, xóa bình luận vi phạm (spam, thù địch, nội dung người lớn) | Admin | ✅ |
 | UC51 | Quản lý thẻ (tag) | Sửa tên/dịch thuật tag, khóa/mở khóa tag (ngăn sử dụng), gộp tag (merge), xóa tag | Admin | ✅ |
-| UC52 | Cấu hình AI | Điều chỉnh threshold phát hiện AI (AI detection score), cấu hình model AI search, quản lý prompt template | Admin | ✅ |
+| UC52 | Quản lý thanh toán | Xem lịch sử giao dịch, cấu hình phí hệ thống, quản lý campaign khuyến mãi | Admin | ⚠️ |
+| UC53 | Xử lý báo cáo vi phạm | Review báo cáo từ người dùng, xác minh hành vi vi phạm, áp dụng biện pháp (cảnh cáo/xóa nội dung/khóa tài khoản) và resolve báo cáo | Admin | ✅ |
+| UC54 | Cấu hình AI | Điều chỉnh threshold phát hiện AI (AI detection score), cấu hình model AI search, quản lý prompt template | Admin | ✅ |
+| UC56 | Ẩn tác phẩm | Ẩn tác phẩm vi phạm khỏi hiển thị công khai, tự động giải quyết các báo cáo liên quan và thông báo cho chủ sở hữu | Admin | ✅ |
+| UC57 | Bỏ ẩn tác phẩm | Khôi phục hiển thị cho tác phẩm đã bị ẩn, thông báo cho chủ sở hữu | Admin | ✅ |

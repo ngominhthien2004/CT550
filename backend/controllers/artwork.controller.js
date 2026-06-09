@@ -1,4 +1,5 @@
 const Artwork = require('../models/Artwork');
+const ArtworkReport = require('../models/ArtworkReport');
 const User = require('../models/User');
 const Chapter = require('../models/Chapter');
 const ReadingProgress = require('../models/ReadingProgress');
@@ -231,7 +232,7 @@ const getArtworks = async (req, res, next) => {
             type, ageRating, user, tag, q, limit: rawLimit,
             sortBy, novelFormat, minWords, maxWords,
         } = req.query;
-        const query = {};
+        const query = { isHidden: { $ne: true } };
         const parsedLimit = Number.parseInt(rawLimit, 10);
         const limit = Number.isNaN(parsedLimit) ? 48 : Math.min(Math.max(parsedLimit, 1), 200);
 
@@ -588,6 +589,208 @@ const getReadingProgress = async (req, res, next) => {
     }
 };
 
+// ─── Report Artwork ────────────────────────────────────────────────────────────
+const reportArtwork = async (req, res, next) => {
+    try {
+        const artwork = await Artwork.findById(req.params.id);
+        if (!artwork) {
+            res.status(404);
+            return next(new Error('Artwork not found'));
+        }
+
+        // Check if user already reported this artwork
+        const existingReport = await ArtworkReport.findOne({
+            artwork: artwork._id,
+            reportedBy: req.user._id,
+            status: 'pending',
+        });
+        if (existingReport) {
+            res.status(400);
+            return next(new Error('You have already reported this artwork'));
+        }
+
+        await ArtworkReport.create({
+            artwork: artwork._id,
+            reportedBy: req.user._id,
+            reason: req.body.reason || 'other',
+            description: req.body.description || '',
+        });
+
+        // Increment reportCount on artwork
+        await Artwork.findByIdAndUpdate(artwork._id, { $inc: { reportCount: 1 } });
+
+        // Notify all admins
+        const admins = await User.find({ role: 'admin' }).select('_id').limit(20);
+        await Promise.all(admins.map((admin) =>
+            createNotification({
+                userId: admin._id,
+                actorId: req.user._id,
+                type: 'system',
+                message: `Artwork reported: ${artwork.title}`,
+            })
+        ));
+
+        res.status(201).json({ message: 'Report submitted for review' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// ─── Admin: Get Reported Artworks ──────────────────────────────────────────────
+const getReportedArtworks = async (req, res, next) => {
+    try {
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
+        const skip = (page - 1) * limit;
+
+        const status = req.query.status || 'pending';
+        const filter = { status };
+
+        const [reports, total] = await Promise.all([
+            ArtworkReport.find(filter)
+                .populate('artwork', 'title type images isHidden')
+                .populate('reportedBy', 'username displayName')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            ArtworkReport.countDocuments(filter),
+        ]);
+
+        res.json({
+            reports,
+            total,
+            page,
+            pages: Math.ceil(total / limit) || 1,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// ─── Admin: Resolve Artwork Report ─────────────────────────────────────────────
+const resolveArtworkReport = async (req, res, next) => {
+    try {
+        const { id: reportId } = req.params;
+        const { action, note } = req.body;
+
+        const report = await ArtworkReport.findById(reportId);
+        if (!report) {
+            res.status(404);
+            return next(new Error('Report not found'));
+        }
+
+        report.status = action === 'dismiss' ? 'dismissed' : 'resolved';
+        report.resolvedBy = req.user._id;
+        report.resolvedAt = new Date();
+        report.resolutionNote = note || '';
+        await report.save();
+
+        res.json({ message: `Report ${report.status}`, reportId: report._id });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// ─── Admin: Hide Artwork ───────────────────────────────────────────────────────
+const hideArtwork = async (req, res, next) => {
+    try {
+        const artwork = await Artwork.findByIdAndUpdate(
+            req.params.id,
+            {
+                isHidden: true,
+                hiddenBy: req.user._id,
+                hiddenAt: new Date(),
+                hiddenReason: req.body.reason || 'Violated platform guidelines',
+            },
+            { new: true }
+        );
+        if (!artwork) {
+            res.status(404);
+            return next(new Error('Artwork not found'));
+        }
+
+        // Auto-resolve all pending reports for this artwork
+        await ArtworkReport.updateMany(
+            { artwork: artwork._id, status: 'pending' },
+            { status: 'resolved', resolvedBy: req.user._id, resolvedAt: new Date(), resolutionNote: 'Artwork hidden by admin' }
+        );
+
+        // Notify the artwork owner
+        await createNotification({
+            userId: artwork.user,
+            actorId: req.user._id,
+            type: 'system',
+            message: `Your artwork "${artwork.title}" has been hidden: ${req.body.reason || 'Violated platform guidelines'}`,
+        });
+
+        res.json({ message: 'Artwork hidden', artwork });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// ─── Admin: Unhide Artwork ────────────────────────────────────────────────────
+const unhideArtwork = async (req, res, next) => {
+    try {
+        const artwork = await Artwork.findByIdAndUpdate(
+            req.params.id,
+            {
+                isHidden: false,
+                hiddenBy: null,
+                hiddenAt: null,
+                hiddenReason: '',
+            },
+            { new: true }
+        );
+        if (!artwork) {
+            res.status(404);
+            return next(new Error('Artwork not found'));
+        }
+
+        await createNotification({
+            userId: artwork.user,
+            actorId: req.user._id,
+            type: 'system',
+            message: `Your artwork "${artwork.title}" has been reinstated.`,
+        });
+
+        res.json({ message: 'Artwork unhidden', artwork });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// ─── Admin: Get Hidden Artworks ────────────────────────────────────────────────
+const getHiddenArtworks = async (req, res, next) => {
+    try {
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
+        const skip = (page - 1) * limit;
+
+        const filter = { isHidden: true };
+        const [artworks, total] = await Promise.all([
+            Artwork.find(filter)
+                .populate('user', 'username displayName')
+                .populate('hiddenBy', 'username displayName')
+                .sort({ hiddenAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            Artwork.countDocuments(filter),
+        ]);
+
+        res.json({
+            artworks,
+            total,
+            page,
+            pages: Math.ceil(total / limit) || 1,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createArtwork,
     getArtworks,
@@ -601,4 +804,10 @@ module.exports = {
     deleteChapter,
     saveReadingProgress,
     getReadingProgress,
+    reportArtwork,
+    getReportedArtworks,
+    resolveArtworkReport,
+    hideArtwork,
+    unhideArtwork,
+    getHiddenArtworks,
 };

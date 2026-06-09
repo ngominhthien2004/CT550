@@ -1,5 +1,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUpdate, onMounted, onUnmounted, ref, toRefs, watch } from 'vue'
+import ArtworkReportModal from '../ArtworkReportModal.vue'
+import { useAuthStore } from '../../../stores/auth.store'
 
 const props = defineProps({
   artwork: {
@@ -59,6 +61,7 @@ onBeforeUpdate(() => {
 const showMoreMenu = ref(false)
 const toastMessage = ref('')
 const showToast = ref(false)
+const showReportModal = ref(false)
 
 function handleShare() {
   if (navigator.share) {
@@ -179,7 +182,7 @@ watch(
           <div v-if="showMoreMenu" class="more-dropdown">
             <button @click="handleCopyLink">Copy link</button>
             <button @click="handleDownload">Download</button>
-            <button disabled>Report</button>
+            <button @click="toggleMoreMenu(); showReportModal = true">Report</button>
           </div>
         </div>
       </div>
@@ -217,8 +220,15 @@ watch(
       </div>
     </div>
 
-    <div v-if="showToast" class="toast-notification">{{ toastMessage }}</div>
-  </div>
+  <div v-if="showToast" class="toast-notification">{{ toastMessage }}</div>
+
+  <ArtworkReportModal
+    :visible="showReportModal"
+    :artwork="artwork"
+    @close="showReportModal = false"
+    @reported="showReportModal = false"
+  />
+</div>
 </template>
 
 <style scoped>

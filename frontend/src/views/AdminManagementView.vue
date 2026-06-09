@@ -8,6 +8,7 @@ import {
   AdminCommentModerationPanel,
   AdminReportReviewPanel, AdminTagManagementPanel,
   AdminAISettingsPanel,
+  AdminArtworkReportPanel, AdminHiddenArtworksPanel,
 } from '@/components/admin'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
@@ -72,12 +73,24 @@ const tags = ref([])
 const tagPanelFiltersOpen = ref(true)
 const tagPagination = ref({ page: 1, pages: 1, total: 0 })
 
+// Artwork report review state
+const artworkReports = ref([])
+const loadingArtworkReports = ref(false)
+const artworkReportPagination = ref({ page: 1, pages: 1, total: 0 })
+
+// Hidden artworks state
+const hiddenArtworks = ref([])
+const loadingHiddenArtworks = ref(false)
+const hiddenArtworkPagination = ref({ page: 1, pages: 1, total: 0 })
+
 const activeTab = ref('users')
 
 const adminTabs = [
   { id: 'users', label: 'User management' },
   { id: 'artworks', label: 'Artwork moderation' },
+  { id: 'artwork-reports', label: 'Artwork reports' },
   { id: 'comments', label: 'Comment moderation' },
+  { id: 'hidden-artworks', label: 'Hidden artworks' },
   { id: 'reports', label: 'Report review' },
   { id: 'tags', label: 'Tag management' },
   { id: 'ai', label: 'AI Settings' },
@@ -338,6 +351,110 @@ async function goToReportPage(nextPage) {
   await loadReports(nextPage)
 }
 
+// --- Artwork report review ---
+async function loadArtworkReports(nextPage = 1) {
+  loadingArtworkReports.value = true
+  error.value = ''
+  try {
+    const params = { limit: 20, page: nextPage }
+    const { data } = await adminApi.getReportedArtworks(params)
+    artworkReports.value = data?.reports || []
+    artworkReportPagination.value = {
+      page: data?.page || nextPage,
+      pages: data?.pages || 1,
+      total: data?.total || 0,
+    }
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to load artwork reports'
+    artworkReports.value = []
+    artworkReportPagination.value = { page: 1, pages: 1, total: 0 }
+  } finally {
+    loadingArtworkReports.value = false
+  }
+}
+
+async function resolveArtworkReport(reportId) {
+  if (mutating.value) return
+  const shouldResolve = window.confirm('Dismiss this report?')
+  if (!shouldResolve) return
+  mutating.value = true
+  error.value = ''
+  try {
+    await adminApi.resolveArtworkReport(reportId, { action: 'dismiss' })
+    artworkReports.value = artworkReports.value.filter((r) => r._id !== reportId)
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to resolve report'
+  } finally {
+    mutating.value = false
+  }
+}
+
+async function hideArtworkFromReport(artworkId, reportId) {
+  if (mutating.value) return
+  const shouldHide = window.confirm('Hide this artwork? The owner will be notified.')
+  if (!shouldHide) return
+  mutating.value = true
+  error.value = ''
+  try {
+    await adminApi.hideArtwork(artworkId, { reason: 'Violated platform guidelines after being reported' })
+    artworkReports.value = artworkReports.value.filter((r) => r._id !== reportId)
+    await loadOverview()
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to hide artwork'
+  } finally {
+    mutating.value = false
+  }
+}
+
+async function goToArtworkReportPage(nextPage) {
+  if (nextPage < 1 || nextPage > artworkReportPagination.value.pages || loadingArtworkReports.value) return
+  await loadArtworkReports(nextPage)
+}
+
+// --- Hidden artworks ---
+async function loadHiddenArtworks(nextPage = 1) {
+  loadingHiddenArtworks.value = true
+  error.value = ''
+  try {
+    const params = { limit: 20, page: nextPage }
+    const { data } = await adminApi.getHiddenArtworks(params)
+    hiddenArtworks.value = data?.artworks || []
+    hiddenArtworkPagination.value = {
+      page: data?.page || nextPage,
+      pages: data?.pages || 1,
+      total: data?.total || 0,
+    }
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to load hidden artworks'
+    hiddenArtworks.value = []
+    hiddenArtworkPagination.value = { page: 1, pages: 1, total: 0 }
+  } finally {
+    loadingHiddenArtworks.value = false
+  }
+}
+
+async function unhideArtwork(artworkId) {
+  if (mutating.value) return
+  const shouldUnhide = window.confirm('Unhide this artwork? It will become visible to all users.')
+  if (!shouldUnhide) return
+  mutating.value = true
+  error.value = ''
+  try {
+    await adminApi.unhideArtwork(artworkId)
+    hiddenArtworks.value = hiddenArtworks.value.filter((a) => a._id !== artworkId)
+    await loadOverview()
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to unhide artwork'
+  } finally {
+    mutating.value = false
+  }
+}
+
+async function goToHiddenArtworkPage(nextPage) {
+  if (nextPage < 1 || nextPage > hiddenArtworkPagination.value.pages || loadingHiddenArtworks.value) return
+  await loadHiddenArtworks(nextPage)
+}
+
 // --- Tag management ---
 async function loadTags(nextPage = 1) {
   loadingTags.value = true
@@ -418,7 +535,7 @@ function formatDate(dateValue) {
 
 onMounted(async () => {
   if (!isAdmin.value) return
-  await Promise.all([loadOverview(), loadUsers(1), loadArtworks(1)])
+  await Promise.all([loadOverview(), loadUsers(1), loadArtworks(1), loadArtworkReports(1), loadHiddenArtworks(1)])
 })
 </script>
 
@@ -489,6 +606,18 @@ onMounted(async () => {
         @go-page="goToArtworkPage"
       />
 
+      <AdminArtworkReportPanel
+        :active-tab="activeTab"
+        :artwork-reports="artworkReports"
+        :loading-reports="loadingArtworkReports"
+        :mutating="mutating"
+        :report-pagination="artworkReportPagination"
+        :format-date="formatDate"
+        @resolve-report="resolveArtworkReport"
+        @hide-artwork="hideArtworkFromReport"
+        @go-page="goToArtworkReportPage"
+      />
+
       <AdminCommentModerationPanel
         :active-tab="activeTab"
         :comment-panel-filters-open="commentPanelFiltersOpen"
@@ -503,6 +632,17 @@ onMounted(async () => {
         @apply-filters="loadComments(1)"
         @delete-comment="removeComment"
         @go-page="goToCommentPage"
+      />
+
+      <AdminHiddenArtworksPanel
+        :active-tab="activeTab"
+        :hidden-artworks="hiddenArtworks"
+        :loading-hidden="loadingHiddenArtworks"
+        :mutating="mutating"
+        :hidden-pagination="hiddenArtworkPagination"
+        :format-date="formatDate"
+        @unhide-artwork="unhideArtwork"
+        @go-page="goToHiddenArtworkPage"
       />
 
       <AdminReportReviewPanel

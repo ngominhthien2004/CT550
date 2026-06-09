@@ -67,6 +67,7 @@ export const getRankings = (params = {}) => api.get('/feed/rankings', { params }
 export const getArtworks = (params = {}) => api.get('/artworks', { params })
 export const getArtworkById = (artworkId) => api.get(`/artworks/${artworkId}`)
 export const createArtwork = (formData) => api.post('/artworks', formData)
+export const reportArtwork = (artworkId, payload) => api.post(`/artworks/${artworkId}/report`, payload)
 export const getTags = (params = {}) => api.get('/tags', { params })
 export const getTagDetail = (tagName) => api.get(`/tags/${encodeURIComponent(tagName)}`)
 
@@ -139,6 +140,13 @@ export const adminApi = {
   // AI settings
   getAiSettings: () => api.get('/users/admin/ai-settings'),
   updateAiSettings: (payload) => api.patch('/users/admin/ai-settings', payload),
+
+  // Artwork moderation
+  getReportedArtworks: (params = {}) => api.get('/artworks/admin/reported', { params }),
+  resolveArtworkReport: (reportId, payload) => api.patch(`/artworks/admin/reports/${reportId}/resolve`, payload),
+  getHiddenArtworks: (params = {}) => api.get('/artworks/admin/hidden', { params }),
+  hideArtwork: (artworkId, payload) => api.patch(`/artworks/admin/${artworkId}/hide`, payload),
+  unhideArtwork: (artworkId) => api.patch(`/artworks/admin/${artworkId}/unhide`),
 }
 
 export const messageApi = {

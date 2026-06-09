@@ -9,6 +9,12 @@ const {
     updateNovelContent,
     getChapters, getChapter, createChapter, deleteChapter,
     saveReadingProgress, getReadingProgress,
+    reportArtwork,
+    getReportedArtworks,
+    resolveArtworkReport,
+    hideArtwork,
+    unhideArtwork,
+    getHiddenArtworks,
 } = require('../controllers/artwork.controller');
 const { protect, admin } = require('../middlewares/auth.middleware');
 const { getMaxUploadFileSizeBytes } = require('../config/env');
@@ -112,5 +118,13 @@ router.route('/:id/chapters/:chapterId')
 router.route('/:id/reading-progress')
     .get(protect, getReadingProgress)
     .post(protect, saveReadingProgress);
+
+// ─── Artwork Report Routes ────────────────────────────────────────────────────
+router.post('/:id/report', protect, reportArtwork);
+router.get('/admin/reported', protect, admin, getReportedArtworks);
+router.patch('/admin/reports/:id/resolve', protect, admin, resolveArtworkReport);
+router.patch('/admin/:id/hide', protect, admin, hideArtwork);
+router.patch('/admin/:id/unhide', protect, admin, unhideArtwork);
+router.get('/admin/hidden', protect, admin, getHiddenArtworks);
 
 module.exports = router;

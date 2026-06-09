@@ -2,7 +2,7 @@
 
 > **Môn học:** CT550 - Công nghệ phần mềm  
 > **Hệ thống:** IlluWrl - Nền tảng chia sẻ tranh vẽ và manga (Pixiv-clone)  
-> **Ngày:** 2026-06-08
+> **Ngày:** 2026-06-09
 
 ## Tổng Quan
 
@@ -110,6 +110,7 @@ rectangle "Tương tác Xã hội (Social Interaction)" {
   usecase "UC30" as UC_DIRECT_MSG
   usecase "UC31" as UC_BLOCK_USER
   usecase "UC32" as UC_NOTIFICATIONS
+  usecase "UC55" as UC_REPORT_ARTWORK
 }
 
 Member --> UC_LIKE
@@ -122,27 +123,30 @@ Member --> UC_FEED
 Member --> UC_DIRECT_MSG
 Member --> UC_BLOCK_USER
 Member --> UC_NOTIFICATIONS
+Member --> UC_REPORT_ARTWORK
 
 %% === PACKAGE: Commission & Payment ===
-rectangle "Ủy thác (Commission)" {
+rectangle "Ủy thác & Thanh toán (Commission & Payment)" {
   usecase "UC33" as UC_CREATE_TERM
   usecase "UC34" as UC_ORDER_REQUEST
   usecase "UC35" as UC_MANAGE_REQUEST
-  usecase "UC36" as UC_FAN_LETTER
-  usecase "UC37" as UC_REQUEST_CHAT
+  usecase "UC36" as UC_PAYMENT
+  usecase "UC37" as UC_FAN_LETTER
+  usecase "UC38" as UC_REQUEST_CHAT
 }
 
 Member --> UC_CREATE_TERM
 Member --> UC_ORDER_REQUEST
 Member --> UC_MANAGE_REQUEST
+Member --> UC_PAYMENT
 Member --> UC_FAN_LETTER
 Member --> UC_REQUEST_CHAT
 
 %% === PACKAGE: AI Features ===
 rectangle "Tính năng AI (AI Features)" {
-  usecase "UC38" as UC_AI_CHAT
-  usecase "UC39" as UC_AI_SEARCH_UC
-  usecase "UC40" as UC_AI_SUMMARIZE
+  usecase "UC39" as UC_AI_CHAT
+  usecase "UC40" as UC_AI_SEARCH_UC
+  usecase "UC41" as UC_AI_SUMMARIZE
   usecase "UC42" as UC_AI_DETECT
 }
 
@@ -162,23 +166,34 @@ UC_SEARCH_WORKS ..> UC_AI_SEARCH_UC : <<extend>>
 
 %% === PACKAGE: Drawing Tool ===
 rectangle "Công cụ Vẽ (Drawing Tool)" {
-  usecase "UC41" as UC_DRAW_ONLINE
-  usecase "UC42" as UC_EXPORT_IMAGE
+  usecase "UC43" as UC_DRAW_ONLINE
+  usecase "UC44" as UC_EXPORT_IMAGE
 }
 
 Member --> UC_DRAW_ONLINE
 Member --> UC_EXPORT_IMAGE
 
+%% === PACKAGE: Premium ===
+rectangle "Premium (Premium)" {
+  usecase "UC45" as UC_VIEW_PREMIUM
+  usecase "UC46" as UC_SUBSCRIBE_PREMIUM
+}
+
+Member --> UC_VIEW_PREMIUM
+Member --> UC_SUBSCRIBE_PREMIUM
 
 %% === PACKAGE: Administration ===
 rectangle "Quản trị (Administration)" {
-  usecase "UC43" as UC_ADMIN_DASHBOARD
-  usecase "UC44" as UC_MANAGE_USER
-  usecase "UC45" as UC_MODERATE_ART
-  usecase "UC46" as UC_MODERATE_COMMENT
-  usecase "UC47" as UC_MANAGE_TAG
-  usecase "UC48" as UC_HANDLE_REPORT
-  usecase "UC49" as UC_CONFIG_AI
+  usecase "UC47" as UC_ADMIN_DASHBOARD
+  usecase "UC48" as UC_MANAGE_USER
+  usecase "UC49" as UC_MODERATE_ART
+  usecase "UC50" as UC_MODERATE_COMMENT
+  usecase "UC51" as UC_MANAGE_TAG
+  usecase "UC52" as UC_MANAGE_PAYMENT
+  usecase "UC53" as UC_HANDLE_REPORT
+  usecase "UC54" as UC_CONFIG_AI
+  usecase "UC56" as UC_HIDE_ARTWORK
+  usecase "UC57" as UC_UNHIDE_ARTWORK
 }
 
 Admin --> UC_ADMIN_DASHBOARD
@@ -186,8 +201,11 @@ Admin --> UC_MANAGE_USER
 Admin --> UC_MODERATE_ART
 Admin --> UC_MODERATE_COMMENT
 Admin --> UC_MANAGE_TAG
+Admin --> UC_MANAGE_PAYMENT
 Admin --> UC_HANDLE_REPORT
 Admin --> UC_CONFIG_AI
+Admin --> UC_HIDE_ARTWORK
+Admin --> UC_UNHIDE_ARTWORK
 ```
 
 ## Bảng Mô tả Use Case Chi Tiết
@@ -229,15 +247,25 @@ Admin --> UC_CONFIG_AI
 | UC33 | Tạo Request Term | Người sáng tác tạo các điều khoản nhận request | Member |
 | UC34 | Đặt hàng Request | Người đặt tạo request commission cho người sáng tác | Member |
 | UC35 | Quản lý Request | Quản lý trạng thái request (chấp nhận/từ chối/hủy) | Member |
-| UC37 | Chat trong Request | Trao đổi trực tiếp giữa hai bên trong request | Member |
-| UC38 | Chat với AI Assistant | Trò chuyện với trợ lý AI để được hỗ trợ | Member |
-| UC39 | Tìm kiếm bằng AI | Tìm kiếm tác phẩm bằng ngôn ngữ tự nhiên | Member |
-| UC40 | Tóm tắt nội dung AI | Tóm tắt nội dung tác phẩm bằng AI | Member |
+| UC36 | Thanh toán (Escrow/Refund) | Thanh toán qua escrow hoặc yêu cầu hoàn tiền | Member |
+| UC37 | Gửi Fan Letter | Gửi tin nhắn hỗ trợ kèm tip cho người sáng tác | Member |
+| UC38 | Chat trong Request | Trao đổi trực tiếp giữa hai bên trong request | Member |
+| UC39 | Chat với AI Assistant | Trò chuyện với trợ lý AI để được hỗ trợ | Member |
+| UC40 | Tìm kiếm bằng AI | Tìm kiếm tác phẩm bằng ngôn ngữ tự nhiên | Member |
+| UC41 | Tóm tắt nội dung AI | Tóm tắt nội dung tác phẩm bằng AI | Member |
 | UC42 | Phát hiện AI | Tự động phát hiện nội dung do AI tạo ra khi upload | Hệ thống (tự động) |
-| UC41 | Vẽ online | Sử dụng công cụ vẽ Konva.js trực tiếp trên trình duyệt | Member |
-| UC42 | Xuất ảnh | Xuất ảnh từ công cụ vẽ (PNG/JPG) | Member |
-| UC43 | Xem Dashboard tổng quan | Xem KPI, thống kê toàn hệ thống | Admin |
-| UC44 | Quản lý người dùng | Xem, tìm, sửa role và isPremium của người dùng | Admin |
-| UC47 | Quản lý thẻ (tag) | Sửa tên/dịch thuật, khóa/mở khóa, gộp, xóa thẻ | Admin |
-| UC48 | Xử lý báo cáo vi phạm | Review và resolve các báo cáo từ người dùng | Admin |
-| UC49 | Cấu hình AI | Điều chỉnh ngưỡng phát hiện AI, cấu hình model | Admin |
+| UC43 | Vẽ online | Sử dụng công cụ vẽ Konva.js trực tiếp trên trình duyệt | Member |
+| UC44 | Xuất ảnh | Xuất ảnh từ công cụ vẽ (PNG/JPG) | Member |
+| UC45 | Xem thông tin Premium | Xem thông tin về gói Premium và quyền lợi | Member |
+| UC46 | Đăng ký Premium | Đăng ký gói Premium (đã lên kế hoạch) | Member |
+| UC47 | Xem Dashboard tổng quan | Xem KPI, thống kê toàn hệ thống | Admin |
+| UC48 | Quản lý người dùng | Xem, tìm, sửa role và isPremium của người dùng | Admin |
+| UC49 | Kiểm duyệt tác phẩm | Xem, tìm, xóa tác phẩm vi phạm | Admin |
+| UC50 | Kiểm duyệt bình luận | Xem, tìm, xóa bình luận vi phạm | Admin |
+| UC51 | Quản lý thẻ (tag) | Sửa tên/dịch thuật, khóa/mở khóa, gộp, xóa thẻ | Admin |
+| UC52 | Quản lý thanh toán | Xem lịch sử, cấu hình phí, quản lý campaign | Admin |
+| UC53 | Xử lý báo cáo vi phạm | Review và resolve các báo cáo từ người dùng | Admin |
+| UC54 | Cấu hình AI | Điều chỉnh ngưỡng phát hiện AI, cấu hình model | Admin |
+| UC55 | Báo cáo tác phẩm | Người dùng gửi báo cáo vi phạm cho một tác phẩm | Member |
+| UC56 | Ẩn tác phẩm | Admin ẩn tác phẩm vi phạm khỏi hiển thị công khai | Admin |
+| UC57 | Bỏ ẩn tác phẩm | Admin khôi phục hiển thị cho tác phẩm đã bị ẩn | Admin |

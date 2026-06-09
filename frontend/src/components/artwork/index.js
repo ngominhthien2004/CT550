@@ -7,3 +7,4 @@ export { default as ArtworkDetailViewer } from './detail/ArtworkDetailViewer.vue
 export { default as ArtworkDetailAuthorRow } from './detail/ArtworkDetailAuthorRow.vue'
 export { default as ArtworkDetailCaption } from './detail/ArtworkDetailCaption.vue'
 export { default as ArtworkDetailWorksStrip } from './detail/ArtworkDetailWorksStrip.vue'
+export { default as ArtworkReportModal } from './ArtworkReportModal.vue'

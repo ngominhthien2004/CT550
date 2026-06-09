@@ -1,8 +1,9 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLikeStore } from '../../stores/like.store'
 import { useAuthStore } from '../../stores/auth.store'
+import ArtworkReportModal from './ArtworkReportModal.vue'
 
 const props = defineProps({
   item: {
@@ -14,6 +15,9 @@ const props = defineProps({
 const router = useRouter()
 const likeStore = useLikeStore()
 const authStore = useAuthStore()
+
+const showReportModal = ref(false)
+const isLoggedIn = computed(() => !!authStore.user)
 
 const isLiked = computed(() => {
   if (likeStore.statusByArtwork[props.item._id] !== undefined) {
@@ -60,25 +64,36 @@ function getImageCount(item) {
 
 <template>
   <article class="artwork-card">
-    <router-link :to="`/artworks/${item._id}`" class="card-cover-link">
-      <img
-        v-if="getImage(item)"
-        :src="getImage(item)"
-        :alt="item.title"
-        loading="lazy"
-      />
-      <div v-else class="card-placeholder"></div>
+    <div class="card-cover-wrapper">
+      <!-- Hidden artwork overlay -->
+      <div v-if="item.isHidden" class="artwork-hidden-banner">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        <span>Hidden by administrator</span>
+      </div>
+      <router-link :to="`/artworks/${item._id}`" class="card-cover-link">
+        <img
+          v-if="getImage(item)"
+          :src="getImage(item)"
+          :alt="item.title"
+          loading="lazy"
+        />
+        <div v-else class="card-placeholder"></div>
 
-      <!-- Multi-image badge -->
-      <span v-if="getImageCount(item) > 1" class="badge-count">
-        <i class="fa-regular fa-clone"></i> {{ getImageCount(item) }}
-      </span>
+        <!-- Multi-image badge -->
+        <span v-if="getImageCount(item) > 1" class="badge-count">
+          <i class="fa-regular fa-clone"></i> {{ getImageCount(item) }}
+        </span>
+      </router-link>
 
       <!-- Like button -->
       <button class="btn-like" :class="{ 'is-liked': isLiked }" aria-label="Like" @click.prevent="handleLike" :disabled="isToggling">
         <i :class="isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
       </button>
-    </router-link>
+      <!-- Report button -->
+      <button v-if="isLoggedIn" class="btn-report" @click.stop="showReportModal = true" title="Report artwork">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </button>
+    </div>
 
     <div class="card-meta">
       <router-link :to="`/artworks/${item._id}`" class="card-title">
@@ -99,10 +114,17 @@ function getImageCount(item) {
       </router-link>
     </div>
   </article>
+  <ArtworkReportModal
+    :visible="showReportModal"
+    :artwork="item"
+    @close="showReportModal = false"
+    @reported="showReportModal = false"
+  />
 </template>
 
 <style scoped>
 .artwork-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
@@ -146,6 +168,11 @@ function getImageCount(item) {
   width: 100%;
   aspect-ratio: 1 / 1;
   background: linear-gradient(135deg, var(--surface-alt), var(--surface));
+}
+
+/* Wrapper to anchor absolute children */
+.card-cover-wrapper {
+  position: relative;
 }
 
 /* Badges / overlays */
@@ -192,6 +219,24 @@ function getImageCount(item) {
 .btn-like.is-liked {
   color: #ef4444;
 }
+
+.btn-report {
+  position: absolute; bottom: 8px; right: 40px;
+  background: rgba(0,0,0,0.4); color: #fff; border: none; border-radius: 50%;
+  width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s;
+}
+.artwork-card:hover .btn-report { opacity: 1; }
+.btn-report:hover { background: rgba(220,53,69,0.7); }
+
+.artwork-hidden-banner {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; color: #fff; font-size: 0.85rem; z-index: 2;
+  border-radius: inherit;
+}
+.artwork-hidden-banner svg { opacity: 0.7; }
 
 /* ─── Meta (title + author) ─── */
 .card-meta {

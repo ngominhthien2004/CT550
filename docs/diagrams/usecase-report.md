@@ -2,7 +2,7 @@
 
 > **Môn học:** CT550 - Công nghệ phần mềm  
 > **Hệ thống:** IlluWrl - Nền tảng chia sẻ tranh vẽ và manga (Pixiv-clone)  
-> **Ngày:** 2026-06-08  
+> **Ngày:** 2026-06-09  
 
 ---
 
@@ -112,20 +112,28 @@ Member có tất cả quyền của Guest.
 | UC33 | Tạo Request Term | — | ✅ | ✅ |
 | UC34 | Đặt hàng Request | — | ✅ | ✅ |
 | UC35 | Quản lý Request | — | ✅ | ✅ |
-| UC37 | Chat trong Request | — | ✅ | ✅ |
-| UC38 | Chat với AI Assistant | — | ✅ | ✅ |
-| UC39 | Tìm kiếm bằng AI | — | ✅ | ✅ |
-| UC40 | Tóm tắt nội dung AI | — | ✅ | ✅ |
+| UC36 | Thanh toán (Escrow/Refund) | — | ✅ | ✅ |
+| UC37 | Gửi Fan Letter | — | ✅ | ✅ |
+| UC38 | Chat trong Request | — | ✅ | ✅ |
+| UC39 | Chat với AI Assistant | — | ✅ | ✅ |
+| UC40 | Tìm kiếm bằng AI | — | ✅ | ✅ |
+| UC41 | Tóm tắt nội dung AI | — | ✅ | ✅ |
 | UC42 | Phát hiện AI (tự động) | — | — | — |
-| UC41 | Vẽ online | — | ✅ | ✅ |
-| UC42 | Xuất ảnh | — | ✅ | ✅ |
-| UC43 | Xem Dashboard tổng quan | — | — | ✅ |
-| UC44 | Quản lý người dùng | — | — | ✅ |
-| UC45 | Kiểm duyệt tác phẩm | — | — | ✅ |
-| UC46 | Kiểm duyệt bình luận | — | — | ✅ |
-| UC47 | Quản lý thẻ (tag) | — | — | ✅ |
-| UC48 | Xử lý báo cáo vi phạm | — | — | ✅ |
-| UC49 | Cấu hình AI | — | — | ✅ |
+| UC43 | Vẽ online | — | ✅ | ✅ |
+| UC44 | Xuất ảnh | — | ✅ | ✅ |
+| UC45 | Xem thông tin Premium | — | ✅ | ✅ |
+| UC46 | Đăng ký Premium | — | ✅ | ✅ |
+| UC47 | Xem Dashboard tổng quan | — | — | ✅ |
+| UC48 | Quản lý người dùng | — | — | ✅ |
+| UC49 | Kiểm duyệt tác phẩm | — | — | ✅ |
+| UC50 | Kiểm duyệt bình luận | — | — | ✅ |
+| UC51 | Quản lý thẻ (tag) | — | — | ✅ |
+| UC52 | Quản lý thanh toán | — | — | ✅ |
+| UC53 | Xử lý báo cáo vi phạm | — | — | ✅ |
+| UC54 | Cấu hình AI | — | — | ✅ |
+| UC55 | Báo cáo tác phẩm | — | ✅ | ✅ |
+| UC56 | Ẩn tác phẩm | — | — | ✅ |
+| UC57 | Bỏ ẩn tác phẩm | — | — | ✅ |
 
 > **Ghi chú**: UC42 (Phát hiện AI) là use case tự động — Hệ thống AI thực hiện khi người dùng upload tác phẩm. Không có actor người kích hoạt trực tiếp.
 
@@ -195,42 +203,60 @@ Member có tất cả quyền của Guest.
 | UC31 | Chặn người dùng | Chặn user — người bị chặn không thể comment, follow, nhắn tin. | Member / Admin | — |
 | UC32 | Xem thông báo | Hệ thống notification realtime: like, comment, follow, request. | Member / Admin | — |
 
-### 4.7 Nhóm: Ủy thác (Commission)
+### 4.7 Nhóm: Ủy thác & Thanh toán (Commission & Payment)
 
 | Mã số | Tên | Mô tả | Actor | Phụ thuộc |
 |-------|-----|-------|-------|-----------|
 | UC33 | Tạo Request Term | Creator tạo gói request: mô tả, price, content type, thời gian hoàn thành. | Member / Admin | — |
 | UC34 | Đặt hàng Request | Client chọn term, điền yêu cầu chi tiết, thanh toán escrow. | Member / Admin | UC33 |
 | UC35 | Quản lý Request | Theo dõi lifecycle: pending → accepted → completed / rejected / cancelled. | Member / Admin | UC34 |
-| UC37 | Chat trong Request | Chat giữa creator và client trong từng request cụ thể. | Member / Admin | UC35 |
+| UC36 | Thanh toán (Escrow/Refund) | Giữ tiền trong escrow, giải ngân khi hoàn thành, hỗ trợ refund. | Member / Admin | UC35 |
+| UC37 | Gửi Fan Letter | Gửi tin nhắn kèm tip (donation) không qua commission. | Member / Admin | — |
+| UC38 | Chat trong Request | Chat giữa creator và client trong từng request cụ thể. | Member / Admin | UC35 |
 
 ### 4.8 Nhóm: Tính năng AI
 
 | Mã số | Tên | Mô tả | Actor | Phụ thuộc |
 |-------|-----|-------|-------|-----------|
-| UC38 | Chat với AI Assistant | Hội thoại với AI assistant — hỗ trợ kỹ thuật, gợi ý nội dung, giải đáp thắc mắc. | Member / Admin | AI System |
-| UC39 | Tìm kiếm bằng AI | Tìm kiếm semantic bằng ngôn ngữ tự nhiên, không cần từ khóa chính xác. | Member / Admin | AI System |
-| UC40 | Tóm tắt nội dung AI | AI tóm tắt nội dung novel, description artwork thành đoạn ngắn. | Member / Admin | AI System |
+| UC39 | Chat với AI Assistant | Hội thoại với AI assistant — hỗ trợ kỹ thuật, gợi ý nội dung, giải đáp thắc mắc. | Member / Admin | AI System |
+| UC40 | Tìm kiếm bằng AI | Tìm kiếm semantic bằng ngôn ngữ tự nhiên, không cần từ khóa chính xác. | Member / Admin | AI System |
+| UC41 | Tóm tắt nội dung AI | AI tóm tắt nội dung novel, description artwork thành đoạn ngắn. | Member / Admin | AI System |
 | UC42 | Phát hiện AI (tự động) | Khi upload artwork, AI kiểm tra và gán nhãn AI-generated nếu phát hiện. | Hệ thống AI (tự động) | UC18 |
 
 ### 4.9 Nhóm: Công cụ Vẽ (Drawing Tool)
 
 | Mã số | Tên | Mô tả | Actor | Phụ thuộc |
 |-------|-----|-------|-------|-----------|
-| UC41 | Vẽ online | Sử dụng Konva.js canvas để vẽ: brush, layer, color, shape. | Member / Admin | — |
-| UC42 | Xuất ảnh | Xuất file PNG hoặc JPG từ canvas hiện tại. | Member / Admin | UC41 |
+| UC43 | Vẽ online | Sử dụng Konva.js canvas để vẽ: brush, layer, color, shape. | Member / Admin | — |
+| UC44 | Xuất ảnh | Xuất file PNG hoặc JPG từ canvas hiện tại. | Member / Admin | UC43 |
 
-### 4.10 Nhóm: Quản trị (Administration)
+### 4.10 Nhóm: Premium
 
 | Mã số | Tên | Mô tả | Actor | Phụ thuộc |
 |-------|-----|-------|-------|-----------|
-| UC43 | Xem Dashboard tổng quan | Thống kê toàn hệ thống: users, artworks, revenue, reports pending. | Admin | — |
-| UC44 | Quản lý người dùng | CRUD users, set role/premium, lock/unlock account. | Admin | — |
-| UC45 | Kiểm duyệt tác phẩm | Xem, tìm, xóa artwork vi phạm. | Admin | — |
-| UC46 | Kiểm duyệt bình luận | Xem, tìm, xóa comment vi phạm (spam, toxic, NSFW). | Admin | — |
-| UC47 | Quản lý thẻ (tag) | Edit, lock/unlock, merge, delete tag. | Admin | — |
-| UC48 | Xử lý báo cáo vi phạm | Review report, determine violation, take action, resolve. | Admin | UC44, UC45, UC46 |
-| UC49 | Cấu hình AI | Set AI detection threshold, configure model, manage prompt templates. | Admin | — |
+| UC45 | Xem thông tin Premium | Xem trang giới thiệu Premium: quyền lợi, bảng giá, so sánh. | Member / Admin | — |
+| UC46 | Đăng ký Premium | Đăng ký gói Premium (chưa triển khai — planned). | Member / Admin | — |
+
+### 4.11 Nhóm: Báo cáo & Kiểm duyệt (Reporting & Moderation)
+
+| Mã số | Tên | Mô tả | Actor | Phụ thuộc |
+|-------|-----|-------|-------|-----------|
+| UC55 | Báo cáo tác phẩm | Người dùng gửi báo cáo cho tác phẩm kèm lý do (spam, nội dung không phù hợp, vi phạm bản quyền, quấy rối, thiếu phân loại độ tuổi) và mô tả tùy chọn | Member / Admin | UC07 |
+| UC56 | Ẩn tác phẩm | Admin ẩn tác phẩm khỏi hiển thị công khai, tự động giải quyết các báo cáo liên quan, gửi thông báo cho chủ sở hữu | Admin | UC55 |
+| UC57 | Bỏ ẩn tác phẩm | Admin khôi phục hiển thị cho tác phẩm đã bị ẩn, gửi thông báo cho chủ sở hữu | Admin | UC56 |
+
+### 4.12 Nhóm: Quản trị (Administration)
+
+| Mã số | Tên | Mô tả | Actor | Phụ thuộc |
+|-------|-----|-------|-------|-----------|
+| UC47 | Xem Dashboard tổng quan | Thống kê toàn hệ thống: users, artworks, revenue, reports pending. | Admin | — |
+| UC48 | Quản lý người dùng | CRUD users, set role/premium, lock/unlock account. | Admin | — |
+| UC49 | Kiểm duyệt tác phẩm | Xem, tìm, xóa artwork vi phạm. | Admin | — |
+| UC50 | Kiểm duyệt bình luận | Xem, tìm, xóa comment vi phạm (spam, toxic, NSFW). | Admin | — |
+| UC51 | Quản lý thẻ (tag) | Edit, lock/unlock, merge, delete tag. | Admin | — |
+| UC52 | Quản lý thanh toán | View transactions, config platform fee, manage campaigns. | Admin | — |
+| UC53 | Xử lý báo cáo vi phạm | Review report, determine violation, take action, resolve. | Admin | UC48, UC49, UC50 |
+| UC54 | Cấu hình AI | Set AI detection threshold, configure model, manage prompt templates. | Admin | — |
 
 ---
 
@@ -249,19 +275,21 @@ Member có tất cả quyền của Guest.
 |----------|---------|-----------|-------|
 | UC01 (Đăng ký) | Member | Sau khi đăng ký thành công | Guest trở thành Member sau khi tạo tài khoản |
 | UC18 (Upload) | UC42 (Phát hiện AI) | Khi upload artwork | Tự động kích hoạt AI detection sau khi upload |
-| UC38 (Chat AI) | UC40 (Tóm tắt AI) | Khi người dùng yêu cầu tóm tắt | AI chat có thể gọi tóm tắt nội dung |
-| UC41 (Vẽ online) | UC42 (Xuất ảnh) | Khi người dùng muốn tải ảnh | Sau khi vẽ, user có thể xuất ảnh |
+| UC39 (Chat AI) | UC41 (Tóm tắt AI) | Khi người dùng yêu cầu tóm tắt | AI chat có thể gọi tóm tắt nội dung |
+| UC43 (Vẽ online) | UC44 (Xuất ảnh) | Khi người dùng muốn tải ảnh | Sau khi vẽ, user có thể xuất ảnh |
 | UC11 (Search works) | UC14 (AI search) | Khi người dùng chuyển sang chế độ AI | Search cơ bản có thể mở rộng sang AI search |
 
 ### 5.3 Quan hệ Include (bao gồm)
 
 | Use Case Chính | Bao gồm | Mô tả |
 |----------------|---------|-------|
-
-| UC35 (Quản lý Request) | UC37 (Chat Request) | Mỗi request có chat đi kèm |
-| UC44 (Quản lý user) | UC48 (Xử lý báo cáo) | Xử lý báo cáo có thể dẫn đến quản lý user |
-| UC45 (Kiểm duyệt art) | UC48 (Xử lý báo cáo) | Kiểm duyệt art thường từ báo cáo |
-| UC46 (Kiểm duyệt comment) | UC48 (Xử lý báo cáo) | Kiểm duyệt comment thường từ báo cáo |
+| UC33 (Tạo Request Term) | UC34 (Đặt hàng Request) | Term là tiền đề để tạo order |
+| UC34 (Đặt hàng Request) | UC36 (Thanh toán) | Đặt hàng yêu cầu thanh toán escrow |
+| UC35 (Quản lý Request) | UC38 (Chat Request) | Mỗi request có chat đi kèm |
+| UC48 (Quản lý user) | UC53 (Xử lý báo cáo) | Xử lý báo cáo có thể dẫn đến quản lý user |
+| UC49 (Kiểm duyệt art) | UC53 (Xử lý báo cáo) | Kiểm duyệt art thường từ báo cáo |
+| UC50 (Kiểm duyệt comment) | UC53 (Xử lý báo cáo) | Kiểm duyệt comment thường từ báo cáo |
+| UC53 (Xử lý báo cáo) | UC56 (Ẩn tác phẩm) | Xử lý báo cáo có thể dẫn đến ẩn tác phẩm |
 
 ### 5.4 Sơ đồ quan hệ tổng thể
 
@@ -270,15 +298,17 @@ UC01 (Đăng ký) --extend--> Member
                            |
 UC18 (Upload) --extend--> UC42 (AI Detect)
 UC11 (Search) --extend--> UC14 (AI Search)
-UC38 (Chat AI) --extend--> UC40 (AI Summarize)
-UC41 (Draw) --extend--> UC42 (Export)
+UC39 (Chat AI) --extend--> UC41 (AI Summarize)
+UC43 (Draw) --extend--> UC44 (Export)
                            |
 UC33 (Term) --include--> UC34 (Order)
-UC35 (Manage) --include--> UC37 (Chat)
+UC34 (Order) --include--> UC36 (Payment)
+UC35 (Manage) --include--> UC38 (Chat)
                            |
-UC44 (User Mgmt) --include--> UC48 (Report)
-UC45 (Art Mod) --include--> UC48 (Report)
-UC46 (Comment Mod) --include--> UC48 (Report)
+UC48 (User Mgmt) --include--> UC53 (Report)
+UC49 (Art Mod) --include--> UC53 (Report)
+UC50 (Comment Mod) --include--> UC53 (Report)
+UC53 (Report) --include--> UC56 (Hide Artwork)
 ```
 
 ---
@@ -292,21 +322,21 @@ Hệ thống **IlluWrl** được mô hình hóa với:
 | Thành phần | Số lượng |
 |------------|:--------:|
 | Actors | **4** (Guest, Member, Admin, AI System) |
-| Use cases | **50** |
-| Nhóm chức năng | **10** (Authentication, Browse, Search, Profile, Artwork, Social, Commission, AI, Drawing, Admin) |
+| Use cases | **57** |
+| Nhóm chức năng | **11** (Authentication, Browse, Search, Profile, Artwork, Social, Commission, AI, Drawing, Premium, Admin) |
 
 ### 6.2 Phân bố use case theo mức độ ưu tiên
 
 | Mức độ | Số lượng | Mô tả |
 |--------|:--------:|-------|
-| ✅ **Đã triển khai** | 49 | Hầu hết các use case đã được implement |
-| ⚠️ **Triển khai một phần** | 0 | — |
-| ❌ **Chưa triển khai** | 0 | — |
+| ✅ **Đã triển khai** | 55 | Hầu hết các use case đã được implement |
+| ⚠️ **Triển khai một phần** | 1 | UC36 (Thanh toán Escrow) — chức năng cốt lõi nhưng chưa đầy đủ |
+| ❌ **Chưa triển khai** | 1 | UC46 (Đăng ký Premium) — đã lên kế hoạch |
 
 ### 6.3 Kết quả đạt được
 
-1. **Bao phủ toàn diện**: 50 use case bao phủ tất cả chức năng từ xác thực, duyệt nội dung,
-   tương tác xã hội, đến quản trị và AI.
+1. **Bao phủ toàn diện**: 57 use case bao phủ tất cả chức năng từ xác thực, duyệt nội dung,
+   tương tác xã hội, báo cáo & kiểm duyệt, đến quản trị và AI.
 
 2. **Phân quyền rõ ràng**: Quan hệ kế thừa (generalization) 3 tầng Guest → Member → Admin
    đảm bảo phân quyền chính xác.
@@ -317,12 +347,14 @@ Hệ thống **IlluWrl** được mô hình hóa với:
 4. **Quy trình nghiệp vụ**: Commission/Payment được mô hình hóa với chuỗi include/extend
    rõ ràng: Term → Order → Payment → Request → Chat.
 
-5. **Hỗ trợ báo cáo**: 54 use case mỗi use case có mã số duy nhất, mô tả chi tiết,
+5. **Hỗ trợ báo cáo**: 57 use case mỗi use case có mã số duy nhất, mô tả chi tiết,
    trạng thái triển khai và phụ thuộc, thuận tiện cho việc theo dõi tiến độ dự án.
 
 ### 6.4 Hướng phát triển
 
-
+- **UC46 (Đăng ký Premium)**: Cần tích hợp cổng thanh toán (PayPal/VNPay/Momo)
+- **UC36 (Thanh toán Escrow)**: Hoàn thiện quy trình escrow, dispute resolution
+- **Bổ sung**: Có thể mở rộng thêm use case cho mobile app hoặc API third-party
 
 ---
 

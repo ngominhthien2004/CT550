@@ -143,7 +143,7 @@ const DIAGRAMS = [
   // ── Diagram 1: Overall System ──────────────────────────────────────────────
   {
     name: 'Overall System - Sơ đồ Use Case Tổng Quát',
-    code: `actor Guest as "Khách vãng lai"
+      code: `actor Guest as "Khách vãng lai"
 actor Member as "Thành viên"
 actor Admin as "Quản trị viên"
 actor AISystem as "Hệ thống AI"
@@ -186,25 +186,21 @@ usecase UC32 as "Xem thông báo"
 usecase UC33 as "Tạo Request Term"
 usecase UC34 as "Đặt hàng Request"
 usecase UC35 as "Quản lý Request"
-usecase UC36 as "Thanh toán (Escrow/Refund)"
-usecase UC37 as "Gửi Fan Letter"
-usecase UC38 as "Chat trong Request"
-usecase UC39 as "Chat với AI Assistant"
-usecase UC40 as "Tìm kiếm bằng AI"
-usecase UC41 as "Tóm tắt nội dung AI"
-usecase UC42 as "Phát hiện AI"
-usecase UC43 as "Vẽ online"
-usecase UC44 as "Xuất ảnh"
-usecase UC45 as "Xem thông tin Premium"
-usecase UC46 as "Đăng ký Premium"
-usecase UC47 as "Xem Dashboard tổng quan"
-usecase UC48 as "Quản lý người dùng"
-usecase UC49 as "Kiểm duyệt tác phẩm"
-usecase UC50 as "Kiểm duyệt bình luận"
-usecase UC51 as "Quản lý thẻ (tag)"
-usecase UC52 as "Quản lý thanh toán"
-usecase UC53 as "Xử lý báo cáo vi phạm"
-usecase UC54 as "Cấu hình AI"
+usecase UC36 as "Gửi Fan Letter"
+usecase UC37 as "Chat trong Request"
+usecase UC38 as "Chat với AI Assistant"
+usecase UC39 as "Tìm kiếm bằng AI"
+usecase UC40 as "Tóm tắt nội dung AI"
+usecase UC41 as "Phát hiện AI"
+usecase UC42 as "Vẽ online"
+usecase UC43 as "Xuất ảnh"
+usecase UC44 as "Xem Dashboard tổng quan"
+usecase UC45 as "Quản lý người dùng"
+usecase UC46 as "Kiểm duyệt tác phẩm"
+usecase UC47 as "Kiểm duyệt bình luận"
+usecase UC48 as "Quản lý thẻ (tag)"
+usecase UC49 as "Xử lý báo cáo vi phạm"
+usecase UC50 as "Cấu hình AI"
 
 Guest --> UC01
 Guest --> UC02
@@ -246,26 +242,22 @@ Member --> UC37
 Member --> UC38
 Member --> UC39
 Member --> UC40
-Member --> UC41
+Member --> UC42
 Member --> UC43
-Member --> UC44
-Member --> UC45
-Member --> UC46
+Admin --> UC44
+Admin --> UC45
+Admin --> UC46
 Admin --> UC47
 Admin --> UC48
 Admin --> UC49
 Admin --> UC50
-Admin --> UC51
-Admin --> UC52
-Admin --> UC53
-Admin --> UC54
 
+AISystem <-- UC38
 AISystem <-- UC39
 AISystem <-- UC40
 AISystem <-- UC41
-AISystem <-- UC42
 
-UC18 ..> UC42 : <<extend>>`,
+UC18 ..> UC41 : <<extend>>`,
   },
 
   // ── Diagram 2: Guest ───────────────────────────────────────────────────────
@@ -306,7 +298,7 @@ Guest --> UC12`,
   // ── Diagram 3: Member ──────────────────────────────────────────────────────
   {
     name: 'Member - Sơ đồ Use Case Thành viên',
-    code: `actor Member as "Thành viên"
+      code: `actor Member as "Thành viên"
 actor Guest as "Khách vãng lai"
 
 Guest <|-- Member
@@ -333,16 +325,13 @@ usecase UC19 as "Xem thông báo"
 usecase UC20 as "Tạo Request Term"
 usecase UC21 as "Đặt hàng Request"
 usecase UC22 as "Quản lý Request"
-usecase UC23 as "Thanh toán (Escrow/Refund)"
-usecase UC24 as "Gửi Fan Letter"
-usecase UC25 as "Chat trong Request"
-usecase UC26 as "Chat với AI Assistant"
-usecase UC27 as "Tìm kiếm bằng AI"
-usecase UC28 as "Tóm tắt nội dung AI"
-usecase UC29 as "Vẽ online"
-usecase UC30 as "Xuất ảnh"
-usecase UC31 as "Xem thông tin Premium"
-usecase UC32 as "Đăng ký Premium"
+usecase UC23 as "Gửi Fan Letter"
+usecase UC24 as "Chat trong Request"
+usecase UC25 as "Chat với AI Assistant"
+usecase UC26 as "Tìm kiếm bằng AI"
+usecase UC27 as "Tóm tắt nội dung AI"
+usecase UC28 as "Vẽ online"
+usecase UC29 as "Xuất ảnh"
 
 Member --> UC01
 Member --> UC02
@@ -372,16 +361,13 @@ Member --> UC25
 Member --> UC26
 Member --> UC27
 Member --> UC28
-Member --> UC29
-Member --> UC30
-Member --> UC31
-Member --> UC32`,
+Member --> UC29`,
   },
 
   // ── Diagram 4: Admin ───────────────────────────────────────────────────────
   {
     name: 'Admin - Sơ đồ Use Case Quản trị viên',
-    code: `actor Admin as "Quản trị viên"
+      code: `actor Admin as "Quản trị viên"
 actor Member as "Thành viên"
 actor Guest as "Khách vãng lai"
 
@@ -393,9 +379,8 @@ usecase UC02 as "Quản lý người dùng"
 usecase UC03 as "Kiểm duyệt tác phẩm"
 usecase UC04 as "Kiểm duyệt bình luận"
 usecase UC05 as "Quản lý thẻ (tag)"
-usecase UC06 as "Quản lý thanh toán"
-usecase UC07 as "Xử lý báo cáo vi phạm"
-usecase UC08 as "Cấu hình AI"
+usecase UC06 as "Xử lý báo cáo vi phạm"
+usecase UC07 as "Cấu hình AI"
 
 Admin --> UC01
 Admin --> UC02
@@ -403,8 +388,7 @@ Admin --> UC03
 Admin --> UC04
 Admin --> UC05
 Admin --> UC06
-Admin --> UC07
-Admin --> UC08`,
+Admin --> UC07`,
   },
 ];
 
