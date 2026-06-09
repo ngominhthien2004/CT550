@@ -34,6 +34,6 @@ description: "Portable rules for Vue 3 frontend files in MEVN projects."
 - For icons, use one consistent icon set across a screen (prefer Font Awesome when installed); avoid mixing emoji icons with icon libraries.
 - For icon-only controls, include accessible labels (`aria-label`/`title`) and hide decorative icons from screen readers (`aria-hidden="true"`).
 - For local auth-dependent tests, prefer reusing existing QA accounts documented in `docs/reports/auth-test-accounts-2026-04-05.md`; create new accounts only when a test case explicitly requires account-creation coverage.
-- After frontend UI changes, run a browser smoke test on affected routes (prefer Playwright) before reporting completion.
-- After adding or modifying a frontend feature, capture at least one updated screenshot artifact of the affected UI state (prefer Chrome DevTools MCP screenshot tools in chat automation).
+- After frontend UI changes, run a browser smoke test on affected routes before reporting completion. Use Chrome DevTools MCP tools for browser interactions (navigation, form fill, click, screenshot capture). Fall back to Playwright only when Chrome MCP cannot perform the required action.
+- After adding or modifying a frontend feature, capture at least one updated screenshot artifact of the affected UI state (use Chrome DevTools MCP screenshot tools; they are preferred over Playwright screenshots).
 - Verify compile/build compatibility after changes.
