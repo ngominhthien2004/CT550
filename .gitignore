@@ -42,3 +42,6 @@ frontend/playwright_check.spec.js
 
 # Local prompt/skill bundle (do not push)
 .github/prompts/ui-ux-pro-max/
+
+# Screenshots (local-only artifacts)
+docs/screenshots/
