@@ -177,23 +177,32 @@ defineExpose({ updateChatMessages, setChatLoading })
       <div class="chat-messages" ref="chatContainer">
         <p v-if="chatLoading" class="state-note">Loading messages...</p>
         <p v-else-if="chatMessages.length === 0" class="state-note">No messages yet.</p>
-        <div v-for="msg in chatMessages" :key="msg._id" class="chat-message">
-          <div class="msg-header">
-            <strong>{{ msg.sender?.displayName || msg.sender?.username || 'Unknown' }}</strong>
+        <div v-for="msg in chatMessages" :key="msg._id">
+          <!-- System message -->
+          <div v-if="msg.isSystem" class="chat-message system-message">
+            <i class="fa-regular fa-info-circle"></i>
+            <span class="msg-content">{{ msg.content }}</span>
             <span class="msg-time">{{ new Date(msg.createdAt).toLocaleString() }}</span>
           </div>
-          <p v-if="msg.content" class="msg-content">{{ msg.content }}</p>
-          <div v-if="msg.attachments?.length" class="msg-attachments">
-            <a
-              v-for="(att, attIdx) in msg.attachments"
-              :key="attIdx"
-              :href="att.url"
-              target="_blank"
-              class="att-link"
-            >
-              <i :class="fileIcon(att.mimeType)"></i>
-              {{ att.originalName || 'Attachment' }}
-            </a>
+          <!-- User message -->
+          <div v-else class="chat-message">
+            <div class="msg-header">
+              <strong>{{ msg.sender?.displayName || msg.sender?.username || 'Unknown' }}</strong>
+              <span class="msg-time">{{ new Date(msg.createdAt).toLocaleString() }}</span>
+            </div>
+            <p v-if="msg.content" class="msg-content">{{ msg.content }}</p>
+            <div v-if="msg.attachments?.length" class="msg-attachments">
+              <a
+                v-for="(att, attIdx) in msg.attachments"
+                :key="attIdx"
+                :href="att.url"
+                target="_blank"
+                class="att-link"
+              >
+                <i :class="fileIcon(att.mimeType)"></i>
+                {{ att.originalName || 'Attachment' }}
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -406,6 +415,30 @@ defineExpose({ updateChatMessages, setChatLoading })
   border: 1px solid #edf0f4;
   border-radius: 10px;
   padding: 0.5rem 0.7rem;
+}
+.chat-message.system-message {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-style: italic;
+  padding: 0.4rem 0.7rem;
+}
+.chat-message.system-message i {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+.chat-message.system-message .msg-content {
+  flex: 1;
+  margin: 0;
+  font-size: 0.8rem;
+}
+.chat-message.system-message .msg-time {
+  flex-shrink: 0;
 }
 .msg-header {
   display: flex;
