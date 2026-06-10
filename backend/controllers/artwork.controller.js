@@ -650,6 +650,7 @@ const getReportedArtworks = async (req, res, next) => {
             ArtworkReport.find(filter)
                 .populate('artwork', 'title type images isHidden')
                 .populate('reportedBy', 'username displayName')
+                .populate('resolvedBy', 'username displayName')
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)

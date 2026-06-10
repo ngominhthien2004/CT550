@@ -34,6 +34,8 @@ const chapters = ref([])
 const novelContent = ref('')
 const currentChapterId = ref(null)
 const readingProgress = ref(0)
+const readingScrollPosition = ref(0)
+const readingLastReadAt = ref('')
 
 const artworkId = computed(() => route.params.id)
 const artwork = computed(() => artworkStore.detail)
@@ -219,6 +221,12 @@ async function loadNovelData() {
       if (data?.progressPercent) {
         readingProgress.value = data.progressPercent
       }
+      if (data?.scrollPosition) {
+        readingScrollPosition.value = data.scrollPosition
+      }
+      if (data?.lastReadAt) {
+        readingLastReadAt.value = data.lastReadAt
+      }
     } catch (_err) {
       // Ignore - not critical
     }
@@ -237,16 +245,21 @@ async function handleSelectChapter(chapterId) {
   }
 }
 
-async function handleProgressChange({ progressPercent }) {
+async function handleProgressChange({ progressPercent, scrollPosition }) {
   if (!authStore.isAuthenticated) return
   try {
     await saveReadingProgress(artworkId.value, {
       progressPercent,
+      scrollPosition: scrollPosition || 0,
       chapter: currentChapterId.value || null,
     })
   } catch (_err) {
     // Non-critical
   }
+}
+
+function handleScrollChange(scrollPos) {
+  readingScrollPosition.value = scrollPos
 }
 
 async function handleLikeToggle() {
@@ -416,10 +429,13 @@ watch(
                 :is-bookmarked="isBookmarked"
                 :like-loading="likeLoading"
                 :bookmark-loading="bookmarkLoading"
+                :initial-scroll-position="readingScrollPosition"
+                :last-read-at="readingLastReadAt"
                 @progress-change="handleProgressChange"
                 @select-chapter="handleSelectChapter"
                 @toggle-like="handleLikeToggle"
                 @toggle-bookmark="handleBookmarkToggle"
+                @scroll-change="handleScrollChange"
               />
 
               <!-- Pixiv-like In-Content Author Card -->

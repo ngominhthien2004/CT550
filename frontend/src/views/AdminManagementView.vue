@@ -73,6 +73,7 @@ const tagPanelFiltersOpen = ref(true)
 const tagPagination = ref({ page: 1, pages: 1, total: 0 })
 
 // Artwork report review state
+const reportStatusFilter = ref('pending')
 const artworkReports = ref([])
 const loadingArtworkReports = ref(false)
 const artworkReportPagination = ref({ page: 1, pages: 1, total: 0 })
@@ -340,7 +341,7 @@ async function loadArtworkReports(nextPage = 1) {
   loadingArtworkReports.value = true
   error.value = ''
   try {
-    const params = { limit: 20, page: nextPage }
+    const params = { limit: 20, page: nextPage, status: reportStatusFilter.value }
     const { data } = await adminApi.getReportedArtworks(params)
     artworkReports.value = data?.reports || []
     artworkReportPagination.value = {
@@ -359,12 +360,12 @@ async function loadArtworkReports(nextPage = 1) {
 
 async function resolveArtworkReport(reportId) {
   if (mutating.value) return
-  const shouldResolve = window.confirm('Dismiss this report?')
-  if (!shouldResolve) return
+  const note = window.prompt('Resolution note (optional):')
+  if (note === null) return // cancelled
   mutating.value = true
   error.value = ''
   try {
-    await adminApi.resolveArtworkReport(reportId, { action: 'dismiss' })
+    await adminApi.resolveArtworkReport(reportId, { action: 'dismiss', note: note || '' })
     artworkReports.value = artworkReports.value.filter((r) => r._id !== reportId)
   } catch (fetchError) {
     error.value = fetchError?.response?.data?.message || 'Failed to resolve report'
@@ -595,10 +596,12 @@ onMounted(async () => {
         :loading-reports="loadingArtworkReports"
         :mutating="mutating"
         :report-pagination="artworkReportPagination"
+        :report-status-filter="reportStatusFilter"
         :format-date="formatDate"
         @resolve-report="resolveArtworkReport"
         @hide-artwork="hideArtworkFromReport"
         @go-page="goToArtworkReportPage"
+        @update:report-status-filter="reportStatusFilter = $event; loadArtworkReports(1)"
       />
 
       <AdminCommentModerationPanel

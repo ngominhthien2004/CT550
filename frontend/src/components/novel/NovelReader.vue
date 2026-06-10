@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 
 const props = defineProps({
   artwork: { type: Object, required: true },
@@ -11,9 +11,11 @@ const props = defineProps({
   isLiked: { type: Boolean, default: false },
   likeLoading: { type: Boolean, default: false },
   bookmarkLoading: { type: Boolean, default: false },
+  initialScrollPosition: { type: Number, default: 0 },
+  lastReadAt: { type: String, default: '' },
 })
 
-const emit = defineEmits(['progress-change', 'select-chapter', 'toggle-like', 'toggle-bookmark'])
+const emit = defineEmits(['progress-change', 'select-chapter', 'toggle-like', 'toggle-bookmark', 'scroll-change'])
 
 // ── Font Size ──────────────────────────────────────────────────────
 const DEFAULT_FONT_SIZE = '1.05rem'
@@ -55,15 +57,27 @@ function toggleDarkMode() {
 
 // ── Reading Progress ───────────────────────────────────────────────
 const progressPercent = ref(0)
+const scrollPosition = ref(0)
 const readingArea = ref(null)
 let scrollTimer = null
 
+const lastReadDisplay = computed(() => {
+  if (!props.lastReadAt) return ''
+  const diff = Date.now() - new Date(props.lastReadAt).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return 'Just now'
+  if (mins < 60) return `${mins}m ago`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  return `${days}d ago`
+})
+
 function onScroll() {
   const el = readingArea.value
-  if (!el) {
-    return
-  }
+  if (!el) { return }
 
+  scrollPosition.value = el.scrollTop
   const scrollTop = el.scrollTop
   const scrollHeight = el.scrollHeight - el.clientHeight
 
@@ -73,11 +87,11 @@ function onScroll() {
     progressPercent.value = Math.min(100, Math.round((scrollTop / scrollHeight) * 100))
   }
 
-  if (scrollTimer) {
-    clearTimeout(scrollTimer)
-  }
+  // Debounced emits
+  if (scrollTimer) { clearTimeout(scrollTimer) }
   scrollTimer = setTimeout(() => {
-    emit('progress-change', { progressPercent: progressPercent.value })
+    emit('progress-change', { progressPercent: progressPercent.value, scrollPosition: scrollPosition.value })
+    emit('scroll-change', scrollPosition.value)
   }, 3000)
 }
 
@@ -97,6 +111,13 @@ const selectedChapterId = ref('')
 onMounted(() => {
   if (props.chapters.length > 0 && props.chapters[0]._id) {
     selectedChapterId.value = props.chapters[0]._id
+  }
+
+  // Restore scroll position after the content renders
+  if (props.initialScrollPosition > 0 && readingArea.value) {
+    nextTick(() => {
+      readingArea.value.scrollTop = props.initialScrollPosition
+    })
   }
 })
 
@@ -126,6 +147,10 @@ function handleShare() {
       <div class="reading-progress-bar" :style="{ width: `${Math.round(progressPercent)}%` }">
         <span class="progress-label">{{ Math.round(progressPercent) }}%</span>
       </div>
+    </div>
+
+    <div v-if="lastReadDisplay" class="last-read-indicator">
+      <i class="fa-regular fa-clock" aria-hidden="true"></i> Last read {{ lastReadDisplay }}
     </div>
 
     <!-- Controls Bar -->
@@ -874,5 +899,15 @@ function handleShare() {
   .novel-end-marker {
     opacity: 0.4;
   }
+}
+
+.last-read-indicator {
+  font-size: 0.75rem;
+  color: #6b7280;
+  padding: 0.25rem 0 0.5rem;
+  text-align: center;
+}
+.last-read-indicator i {
+  margin-right: 0.35rem;
 }
 </style>
