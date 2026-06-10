@@ -24,15 +24,6 @@ const requestRevisionSchema = mongoose.Schema({
         trim: true,
         maxlength: 3000,
     },
-    status: {
-        type: String,
-        enum: ['open', 'addressed'],
-        default: 'open',
-    },
-    addressedAt: {
-        type: Date,
-        default: null,
-    },
 }, {
     timestamps: true,
 });

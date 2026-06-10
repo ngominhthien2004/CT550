@@ -97,7 +97,7 @@ flowchart TD
 
 ### RequestRevision
 
-- `request`, `requester`, `round`, `notes`, `status`, `addressedAt`, timestamps.
+- `request`, `requester`, `round`, `notes`, timestamps.
 
 ### RequestEvent
 

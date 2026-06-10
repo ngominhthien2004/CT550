@@ -283,8 +283,7 @@ const entities = [
       'ObjectId requester FK "ref User"',
       'number round "1|2 — unique per request"',
       'string notes',
-      'string status "open|addressed"',
-      'datetime addressedAt',
+
     ],
   },
 ];
