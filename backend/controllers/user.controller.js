@@ -128,6 +128,22 @@ const followUser = async (req, res, next) => {
         const targetUserId = req.params.id;
         const followerId = req.user._id;
 
+        // Prevent following if blocked
+        if (targetUserId !== followerId.toString()) {
+            const [theyBlockedMe, iBlockedThem] = await Promise.all([
+                UserBlock.findOne({ blocker: targetUserId, blocked: req.user._id }),
+                UserBlock.findOne({ blocker: req.user._id, blocked: targetUserId }),
+            ]);
+            if (theyBlockedMe) {
+                res.status(403);
+                return next(new Error('Cannot follow: you have been blocked by this user'));
+            }
+            if (iBlockedThem) {
+                res.status(403);
+                return next(new Error('Cannot follow: you have blocked this user'));
+            }
+        }
+
         if (targetUserId === followerId.toString()) {
             res.status(400);
             return next(new Error('You cannot follow yourself'));
@@ -246,6 +262,56 @@ const blockUser = async (req, res, next) => {
         });
 
         res.json({ message: 'User blocked successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const unblockUser = async (req, res, next) => {
+    try {
+        const blockedUserId = req.params.id;
+        const blockerId = req.user._id;
+
+        const result = await UserBlock.findOneAndDelete({
+            blocker: blockerId,
+            blocked: blockedUserId,
+        });
+
+        if (!result) {
+            res.status(404);
+            return next(new Error('Block record not found'));
+        }
+
+        res.json({ message: 'User unblocked successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getBlockedUsers = async (req, res, next) => {
+    try {
+        const blocks = await UserBlock.find({ blocker: req.user._id })
+            .populate('blocked', 'username displayName avatar')
+            .sort({ createdAt: -1 });
+
+        res.json(blocks);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getBlockStatus = async (req, res, next) => {
+    try {
+        const targetId = req.params.id;
+        const userId = req.user._id;
+
+        const iBlockThem = await UserBlock.findOne({ blocker: userId, blocked: targetId });
+        const theyBlockMe = await UserBlock.findOne({ blocker: targetId, blocked: userId });
+
+        res.json({
+            blockedByMe: !!iBlockThem,
+            blockedMe: !!theyBlockMe,
+        });
     } catch (error) {
         next(error);
     }
@@ -473,6 +539,9 @@ module.exports = {
     getFollowing,
     getFollowStatus,
     blockUser,
+    unblockUser,
+    getBlockedUsers,
+    getBlockStatus,
     getAdminOverview,
     getAdminUsers,
     updateAdminUser,

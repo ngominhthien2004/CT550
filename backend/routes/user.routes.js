@@ -13,6 +13,9 @@ const {
 	getFollowing,
 	getFollowStatus,
     blockUser,
+    unblockUser,
+    getBlockedUsers,
+    getBlockStatus,
 	getAdminOverview,
 	getAdminUsers,
 	updateAdminUser,
@@ -80,6 +83,9 @@ router.post('/:id/follow', protect, followUser);
 router.delete('/:id/follow', protect, unfollowUser);
 router.get('/:id/follow-status', protect, getFollowStatus);
 router.post('/:id/block', protect, blockUser);
+router.delete('/:id/block', protect, unblockUser);
+router.get('/blocked', protect, getBlockedUsers);
+router.get('/:id/block-status', protect, getBlockStatus);
 router.get('/:id/followers', getFollowers);
 router.get('/:id/following', getFollowing);
 

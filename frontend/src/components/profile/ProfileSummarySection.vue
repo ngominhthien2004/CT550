@@ -1,5 +1,7 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { userApi } from '../../services/api'
+import { useAuthStore } from '../../stores/auth.store'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
@@ -77,6 +79,53 @@ const socialLinks = computed(() => {
 const emit = defineEmits(['toggle-follow', 'edit-profile', 'edit-avatar', 'open-requests'])
 
 const shareTooltip = ref('')
+const authStore = useAuthStore()
+const blockedByMe = ref(false)
+const blockedMe = ref(false)
+const blockLoading = ref(false)
+const blockError = ref('')
+
+async function fetchBlockStatus() {
+  if (props.isOwnProfile || !props.user?._id || !authStore.isAuthenticated) {
+    return
+  }
+  try {
+    const { data } = await userApi.getBlockStatus(props.user._id)
+    blockedByMe.value = data.blockedByMe
+    blockedMe.value = data.blockedMe
+  } catch {
+    // silently fail
+  }
+}
+
+async function handleBlockToggle() {
+  if (!props.user?._id || !authStore.isAuthenticated) return
+  blockLoading.value = true
+  blockError.value = ''
+  try {
+    if (blockedByMe.value) {
+      await userApi.unblock(props.user._id)
+      blockedByMe.value = false
+    } else {
+      const confirmed = window.confirm(`Block ${props.user.displayName || props.user.username}? You will no longer follow each other.`)
+      if (!confirmed) {
+        blockLoading.value = false
+        return
+      }
+      await userApi.block(props.user._id)
+      blockedByMe.value = true
+    }
+  } catch (err) {
+    blockError.value = err?.response?.data?.message || 'Failed to update block status'
+  } finally {
+    blockLoading.value = false
+  }
+}
+
+// Fetch block status when user changes
+watch(() => props.user?._id, () => {
+  fetchBlockStatus()
+}, { immediate: true })
 
 function handleAvatarError(event) {
   if (event.target?.src !== DEFAULT_PROFILE_AVATAR) {
@@ -186,6 +235,19 @@ async function handleShare() {
       >
         <i class="fa-regular fa-envelope" aria-hidden="true"></i>
       </router-link>
+      <button
+        v-if="!isOwnProfile && authStore.isAuthenticated"
+        type="button"
+        class="block-btn"
+        :class="{ 'is-blocked': blockedByMe }"
+        :disabled="blockLoading"
+        :aria-label="blockedByMe ? 'Unblock user' : 'Block user'"
+        :title="blockedByMe ? 'Unblock' : 'Block'"
+        @click="handleBlockToggle"
+      >
+        <i v-if="blockLoading" class="fa-solid fa-spinner fa-spin"></i>
+        <i v-else :class="blockedByMe ? 'fa-solid fa-ban' : 'fa-regular fa-circle-xmark'"></i>
+      </button>
       <div class="share-wrap">
         <button type="button" class="share-btn" aria-label="Share profile" title="Share profile" @click="handleShare">
           <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>
@@ -193,6 +255,9 @@ async function handleShare() {
         <span v-if="shareTooltip" class="share-tooltip">{{ shareTooltip }}</span>
       </div>
     </div>
+      <div v-if="blockedMe" class="blocked-notice">
+        <i class="fa-solid fa-ban"></i> You have been blocked by this user.
+      </div>
   </div>
 </template>
 
@@ -517,5 +582,47 @@ async function handleShare() {
   .profile-actions {
     justify-content: flex-start;
   }
+}
+
+.block-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.block-btn:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+.block-btn.is-blocked {
+  border-color: #fca5a5;
+  background: #fef2f2;
+  color: #dc2626;
+}
+.block-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.blocked-notice {
+  grid-column: 1 / -1;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 </style>

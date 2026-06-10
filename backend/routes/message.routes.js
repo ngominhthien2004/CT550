@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const { getMyMessages, createMessage, markMessageRead, searchThread, softDeleteMessage } = require('../controllers/message.controller');
 const { protect } = require('../middlewares/auth.middleware');
+const { checkBlocked } = require('../middlewares/blockCheck.middleware');
 const { getMaxUploadFileSizeBytes } = require('../config/env');
 
 const IMAGE_EXTNAMES = /\.(jpg|jpeg|png|webp|gif)$/i;
@@ -44,7 +45,7 @@ const upload = multer({
 
 router.route('/')
     .get(protect, getMyMessages)
-    .post(protect, upload.array('images', 5), createMessage);
+    .post(protect, checkBlocked({ bodyField: 'recipientId' }), upload.array('images', 5), createMessage);
 
 router.route('/:id/read')
     .patch(protect, markMessageRead);

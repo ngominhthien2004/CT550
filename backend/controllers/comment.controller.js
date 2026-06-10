@@ -1,5 +1,6 @@
 const Comment = require('../models/Comment');
 const Artwork = require('../models/Artwork');
+const UserBlock = require('../models/UserBlock');
 const { createNotification } = require('../utils/notification');
 
 const createComment = async (req, res, next) => {
@@ -24,6 +25,23 @@ const createComment = async (req, res, next) => {
             return next(new Error('Artwork not found'));
         }
 
+        // Check block relationships with artwork owner
+        const artworkOwnerId = artwork.user?.toString();
+        if (artworkOwnerId && artworkOwnerId !== req.user._id.toString()) {
+            const [theyBlockedMe, iBlockedThem] = await Promise.all([
+                UserBlock.findOne({ blocker: artworkOwnerId, blocked: req.user._id }),
+                UserBlock.findOne({ blocker: req.user._id, blocked: artworkOwnerId }),
+            ]);
+            if (theyBlockedMe) {
+                res.status(403);
+                return next(new Error('You cannot comment: you have been blocked by the artwork owner'));
+            }
+            if (iBlockedThem) {
+                res.status(403);
+                return next(new Error('You cannot comment: you have blocked the artwork owner'));
+            }
+        }
+
         let parentComment = null;
         if (parentCommentId) {
             parentComment = await Comment.findById(parentCommentId).select('_id artwork user');
@@ -35,6 +53,21 @@ const createComment = async (req, res, next) => {
             if (parentComment.artwork.toString() !== artworkId.toString()) {
                 res.status(400);
                 return next(new Error('Parent comment must belong to the same artwork'));
+            }
+        }
+
+        // If replying, also check parent comment owner
+        if (parentComment) {
+            const parentOwnerId = parentComment.user?.toString();
+            if (parentOwnerId && parentOwnerId !== req.user._id.toString()) {
+                const [theyBlockedMe, iBlockedThem] = await Promise.all([
+                    UserBlock.findOne({ blocker: parentOwnerId, blocked: req.user._id }),
+                    UserBlock.findOne({ blocker: req.user._id, blocked: parentOwnerId }),
+                ]);
+                if (theyBlockedMe || iBlockedThem) {
+                    res.status(403);
+                    return next(new Error('You cannot reply: block relationship exists with the comment author'));
+                }
             }
         }
 

@@ -23,6 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
+# Server runtime artifacts
+backend/.server-errors.tmp
+backend/.server-output.tmp
+
 # Local-only artifacts (keep on machine, do not push)
 test-artifacts/
 tmp-chrome-user-data/
