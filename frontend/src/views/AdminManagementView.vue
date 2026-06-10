@@ -564,6 +564,7 @@ onMounted(async () => {
         :mutating="mutating"
         :users="users"
         :user-pagination="userPagination"
+        :format-date="formatDate"
         @toggle-filters="toggleUserFilters"
         @update:user-query="userQuery = $event"
         @update:user-role-filter="userRoleFilter = $event"
