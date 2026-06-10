@@ -5,6 +5,7 @@ import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
 import { useRequestStore } from '../stores/request.store'
+import RequestDetailPanel from '../components/request/RequestDetailPanel.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -14,6 +15,10 @@ const activeRole = ref('creator')
 const statusFilter = ref('')
 const saveMessage = ref('')
 const actionError = ref('')
+const selectedRequestId = ref(null)
+const selectedRequestDetail = ref(null)
+const detailLoading = ref(false)
+const detailPanelRef = ref(null)
 
 const termForm = reactive({
   title: 'Basic Request',
@@ -87,6 +92,39 @@ async function runAction(requestId, action) {
     await requestStore.transition(requestId, action)
   } catch (error) {
     actionError.value = error?.response?.data?.message || `Failed to ${action} request`
+  }
+}
+
+async function selectRequest(requestId) {
+  if (!requestId) {
+    selectedRequestId.value = null
+    selectedRequestDetail.value = null
+    return
+  }
+  selectedRequestId.value = requestId
+  detailLoading.value = true
+  try {
+    const detail = await requestStore.fetchById(requestId)
+    selectedRequestDetail.value = detail
+  } catch (_e) {
+    selectedRequestDetail.value = null
+  } finally {
+    detailLoading.value = false
+  }
+}
+
+async function handleChatMessage(formData) {
+  if (!selectedRequestId.value) return
+  detailPanelRef.value?.setChatLoading(true)
+  try {
+    await requestStore.sendChat(selectedRequestId.value, formData)
+    // Reload chat
+    const messages = await requestStore.getChat(selectedRequestId.value)
+    detailPanelRef.value?.updateChatMessages(messages)
+  } catch (_e) {
+    // ignore
+  } finally {
+    detailPanelRef.value?.setChatLoading(false)
   }
 }
 
@@ -218,7 +256,7 @@ onMounted(loadAll)
             <span v-for="term in terms" :key="term._id">{{ term.title }} · {{ term.currency }} {{ term.targetPrice }}</span>
           </div>
 
-          <article v-for="item in requests" :key="item._id" class="request-row">
+          <article v-for="item in requests" :key="item._id" class="request-row" @click="selectRequest(item._id)">
             <div>
               <p class="status-pill">{{ statusLabel(item.status) }}</p>
               <h3>{{ item.title }}</h3>
@@ -237,6 +275,16 @@ onMounted(loadAll)
 
           <p v-if="!loading && !requests.length" class="empty">No requests in this view.</p>
         </div>
+
+        <RequestDetailPanel
+          v-if="selectedRequestId"
+          ref="detailPanelRef"
+          :request="selectedRequestDetail"
+          :loading="detailLoading"
+          :active-role="activeRole"
+          @close="selectRequest(null)"
+          @send-chat="handleChatMessage"
+        />
       </div>
     </section>
   </MainLayoutTemplate>

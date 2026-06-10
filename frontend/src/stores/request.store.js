@@ -69,6 +69,37 @@ export const useRequestStore = defineStore('requests', {
         this.loading = false
       }
     },
+    async fetchById(requestId) {
+      this.loading = true
+      this.error = ''
+      try {
+        const { data } = await requestApi.getById(requestId)
+        return data
+      } catch (error) {
+        this.error = error?.response?.data?.message || 'Failed to load request'
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+    async getChat(requestId) {
+      try {
+        const { data } = await requestApi.getChat(requestId)
+        return Array.isArray(data) ? data : []
+      } catch (error) {
+        this.error = error?.response?.data?.message || 'Failed to load chat'
+        throw error
+      }
+    },
+    async sendChat(requestId, formData) {
+      try {
+        const { data } = await requestApi.sendChat(requestId, formData)
+        return data
+      } catch (error) {
+        this.error = error?.response?.data?.message || 'Failed to send message'
+        throw error
+      }
+    },
     async transition(requestId, action, payload = {}) {
       const actionMap = {
         accept: () => requestApi.accept(requestId),
