@@ -13,12 +13,6 @@ const requestFileSchema = mongoose.Schema({
     size: { type: Number, default: 0 },
 }, { _id: false });
 
-const fanLetterSchema = mongoose.Schema({
-    rating: { type: Number, min: 1, max: 5 },
-    message: { type: String, trim: true, maxlength: 2000, default: '' },
-    createdAt: { type: Date, default: null },
-}, { _id: false });
-
 const requestSchema = mongoose.Schema({
     term: {
         type: mongoose.Schema.Types.ObjectId,
@@ -118,10 +112,6 @@ const requestSchema = mongoose.Schema({
         type: String,
         enum: ['personal', 'commercial'],
         default: 'personal',
-    },
-    fanLetter: {
-        type: fanLetterSchema,
-        default: () => ({}),
     },
 }, {
     timestamps: true,

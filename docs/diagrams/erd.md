@@ -197,7 +197,6 @@ erDiagram
     number extensionDays
     datetime chatClosedAt
     string licenseTier
-    json fanLetter "embedded {rating,message,createdAt}"
   }
 
   REQUEST_CHAT_MESSAGE {
@@ -313,7 +312,7 @@ erDiagram
 | 12 | **READING_PROGRESS** | 7 | 3 relationships | Content System |
 | 13 | **ARTWORK_REPORT** | 9 | 3 relationships | Reporting & Moderation |
 | 14 | **REQUEST_TERM** | 16 | 2 relationships | Commission System |
-| 15 | **REQUEST** | 27 | 6 relationships | Commission System |
+| 15 | **REQUEST** | 26 | 6 relationships | Commission System |
 | 16 | **REQUEST_CHAT_MESSAGE** | 6 | 2 relationships | Commission System |
 | 17 | **REQUEST_EVENT** | 7 | 2 relationships | Commission System |
 | 18 | **REQUEST_REVISION** | 5 | 2 relationships | Commission System |

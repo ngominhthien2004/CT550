@@ -7,7 +7,6 @@ const {
     approveRequest,
     cancelRequest,
     completeRequest,
-    createFanLetter,
     createRequest,
     createRequestChatMessage,
     createRequestTerm,
@@ -101,7 +100,6 @@ router.post('/:id/draft', protect, upload.fields([{ name: 'draftFiles', maxCount
 router.post('/:id/revisions', protect, createRevision);
 router.post('/:id/complete', protect, upload.fields([{ name: 'finalFiles', maxCount: 5 }, { name: 'giftFiles', maxCount: 5 }]), completeRequest);
 router.post('/:id/approve', protect, approveRequest);
-router.post('/:id/fan-letter', protect, createFanLetter);
 router.route('/:id/chat')
     .get(protect, getRequestChat)
     .post(protect, upload.fields([{ name: 'attachments', maxCount: 10 }]), createRequestChatMessage);

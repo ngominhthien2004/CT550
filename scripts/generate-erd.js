@@ -246,7 +246,6 @@ const entities = [
       'number extensionDays',
       'datetime chatClosedAt',
       'string licenseTier',
-      'json fanLetter "embedded {rating,message,createdAt}"',
     ],
   },
   {

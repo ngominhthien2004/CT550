@@ -693,42 +693,6 @@ const requestExtension = async (req, res, next) => {
     }
 };
 
-const createFanLetter = async (req, res, next) => {
-    try {
-        const request = await Request.findById(req.params.id);
-        if (!request) {
-            res.status(404);
-            return next(new Error('Request not found'));
-        }
-
-        if (!ensureRequester(request, req.user._id)) {
-            res.status(403);
-            return next(new Error('Only the requester can send a fan letter'));
-        }
-
-        if (request.status !== REQUEST_STATUSES.COMPLETED) {
-            res.status(400);
-            return next(new Error('Fan letters are available after completion'));
-        }
-
-        request.fanLetter = {
-            rating: Number(req.body.rating) || undefined,
-            message: req.body.message || '',
-            createdAt: new Date(),
-        };
-        await request.save();
-        await logRequestEvent({
-            requestId: request._id,
-            actorId: req.user._id,
-            type: 'fan_letter_sent',
-        });
-
-        res.json(await populateRequest(Request.findById(request._id)));
-    } catch (error) {
-        next(error);
-    }
-};
-
 const getRequestChat = async (req, res, next) => {
     try {
         const request = await Request.findById(req.params.id);
@@ -981,7 +945,6 @@ module.exports = {
     approveRequest,
     cancelRequest,
     completeRequest,
-    createFanLetter,
     createRequest,
     createRequestChatMessage,
     createRequestTerm,
