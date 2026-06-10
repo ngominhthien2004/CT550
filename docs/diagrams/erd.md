@@ -78,7 +78,6 @@ erDiagram
     number bookmarkCount
     number commentCount
     number reportCount
-    boolean isDraft
     json gifNotes
     string novelContent
     string novelFormat "oneshot|series"
@@ -307,7 +306,7 @@ erDiagram
 | 3 | **USER_BLOCK** | 3 | 2 relationships | Core User System |
 | 4 | **MESSAGE** | 8 | 2 relationships | Core User System |
 | 5 | **NOTIFICATION** | 8 | 3 relationships | Core User System |
-| 6 | **ARTWORK** | 24 | 10 relationships | Content System |
+| 6 | **ARTWORK** | 23 | 10 relationships | Content System |
 | 7 | **TAG** | 5 | 1 relationships | Content System |
 | 8 | **COMMENT** | 6 | 2 relationships | Content System |
 | 9 | **LIKE** | 3 | 2 relationships | Content System |

@@ -14,7 +14,7 @@ const getFeed = async (req, res, next) => {
             return res.json({ artworks: [], total: 0, page, pages: 0 });
         }
 
-        const filter = { user: { $in: followingIds }, isDraft: false };
+        const filter = { user: { $in: followingIds } };
 
         const [artworks, total] = await Promise.all([
             Artwork.find(filter)
@@ -44,7 +44,7 @@ const getRankings = async (req, res, next) => {
         const limit = parseInt(req.query.limit, 10) || 50;
 
         const startDate = new Date();
-        const filter = { isDraft: false };
+        const filter = {};
 
         if (type !== 'all') {
             filter.type = type;
@@ -89,7 +89,7 @@ const getDiscovery = async (req, res, next) => {
         const type = req.query.type;
         const skip = (page - 1) * limit;
 
-        const filter = { isDraft: false };
+        const filter = {};
         if (type && type !== 'all' && type !== 'undefined') {
             filter.type = type;
         }

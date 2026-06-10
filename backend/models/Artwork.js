@@ -52,10 +52,6 @@ const artworkSchema = mongoose.Schema({
         default: 0
     },
     reportCount: { type: Number, default: 0 },
-    isDraft: {
-        type: Boolean,
-        default: false
-    },
     gifNotes: {
         type: String,
         trim: true,

@@ -100,7 +100,6 @@ const entities = [
       'number bookmarkCount',
       'number commentCount',
       'number reportCount',
-      'boolean isDraft',
       'json gifNotes',
       'string novelContent',
       'string novelFormat "oneshot|series"',
