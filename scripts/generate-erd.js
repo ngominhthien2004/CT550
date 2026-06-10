@@ -30,8 +30,6 @@ const entities = [
       'string website',
       'json socialLinks "embedded {x,facebook,instagram}"',
       'string role "user | admin"',
-      'boolean isPremium',
-      'datetime premiumUntil',
       'boolean aiDetectionEnabled',
       'string password "hashed"',
       'string googleId',

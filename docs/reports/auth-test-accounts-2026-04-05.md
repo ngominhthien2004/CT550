@@ -30,35 +30,20 @@ Based on `backend/models/User.js`:
 - `user`
 - `admin`
 
-2. Premium dimension (`isPremium` boolean)
+2. ~~Premium dimension (`isPremium` boolean)~~ — **Removed from system**
 
-- `false` (default)
-- `true`
+The `isPremium` field has been removed from the system. There is no longer a premium tier.
+All users are standard users with role `user` or `admin`.
 
 ### Practical account categories in this system
 
 1. Standard User
 
 - `role = user`
-- `isPremium = false`
 
-2. Premium User
-
-- `role = user`
-- `isPremium = true`
-
-3. Admin
+2. Admin
 
 - `role = admin`
-- `isPremium` can be false or true (premium is independent from role)
-
-Conclusion:
-
-- If grouping by product behavior, you can treat it as 3 common categories:
-  - Admin
-  - User
-  - UserPremium
-- Technically, data model supports a matrix of combinations because `role` and `isPremium` are separate fields.
 
 ## Newly Created Test Accounts (Automated)
 

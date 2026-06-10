@@ -2,7 +2,7 @@
 
 > **Môn học:** CT550 - Công nghệ phần mềm  
 > **Hệ thống:** IlluWrl - Nền tảng chia sẻ tranh vẽ và manga (Pixiv-clone)  
-> **Ngày:** 2026-06-09
+> **Ngày:** 2026-06-10
 
 ## Tổng Quan
 
@@ -66,7 +66,7 @@ UC50 ..> UC53 : <<include>>
 | Mã số | Tên Use Case | Mô tả ngắn | Actor chính | Trạng thái |
 |-------|-------------|------------|-------------|------------|
 | UC47 | Xem Dashboard tổng quan | Xem bảng KPI tổng quan: số người dùng, tác phẩm, doanh thu, request, báo cáo đang chờ xử lý | Admin | ✅ |
-| UC48 | Quản lý người dùng | Xem danh sách, tìm kiếm người dùng; chỉnh sửa role (member/admin), isPremium status; khóa/mở khóa tài khoản | Admin | ✅ |
+| UC48 | Quản lý người dùng | Xem danh sách, tìm kiếm người dùng; chỉnh sửa role (member/admin); khóa/mở khóa tài khoản | Admin | ✅ |
 | UC49 | Kiểm duyệt tác phẩm | Xem danh sách tác phẩm (có bộ lọc), xem chi tiết, xóa tác phẩm vi phạm điều khoản | Admin | ✅ |
 | UC50 | Kiểm duyệt bình luận | Xem danh sách bình luận, xóa bình luận vi phạm (spam, thù địch, nội dung người lớn) | Admin | ✅ |
 | UC51 | Quản lý thẻ (tag) | Sửa tên/dịch thuật tag, khóa/mở khóa tag (ngăn sử dụng), gộp tag (merge), xóa tag | Admin | ✅ |

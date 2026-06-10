@@ -24,7 +24,7 @@
 
 ### Core User Stories
 
-- As a creator, I can create multiple request plans such as Basic, Premium, and Commercial Use.
+- As a creator, I can create multiple request plans such as Basic and Commercial Use.
 - As a fan, I can see whether a creator is accepting requests from their profile and submit a request only when a plan is open.
 - As a creator, I can accept, reject, start, cancel, submit drafts, complete, and request one delivery extension.
 - As a requester, I can ask for up to 2 minor revisions after a draft and send a fan letter after completion.

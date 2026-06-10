@@ -44,7 +44,6 @@ const emit = defineEmits([
   'update:userRoleFilter',
   'apply-filters',
   'set-user-role',
-  'toggle-premium',
   'go-page',
 ])
 
@@ -98,7 +97,6 @@ function onRoleFilterChange(event) {
             <th>Username</th>
             <th>Email</th>
             <th>Role</th>
-            <th>Premium</th>
             <th>Created</th>
             <th>Actions</th>
           </tr>

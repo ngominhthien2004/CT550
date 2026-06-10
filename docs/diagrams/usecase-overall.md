@@ -2,7 +2,7 @@
 
 > **Môn học:** CT550 - Công nghệ phần mềm  
 > **Hệ thống:** IlluWrl - Nền tảng chia sẻ tranh vẽ và manga (Pixiv-clone)  
-> **Ngày:** 2026-06-09
+> **Ngày:** 2026-06-10
 
 ## Tổng Quan
 
@@ -173,15 +173,6 @@ rectangle "Công cụ Vẽ (Drawing Tool)" {
 Member --> UC_DRAW_ONLINE
 Member --> UC_EXPORT_IMAGE
 
-%% === PACKAGE: Premium ===
-rectangle "Premium (Premium)" {
-  usecase "UC45" as UC_VIEW_PREMIUM
-  usecase "UC46" as UC_SUBSCRIBE_PREMIUM
-}
-
-Member --> UC_VIEW_PREMIUM
-Member --> UC_SUBSCRIBE_PREMIUM
-
 %% === PACKAGE: Administration ===
 rectangle "Quản trị (Administration)" {
   usecase "UC47" as UC_ADMIN_DASHBOARD
@@ -256,10 +247,8 @@ Admin --> UC_UNHIDE_ARTWORK
 | UC42 | Phát hiện AI | Tự động phát hiện nội dung do AI tạo ra khi upload | Hệ thống (tự động) |
 | UC43 | Vẽ online | Sử dụng công cụ vẽ Konva.js trực tiếp trên trình duyệt | Member |
 | UC44 | Xuất ảnh | Xuất ảnh từ công cụ vẽ (PNG/JPG) | Member |
-| UC45 | Xem thông tin Premium | Xem thông tin về gói Premium và quyền lợi | Member |
-| UC46 | Đăng ký Premium | Đăng ký gói Premium (đã lên kế hoạch) | Member |
 | UC47 | Xem Dashboard tổng quan | Xem KPI, thống kê toàn hệ thống | Admin |
-| UC48 | Quản lý người dùng | Xem, tìm, sửa role và isPremium của người dùng | Admin |
+| UC48 | Quản lý người dùng | Xem, tìm, sửa role (member/admin), khóa/mở khóa tài khoản | Admin |
 | UC49 | Kiểm duyệt tác phẩm | Xem, tìm, xóa tác phẩm vi phạm | Admin |
 | UC50 | Kiểm duyệt bình luận | Xem, tìm, xóa bình luận vi phạm | Admin |
 | UC51 | Quản lý thẻ (tag) | Sửa tên/dịch thuật, khóa/mở khóa, gộp, xóa thẻ | Admin |

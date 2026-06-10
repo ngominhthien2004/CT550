@@ -21,10 +21,7 @@ defineProps({
       <span>Admins</span>
       <strong>{{ loadingOverview ? '...' : overview.totalAdmins }}</strong>
     </article>
-    <article class="overview-card">
-      <span>Premium Users</span>
-      <strong>{{ loadingOverview ? '...' : overview.totalPremium }}</strong>
-    </article>
+
     <article class="overview-card">
       <span>Artworks</span>
       <strong>{{ loadingOverview ? '...' : overview.totalArtworks }}</strong>

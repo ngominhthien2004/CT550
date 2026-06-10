@@ -9,7 +9,7 @@ public_user_search:
     in_scope:
       - "Tìm kiếm người dùng công khai theo tên người dùng hoặc tên hiển thị."
       - "Hỗ trợ phân trang với page và limit (giới hạn limit theo cấu hình)."
-      - "Chỉ trả về trường công khai (không có email, role, isPremium)."
+      - "Chỉ trả về trường công khai (không có email, role)."
     out_of_scope:
       - "Tìm kiếm người dùng theo tiêu chí riêng tư hoặc nội bộ."
       - "Loại bỏ điều hướng hoặc thay đổi logic tìm kiếm tác phẩm hiện tại."

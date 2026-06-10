@@ -33,7 +33,6 @@ const error = ref('')
 const overview = ref({
   totalUsers: 0,
   totalAdmins: 0,
-  totalPremium: 0,
   totalArtworks: 0,
   totalComments: 0,
 })
@@ -157,21 +156,6 @@ async function setUserRole(targetUser, nextRole) {
     await loadOverview()
   } catch (updateError) {
     error.value = updateError?.response?.data?.message || 'Failed to update user role'
-  } finally {
-    mutating.value = false
-  }
-}
-
-async function togglePremium(targetUser) {
-  if (mutating.value) return
-  mutating.value = true
-  error.value = ''
-  try {
-    const { data } = await adminApi.updateUser(targetUser._id, { isPremium: !targetUser.isPremium })
-    users.value = users.value.map((item) => (item._id === targetUser._id ? data : item))
-    await loadOverview()
-  } catch (updateError) {
-    error.value = updateError?.response?.data?.message || 'Failed to update premium status'
   } finally {
     mutating.value = false
   }
@@ -580,13 +564,11 @@ onMounted(async () => {
         :mutating="mutating"
         :users="users"
         :user-pagination="userPagination"
-        :format-date="formatDate"
         @toggle-filters="toggleUserFilters"
         @update:user-query="userQuery = $event"
         @update:user-role-filter="userRoleFilter = $event"
         @apply-filters="loadUsers(1)"
         @set-user-role="setUserRole"
-        @toggle-premium="togglePremium"
         @go-page="goToUserPage"
       />
 

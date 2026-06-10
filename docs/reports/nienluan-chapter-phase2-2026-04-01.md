@@ -3,7 +3,7 @@
 ## I. Đặc tả yêu cầu
 ### 1. Mô tả hệ thống
 - Bối cảnh bài toán: Xây dựng nền tảng chia sẻ tranh minh họa/comic theo định hướng Pixiv Clone, ưu tiên trải nghiệm cộng đồng và khám phá nội dung.
-- Đối tượng sử dụng: Khách vãng lai, thành viên, thành viên premium, quản trị viên.
+- Đối tượng sử dụng: Khách vãng lai, thành viên, quản trị viên.
 - Chức năng chính: Auth/profile/follow (Phase 1), artwork CRUD (Phase 1), social workflows gồm comment, bookmark, feed, ranking/discovery (Phase 2), và chuẩn bị nền cho moderation/reporting.
 
 ### 2. Công nghệ sử dụng

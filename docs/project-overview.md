@@ -18,7 +18,7 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
 
 - **Khách vãng lai (Guest):** ✅ Xem nội dung công khai, tìm kiếm cơ bản, không thể tương tác sâu (like, comment, upload).
 - **Người dùng thành viên (Member):** ✅ Đăng tải tác phẩm, tương tác đầy đủ (like, bookmark, follow, comment), quản lý gallery cá nhân.
-- **Thành viên Premium:** ⚠️ Giao diện `PremiumView.vue` và dữ liệu hằng số đã có, nhưng **chưa có luồng thanh toán subscription** và chưa có logic gating feature ở backend.
+- **Thành viên Premium:** ❌ Đã loại bỏ hoàn toàn khỏi hệ thống (removed).
 - **Quản trị viên (Admin):** ✅ Kiểm duyệt nội dung, quản lý người dùng, dashboard thống kê, xử lý báo cáo vi phạm.
 
 ## 3. Danh sách chức năng chi tiết
@@ -94,8 +94,8 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
 
 ### F. Quản trị & Kỹ thuật
 
-- **Dashboard quản trị:** ✅ Tổng quan (users/admins/premium/artworks/comments), 6 bảng quản lý chuyên biệt
-- ✅ **Quản lý người dùng (Admin):** Danh sách, tìm kiếm, cập nhật role/isPremium
+- **Dashboard quản trị:** ✅ Tổng quan (users/admins/artworks/comments), 6 bảng quản lý chuyên biệt
+- ⚠️ **Quản lý người dùng (Admin):** Danh sách, tìm kiếm, cập nhật role — trường `isPremium` đã loại bỏ (removed)
 - ✅ **Kiểm duyệt tác phẩm (Admin):** Xem danh sách, tìm kiếm, xóa tác phẩm
 - ✅ **Kiểm duyệt bình luận (Admin):** Xem danh sách, tìm kiếm, xóa bình luận
 - ✅ **Quản lý thẻ (Admin):** Sửa tên/bản dịch/isLocked, gộp thẻ, xóa thẻ
@@ -126,7 +126,7 @@ Những chức năng dưới đây đã được code nhưng chưa có trong tà
 
 | Model | Mô tả |
 |-------|-------|
-| **User** | email, password_hash, googleId, facebookId, twitterId, username, displayName, avatar, coverImage, bio, socialLinks, role, isPremium, premiumUntil |
+| **User** | email, password_hash, googleId, facebookId, twitterId, username, displayName, avatar, coverImage, bio, socialLinks, role |
 | **Artwork** | user, title, description, type (illust/manga/gif/novel), images[], tags[], ageRating, viewCount, likeCount, bookmarkCount, commentCount, isDraft, gifNotes, novelContent, novelFormat, novelSeriesName, chapterCount, wordCount |
 | **Tag** | name (unique), translations (en/vi/ja), usageCount, isLocked |
 | **Comment** | artwork, user, content, parentComment, stickerUrl |

@@ -23,7 +23,7 @@
 2. Verify successful session and navigation access.
 3. Open `/admin`.
 4. Verify Admin overview KPI cards render.
-5. Verify User Management tab renders table + role/premium actions.
+5. Verify User Management tab renders table + role actions.
 6. Switch to Artwork Moderation tab and verify table + delete actions.
 
 ## Result

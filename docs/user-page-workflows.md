@@ -23,7 +23,6 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Nút Edit favorite tags mở modal để xóa tag yêu thích.
 - Nút Media: mở menu chọn phạm vi tìm kiếm (Illustrations and Manga, Novels, User).
 - Nút More (ellipsis): mở modal Search option; bấm Apply sẽ chuyển sang `/feed` kèm query nâng cao (`qall`, `qany`, `qnot`, `target`, `type`).
-- Nút Premium Free Trial: chuyển tới `/signup`.
 - Nút Post: mở menu chọn loại bài đăng, điều hướng tới:
   - Illustration -> `/upload/illust`
   - Manga -> `/upload/manga`

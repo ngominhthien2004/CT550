@@ -23,8 +23,6 @@ erDiagram
     string website
     json socialLinks "embedded {x,facebook,instagram}"
     string role "user | admin"
-    boolean isPremium
-    datetime premiumUntil
     boolean aiDetectionEnabled
     string password "hashed"
     string googleId
@@ -315,7 +313,7 @@ erDiagram
 
 | # | Entity | Fields | Key Relationships | Group |
 |---|--------|--------|-------------------|-------|
-| 1 | **USER** | 21 | 24 relationships | Core User System |
+| 1 | **USER** | 19 | 24 relationships | Core User System |
 | 2 | **FOLLOW** | 3 | 2 relationships | Core User System |
 | 3 | **USER_BLOCK** | 3 | 2 relationships | Core User System |
 | 4 | **MESSAGE** | 8 | 2 relationships | Core User System |

@@ -78,7 +78,6 @@ function chooseSearchScope(scopeKey) {
     <button type="button" class="icon-round" aria-label="More" title="More" @click="emit('open-search-options')">
       <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
     </button>
-    <router-link to="/premium" class="premium-pill">Premium Free Trial</router-link>
   </div>
 </template>
 
@@ -252,22 +251,6 @@ function chooseSearchScope(scopeKey) {
   width: 1rem;
   text-align: center;
   flex-shrink: 0;
-}
-
-/* --- Premium Link (less prominent) --- */
-.premium-pill {
-  text-decoration: none;
-  color: #cc8800;
-  font-weight: 700;
-  font-size: 0.82rem;
-  white-space: nowrap;
-  padding: 0.3rem 0.6rem;
-  border-radius: 6px;
-  transition: background 0.15s;
-}
-
-.premium-pill:hover {
-  background: rgba(204, 136, 0, 0.08);
 }
 
 @media (max-width: 920px) {

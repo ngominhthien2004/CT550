@@ -34,7 +34,7 @@
 5. [Standalone Pages (Không Dùng MainLayoutTemplate)](#5-standalone-pages-không-dùng-mainlayouttemplate)
    - 5.1. [FeedView (`/feed`)](#51-feedview-feed)
    - 5.2. [LoginView (`/login`) & SignUpView (`/signup`)](#52-loginview-login--signupview-signup)
-   - 5.3. [PremiumView (`/premium`)](#53-premiumview-premium)
+   - 5.3. ~~PremiumView (`/premium`)~~ — **Removed**
    - 5.4. [AIView (`/ai`)](#54-aiview-ai)
    - 5.5. [DrawingView (`/draw`)](#55-drawingview-draw)
    - 5.6. [AuthCallbackView (`/auth/callback`)](#56-authcallbackview-authcallback)
@@ -896,32 +896,9 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
 ---
 
-### 5.3. PremiumView (`/premium`)
+### 5.3. ~~PremiumView (`/premium`)~~ — **Removed**
 
-```text
-┌──────────────────────────────────────────────────────────┐
-│ .premium-page (100vh, gradient background, dark/gold)    │
-│  ├── <PremiumTopBar />                                    │
-│  │    (topbar riêng cho premium page)                    │
-│  └── <main>                                              │
-│       ├── <PremiumHero />                                │
-│       │    (hero section giới thiệu premium)             │
-│       ├── <PremiumBenefits />                            │
-│       │    (danh sách lợi ích premium)                  │
-│       ├── <PremiumCompare />                             │
-│       │    (bảng so sánh gói)                           │
-│       ├── <PremiumCreatorTools />                        │
-│       │    (công cụ cho creator)                        │
-│       └── <PremiumFinalCta />                            │
-│            (call-to-action cuối trang)                   │
-└──────────────────────────────────────────────────────────┘
-```
-
-**Đặc điểm:**
-
-- **Không dùng `MainLayoutTemplate`** — full-screen standalone.
-- Background gradient dark/gold theme.
-- Các section được tổ chức thành component riêng, flow từ trên xuống dưới.
+Trang Premium đã được gỡ bỏ khỏi hệ thống. Route `/premium` không còn tồn tại.
 
 ---
 
@@ -1037,7 +1014,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 | **MainLayoutTemplate + grid slot** | Home, TypedHomeFeed, Discovery, NewestByAll, FollowingNewest, SearchResults, Rankings, ArtworkDetail, TagDetail, Account, Dashboard, Admin, Upload, Messages, Notifications, Favorites, FollowUsers, RequestManagement, PaymentSandbox, NotFound |
 | **Auth shell + auth-card (centered)** | Login, SignUp |
 | **Standalone page-block** | FeedView |
-| **Full-screen standalone** | Premium, AI, Drawing, AuthCallback |
+| **Full-screen standalone** | AI, Drawing, AuthCallback |
 | **2-column (sidebar + main)** | Messages, HomeFeed (trong feed layout), ArtworkDetail (trên 1000px), SearchResults (user), RequestManagement, PaymentSandbox |
 | **3-column dashboard** | Dashboard |
 | **Multi-column CSS Grid** | Discovery, NewestByAll, FollowingNewest, Rankings, SearchResults (illust), Favorites, FollowUsers |

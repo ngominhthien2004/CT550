@@ -89,7 +89,6 @@ const updateUserProfile = async (req, res, next) => {
                 occupation: updatedUser.occupation,
                 socialLinks: updatedUser.socialLinks,
                 role: updatedUser.role,
-                isPremium: updatedUser.isPremium,
             });
         } else {
             res.status(404);
@@ -336,13 +335,11 @@ const getAdminOverview = async (req, res, next) => {
         const [
             totalUsers,
             totalAdmins,
-            totalPremium,
             totalArtworks,
             totalComments,
         ] = await Promise.all([
             User.countDocuments(),
             User.countDocuments({ role: 'admin' }),
-            User.countDocuments({ isPremium: true }),
             Artwork.countDocuments(),
             Comment.countDocuments(),
         ]);
@@ -350,7 +347,6 @@ const getAdminOverview = async (req, res, next) => {
         res.json({
             totalUsers,
             totalAdmins,
-            totalPremium,
             totalArtworks,
             totalComments,
         });
@@ -382,7 +378,7 @@ const getAdminUsers = async (req, res, next) => {
 
         const [users, total] = await Promise.all([
             User.find(filter)
-                .select('username displayName email role isPremium createdAt')
+                .select('username displayName email role createdAt')
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit),
@@ -486,10 +482,6 @@ const updateAdminUser = async (req, res, next) => {
             user.role = req.body.role;
         }
 
-        if (typeof req.body.isPremium === 'boolean') {
-            user.isPremium = req.body.isPremium;
-        }
-
         const updated = await user.save();
 
         res.json({
@@ -498,7 +490,6 @@ const updateAdminUser = async (req, res, next) => {
             displayName: updated.displayName,
             email: updated.email,
             role: updated.role,
-            isPremium: updated.isPremium,
             createdAt: updated.createdAt,
         });
     } catch (error) {

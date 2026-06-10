@@ -2,7 +2,7 @@
 
 > **Môn học:** CT550 - Công nghệ phần mềm  
 > **Hệ thống:** IlluWrl - Nền tảng chia sẻ tranh vẽ và manga (Pixiv-clone)  
-> **Ngày:** 2026-06-09  
+> **Ngày:** 2026-06-10  
 
 ---
 
@@ -121,8 +121,6 @@ Member có tất cả quyền của Guest.
 | UC42 | Phát hiện AI (tự động) | — | — | — |
 | UC43 | Vẽ online | — | ✅ | ✅ |
 | UC44 | Xuất ảnh | — | ✅ | ✅ |
-| UC45 | Xem thông tin Premium | — | ✅ | ✅ |
-| UC46 | Đăng ký Premium | — | ✅ | ✅ |
 | UC47 | Xem Dashboard tổng quan | — | — | ✅ |
 | UC48 | Quản lý người dùng | — | — | ✅ |
 | UC49 | Kiểm duyệt tác phẩm | — | — | ✅ |
@@ -230,14 +228,7 @@ Member có tất cả quyền của Guest.
 | UC43 | Vẽ online | Sử dụng Konva.js canvas để vẽ: brush, layer, color, shape. | Member / Admin | — |
 | UC44 | Xuất ảnh | Xuất file PNG hoặc JPG từ canvas hiện tại. | Member / Admin | UC43 |
 
-### 4.10 Nhóm: Premium
-
-| Mã số | Tên | Mô tả | Actor | Phụ thuộc |
-|-------|-----|-------|-------|-----------|
-| UC45 | Xem thông tin Premium | Xem trang giới thiệu Premium: quyền lợi, bảng giá, so sánh. | Member / Admin | — |
-| UC46 | Đăng ký Premium | Đăng ký gói Premium (chưa triển khai — planned). | Member / Admin | — |
-
-### 4.11 Nhóm: Báo cáo & Kiểm duyệt (Reporting & Moderation)
+### 4.10 Nhóm: Báo cáo & Kiểm duyệt (Reporting & Moderation)
 
 | Mã số | Tên | Mô tả | Actor | Phụ thuộc |
 |-------|-----|-------|-------|-----------|
@@ -250,7 +241,7 @@ Member có tất cả quyền của Guest.
 | Mã số | Tên | Mô tả | Actor | Phụ thuộc |
 |-------|-----|-------|-------|-----------|
 | UC47 | Xem Dashboard tổng quan | Thống kê toàn hệ thống: users, artworks, revenue, reports pending. | Admin | — |
-| UC48 | Quản lý người dùng | CRUD users, set role/premium, lock/unlock account. | Admin | — |
+| UC48 | Quản lý người dùng | CRUD users, set role, lock/unlock account. | Admin | — |
 | UC49 | Kiểm duyệt tác phẩm | Xem, tìm, xóa artwork vi phạm. | Admin | — |
 | UC50 | Kiểm duyệt bình luận | Xem, tìm, xóa comment vi phạm (spam, toxic, NSFW). | Admin | — |
 | UC51 | Quản lý thẻ (tag) | Edit, lock/unlock, merge, delete tag. | Admin | — |
@@ -322,20 +313,20 @@ Hệ thống **IlluWrl** được mô hình hóa với:
 | Thành phần | Số lượng |
 |------------|:--------:|
 | Actors | **4** (Guest, Member, Admin, AI System) |
-| Use cases | **57** |
-| Nhóm chức năng | **11** (Authentication, Browse, Search, Profile, Artwork, Social, Commission, AI, Drawing, Premium, Admin) |
+| Use cases | **55** |
+| Nhóm chức năng | **10** (Authentication, Browse, Search, Profile, Artwork, Social, Commission, AI, Drawing, Admin) |
 
 ### 6.2 Phân bố use case theo mức độ ưu tiên
 
 | Mức độ | Số lượng | Mô tả |
 |--------|:--------:|-------|
-| ✅ **Đã triển khai** | 55 | Hầu hết các use case đã được implement |
+| ✅ **Đã triển khai** | 54 | Hầu hết các use case đã được implement |
 | ⚠️ **Triển khai một phần** | 1 | UC36 (Thanh toán Escrow) — chức năng cốt lõi nhưng chưa đầy đủ |
-| ❌ **Chưa triển khai** | 1 | UC46 (Đăng ký Premium) — đã lên kế hoạch |
+| ❌ **Chưa triển khai** | 0 | — |
 
 ### 6.3 Kết quả đạt được
 
-1. **Bao phủ toàn diện**: 57 use case bao phủ tất cả chức năng từ xác thực, duyệt nội dung,
+1. **Bao phủ toàn diện**: 55 use case bao phủ tất cả chức năng từ xác thực, duyệt nội dung,
    tương tác xã hội, báo cáo & kiểm duyệt, đến quản trị và AI.
 
 2. **Phân quyền rõ ràng**: Quan hệ kế thừa (generalization) 3 tầng Guest → Member → Admin
@@ -347,12 +338,11 @@ Hệ thống **IlluWrl** được mô hình hóa với:
 4. **Quy trình nghiệp vụ**: Commission/Payment được mô hình hóa với chuỗi include/extend
    rõ ràng: Term → Order → Payment → Request → Chat.
 
-5. **Hỗ trợ báo cáo**: 57 use case mỗi use case có mã số duy nhất, mô tả chi tiết,
+5. **Hỗ trợ báo cáo**: 55 use case mỗi use case có mã số duy nhất, mô tả chi tiết,
    trạng thái triển khai và phụ thuộc, thuận tiện cho việc theo dõi tiến độ dự án.
 
 ### 6.4 Hướng phát triển
 
-- **UC46 (Đăng ký Premium)**: Cần tích hợp cổng thanh toán (PayPal/VNPay/Momo)
 - **UC36 (Thanh toán Escrow)**: Hoàn thiện quy trình escrow, dispute resolution
 - **Bổ sung**: Có thể mở rộng thêm use case cho mobile app hoặc API third-party
 

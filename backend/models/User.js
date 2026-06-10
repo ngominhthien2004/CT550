@@ -47,13 +47,6 @@ const userSchema = mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user'
     },
-    isPremium: {
-        type: Boolean,
-        default: false
-    },
-    premiumUntil: {
-        type: Date
-    },
     aiDetectionEnabled: {
         type: Boolean,
         default: true

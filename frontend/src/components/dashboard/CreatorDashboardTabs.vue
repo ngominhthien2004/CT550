@@ -3,8 +3,8 @@ const tabs = [
   { key: 'home', label: 'Home' },
   { key: 'works', label: 'Works' },
   { key: 'reactions', label: 'Reactions' },
-  { key: 'analytics', label: 'Access analytics', premium: true },
-  { key: 'ranking', label: 'Ranking report', premium: true },
+  { key: 'analytics', label: 'Access analytics' },
+  { key: 'ranking', label: 'Ranking report' },
 ]
 </script>
 
@@ -18,7 +18,6 @@ const tabs = [
       :class="{ 'dashboard-tab--active': tab.key === 'home' }"
     >
       {{ tab.label }}
-      <span v-if="tab.premium" class="premium-chip" aria-hidden="true">P</span>
     </button>
   </nav>
 </template>

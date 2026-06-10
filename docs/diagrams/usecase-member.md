@@ -2,13 +2,13 @@
 
 > **Môn học:** CT550 - Công nghệ phần mềm  
 > **Hệ thống:** IlluWrl - Nền tảng chia sẻ tranh vẽ và manga (Pixiv-clone)  
-> **Ngày:** 2026-06-09
+> **Ngày:** 2026-06-10
 
 ## Tổng Quan
 
 Biểu đồ dưới đây tập trung vào tác nhân **Thành viên (Member)** — người dùng đã đăng nhập.
 Member kế thừa tất cả quyền của Guest và có thêm các quyền: quản lý hồ sơ, quản lý tác phẩm,
-tương tác xã hội, ủy thác & thanh toán, tính năng AI, công cụ vẽ và Premium.
+tương tác xã hội, ủy thác & thanh toán, tính năng AI và công cụ vẽ.
 
 ```mermaid
 ---
@@ -119,15 +119,6 @@ Member --> UC41
 Member --> UC43
 Member --> UC44
 
-%% === Premium ===
-rectangle "Nhóm Premium" {
-  usecase "UC45" as "Xem thông tin Premium"
-  usecase "UC46" as "Đăng ký Premium"
-}
-
-Member --> UC45
-Member --> UC46
-
 %% Quan hệ giữa các use case bổ sung
 UC39 ..> UC41 : <<extend>>
 UC43 ..> UC44 : <<extend>>
@@ -167,6 +158,4 @@ UC43 ..> UC44 : <<extend>>
 | UC41 | Tóm tắt nội dung AI | AI tự động tóm tắt nội dung novel hoặc mô tả tác phẩm | Member | ✅ |
 | UC43 | Vẽ online | Sử dụng công cụ vẽ tích hợp (Konva.js canvas) để vẽ trực tiếp trên web | Member | ✅ |
 | UC44 | Xuất ảnh | Xuất tác phẩm từ công cụ vẽ dưới định dạng PNG hoặc JPG | Member | ✅ |
-| UC45 | Xem thông tin Premium | Xem trang thông tin gói Premium, quyền lợi và bảng giá | Member | ✅ |
-| UC46 | Đăng ký Premium | Đăng ký gói Premium (chức năng đã lên kế hoạch, chưa triển khai) | Member | ❌ |
 | UC55 | Báo cáo tác phẩm | Gửi báo cáo vi phạm cho một tác phẩm kèm lý do và mô tả | Member | ✅ |
