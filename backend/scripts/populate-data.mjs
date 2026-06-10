@@ -5,7 +5,7 @@
  * 
  * Collections populated:
  *   chapters, readingprogresses, requestterms, requests,
- *   requestchatmessages, requestevents, illuwrlrequests, userblocks
+ *   requestchatmessages, requestevents, userblocks
  * 
  * Usage: node backend/scripts/populate-data.mjs
  */
@@ -453,33 +453,8 @@ When dawn broke, she stepped back to examine her work. For the first time, she s
     }
     console.log();
 
-    // ── Step 8: IlluWrl Request (yuki.sato → goku.tanaka) ────────────────────
-    console.log('── Step 8: Create IlluWrl request (yuki.sato → goku.tanaka) ────');
-
-    if (gokuUserId) {
-        try {
-            const illRes = await fetch(`${API}/users/${gokuUserId}/illuwrl-request`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${tokens['yuki.sato']}`,
-                },
-                body: JSON.stringify({
-                    message: "Hi! I really love your art style, especially the way you use colors. I'm a writer and I'd love to collaborate on a project together. Let me know if you're interested!",
-                }),
-            });
-            await check(illRes, 'IlluWrl request');
-            logResult('illuwrlrequests', 'yuki.sato → goku.tanaka', 'OK');
-        } catch (err) {
-            logResult('illuwrlrequests', 'Create IlluWrl request', 'FAIL', err.message);
-        }
-    } else {
-        logResult('illuwrlrequests', 'Skip (no goku userId)', 'SKIP');
-    }
-    console.log();
-
-    // ── Step 9: Block User (priya.sharma blocks someone) ──────────────────────
-    console.log('── Step 9: Block a user (priya.sharma) ─────────────────────────');
+    // ── Step 8: Block User (priya.sharma blocks someone) ──────────────────────
+    console.log('── Step 8: Block a user (priya.sharma) ─────────────────────────');
 
     try {
         // Search for another user to block (e.g., xiangxia.chen)
@@ -514,7 +489,6 @@ When dawn broke, she stepped back to examine her work. For the first time, she s
         requests: 'requests',
         requestchatmessages: 'requestchatmessages',
         requestevents: 'requestevents',
-        illuwrlrequests: 'illuwrlrequests',
         userblocks: 'userblocks',
     };
 

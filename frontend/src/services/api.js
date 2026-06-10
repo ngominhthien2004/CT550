@@ -109,7 +109,6 @@ export const userApi = {
   getFollowers: (userId) => api.get(`/users/${userId}/followers`),
   getFollowing: (userId) => api.get(`/users/${userId}/following`),
   getFollowStatus: (userId) => api.get(`/users/${userId}/follow-status`),
-  sendIlluWrlRequest: (userId, payload = {}) => api.post(`/users/${userId}/illuwrl-request`, payload),
   block: (userId) => api.post(`/users/${userId}/block`),
   searchPublic: (params = {}) => api.get('/users/search', { params }),
   postPresence: (userId, payload = {}) => api.post(`/users/${userId}/presence`, payload),

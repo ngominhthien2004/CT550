@@ -1,7 +1,6 @@
 const User = require('../models/User');
 const cloudinary = require('cloudinary').v2;
 const Follow = require('../models/Follow');
-const IlluWrlRequest = require('../models/IlluWrlRequest');
 const UserBlock = require('../models/UserBlock');
 const Artwork = require('../models/Artwork');
 const Comment = require('../models/Comment');
@@ -217,73 +216,6 @@ const getFollowStatus = async (req, res, next) => {
     }
 };
 
-const createIlluWrlRequest = async (req, res, next) => {
-    try {
-        const recipientId = req.params.id;
-        const requesterId = req.user._id;
-        const message = typeof req.body.message === 'string' ? req.body.message.trim() : '';
-
-        if (recipientId === requesterId.toString()) {
-            res.status(400);
-            return next(new Error('You cannot send a request to yourself'));
-        }
-
-        if (message.length > 10000) {
-            res.status(400);
-            return next(new Error('Request message must be 10000 characters or fewer'));
-        }
-
-        const recipient = await User.findById(recipientId).select('username displayName');
-        if (!recipient) {
-            res.status(404);
-            return next(new Error('User not found'));
-        }
-
-        const blockedRelationship = await UserBlock.findOne({
-            $or: [
-                { blocker: requesterId, blocked: recipientId },
-                { blocker: recipientId, blocked: requesterId },
-            ],
-        });
-
-        if (blockedRelationship) {
-            res.status(403);
-            return next(new Error('You cannot send a request to this user'));
-        }
-
-        const existingRequest = await IlluWrlRequest.findOne({
-            requester: requesterId,
-            recipient: recipientId,
-            status: 'pending',
-        });
-
-        if (existingRequest) {
-            res.status(409);
-            return next(new Error('A pending IlluWrl request already exists'));
-        }
-
-        const request = await IlluWrlRequest.create({
-            requester: requesterId,
-            recipient: recipientId,
-            message,
-        });
-
-        await createNotification({
-            userId: recipientId,
-            actorId: requesterId,
-            type: 'system',
-            message: `${req.user.username || req.user.displayName || 'Someone'} sent you an IlluWrl request.`,
-        });
-
-        res.status(201).json({
-            request,
-            message: 'IlluWrl request sent successfully',
-        });
-    } catch (error) {
-        next(error);
-    }
-};
-
 const blockUser = async (req, res, next) => {
     try {
         const blockedUserId = req.params.id;
@@ -312,17 +244,6 @@ const blockUser = async (req, res, next) => {
                 { follower: blockedUserId, following: blockerId },
             ],
         });
-
-        await IlluWrlRequest.updateMany(
-            {
-                status: 'pending',
-                $or: [
-                    { requester: blockerId, recipient: blockedUserId },
-                    { requester: blockedUserId, recipient: blockerId },
-                ],
-            },
-            { status: 'cancelled' }
-        );
 
         res.json({ message: 'User blocked successfully' });
     } catch (error) {
@@ -551,7 +472,6 @@ module.exports = {
     getFollowers,
     getFollowing,
     getFollowStatus,
-    createIlluWrlRequest,
     blockUser,
     getAdminOverview,
     getAdminUsers,

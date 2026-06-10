@@ -24,11 +24,6 @@ const userLoading = ref(false)
 const userError = ref('')
 const activeUserMenuId = ref('')
 const blockedUserIds = ref([])
-const requestModalUser = ref(null)
-const requestMessage = ref('')
-const requestSubmitting = ref(false)
-const requestError = ref('')
-const requestSuccess = ref('')
 const blockSubmittingId = ref('')
 const sortMode = ref(typeof route.query.order === 'string' ? route.query.order : 'newest')
 const showTags = ref(true)
@@ -231,8 +226,6 @@ const novelSortLabel = computed(() => (sortMode.value === 'popular' ? 'Popular n
 const searchResultPageClass = computed(() => ({
   'search-result-page--users': isUserSearch.value,
 }))
-const requestMessageCount = computed(() => requestMessage.value.length)
-const requestModalUserName = computed(() => (requestModalUser.value ? getUserDisplayName(requestModalUser.value) : 'this user'))
 
 const placeholderCount = computed(() => {
   if (loading.value || error.value || !visibleItems.value.length) {
@@ -360,58 +353,6 @@ async function ensureAuthenticated() {
     query: { redirect: route.fullPath },
   })
   return false
-}
-
-async function openIlluWrlRequest(user) {
-  if (!(await ensureAuthenticated())) {
-    return
-  }
-
-  requestModalUser.value = user
-  requestMessage.value = ''
-  requestError.value = ''
-  requestSuccess.value = ''
-  closeUserMenu()
-}
-
-function closeIlluWrlRequest() {
-  if (requestSubmitting.value) {
-    return
-  }
-
-  requestModalUser.value = null
-  requestMessage.value = ''
-  requestError.value = ''
-  requestSuccess.value = ''
-}
-
-async function submitIlluWrlRequest() {
-  if (!requestModalUser.value || requestSubmitting.value) {
-    return
-  }
-
-  if (requestMessage.value.length > 10000) {
-    requestError.value = 'Message must be 10000 characters or fewer.'
-    return
-  }
-
-  requestSubmitting.value = true
-  requestError.value = ''
-  requestSuccess.value = ''
-
-  try {
-    await userApi.sendIlluWrlRequest(requestModalUser.value._id, {
-      message: requestMessage.value,
-    })
-    requestSuccess.value = `Request sent to ${getUserDisplayName(requestModalUser.value)}.`
-    setTimeout(() => {
-      closeIlluWrlRequest()
-    }, 850)
-  } catch (submitError) {
-    requestError.value = submitError?.response?.data?.message || 'Failed to send request'
-  } finally {
-    requestSubmitting.value = false
-  }
 }
 
 async function blockSearchUser(user) {
@@ -754,7 +695,6 @@ watch(
                     </button>
                     <div v-if="activeUserMenuId === user._id" class="user-action-menu" role="menu">
                       <button type="button" role="menuitem" @click="closeUserMenu">Follow privately</button>
-                      <button type="button" role="menuitem" @click="openIlluWrlRequest(user)">IlluWrl request</button>
                       <span class="menu-separator" aria-hidden="true"></span>
                       <button type="button" role="menuitem" @click="closeUserMenu">Mute setting</button>
                       <button type="button" role="menuitem" :disabled="blockSubmittingId === user._id" @click="blockSearchUser(user)">
@@ -896,30 +836,6 @@ watch(
         @apply="applySearchOptions"
       />
 
-      <div v-if="requestModalUser" class="request-modal-backdrop" role="presentation" @click.self="closeIlluWrlRequest">
-        <section class="illuwrl-request-modal" role="dialog" aria-modal="true" aria-labelledby="illuwrl-request-title">
-          <button type="button" class="request-modal-close" aria-label="Close request dialog" @click="closeIlluWrlRequest">
-            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-          </button>
-          <h2 id="illuwrl-request-title">Request as IlluWrl</h2>
-          <p>You will send an IlluWrl request to {{ requestModalUserName }}.</p>
-          <label class="request-message-box" aria-label="Enter a message">
-            <textarea
-              v-model="requestMessage"
-              maxlength="10000"
-              placeholder="Enter a message"
-              :disabled="requestSubmitting"
-            ></textarea>
-            <span>{{ requestMessageCount }}/10000</span>
-          </label>
-          <p v-if="requestError" class="request-feedback request-feedback--error">{{ requestError }}</p>
-          <p v-if="requestSuccess" class="request-feedback request-feedback--success">{{ requestSuccess }}</p>
-          <button type="button" class="request-submit-btn" :disabled="requestSubmitting || requestMessageCount > 10000" @click="submitIlluWrlRequest">
-            {{ requestSubmitting ? 'Requesting...' : 'Request' }}
-          </button>
-          <button type="button" class="request-cancel-btn" :disabled="requestSubmitting" @click="closeIlluWrlRequest">Cancel</button>
-        </section>
-      </div>
     </section>
   </MainLayoutTemplate>
 </template>
@@ -1488,130 +1404,6 @@ watch(
 .user-search-card :deep(.preview-grid) {
   margin-top: 0.4rem;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.request-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 1300;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.45);
-}
-
-.illuwrl-request-modal {
-  position: relative;
-  width: min(550px, 100%);
-  display: grid;
-  gap: 1rem;
-  border-radius: 24px;
-  background: #fff;
-  padding: 1.8rem 1.9rem 2rem;
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.2);
-}
-
-.illuwrl-request-modal h2 {
-  margin: 0;
-  color: #2f2f2f;
-  text-align: center;
-  font-size: 1.08rem;
-  font-weight: 800;
-}
-
-.illuwrl-request-modal p {
-  margin: 0;
-  color: #555;
-  font-size: 1rem;
-  line-height: 1.45;
-}
-
-.request-modal-close {
-  position: absolute;
-  top: 0.65rem;
-  right: 0.85rem;
-  border: none;
-  background: transparent;
-  color: #aaa;
-  font-size: 1.85rem;
-  line-height: 1;
-}
-
-.request-message-box {
-  display: grid;
-  border-radius: 5px;
-  background: #f5f5f5;
-  overflow: hidden;
-}
-
-.request-message-box textarea {
-  min-height: 128px;
-  resize: vertical;
-  border: none;
-  background: transparent;
-  color: #333;
-  padding: 1rem 0.95rem 0.35rem;
-  font: inherit;
-  line-height: 1.45;
-}
-
-.request-message-box textarea:focus {
-  outline: none;
-}
-
-.request-message-box textarea::placeholder {
-  color: #858585;
-}
-
-.request-message-box span {
-  justify-self: end;
-  padding: 0 0.7rem 0.75rem;
-  color: #858585;
-  font-size: 0.95rem;
-}
-
-.request-feedback {
-  border-radius: 7px;
-  padding: 0.62rem 0.8rem;
-  font-weight: 700;
-}
-
-.request-feedback--error {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.request-feedback--success {
-  background: #ecfdf5;
-  color: #059669;
-}
-
-.request-submit-btn,
-.request-cancel-btn {
-  min-height: 50px;
-  border: none;
-  border-radius: 999px;
-  font-size: 1rem;
-  font-weight: 800;
-}
-
-.request-submit-btn {
-  margin-top: 0.35rem;
-  background: #a8dcfb;
-  color: #fff;
-}
-
-.request-submit-btn:not(:disabled):hover {
-  background: #1695f0;
-}
-
-.request-submit-btn:disabled {
-  opacity: 0.74;
-}
-
-.request-cancel-btn {
-  background: #f5f5f5;
-  color: #4b4b4b;
 }
 
 .novel-result-stack {

@@ -288,17 +288,6 @@ const entities = [
       'datetime addressedAt',
     ],
   },
-  {
-    label: 'ILLUWRL_REQUEST',
-    comment: 'Social friend/connection requests between users',
-    fields: [
-      'ObjectId _id PK',
-      'ObjectId requester FK "ref User"',
-      'ObjectId recipient FK "ref User"',
-      'string message',
-      'string status "pending|accepted|declined|cancelled"',
-    ],
-  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -327,8 +316,6 @@ const relationships = [
   ['USER', 'REQUEST_CHAT_MESSAGE', '||--o{', 'sends'],
   ['USER', 'REQUEST_EVENT', '||--o{', 'acts'],
   ['USER', 'REQUEST_REVISION', '||--o{', 'requests as requester'],
-  ['USER', 'ILLUWRL_REQUEST', '||--o{', 'initiates as requester'],
-  ['USER', 'ILLUWRL_REQUEST', '||--o{', 'receives as recipient'],
   ['USER', 'READING_PROGRESS', '||--o{', 'tracks'],
 
   // ── Artwork ──────────────────────────────────────────────────────────────
@@ -380,7 +367,7 @@ function buildMarkdown() {
   parts.push('# IlluWrl — Entity-Relationship Diagram');
   parts.push('');
   parts.push(`> **Generated:** ${now}`);
-  parts.push('> **Entities:** 19 Mongoose models across 6 domain groups');
+  parts.push('> **Entities:** 18 Mongoose models across 5 domain groups');
   parts.push('> **Description:** Comprehensive ERD of the IlluWrl (Pixiv-clone) data model');
   parts.push('');
   parts.push('---');
@@ -416,7 +403,6 @@ function buildMarkdown() {
   parts.push('| **Content System** | ARTWORK, TAG, COMMENT, LIKE, BOOKMARK, CHAPTER, READING_PROGRESS | Primary creative content and engagement |');
   parts.push('| **Reporting & Moderation** | ARTWORK_REPORT | Content flagging and resolution |');
   parts.push('| **Commission System** | REQUEST_TERM, REQUEST, REQUEST_CHAT_MESSAGE, REQUEST_EVENT, REQUEST_REVISION | Commission marketplace and state machine |');
-  parts.push('| **Social Request System** | ILLUWRL_REQUEST | Friend/connection requests between users |');
   parts.push('');
   parts.push('### Cardinality Notation');
   parts.push('');
@@ -462,7 +448,6 @@ function buildMarkdown() {
     REQUEST_CHAT_MESSAGE: 'Commission System',
     REQUEST_EVENT: 'Commission System',
     REQUEST_REVISION: 'Commission System',
-    ILLUWRL_REQUEST: 'Social Request System',
   };
   let idx = 0;
   for (const entity of entities) {
