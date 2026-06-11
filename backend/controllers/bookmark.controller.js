@@ -11,7 +11,7 @@ const createBookmark = async (req, res, next) => {
             return next(new Error('artworkId is required'));
         }
 
-        const artwork = await Artwork.findById(artworkId);
+        const artwork = await Artwork.findById(artworkId).select('user');
         if (!artwork) {
             res.status(404);
             return next(new Error('Artwork not found'));
@@ -23,8 +23,7 @@ const createBookmark = async (req, res, next) => {
             folder: folder || 'default'
         });
 
-        artwork.bookmarkCount += 1;
-        await artwork.save();
+        await Artwork.findByIdAndUpdate(artworkId, { $inc: { bookmarkCount: 1 } });
 
         await createNotification({
             userId: artwork.user,
@@ -117,11 +116,7 @@ const toggleBookmark = async (req, res, next) => {
         if (existing) {
             await existing.deleteOne();
 
-            const artwork = await Artwork.findById(existing.artwork);
-            if (artwork) {
-                artwork.bookmarkCount = Math.max(0, (artwork.bookmarkCount || 0) - 1);
-                await artwork.save();
-            }
+            await Artwork.findByIdAndUpdate(existing.artwork, { $inc: { bookmarkCount: -1 } });
 
             return res.json({
                 isBookmarked: false,
@@ -130,7 +125,7 @@ const toggleBookmark = async (req, res, next) => {
             });
         }
 
-        const artwork = await Artwork.findById(artworkId);
+        const artwork = await Artwork.findById(artworkId).select('user');
         if (!artwork) {
             res.status(404);
             return next(new Error('Artwork not found'));
@@ -142,8 +137,7 @@ const toggleBookmark = async (req, res, next) => {
             folder: 'default'
         });
 
-        artwork.bookmarkCount += 1;
-        await artwork.save();
+        await Artwork.findByIdAndUpdate(artworkId, { $inc: { bookmarkCount: 1 } });
 
         await createNotification({
             userId: artwork.user,

@@ -19,7 +19,7 @@ const createComment = async (req, res, next) => {
             return next(new Error('At least one of content or stickerUrl is required'));
         }
 
-        const artwork = await Artwork.findById(artworkId);
+        const artwork = await Artwork.findById(artworkId).select('user');
         if (!artwork) {
             res.status(404);
             return next(new Error('Artwork not found'));
@@ -79,8 +79,7 @@ const createComment = async (req, res, next) => {
             stickerUrl: normalizedStickerUrl || undefined
         });
 
-        artwork.commentCount = (artwork.commentCount || 0) + 1;
-        await artwork.save();
+        await Artwork.findByIdAndUpdate(artworkId, { $inc: { commentCount: 1 } });
 
         const notificationUserId = parentComment ? parentComment.user : artwork.user;
         const notificationMessage = parentComment

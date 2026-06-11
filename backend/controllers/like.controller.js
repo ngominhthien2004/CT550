@@ -11,7 +11,7 @@ const createLike = async (req, res, next) => {
             return next(new Error('artworkId is required'));
         }
 
-        const artwork = await Artwork.findById(artworkId);
+        const artwork = await Artwork.findById(artworkId).select('user');
         if (!artwork) {
             res.status(404);
             return next(new Error('Artwork not found'));
@@ -22,8 +22,7 @@ const createLike = async (req, res, next) => {
             artwork: artworkId
         });
 
-        artwork.likeCount += 1;
-        await artwork.save();
+        await Artwork.findByIdAndUpdate(artworkId, { $inc: { likeCount: 1 } });
 
         await createNotification({
             userId: artwork.user,
@@ -116,11 +115,7 @@ const toggleLike = async (req, res, next) => {
         if (existing) {
             await existing.deleteOne();
 
-            const artwork = await Artwork.findById(existing.artwork);
-            if (artwork) {
-                artwork.likeCount = Math.max(0, (artwork.likeCount || 0) - 1);
-                await artwork.save();
-            }
+            await Artwork.findByIdAndUpdate(existing.artwork, { $inc: { likeCount: -1 } });
 
             return res.json({
                 isLiked: false,
@@ -129,7 +124,7 @@ const toggleLike = async (req, res, next) => {
             });
         }
 
-        const artwork = await Artwork.findById(artworkId);
+        const artwork = await Artwork.findById(artworkId).select('user');
         if (!artwork) {
             res.status(404);
             return next(new Error('Artwork not found'));
@@ -140,8 +135,7 @@ const toggleLike = async (req, res, next) => {
             artwork: artworkId
         });
 
-        artwork.likeCount += 1;
-        await artwork.save();
+        await Artwork.findByIdAndUpdate(artworkId, { $inc: { likeCount: 1 } });
 
         await createNotification({
             userId: artwork.user,

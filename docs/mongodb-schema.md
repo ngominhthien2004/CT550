@@ -92,11 +92,11 @@
 | `images` | array |  |  |  | Danh sách đường dẫn ảnh/tệp của tác phẩm |
 | `tags` | array |  |  |  | Tham chiếu Tag[] |
 | `ageRating` | string |  |  |  | Tất cả | R-18 | R-18G |
-| `viewCount` | number |  |  |  | Số lượt xem |
-| `likeCount` | number |  |  |  | Số lượt thích |
-| `bookmarkCount` | number |  |  |  | Số lượt đánh dấu |
-| `commentCount` | number |  |  |  | Số bình luận |
-| `reportCount` | number |  |  |  | Số lần bị báo cáo |
+| `viewCount` | number |  |  |  | Số lượt xem (duy trì tự động bằng $inc) |
+| `likeCount` | number |  |  |  | Số lượt thích (duy trì tự động bằng $inc) |
+| `bookmarkCount` | number |  |  |  | Số lượt đánh dấu (duy trì tự động bằng $inc) |
+| `commentCount` | number |  |  |  | Số bình luận (duy trì tự động bằng $inc) |
+| `reportCount` | number |  |  |  | Số lần bị báo cáo (duy trì tự động bằng $inc) |
 | `gifNotes` | object |  |  |  | Ghi chú GIF (thời gian hiển thị từng khung hình) |
 | `novelContent` | string |  |  |  | Nội dung tiểu thuyết (dạng văn bản) |
 | `novelFormat` | string |  |  |  | oneshot|series |

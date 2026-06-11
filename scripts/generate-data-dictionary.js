@@ -260,7 +260,12 @@ function buildDataDictionary() {
 
     for (const field of entity.fields) {
       const { type, name, constraints, description } = parseField(field);
-      parts.push(`| \`${name}\` | ${type} | ${constraints} | ${description} |`);
+      let viDesc = description;
+      if (viDesc === '—' || viDesc === '') {
+        const key = `${entity.label}.${name}`;
+        viDesc = fieldDescriptionsVI[key] || '—';
+      }
+      parts.push(`| \`${name}\` | ${type} | ${constraints} | ${viDesc} |`);
     }
     parts.push('');
   }
@@ -329,11 +334,11 @@ const fieldDescriptionsVI = {
   'ARTWORK.description': 'Mô tả tác phẩm',
   'ARTWORK.type': 'Loại tác phẩm: illust | manga | gif | novel',
   'ARTWORK.images': 'Danh sách đường dẫn ảnh/tệp của tác phẩm',
-  'ARTWORK.viewCount': 'Số lượt xem',
-  'ARTWORK.likeCount': 'Số lượt thích',
-  'ARTWORK.bookmarkCount': 'Số lượt đánh dấu',
-  'ARTWORK.commentCount': 'Số bình luận',
-  'ARTWORK.reportCount': 'Số lần bị báo cáo',
+  'ARTWORK.viewCount': 'Số lượt xem (duy trì tự động bằng $inc)',
+  'ARTWORK.likeCount': 'Số lượt thích (duy trì tự động bằng $inc)',
+  'ARTWORK.bookmarkCount': 'Số lượt đánh dấu (duy trì tự động bằng $inc)',
+  'ARTWORK.commentCount': 'Số bình luận (duy trì tự động bằng $inc)',
+  'ARTWORK.reportCount': 'Số lần bị báo cáo (duy trì tự động bằng $inc)',
   'ARTWORK.gifNotes': 'Ghi chú GIF (thời gian hiển thị từng khung hình)',
   'ARTWORK.novelContent': 'Nội dung tiểu thuyết (dạng văn bản)',
   'ARTWORK.novelFormat': 'Định dạng tiểu thuyết: oneshot (một chương) | series (nhiều chương)',
