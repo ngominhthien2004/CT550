@@ -276,6 +276,95 @@ function buildDataDictionary() {
 }
 
 // ---------------------------------------------------------------------------
+// Build MongoDB Schema (CSV-like table for each collection)
+// ---------------------------------------------------------------------------
+function buildMongoDBSchema() {
+  const parts = [];
+  const now = new Date().toISOString().split('T')[0];
+
+  parts.push('# IlluWrl — MongoDB Schema (Tiếng Việt)');
+  parts.push('');
+  parts.push(`> **Ngày tạo:** ${now}`);
+  parts.push(`> **Số collection:** ${entities.length}`);
+  parts.push('> **Mô tả:** Chi tiết các collection trong MongoDB, bao gồm kiểu dữ liệu, khoá chính, khoá ngoại, ràng buộc Not Null và diễn giải.');
+  parts.push('');
+  parts.push('---');
+  parts.push('');
+
+  // Map type abbreviations
+  const typeMap = {
+    ObjectId: 'objectId',
+    string: 'string',
+    number: 'number',
+    boolean: 'boolean',
+    date: 'date',
+    datetime: 'date',
+    array: 'array',
+    json: 'object',
+  };
+
+  for (const entity of entities) {
+    const viName = entityLabelVI(entity.label);
+    parts.push(`## ${entity.label} — ${viName}`);
+    parts.push('');
+    parts.push('| Tên thuộc tính | Kiểu dữ liệu | Khóa chính | Khóa ngoại | NN | Diễn giải |');
+    parts.push('|----------------|-------------|:----------:|:----------:|:--:|-----------|');
+
+    for (const field of entity.fields) {
+      const { type, name, constraints, description } = parseField(field);
+      const mongoType = typeMap[type] || type;
+      const isPK = constraints.includes('PK') ? 'X' : '';
+      const isFK = constraints.includes('FK') ? 'X' : '';
+      // NN: all fields are essentially required in Mongoose unless explicitly nullable
+      // _id is always required, FK fields are typically required
+      const isNN = (name === '_id' || isFK) ? 'X' : '';
+      
+      // Clean up description: translate remaining English descriptions to Vietnamese
+      // Order matters: more specific patterns BEFORE generic ones.
+      // NOTE: parseField() already did /^ref User/ -> 'Tham chiếu User', so
+      // we match the ALREADY-TRANSLATED prefix here.
+      let viDesc = description
+        // Specific FK descriptions first (match after parseField's generic translation)
+        .replace('Tham chiếu User — who follows', 'Người theo dõi')
+        .replace('Tham chiếu User — being followed', 'Người được theo dõi')
+        .replace('Tham chiếu User — recipient', 'Người nhận thông báo')
+        .replace('Tham chiếu User — trigger', 'Người kích hoạt thông báo')
+        .replace('Tham chiếu Artwork — optional context', 'Tác phẩm liên quan (tuỳ chọn)')
+        .replace('Tham chiếu User — creator', 'Người sáng tạo')
+        .replace('Tham chiếu User — moderator', 'Người kiểm duyệt')
+        .replace('Tham chiếu User — author', 'Tác giả bình luận')
+        .replace('Tham chiếu User — provider', 'Người cung cấp dịch vụ')
+        .replace('Tham chiếu User — client', 'Khách hàng')
+        // Then other descriptions (non-FK)
+        .replace('unique login email', 'Email đăng nhập duy nhất')
+        .replace('unique display handle', 'Tên hiển thị duy nhất')
+        .replace('hashed', 'Đã mã hoá')
+        .replace('user | admin', 'Người dùng | Quản trị viên')
+        .replace('embedded', 'Nhúng')
+        .replace('Mixed', 'Linh hoạt')
+        .replace('all|r-18|r-18g', 'Tất cả | R-18 | R-18G')
+        .replace('1|2 — unique per artwork', '1 | 2 — duy nhất trong tác phẩm')
+        .replace('1|2 — unique per request', '1 | 2 — duy nhất trong yêu cầu')
+        .replace('unique per artwork', 'Duy nhất trong tác phẩm')
+        .replace('unique per request', 'Duy nhất trong yêu cầu');
+
+      if (viDesc === '—' || viDesc === '') {
+        viDesc = '—';
+      }
+
+      parts.push(`| \`${name}\` | ${mongoType} | ${isPK} | ${isFK} | ${isNN} | ${viDesc} |`);
+    }
+    parts.push('');
+  }
+
+  parts.push('---');
+  parts.push(`*Được tạo bởi \`scripts/generate-data-dictionary.js\` vào ${now} — ${entities.length} collection.*`);
+  parts.push('');
+
+  return parts.join('\n');
+}
+
+// ---------------------------------------------------------------------------
 // Ghi file
 // ---------------------------------------------------------------------------
 const outputPath = path.resolve(__dirname, '..', 'docs', 'data-dictionary.md');
@@ -286,3 +375,12 @@ console.log(`✅ Data dictionary (Tiếng Việt) generated: ${outputPath}`);
 console.log(`   • Entities: ${entities.length}`);
 console.log(`   • Relationships: ${relationships.length}`);
 console.log(`   • File size: ${(Buffer.byteLength(content) / 1024).toFixed(1)} KB`);
+
+// ── Write MongoDB schema file ──
+const schemaOutputPath = path.resolve(__dirname, '..', 'docs', 'mongodb-schema.md');
+const schemaContent = buildMongoDBSchema();
+
+fs.writeFileSync(schemaOutputPath, schemaContent, 'utf-8');
+console.log(`✅ MongoDB Schema generated: ${schemaOutputPath}`);
+console.log(`   • Collections: ${entities.length}`);
+console.log(`   • File size: ${(Buffer.byteLength(schemaContent) / 1024).toFixed(1)} KB`);
