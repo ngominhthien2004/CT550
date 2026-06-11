@@ -129,7 +129,6 @@ const entities = [
       'string name UK',
       'json translations "embedded {en,vi,ja}"',
       'number usageCount',
-      'boolean isLocked',
     ],
   },
   {

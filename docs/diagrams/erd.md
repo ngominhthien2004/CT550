@@ -101,7 +101,6 @@ erDiagram
     string name UK
     json translations "embedded {en,vi,ja}"
     number usageCount
-    boolean isLocked
   }
 
   COMMENT {
@@ -312,7 +311,7 @@ erDiagram
 | 5 | **MESSAGE** | 8 | 2 relationships | Core User System |
 | 6 | **NOTIFICATION** | 8 | 3 relationships | Core User System |
 | 7 | **ARTWORK** | 23 | 10 relationships | Content System |
-| 8 | **TAG** | 5 | 1 relationships | Content System |
+| 8 | **TAG** | 4 | 1 relationships | Content System |
 | 9 | **COMMENT** | 6 | 2 relationships | Content System |
 | 10 | **LIKE** | 3 | 2 relationships | Content System |
 | 11 | **BOOKMARK** | 4 | 2 relationships | Content System |

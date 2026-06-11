@@ -15,10 +15,6 @@ const tagSchema = mongoose.Schema({
     usageCount: {
         type: Number,
         default: 0
-    },
-    isLocked: {
-        type: Boolean,
-        default: false
     }
 }, {
     timestamps: true

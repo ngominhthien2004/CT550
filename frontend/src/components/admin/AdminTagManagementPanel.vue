@@ -107,7 +107,6 @@ function doMerge() {
             <th>Name</th>
             <th>Usage</th>
             <th>Translations</th>
-            <th>Locked</th>
             <th>Created</th>
             <th>Actions</th>
           </tr>
@@ -122,11 +121,6 @@ function doMerge() {
               <span v-if="row.translations?.ja" class="me-1">JA: {{ row.translations.ja }}</span>
               <span v-if="!row.translations?.en && !row.translations?.vi && !row.translations?.ja" class="text-muted">-</span>
             </td>
-            <td>
-              <span class="badge" :class="row.isLocked ? 'bg-danger-subtle text-danger-emphasis' : 'bg-light text-dark'">
-                {{ row.isLocked ? 'Locked' : 'No' }}
-              </span>
-            </td>
             <td>{{ formatDate(row.createdAt) }}</td>
             <td class="actions-cell">
               <button class="btn btn-sm btn-outline-danger" :disabled="mutating" @click="emit('delete-tag', row._id)">
@@ -135,7 +129,7 @@ function doMerge() {
             </td>
           </tr>
           <tr v-if="tags.length === 0">
-            <td colspan="6" class="text-center text-muted py-3">No tags found.</td>
+            <td colspan="5" class="text-center text-muted py-3">No tags found.</td>
           </tr>
         </tbody>
       </table>

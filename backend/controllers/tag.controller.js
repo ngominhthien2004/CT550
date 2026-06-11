@@ -80,7 +80,7 @@ const adminListTags = async (req, res, next) => {
 
         const [tags, total] = await Promise.all([
             Tag.find(filter)
-                .select('name translations usageCount isLocked createdAt')
+                .select('name translations usageCount createdAt')
                 .sort(sortOption)
                 .skip(skip)
                 .limit(limit)
@@ -97,7 +97,7 @@ const adminListTags = async (req, res, next) => {
 const adminUpdateTag = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { name, translations, isLocked } = req.body;
+        const { name, translations } = req.body;
 
         const tag = await Tag.findById(id);
         if (!tag) {
@@ -127,10 +127,6 @@ const adminUpdateTag = async (req, res, next) => {
                     ...translations,
                 };
             }
-        }
-
-        if (isLocked !== undefined) {
-            tag.isLocked = Boolean(isLocked);
         }
 
         await tag.save();

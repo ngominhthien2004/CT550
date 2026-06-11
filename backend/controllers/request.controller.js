@@ -556,6 +556,7 @@ const createRevision = async (req, res, next) => {
             return next(new Error('Revision notes are required'));
         }
 
+        // Safe: revisionCount read immediately for round, persisted by transitionRequest().save()
         request.revisionCount += 1;
         const revision = await RequestRevision.create({
             request: request._id,

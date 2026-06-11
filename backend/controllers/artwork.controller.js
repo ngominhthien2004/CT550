@@ -112,9 +112,8 @@ const createArtwork = async (req, res, next) => {
                     tag = await Tag.create({ name: tagName });
                 }
                 tagIds.push(tag._id);
-                // Increment usage count
-                tag.usageCount += 1;
-                await tag.save();
+                // Increment usage count atomically
+                await Tag.findByIdAndUpdate(tag._id, { $inc: { usageCount: 1 } });
             }
         }
 

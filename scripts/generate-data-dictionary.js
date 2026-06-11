@@ -260,10 +260,13 @@ function buildDataDictionary() {
 
     for (const field of entity.fields) {
       const { type, name, constraints, description } = parseField(field);
-      let viDesc = description;
-      if (viDesc === '—' || viDesc === '') {
-        const key = `${entity.label}.${name}`;
-        viDesc = fieldDescriptionsVI[key] || '—';
+      const key = `${entity.label}.${name}`;
+      let viDesc = fieldDescriptionsVI[key];
+      if (!viDesc) {
+        viDesc = description;
+        if (viDesc === '—' || viDesc === '') {
+          viDesc = '—';
+        }
       }
       parts.push(`| \`${name}\` | ${type} | ${constraints} | ${viDesc} |`);
     }
@@ -302,9 +305,18 @@ const fieldDescriptionsVI = {
   'USER.googleId': 'ID tài khoản Google (dùng cho đăng nhập OAuth)',
   'USER.facebookId': 'ID tài khoản Facebook (dùng cho đăng nhập OAuth)',
   'USER.twitterId': 'ID tài khoản Twitter (dùng cho đăng nhập OAuth)',
+  'USER.password': 'Mật khẩu (đã mã hoá)',
+  'USER.email': 'Email đăng nhập (duy nhất)',
+  'USER.username': 'Tên người dùng (duy nhất)',
+  'USER.role': 'Vai trò: user | admin',
+  'USER.status': 'Trạng thái tài khoản',
+  'USER.followerCount': 'Số người theo dõi (duy trì tự động)',
+  'USER.followingCount': 'Số người đang theo dõi (duy trì tự động)',
 
   // ── FOLLOW ──
   'FOLLOW._id': 'Mã theo dõi (tự động sinh)',
+  'FOLLOW.follower': 'Người theo dõi',
+  'FOLLOW.following': 'Người được theo dõi',
 
   // ── USER_BLOCK ──
   'USER_BLOCK._id': 'Mã chặn (tự động sinh)',
@@ -327,6 +339,9 @@ const fieldDescriptionsVI = {
   'NOTIFICATION.message': 'Nội dung thông báo',
   'NOTIFICATION.isRead': 'Đánh dấu đã đọc',
   'NOTIFICATION.readAt': 'Thời điểm đọc thông báo',
+  'NOTIFICATION.user': 'Người nhận thông báo',
+  'NOTIFICATION.actor': 'Người kích hoạt thông báo',
+  'NOTIFICATION.artwork': 'Tác phẩm liên quan (tuỳ chọn)',
 
   // ── ARTWORK ──
   'ARTWORK._id': 'Mã tác phẩm (tự động sinh)',
@@ -348,37 +363,50 @@ const fieldDescriptionsVI = {
   'ARTWORK.isHidden': 'Tác phẩm có bị ẩn (bởi kiểm duyệt) hay không',
   'ARTWORK.hiddenAt': 'Thời điểm bị ẩn',
   'ARTWORK.hiddenReason': 'Lý do bị ẩn',
+  'ARTWORK.user': 'Người đăng tác phẩm',
+  'ARTWORK.tags': 'Danh sách thẻ gắn vào tác phẩm',
+  'ARTWORK.hiddenBy': 'Người kiểm duyệt ẩn tác phẩm',
 
   // ── TAG ──
   'TAG._id': 'Mã thẻ (tự động sinh)',
   'TAG.name': 'Tên thẻ (duy nhất)',
   'TAG.translations': 'Bản dịch đa ngôn ngữ {en,vi,ja}',
   'TAG.usageCount': 'Số lần thẻ được sử dụng',
-  'TAG.isLocked': 'Thẻ có bị khoá (không cho xoá/sửa) hay không',
 
   // ── COMMENT ──
   'COMMENT._id': 'Mã bình luận (tự động sinh)',
   'COMMENT.content': 'Nội dung bình luận',
   'COMMENT.stickerUrl': 'Đường dẫn sticker (nếu có)',
+  'COMMENT.artwork': 'Tác phẩm được bình luận',
+  'COMMENT.user': 'Tác giả bình luận',
+  'COMMENT.parentComment': 'Bình luận cha (tự tham chiếu cho trả lời)',
 
   // ── LIKE ──
   'LIKE._id': 'Mã lượt thích (tự động sinh)',
+  'LIKE.user': 'Người thích',
+  'LIKE.artwork': 'Tác phẩm được thích',
 
   // ── BOOKMARK ──
   'BOOKMARK._id': 'Mã đánh dấu (tự động sinh)',
   'BOOKMARK.folder': 'Tên thư mục lưu đánh dấu',
+  'BOOKMARK.user': 'Người đánh dấu',
+  'BOOKMARK.artwork': 'Tác phẩm được đánh dấu',
 
   // ── CHAPTER ──
   'CHAPTER._id': 'Mã chương (tự động sinh)',
   'CHAPTER.title': 'Tiêu đề chương',
   'CHAPTER.content': 'Nội dung chương',
   'CHAPTER.wordCount': 'Số từ trong chương',
+  'CHAPTER.artwork': 'Tác phẩm chứa chương',
 
   // ── READING_PROGRESS ──
   'READING_PROGRESS._id': 'Mã tiến độ đọc (tự động sinh)',
   'READING_PROGRESS.progressPercent': 'Phần trăm hoàn thành (0-100)',
   'READING_PROGRESS.scrollPosition': 'Vị trí cuộc đang đọc (dùng để khôi phục)',
   'READING_PROGRESS.lastReadAt': 'Thời điểm đọc gần nhất',
+  'READING_PROGRESS.user': 'Người đọc',
+  'READING_PROGRESS.artwork': 'Tác phẩm đang đọc',
+  'READING_PROGRESS.chapter': 'Chương đang đọc',
 
   // ── ARTWORK_REPORT ──
   'ARTWORK_REPORT._id': 'Mã báo cáo (tự động sinh)',
@@ -386,6 +414,9 @@ const fieldDescriptionsVI = {
   'ARTWORK_REPORT.status': 'Trạng thái xử lý: pending | resolved | dismissed',
   'ARTWORK_REPORT.resolvedAt': 'Thời điểm xử lý báo cáo',
   'ARTWORK_REPORT.resolutionNote': 'Ghi chú của người xử lý',
+  'ARTWORK_REPORT.artwork': 'Tác phẩm bị báo cáo',
+  'ARTWORK_REPORT.reportedBy': 'Người báo cáo',
+  'ARTWORK_REPORT.resolvedBy': 'Người xử lý',
 
   // ── REQUEST_TERM ──
   'REQUEST_TERM._id': 'Mã điều khoản (tự động sinh)',
@@ -402,6 +433,7 @@ const fieldDescriptionsVI = {
   'REQUEST_TERM.preferredStyles': 'Phong cách ưa thích',
   'REQUEST_TERM.strengths': 'Thế mạnh của người sáng tạo',
   'REQUEST_TERM.isOpen': 'Đang mở nhận ủy thác hay không',
+  'REQUEST_TERM.creator': 'Người sáng tạo (cung cấp dịch vụ)',
 
   // ── REQUEST ──
   'REQUEST._id': 'Mã yêu cầu (tự động sinh)',
@@ -421,22 +453,31 @@ const fieldDescriptionsVI = {
   'REQUEST.extensionDays': 'Số ngày gia hạn thêm',
   'REQUEST.chatClosedAt': 'Thời điểm đóng chat của yêu cầu',
   'REQUEST.licenseTier': 'Cấp giấy phép sử dụng: personal | commercial',
+  'REQUEST.requester': 'Người đặt yêu cầu (khách hàng)',
+  'REQUEST.creator': 'Người sáng tạo nhận yêu cầu',
+  'REQUEST.term': 'Điều khoản áp dụng cho yêu cầu',
 
   // ── REQUEST_CHAT_MESSAGE ──
   'REQUEST_CHAT_MESSAGE._id': 'Mã tin nhắn (tự động sinh)',
   'REQUEST_CHAT_MESSAGE.content': 'Nội dung tin nhắn',
   'REQUEST_CHAT_MESSAGE.attachments': 'Tệp đính kèm (hình ảnh, tệp)',
   'REQUEST_CHAT_MESSAGE.isSystem': 'Tin nhắn hệ thống (tự động sinh bởi state machine)',
+  'REQUEST_CHAT_MESSAGE.request': 'Yêu cầu chứa tin nhắn',
+  'REQUEST_CHAT_MESSAGE.sender': 'Người gửi tin nhắn',
 
   // ── REQUEST_EVENT ──
   'REQUEST_EVENT._id': 'Mã sự kiện (tự động sinh)',
   'REQUEST_EVENT.type': 'Loại sự kiện (request_submitted, accepted, rejected, ...)',
   'REQUEST_EVENT.fromStatus': 'Trạng thái trước khi chuyển',
   'REQUEST_EVENT.toStatus': 'Trạng thái sau khi chuyển',
+  'REQUEST_EVENT.request': 'Yêu cầu chứa sự kiện',
+  'REQUEST_EVENT.actor': 'Người thực hiện hành động',
 
   // ── REQUEST_REVISION ──
   'REQUEST_REVISION._id': 'Mã chỉnh sửa (tự động sinh)',
   'REQUEST_REVISION.notes': 'Nội dung yêu cầu chỉnh sửa',
+  'REQUEST_REVISION.request': 'Yêu cầu cần chỉnh sửa',
+  'REQUEST_REVISION.requester': 'Người yêu cầu chỉnh sửa',
 
   // ── SETTING ──
   'SETTING._id': 'Khoá singleton (global)',
@@ -494,39 +535,38 @@ function buildMongoDBSchema() {
       // Order matters: more specific patterns BEFORE generic ones.
       // NOTE: parseField() already did /^ref User/ -> 'Tham chiếu User', so
       // we match the ALREADY-TRANSLATED prefix here.
-      let viDesc = description
-        // Specific FK descriptions first (match after parseField's generic translation)
-        .replace('Tham chiếu User — who follows', 'Người theo dõi')
-        .replace('Tham chiếu User — being followed', 'Người được theo dõi')
-        .replace('Tham chiếu User — recipient', 'Người nhận thông báo')
-        .replace('Tham chiếu User — trigger', 'Người kích hoạt thông báo')
-        .replace('Tham chiếu Artwork — optional context', 'Tác phẩm liên quan (tuỳ chọn)')
-        .replace('Tham chiếu User — creator', 'Người sáng tạo')
-        .replace('Tham chiếu User — moderator', 'Người kiểm duyệt')
-        .replace('Tham chiếu User — author', 'Tác giả bình luận')
-        .replace('Tham chiếu User — provider', 'Người cung cấp dịch vụ')
-        .replace('Tham chiếu User — client', 'Khách hàng')
-        // Then other descriptions (non-FK)
-        .replace('unique login email', 'Email đăng nhập duy nhất')
-        .replace('unique display handle', 'Tên hiển thị duy nhất')
-        .replace('hashed', 'Đã mã hoá')
-        .replace('user | admin', 'Người dùng | Quản trị viên')
-        .replace('embedded', 'Nhúng')
-        .replace('Mixed', 'Linh hoạt')
-        .replace('all|r-18|r-18g', 'Tất cả | R-18 | R-18G')
-        .replace('1|2 — unique per artwork', '1 | 2 — duy nhất trong tác phẩm')
-        .replace('1|2 — unique per request', '1 | 2 — duy nhất trong yêu cầu')
-        .replace('unique per artwork', 'Duy nhất trong tác phẩm')
-        .replace('unique per request', 'Duy nhất trong yêu cầu');
+      const key = `${entity.label}.${name}`;
+      let viDesc = fieldDescriptionsVI[key];
 
-      // If still empty, try to use the hardcoded Vietnamese descriptions
-      if (viDesc === '—' || viDesc === '') {
-        const key = `${entity.label}.${name}`;
-        viDesc = fieldDescriptionsVI[key] || '—';
-      }
+      if (!viDesc) {
+        viDesc = description
+          // Specific FK descriptions first (match after parseField's generic translation)
+          .replace('Tham chiếu User — who follows', 'Người theo dõi')
+          .replace('Tham chiếu User — being followed', 'Người được theo dõi')
+          .replace('Tham chiếu User — recipient', 'Người nhận thông báo')
+          .replace('Tham chiếu User — trigger', 'Người kích hoạt thông báo')
+          .replace('Tham chiếu Artwork — optional context', 'Tác phẩm liên quan (tuỳ chọn)')
+          .replace('Tham chiếu User — creator', 'Người sáng tạo')
+          .replace('Tham chiếu User — moderator', 'Người kiểm duyệt')
+          .replace('Tham chiếu User — author', 'Tác giả bình luận')
+          .replace('Tham chiếu User — provider', 'Người cung cấp dịch vụ')
+          .replace('Tham chiếu User — client', 'Khách hàng')
+          // Then other descriptions (non-FK)
+          .replace('unique login email', 'Email đăng nhập duy nhất')
+          .replace('unique display handle', 'Tên hiển thị duy nhất')
+          .replace('hashed', 'Đã mã hoá')
+          .replace('user | admin', 'Người dùng | Quản trị viên')
+          .replace('embedded', 'Nhúng')
+          .replace('Mixed', 'Linh hoạt')
+          .replace('all|r-18|r-18g', 'Tất cả | R-18 | R-18G')
+          .replace('1|2 — unique per artwork', '1 | 2 — duy nhất trong tác phẩm')
+          .replace('1|2 — unique per request', '1 | 2 — duy nhất trong yêu cầu')
+          .replace('unique per artwork', 'Duy nhất trong tác phẩm')
+          .replace('unique per request', 'Duy nhất trong yêu cầu');
 
-      if (viDesc === '—' || viDesc === '') {
-        viDesc = '—';
+        if (viDesc === '—' || viDesc === '') {
+          viDesc = '—';
+        }
       }
 
       parts.push(`| \`${name}\` | ${mongoType} | ${isPK} | ${isFK} | ${isNN} | ${viDesc} |`);
@@ -597,41 +637,44 @@ function buildHtmlSchema() {
       const isFK = constraints.includes('FK');
 
       // Vietnamese description lookup
-      let viDesc = description
-        .replace('ref User — who follows', 'Người theo dõi')
-        .replace('ref User — being followed', 'Người được theo dõi')
-        .replace('ref User — recipient', 'Người nhận thông báo')
-        .replace('ref User — trigger', 'Người kích hoạt thông báo')
-        .replace('ref Artwork — optional context', 'Tác phẩm liên quan (tuỳ chọn)')
-        .replace('ref User — creator', 'Người sáng tạo')
-        .replace('ref User — moderator', 'Người kiểm duyệt')
-        .replace('ref User — author', 'Tác giả bình luận')
-        .replace('ref User — provider', 'Người cung cấp dịch vụ')
-        .replace('ref User — client', 'Khách hàng')
-        .replace('ref User', 'Tham chiếu User')
-        .replace('ref Artwork', 'Tham chiếu Artwork')
-        .replace('ref Request', 'Tham chiếu Request')
-        .replace('ref Comment — self for replies', 'Tham chiếu Comment (tự tham chiếu cho trả lời)')
-        .replace('ref Comment', 'Tham chiếu Comment')
-        .replace('ref Chapter', 'Tham chiếu Chapter')
-        .replace('ref Tag[]', 'Tham chiếu Tag')
-        .replace('ref RequestTerm', 'Tham chiếu RequestTerm')
-        .replace('unique login email', 'Email đăng nhập duy nhất')
-        .replace('unique display handle', 'Tên hiển thị duy nhất')
-        .replace('hashed', 'Đã mã hoá')
-        .replace('user | admin', 'Người dùng | Quản trị viên')
-        .replace('embedded', 'Nhúng')
-        .replace('Mixed', 'Linh hoạt')
-        .replace('all|r-18|r-18g', 'Tất cả | R-18 | R-18G')
-        .replace('1|2 — unique per artwork', '1 | 2 — duy nhất trong tác phẩm')
-        .replace('1|2 — unique per request', '1 | 2 — duy nhất trong yêu cầu')
-        .replace('unique per artwork', 'Duy nhất trong tác phẩm')
-        .replace('unique per request', 'Duy nhất trong yêu cầu')
-        ;
+      const key = `${entity.label}.${name}`;
+      let viDesc = fieldDescriptionsVI[key];
 
-      if (viDesc === '—' || viDesc === '') {
-        const key = `${entity.label}.${name}`;
-        viDesc = fieldDescriptionsVI[key] || '—';
+      if (!viDesc) {
+        viDesc = description
+          .replace('ref User — who follows', 'Người theo dõi')
+          .replace('ref User — being followed', 'Người được theo dõi')
+          .replace('ref User — recipient', 'Người nhận thông báo')
+          .replace('ref User — trigger', 'Người kích hoạt thông báo')
+          .replace('ref Artwork — optional context', 'Tác phẩm liên quan (tuỳ chọn)')
+          .replace('ref User — creator', 'Người sáng tạo')
+          .replace('ref User — moderator', 'Người kiểm duyệt')
+          .replace('ref User — author', 'Tác giả bình luận')
+          .replace('ref User — provider', 'Người cung cấp dịch vụ')
+          .replace('ref User — client', 'Khách hàng')
+          .replace('ref User', 'Tham chiếu User')
+          .replace('ref Artwork', 'Tham chiếu Artwork')
+          .replace('ref Request', 'Tham chiếu Request')
+          .replace('ref Comment — self for replies', 'Tham chiếu Comment (tự tham chiếu cho trả lời)')
+          .replace('ref Comment', 'Tham chiếu Comment')
+          .replace('ref Chapter', 'Tham chiếu Chapter')
+          .replace('ref Tag[]', 'Tham chiếu Tag')
+          .replace('ref RequestTerm', 'Tham chiếu RequestTerm')
+          .replace('unique login email', 'Email đăng nhập duy nhất')
+          .replace('unique display handle', 'Tên hiển thị duy nhất')
+          .replace('hashed', 'Đã mã hoá')
+          .replace('user | admin', 'Người dùng | Quản trị viên')
+          .replace('embedded', 'Nhúng')
+          .replace('Mixed', 'Linh hoạt')
+          .replace('all|r-18|r-18g', 'Tất cả | R-18 | R-18G')
+          .replace('1|2 — unique per artwork', '1 | 2 — duy nhất trong tác phẩm')
+          .replace('1|2 — unique per request', '1 | 2 — duy nhất trong yêu cầu')
+          .replace('unique per artwork', 'Duy nhất trong tác phẩm')
+          .replace('unique per request', 'Duy nhất trong yêu cầu');
+
+        if (viDesc === '—' || viDesc === '') {
+          viDesc = '—';
+        }
       }
 
       // Zebra striping for rows
