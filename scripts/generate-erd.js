@@ -469,11 +469,14 @@ function buildMarkdown() {
 // ---------------------------------------------------------------------------
 // Write output
 // ---------------------------------------------------------------------------
-const outputPath = path.resolve(__dirname, '..', 'docs', 'diagrams', 'erd.md');
-const content = buildMarkdown();
+if (require.main === module) {
+  const outputPath = path.resolve(__dirname, '..', 'docs', 'diagrams', 'erd.md');
+  const content = buildMarkdown();
+  fs.writeFileSync(outputPath, content, 'utf-8');
+  console.log(`✅ ERD generated successfully: ${outputPath}`);
+  console.log(`   • Entities: ${entities.length}`);
+  console.log(`   • Relationships: ${relationships.length}`);
+  console.log(`   • File size: ${(Buffer.byteLength(content) / 1024).toFixed(1)} KB`);
+}
 
-fs.writeFileSync(outputPath, content, 'utf-8');
-console.log(`✅ ERD generated successfully: ${outputPath}`);
-console.log(`   • Entities: ${entities.length}`);
-console.log(`   • Relationships: ${relationships.length}`);
-console.log(`   • File size: ${(Buffer.byteLength(content) / 1024).toFixed(1)} KB`);
+module.exports = { entities, relationships, buildMarkdown, formatEntity };
