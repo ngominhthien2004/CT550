@@ -280,7 +280,6 @@ async function handleMarkNotificationRead(notificationId) {
       return {
         ...item,
         isRead: true,
-        readAt: new Date().toISOString(),
       }
     })
     if (notificationUnreadCount.value > 0) {

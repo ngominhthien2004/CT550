@@ -80,23 +80,6 @@ const props = defineProps({
       </div>
     </div>
 
-    <!-- GIF Notes Card -->
-    <div v-if="props.isGif" class="additional-settings-card">
-      <div class="row-left">
-        <span class="placeholder-badge"></span>
-        <label for="gif-notes" class="row-label">GIF notes</label>
-      </div>
-      <div class="row-center">
-        <textarea
-          id="gif-notes"
-          v-model="props.form.gifNotes"
-          class="form-control custom-textarea"
-          rows="3"
-          placeholder="Playback notes or loop info."
-        ></textarea>
-      </div>
-    </div>
-
     <!-- Novel Format Card -->
     <div v-if="props.isNovel" class="additional-settings-card">
       <div class="row-left">

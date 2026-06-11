@@ -26,24 +26,32 @@ erDiagram
     string googleId
     string facebookId
     string twitterId
+    datetime createdAt
+    datetime updatedAt
   }
 
   FOLLOW {
     ObjectId _id PK
     ObjectId follower FK "ref User — who follows"
     ObjectId following FK "ref User — being followed"
+    datetime createdAt
+    datetime updatedAt
   }
 
   USER_BLOCK {
     ObjectId _id PK
     ObjectId blocker FK "ref User"
     ObjectId blocked FK "ref User"
+    datetime createdAt
+    datetime updatedAt
   }
 
   SETTING {
     string _id PK "singleton key: global"
     boolean aiDetectionEnabled
     number aiDetectionThreshold "0-100"
+    datetime createdAt
+    datetime updatedAt
   }
 
   MESSAGE {
@@ -55,6 +63,8 @@ erDiagram
     boolean isRead
     datetime readAt
     array deletedFor "ref User[]"
+    datetime createdAt
+    datetime updatedAt
   }
 
   NOTIFICATION {
@@ -65,7 +75,8 @@ erDiagram
     string type "follow|like|bookmark|comment|request|system"
     string message
     boolean isRead
-    datetime readAt
+    datetime createdAt
+    datetime updatedAt
   }
 
   ARTWORK {
@@ -82,7 +93,6 @@ erDiagram
     number bookmarkCount
     number commentCount
     number reportCount
-    json gifNotes
     string novelContent
     string novelFormat "oneshot|series"
     string novelSeriesName
@@ -92,6 +102,8 @@ erDiagram
     ObjectId hiddenBy FK "ref User — moderator"
     datetime hiddenAt
     string hiddenReason
+    datetime createdAt
+    datetime updatedAt
   }
 
   TAG {
@@ -99,6 +111,8 @@ erDiagram
     string name UK
     json translations "embedded {en,vi,ja}"
     number usageCount
+    datetime createdAt
+    datetime updatedAt
   }
 
   COMMENT {
@@ -108,12 +122,16 @@ erDiagram
     string content
     ObjectId parentComment FK "ref Comment — self for replies"
     string stickerUrl
+    datetime createdAt
+    datetime updatedAt
   }
 
   LIKE {
     ObjectId _id PK
     ObjectId user FK "ref User"
     ObjectId artwork FK "ref Artwork"
+    datetime createdAt
+    datetime updatedAt
   }
 
   BOOKMARK {
@@ -121,6 +139,8 @@ erDiagram
     ObjectId user FK "ref User"
     ObjectId artwork FK "ref Artwork"
     string folder
+    datetime createdAt
+    datetime updatedAt
   }
 
   CHAPTER {
@@ -130,6 +150,8 @@ erDiagram
     string content
     number chapterNumber "unique per artwork"
     number wordCount
+    datetime createdAt
+    datetime updatedAt
   }
 
   READING_PROGRESS {
@@ -140,6 +162,8 @@ erDiagram
     number progressPercent
     number scrollPosition
     datetime lastReadAt
+    datetime createdAt
+    datetime updatedAt
   }
 
   ARTWORK_REPORT {
@@ -152,6 +176,8 @@ erDiagram
     ObjectId resolvedBy FK "ref User"
     datetime resolvedAt
     string resolutionNote
+    datetime createdAt
+    datetime updatedAt
   }
 
   REQUEST_TERM {
@@ -171,6 +197,8 @@ erDiagram
     array strengths
     json commercialUse "embedded {allowed,feeMultiplier,notes}"
     boolean isOpen
+    datetime createdAt
+    datetime updatedAt
   }
 
   REQUEST {
@@ -200,6 +228,8 @@ erDiagram
     number extensionDays
     datetime chatClosedAt
     string licenseTier
+    datetime createdAt
+    datetime updatedAt
   }
 
   REQUEST_CHAT_MESSAGE {
@@ -209,6 +239,8 @@ erDiagram
     string content
     array attachments "embedded"
     boolean isSystem
+    datetime createdAt
+    datetime updatedAt
   }
 
   REQUEST_EVENT {
@@ -219,6 +251,8 @@ erDiagram
     string fromStatus
     string toStatus
     json metadata "Mixed"
+    datetime createdAt
+    datetime updatedAt
   }
 
   REQUEST_REVISION {
@@ -227,6 +261,8 @@ erDiagram
     ObjectId requester FK "ref User"
     number round "1|2 — unique per request"
     string notes
+    datetime createdAt
+    datetime updatedAt
   }
 
   USER ||--o{ ARTWORK : "creates"
@@ -302,25 +338,25 @@ erDiagram
 
 | # | Entity | Fields | Key Relationships | Group |
 |---|--------|--------|-------------------|-------|
-| 1 | **USER** | 17 | 22 relationships | Core User System |
-| 2 | **FOLLOW** | 3 | 2 relationships | Core User System |
-| 3 | **USER_BLOCK** | 3 | 2 relationships | Core User System |
-| 4 | **SETTING** | 3 | 0 relationships | Core System Config |
-| 5 | **MESSAGE** | 8 | 2 relationships | Core User System |
-| 6 | **NOTIFICATION** | 8 | 3 relationships | Core User System |
-| 7 | **ARTWORK** | 23 | 10 relationships | Content System |
-| 8 | **TAG** | 4 | 1 relationships | Content System |
-| 9 | **COMMENT** | 6 | 2 relationships | Content System |
-| 10 | **LIKE** | 3 | 2 relationships | Content System |
-| 11 | **BOOKMARK** | 4 | 2 relationships | Content System |
-| 12 | **CHAPTER** | 6 | 2 relationships | Content System |
-| 13 | **READING_PROGRESS** | 7 | 3 relationships | Content System |
-| 14 | **ARTWORK_REPORT** | 9 | 3 relationships | Reporting & Moderation |
-| 15 | **REQUEST_TERM** | 16 | 2 relationships | Commission System |
-| 16 | **REQUEST** | 26 | 6 relationships | Commission System |
-| 17 | **REQUEST_CHAT_MESSAGE** | 6 | 2 relationships | Commission System |
-| 18 | **REQUEST_EVENT** | 7 | 2 relationships | Commission System |
-| 19 | **REQUEST_REVISION** | 5 | 2 relationships | Commission System |
+| 1 | **USER** | 19 | 22 relationships | Core User System |
+| 2 | **FOLLOW** | 5 | 2 relationships | Core User System |
+| 3 | **USER_BLOCK** | 5 | 2 relationships | Core User System |
+| 4 | **SETTING** | 5 | 0 relationships | Core System Config |
+| 5 | **MESSAGE** | 10 | 2 relationships | Core User System |
+| 6 | **NOTIFICATION** | 9 | 3 relationships | Core User System |
+| 7 | **ARTWORK** | 24 | 10 relationships | Content System |
+| 8 | **TAG** | 6 | 1 relationships | Content System |
+| 9 | **COMMENT** | 8 | 2 relationships | Content System |
+| 10 | **LIKE** | 5 | 2 relationships | Content System |
+| 11 | **BOOKMARK** | 6 | 2 relationships | Content System |
+| 12 | **CHAPTER** | 8 | 2 relationships | Content System |
+| 13 | **READING_PROGRESS** | 9 | 3 relationships | Content System |
+| 14 | **ARTWORK_REPORT** | 11 | 3 relationships | Reporting & Moderation |
+| 15 | **REQUEST_TERM** | 18 | 2 relationships | Commission System |
+| 16 | **REQUEST** | 28 | 6 relationships | Commission System |
+| 17 | **REQUEST_CHAT_MESSAGE** | 8 | 2 relationships | Commission System |
+| 18 | **REQUEST_EVENT** | 9 | 2 relationships | Commission System |
+| 19 | **REQUEST_REVISION** | 7 | 2 relationships | Commission System |
 
 ---
 *Generated by `scripts/generate-erd.js` on 2026-06-11 — 19 entities, 35 relationships.*

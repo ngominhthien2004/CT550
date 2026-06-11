@@ -50,7 +50,6 @@ const markNotificationRead = async (req, res, next) => {
         }
 
         notification.isRead = true;
-        notification.readAt = new Date();
         await notification.save();
 
         res.json({ message: 'Notification marked as read' });

@@ -52,11 +52,6 @@ const artworkSchema = mongoose.Schema({
         default: 0
     },
     reportCount: { type: Number, default: 0 },
-    gifNotes: {
-        type: String,
-        trim: true,
-        default: ''
-    },
     // Novel-specific fields
     novelContent: {
         type: String,

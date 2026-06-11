@@ -25,7 +25,7 @@
   <div class="meta">
     <p><strong>Ngày tạo:</strong> 2026-06-11</p>
     <p><strong>Số collection:</strong> 19</p>
-    <p><strong>Tổng số fields:</strong> 164</p>
+    <p><strong>Tổng số fields:</strong> 200</p>
   </div>
 
   <h2>USER — Người dùng</h2>
@@ -52,6 +52,8 @@
     <tr><td>googleId</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>ID tài khoản Google (dùng cho đăng nhập OAuth)</td></tr>
     <tr><td>facebookId</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>ID tài khoản Facebook (dùng cho đăng nhập OAuth)</td></tr>
     <tr><td>twitterId</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>ID tài khoản Twitter (dùng cho đăng nhập OAuth)</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo tài khoản</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -65,6 +67,8 @@
     <tr><td>_id</td><td style="font-style:italic;color:#555">objectId</td><td class="pk" style="width:60px">X</td><td class="pk" style="width:60px"></td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Mã theo dõi (tự động sinh)</td></tr>
     <tr><td>follower</td><td style="font-style:italic;color:#555">objectId</td><td class="fk" style="width:60px"></td><td class="fk" style="width:60px">X</td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Người theo dõi</td></tr>
     <tr><td>following</td><td style="font-style:italic;color:#555">objectId</td><td class="fk" style="width:60px"></td><td class="fk" style="width:60px">X</td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Người được theo dõi</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -78,6 +82,8 @@
     <tr><td>_id</td><td style="font-style:italic;color:#555">objectId</td><td class="pk" style="width:60px">X</td><td class="pk" style="width:60px"></td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Mã chặn (tự động sinh)</td></tr>
     <tr><td>blocker</td><td style="font-style:italic;color:#555">objectId</td><td class="fk" style="width:60px"></td><td class="fk" style="width:60px">X</td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Người thực hiện chặn</td></tr>
     <tr><td>blocked</td><td style="font-style:italic;color:#555">objectId</td><td class="fk" style="width:60px"></td><td class="fk" style="width:60px">X</td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Người bị chặn</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -91,6 +97,8 @@
     <tr><td>_id</td><td style="font-style:italic;color:#555">string</td><td class="pk" style="width:60px">X</td><td class="pk" style="width:60px"></td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Khoá singleton (global)</td></tr>
     <tr><td>aiDetectionEnabled</td><td style="font-style:italic;color:#555">boolean</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Bật/tắt tính năng phát hiện AI trên toàn hệ thống</td></tr>
     <tr><td>aiDetectionThreshold</td><td style="font-style:italic;color:#555">number</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Ngưỡng phát hiện AI (0-100%), mặc định 70%</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -109,6 +117,8 @@
     <tr><td>isRead</td><td style="font-style:italic;color:#555">boolean</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Đánh dấu đã đọc</td></tr>
     <tr><td>readAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm người nhận đọc tin nhắn</td></tr>
     <tr><td>deletedFor</td><td style="font-style:italic;color:#555">array</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Danh sách người dùng đã xóa tin nhắn này</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm gửi tin nhắn</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -126,7 +136,8 @@
     <tr><td>type</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Loại thông báo: follow | like | bookmark | comment | request | system</td></tr>
     <tr><td>message</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Nội dung thông báo</td></tr>
     <tr><td>isRead</td><td style="font-style:italic;color:#555">boolean</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Đánh dấu đã đọc</td></tr>
-    <tr><td>readAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm đọc thông báo</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm gửi thông báo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -150,7 +161,6 @@
     <tr><td>bookmarkCount</td><td style="font-style:italic;color:#555">number</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Số lượt đánh dấu (duy trì tự động bằng $inc)</td></tr>
     <tr><td>commentCount</td><td style="font-style:italic;color:#555">number</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Số bình luận (duy trì tự động bằng $inc)</td></tr>
     <tr><td>reportCount</td><td style="font-style:italic;color:#555">number</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Số lần bị báo cáo (duy trì tự động bằng $inc)</td></tr>
-    <tr><td>gifNotes</td><td style="font-style:italic;color:#555">object</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Ghi chú GIF (thời gian hiển thị từng khung hình)</td></tr>
     <tr><td>novelContent</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Nội dung tiểu thuyết (dạng văn bản)</td></tr>
     <tr><td>novelFormat</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Định dạng tiểu thuyết: oneshot (một chương) | series (nhiều chương)</td></tr>
     <tr><td>novelSeriesName</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Tên series tiểu thuyết</td></tr>
@@ -160,6 +170,8 @@
     <tr><td>hiddenBy</td><td style="font-style:italic;color:#555">objectId</td><td class="fk" style="width:60px"></td><td class="fk" style="width:60px">X</td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Người kiểm duyệt ẩn tác phẩm</td></tr>
     <tr><td>hiddenAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm bị ẩn</td></tr>
     <tr><td>hiddenReason</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Lý do bị ẩn</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm đăng tác phẩm</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -174,6 +186,8 @@
     <tr><td>name</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Tên thẻ (duy nhất)</td></tr>
     <tr><td>translations</td><td style="font-style:italic;color:#555">object</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Bản dịch đa ngôn ngữ {en,vi,ja}</td></tr>
     <tr><td>usageCount</td><td style="font-style:italic;color:#555">number</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Số lần thẻ được sử dụng</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -190,6 +204,8 @@
     <tr><td>content</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Nội dung bình luận</td></tr>
     <tr><td>parentComment</td><td style="font-style:italic;color:#555">objectId</td><td class="fk" style="width:60px"></td><td class="fk" style="width:60px">X</td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Bình luận cha (tự tham chiếu cho trả lời)</td></tr>
     <tr><td>stickerUrl</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Đường dẫn sticker (nếu có)</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -203,6 +219,8 @@
     <tr><td>_id</td><td style="font-style:italic;color:#555">objectId</td><td class="pk" style="width:60px">X</td><td class="pk" style="width:60px"></td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Mã lượt thích (tự động sinh)</td></tr>
     <tr><td>user</td><td style="font-style:italic;color:#555">objectId</td><td class="fk" style="width:60px"></td><td class="fk" style="width:60px">X</td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Người thích</td></tr>
     <tr><td>artwork</td><td style="font-style:italic;color:#555">objectId</td><td class="fk" style="width:60px"></td><td class="fk" style="width:60px">X</td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Tác phẩm được thích</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -217,6 +235,8 @@
     <tr><td>user</td><td style="font-style:italic;color:#555">objectId</td><td class="fk" style="width:60px"></td><td class="fk" style="width:60px">X</td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Người đánh dấu</td></tr>
     <tr><td>artwork</td><td style="font-style:italic;color:#555">objectId</td><td class="fk" style="width:60px"></td><td class="fk" style="width:60px">X</td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Tác phẩm được đánh dấu</td></tr>
     <tr><td>folder</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Tên thư mục lưu đánh dấu</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -233,6 +253,8 @@
     <tr><td>content</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Nội dung chương</td></tr>
     <tr><td>chapterNumber</td><td style="font-style:italic;color:#555">number</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>duy nhất trong tác phẩm</td></tr>
     <tr><td>wordCount</td><td style="font-style:italic;color:#555">number</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Số từ trong chương</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -250,6 +272,8 @@
     <tr><td>progressPercent</td><td style="font-style:italic;color:#555">number</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Phần trăm hoàn thành (0-100)</td></tr>
     <tr><td>scrollPosition</td><td style="font-style:italic;color:#555">number</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Vị trí cuộc đang đọc (dùng để khôi phục)</td></tr>
     <tr><td>lastReadAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm đọc gần nhất</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -269,6 +293,8 @@
     <tr><td>resolvedBy</td><td style="font-style:italic;color:#555">objectId</td><td class="fk" style="width:60px"></td><td class="fk" style="width:60px">X</td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Người xử lý</td></tr>
     <tr><td>resolvedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm xử lý báo cáo</td></tr>
     <tr><td>resolutionNote</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Ghi chú của người xử lý</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -295,6 +321,8 @@
     <tr><td>strengths</td><td style="font-style:italic;color:#555">array</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thế mạnh của người sáng tạo</td></tr>
     <tr><td>commercialUse</td><td style="font-style:italic;color:#555">object</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Nhúng {allowed,feeMultiplier,notes}</td></tr>
     <tr><td>isOpen</td><td style="font-style:italic;color:#555">boolean</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Đang mở nhận ủy thác hay không</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -331,6 +359,8 @@
     <tr><td>extensionDays</td><td style="font-style:italic;color:#555">number</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Số ngày gia hạn thêm</td></tr>
     <tr><td>chatClosedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm đóng chat của yêu cầu</td></tr>
     <tr><td>licenseTier</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Cấp giấy phép sử dụng: personal | commercial</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -347,6 +377,8 @@
     <tr><td>content</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Nội dung tin nhắn</td></tr>
     <tr><td>attachments</td><td style="font-style:italic;color:#555">array</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Tệp đính kèm (hình ảnh, tệp)</td></tr>
     <tr><td>isSystem</td><td style="font-style:italic;color:#555">boolean</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Tin nhắn hệ thống (tự động sinh bởi state machine)</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -364,6 +396,8 @@
     <tr><td>fromStatus</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Trạng thái trước khi chuyển</td></tr>
     <tr><td>toStatus</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Trạng thái sau khi chuyển</td></tr>
     <tr><td>metadata</td><td style="font-style:italic;color:#555">object</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Linh hoạt</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
 
@@ -379,6 +413,8 @@
     <tr><td>requester</td><td style="font-style:italic;color:#555">objectId</td><td class="fk" style="width:60px"></td><td class="fk" style="width:60px">X</td><td style="text-align:center;width:40px"><span class="nn">X</span></td><td>Người yêu cầu chỉnh sửa</td></tr>
     <tr><td>round</td><td style="font-style:italic;color:#555">number</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>1 | 2 — Duy nhất trong yêu cầu</td></tr>
     <tr><td>notes</td><td style="font-style:italic;color:#555">string</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Nội dung yêu cầu chỉnh sửa</td></tr>
+    <tr><td>createdAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm tạo</td></tr>
+    <tr><td>updatedAt</td><td style="font-style:italic;color:#555">date</td><td class="" style="width:60px"></td><td class="" style="width:60px"></td><td style="text-align:center;width:40px"></td><td>Thời điểm cập nhật gần nhất</td></tr>
     </tbody>
   </table>
   <div class="footer">Được tạo bởi scripts/generate-data-dictionary.js vào 2026-06-11 — 19 collection.</div>

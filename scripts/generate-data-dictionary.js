@@ -292,6 +292,8 @@ function buildDataDictionary() {
 const fieldDescriptionsVI = {
   // ── USER ──
   'USER._id': 'Mã người dùng (tự động sinh)',
+  'USER.createdAt': 'Thời điểm tạo tài khoản',
+  'USER.updatedAt': 'Thời điểm cập nhật gần nhất',
   'USER.displayName': 'Tên hiển thị của người dùng',
   'USER.avatar': 'Đường dẫn ảnh đại diện',
   'USER.coverImage': 'Đường dẫn ảnh bìa',
@@ -315,16 +317,22 @@ const fieldDescriptionsVI = {
 
   // ── FOLLOW ──
   'FOLLOW._id': 'Mã theo dõi (tự động sinh)',
+  'FOLLOW.createdAt': 'Thời điểm tạo',
+  'FOLLOW.updatedAt': 'Thời điểm cập nhật gần nhất',
   'FOLLOW.follower': 'Người theo dõi',
   'FOLLOW.following': 'Người được theo dõi',
 
   // ── USER_BLOCK ──
   'USER_BLOCK._id': 'Mã chặn (tự động sinh)',
+  'USER_BLOCK.createdAt': 'Thời điểm tạo',
+  'USER_BLOCK.updatedAt': 'Thời điểm cập nhật gần nhất',
   'USER_BLOCK.blocker': 'Người thực hiện chặn',
   'USER_BLOCK.blocked': 'Người bị chặn',
 
   // ── MESSAGE ──
   'MESSAGE._id': 'Mã tin nhắn (tự động sinh)',
+  'MESSAGE.createdAt': 'Thời điểm gửi tin nhắn',
+  'MESSAGE.updatedAt': 'Thời điểm cập nhật gần nhất',
   'MESSAGE.sender': 'Người gửi tin nhắn',
   'MESSAGE.recipient': 'Người nhận tin nhắn',
   'MESSAGE.content': 'Nội dung tin nhắn',
@@ -335,16 +343,19 @@ const fieldDescriptionsVI = {
 
   // ── NOTIFICATION ──
   'NOTIFICATION._id': 'Mã thông báo (tự động sinh)',
+  'NOTIFICATION.createdAt': 'Thời điểm gửi thông báo',
+  'NOTIFICATION.updatedAt': 'Thời điểm cập nhật gần nhất',
   'NOTIFICATION.type': 'Loại thông báo: follow | like | bookmark | comment | request | system',
   'NOTIFICATION.message': 'Nội dung thông báo',
   'NOTIFICATION.isRead': 'Đánh dấu đã đọc',
-  'NOTIFICATION.readAt': 'Thời điểm đọc thông báo',
   'NOTIFICATION.user': 'Người nhận thông báo',
   'NOTIFICATION.actor': 'Người kích hoạt thông báo',
   'NOTIFICATION.artwork': 'Tác phẩm liên quan (tuỳ chọn)',
 
   // ── ARTWORK ──
   'ARTWORK._id': 'Mã tác phẩm (tự động sinh)',
+  'ARTWORK.createdAt': 'Thời điểm đăng tác phẩm',
+  'ARTWORK.updatedAt': 'Thời điểm cập nhật gần nhất',
   'ARTWORK.title': 'Tiêu đề tác phẩm',
   'ARTWORK.description': 'Mô tả tác phẩm',
   'ARTWORK.type': 'Loại tác phẩm: illust | manga | gif | novel',
@@ -354,7 +365,6 @@ const fieldDescriptionsVI = {
   'ARTWORK.bookmarkCount': 'Số lượt đánh dấu (duy trì tự động bằng $inc)',
   'ARTWORK.commentCount': 'Số bình luận (duy trì tự động bằng $inc)',
   'ARTWORK.reportCount': 'Số lần bị báo cáo (duy trì tự động bằng $inc)',
-  'ARTWORK.gifNotes': 'Ghi chú GIF (thời gian hiển thị từng khung hình)',
   'ARTWORK.novelContent': 'Nội dung tiểu thuyết (dạng văn bản)',
   'ARTWORK.novelFormat': 'Định dạng tiểu thuyết: oneshot (một chương) | series (nhiều chương)',
   'ARTWORK.novelSeriesName': 'Tên series tiểu thuyết',
@@ -369,12 +379,16 @@ const fieldDescriptionsVI = {
 
   // ── TAG ──
   'TAG._id': 'Mã thẻ (tự động sinh)',
+  'TAG.createdAt': 'Thời điểm tạo',
+  'TAG.updatedAt': 'Thời điểm cập nhật gần nhất',
   'TAG.name': 'Tên thẻ (duy nhất)',
   'TAG.translations': 'Bản dịch đa ngôn ngữ {en,vi,ja}',
   'TAG.usageCount': 'Số lần thẻ được sử dụng',
 
   // ── COMMENT ──
   'COMMENT._id': 'Mã bình luận (tự động sinh)',
+  'COMMENT.createdAt': 'Thời điểm tạo',
+  'COMMENT.updatedAt': 'Thời điểm cập nhật gần nhất',
   'COMMENT.content': 'Nội dung bình luận',
   'COMMENT.stickerUrl': 'Đường dẫn sticker (nếu có)',
   'COMMENT.artwork': 'Tác phẩm được bình luận',
@@ -383,17 +397,23 @@ const fieldDescriptionsVI = {
 
   // ── LIKE ──
   'LIKE._id': 'Mã lượt thích (tự động sinh)',
+  'LIKE.createdAt': 'Thời điểm tạo',
+  'LIKE.updatedAt': 'Thời điểm cập nhật gần nhất',
   'LIKE.user': 'Người thích',
   'LIKE.artwork': 'Tác phẩm được thích',
 
   // ── BOOKMARK ──
   'BOOKMARK._id': 'Mã đánh dấu (tự động sinh)',
+  'BOOKMARK.createdAt': 'Thời điểm tạo',
+  'BOOKMARK.updatedAt': 'Thời điểm cập nhật gần nhất',
   'BOOKMARK.folder': 'Tên thư mục lưu đánh dấu',
   'BOOKMARK.user': 'Người đánh dấu',
   'BOOKMARK.artwork': 'Tác phẩm được đánh dấu',
 
   // ── CHAPTER ──
   'CHAPTER._id': 'Mã chương (tự động sinh)',
+  'CHAPTER.createdAt': 'Thời điểm tạo',
+  'CHAPTER.updatedAt': 'Thời điểm cập nhật gần nhất',
   'CHAPTER.title': 'Tiêu đề chương',
   'CHAPTER.content': 'Nội dung chương',
   'CHAPTER.wordCount': 'Số từ trong chương',
@@ -401,6 +421,8 @@ const fieldDescriptionsVI = {
 
   // ── READING_PROGRESS ──
   'READING_PROGRESS._id': 'Mã tiến độ đọc (tự động sinh)',
+  'READING_PROGRESS.createdAt': 'Thời điểm tạo',
+  'READING_PROGRESS.updatedAt': 'Thời điểm cập nhật gần nhất',
   'READING_PROGRESS.progressPercent': 'Phần trăm hoàn thành (0-100)',
   'READING_PROGRESS.scrollPosition': 'Vị trí cuộc đang đọc (dùng để khôi phục)',
   'READING_PROGRESS.lastReadAt': 'Thời điểm đọc gần nhất',
@@ -410,6 +432,8 @@ const fieldDescriptionsVI = {
 
   // ── ARTWORK_REPORT ──
   'ARTWORK_REPORT._id': 'Mã báo cáo (tự động sinh)',
+  'ARTWORK_REPORT.createdAt': 'Thời điểm tạo',
+  'ARTWORK_REPORT.updatedAt': 'Thời điểm cập nhật gần nhất',
   'ARTWORK_REPORT.description': 'Mô tả chi tiết lý do báo cáo',
   'ARTWORK_REPORT.status': 'Trạng thái xử lý: pending | resolved | dismissed',
   'ARTWORK_REPORT.resolvedAt': 'Thời điểm xử lý báo cáo',
@@ -420,6 +444,8 @@ const fieldDescriptionsVI = {
 
   // ── REQUEST_TERM ──
   'REQUEST_TERM._id': 'Mã điều khoản (tự động sinh)',
+  'REQUEST_TERM.createdAt': 'Thời điểm tạo',
+  'REQUEST_TERM.updatedAt': 'Thời điểm cập nhật gần nhất',
   'REQUEST_TERM.title': 'Tiêu đề gói điều khoản',
   'REQUEST_TERM.tier': 'Hạng mục (cấp độ dịch vụ)',
   'REQUEST_TERM.targetPrice': 'Giá mục tiêu cho một yêu cầu',
@@ -437,6 +463,8 @@ const fieldDescriptionsVI = {
 
   // ── REQUEST ──
   'REQUEST._id': 'Mã yêu cầu (tự động sinh)',
+  'REQUEST.createdAt': 'Thời điểm tạo',
+  'REQUEST.updatedAt': 'Thời điểm cập nhật gần nhất',
   'REQUEST.title': 'Tiêu đề yêu cầu',
   'REQUEST.description': 'Mô tả chi tiết yêu cầu',
   'REQUEST.workType': 'Loại công việc yêu cầu',
@@ -459,6 +487,8 @@ const fieldDescriptionsVI = {
 
   // ── REQUEST_CHAT_MESSAGE ──
   'REQUEST_CHAT_MESSAGE._id': 'Mã tin nhắn (tự động sinh)',
+  'REQUEST_CHAT_MESSAGE.createdAt': 'Thời điểm tạo',
+  'REQUEST_CHAT_MESSAGE.updatedAt': 'Thời điểm cập nhật gần nhất',
   'REQUEST_CHAT_MESSAGE.content': 'Nội dung tin nhắn',
   'REQUEST_CHAT_MESSAGE.attachments': 'Tệp đính kèm (hình ảnh, tệp)',
   'REQUEST_CHAT_MESSAGE.isSystem': 'Tin nhắn hệ thống (tự động sinh bởi state machine)',
@@ -467,6 +497,8 @@ const fieldDescriptionsVI = {
 
   // ── REQUEST_EVENT ──
   'REQUEST_EVENT._id': 'Mã sự kiện (tự động sinh)',
+  'REQUEST_EVENT.createdAt': 'Thời điểm tạo',
+  'REQUEST_EVENT.updatedAt': 'Thời điểm cập nhật gần nhất',
   'REQUEST_EVENT.type': 'Loại sự kiện (request_submitted, accepted, rejected, ...)',
   'REQUEST_EVENT.fromStatus': 'Trạng thái trước khi chuyển',
   'REQUEST_EVENT.toStatus': 'Trạng thái sau khi chuyển',
@@ -475,12 +507,16 @@ const fieldDescriptionsVI = {
 
   // ── REQUEST_REVISION ──
   'REQUEST_REVISION._id': 'Mã chỉnh sửa (tự động sinh)',
+  'REQUEST_REVISION.createdAt': 'Thời điểm tạo',
+  'REQUEST_REVISION.updatedAt': 'Thời điểm cập nhật gần nhất',
   'REQUEST_REVISION.notes': 'Nội dung yêu cầu chỉnh sửa',
   'REQUEST_REVISION.request': 'Yêu cầu cần chỉnh sửa',
   'REQUEST_REVISION.requester': 'Người yêu cầu chỉnh sửa',
 
   // ── SETTING ──
   'SETTING._id': 'Khoá singleton (global)',
+  'SETTING.createdAt': 'Thời điểm tạo',
+  'SETTING.updatedAt': 'Thời điểm cập nhật gần nhất',
   'SETTING.aiDetectionEnabled': 'Bật/tắt tính năng phát hiện AI trên toàn hệ thống',
   'SETTING.aiDetectionThreshold': 'Ngưỡng phát hiện AI (0-100%), mặc định 70%',
 };

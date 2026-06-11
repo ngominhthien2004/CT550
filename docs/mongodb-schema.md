@@ -27,6 +27,8 @@
 | `googleId` | string |  |  |  | ID tài khoản Google (dùng cho đăng nhập OAuth) |
 | `facebookId` | string |  |  |  | ID tài khoản Facebook (dùng cho đăng nhập OAuth) |
 | `twitterId` | string |  |  |  | ID tài khoản Twitter (dùng cho đăng nhập OAuth) |
+| `createdAt` | date |  |  |  | Thời điểm tạo tài khoản |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## FOLLOW — Theo dõi
 
@@ -35,6 +37,8 @@
 | `_id` | objectId | X |  | X | Mã theo dõi (tự động sinh) |
 | `follower` | objectId |  | X | X | Người theo dõi |
 | `following` | objectId |  | X | X | Người được theo dõi |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## USER_BLOCK — Chặn người dùng
 
@@ -43,6 +47,8 @@
 | `_id` | objectId | X |  | X | Mã chặn (tự động sinh) |
 | `blocker` | objectId |  | X | X | Người thực hiện chặn |
 | `blocked` | objectId |  | X | X | Người bị chặn |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## SETTING — Cấu hình hệ thống
 
@@ -51,6 +57,8 @@
 | `_id` | string | X |  | X | Khoá singleton (global) |
 | `aiDetectionEnabled` | boolean |  |  |  | Bật/tắt tính năng phát hiện AI trên toàn hệ thống |
 | `aiDetectionThreshold` | number |  |  |  | Ngưỡng phát hiện AI (0-100%), mặc định 70% |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## MESSAGE — Tin nhắn
 
@@ -64,6 +72,8 @@
 | `isRead` | boolean |  |  |  | Đánh dấu đã đọc |
 | `readAt` | date |  |  |  | Thời điểm người nhận đọc tin nhắn |
 | `deletedFor` | array |  |  |  | Danh sách người dùng đã xóa tin nhắn này |
+| `createdAt` | date |  |  |  | Thời điểm gửi tin nhắn |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## NOTIFICATION — Thông báo
 
@@ -76,7 +86,8 @@
 | `type` | string |  |  |  | Loại thông báo: follow | like | bookmark | comment | request | system |
 | `message` | string |  |  |  | Nội dung thông báo |
 | `isRead` | boolean |  |  |  | Đánh dấu đã đọc |
-| `readAt` | date |  |  |  | Thời điểm đọc thông báo |
+| `createdAt` | date |  |  |  | Thời điểm gửi thông báo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## ARTWORK — Tác phẩm
 
@@ -95,7 +106,6 @@
 | `bookmarkCount` | number |  |  |  | Số lượt đánh dấu (duy trì tự động bằng $inc) |
 | `commentCount` | number |  |  |  | Số bình luận (duy trì tự động bằng $inc) |
 | `reportCount` | number |  |  |  | Số lần bị báo cáo (duy trì tự động bằng $inc) |
-| `gifNotes` | object |  |  |  | Ghi chú GIF (thời gian hiển thị từng khung hình) |
 | `novelContent` | string |  |  |  | Nội dung tiểu thuyết (dạng văn bản) |
 | `novelFormat` | string |  |  |  | Định dạng tiểu thuyết: oneshot (một chương) | series (nhiều chương) |
 | `novelSeriesName` | string |  |  |  | Tên series tiểu thuyết |
@@ -105,6 +115,8 @@
 | `hiddenBy` | objectId |  | X | X | Người kiểm duyệt ẩn tác phẩm |
 | `hiddenAt` | date |  |  |  | Thời điểm bị ẩn |
 | `hiddenReason` | string |  |  |  | Lý do bị ẩn |
+| `createdAt` | date |  |  |  | Thời điểm đăng tác phẩm |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## TAG — Thẻ
 
@@ -114,6 +126,8 @@
 | `name` | string |  |  |  | Tên thẻ (duy nhất) |
 | `translations` | object |  |  |  | Bản dịch đa ngôn ngữ {en,vi,ja} |
 | `usageCount` | number |  |  |  | Số lần thẻ được sử dụng |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## COMMENT — Bình luận
 
@@ -125,6 +139,8 @@
 | `content` | string |  |  |  | Nội dung bình luận |
 | `parentComment` | objectId |  | X | X | Bình luận cha (tự tham chiếu cho trả lời) |
 | `stickerUrl` | string |  |  |  | Đường dẫn sticker (nếu có) |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## LIKE — Lượt thích
 
@@ -133,6 +149,8 @@
 | `_id` | objectId | X |  | X | Mã lượt thích (tự động sinh) |
 | `user` | objectId |  | X | X | Người thích |
 | `artwork` | objectId |  | X | X | Tác phẩm được thích |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## BOOKMARK — Đánh dấu
 
@@ -142,6 +160,8 @@
 | `user` | objectId |  | X | X | Người đánh dấu |
 | `artwork` | objectId |  | X | X | Tác phẩm được đánh dấu |
 | `folder` | string |  |  |  | Tên thư mục lưu đánh dấu |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## CHAPTER — Chương
 
@@ -153,6 +173,8 @@
 | `content` | string |  |  |  | Nội dung chương |
 | `chapterNumber` | number |  |  |  | duy nhất trong tác phẩm |
 | `wordCount` | number |  |  |  | Số từ trong chương |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## READING_PROGRESS — Tiến độ đọc
 
@@ -165,6 +187,8 @@
 | `progressPercent` | number |  |  |  | Phần trăm hoàn thành (0-100) |
 | `scrollPosition` | number |  |  |  | Vị trí cuộc đang đọc (dùng để khôi phục) |
 | `lastReadAt` | date |  |  |  | Thời điểm đọc gần nhất |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## ARTWORK_REPORT — Báo cáo tác phẩm
 
@@ -179,6 +203,8 @@
 | `resolvedBy` | objectId |  | X | X | Người xử lý |
 | `resolvedAt` | date |  |  |  | Thời điểm xử lý báo cáo |
 | `resolutionNote` | string |  |  |  | Ghi chú của người xử lý |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## REQUEST_TERM — Điều khoản ủy thác
 
@@ -200,6 +226,8 @@
 | `strengths` | array |  |  |  | Thế mạnh của người sáng tạo |
 | `commercialUse` | object |  |  |  | Nhúng {allowed,feeMultiplier,notes} |
 | `isOpen` | boolean |  |  |  | Đang mở nhận ủy thác hay không |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## REQUEST — Yêu cầu ủy thác
 
@@ -231,6 +259,8 @@
 | `extensionDays` | number |  |  |  | Số ngày gia hạn thêm |
 | `chatClosedAt` | date |  |  |  | Thời điểm đóng chat của yêu cầu |
 | `licenseTier` | string |  |  |  | Cấp giấy phép sử dụng: personal | commercial |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## REQUEST_CHAT_MESSAGE — Tin nhắn ủy thác
 
@@ -242,6 +272,8 @@
 | `content` | string |  |  |  | Nội dung tin nhắn |
 | `attachments` | array |  |  |  | Tệp đính kèm (hình ảnh, tệp) |
 | `isSystem` | boolean |  |  |  | Tin nhắn hệ thống (tự động sinh bởi state machine) |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## REQUEST_EVENT — Sự kiện ủy thác
 
@@ -254,6 +286,8 @@
 | `fromStatus` | string |  |  |  | Trạng thái trước khi chuyển |
 | `toStatus` | string |  |  |  | Trạng thái sau khi chuyển |
 | `metadata` | object |  |  |  | Linh hoạt |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## REQUEST_REVISION — Chỉnh sửa ủy thác
 
@@ -264,6 +298,8 @@
 | `requester` | objectId |  | X | X | Người yêu cầu chỉnh sửa |
 | `round` | number |  |  |  | 1 | 2 — Duy nhất trong yêu cầu |
 | `notes` | string |  |  |  | Nội dung yêu cầu chỉnh sửa |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ---
 *Được tạo bởi `scripts/generate-data-dictionary.js` vào 2026-06-11 — 19 collection.*

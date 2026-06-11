@@ -54,7 +54,7 @@ function hasTagId(tagIds, tagId) {
 // Create Artwork
 const createArtwork = async (req, res, next) => {
     try {
-        const { title, description, type, ageRating, tags, gifNotes, novelContent, novelFormat, novelSeriesName } = req.body;
+        const { title, description, type, ageRating, tags, novelContent, novelFormat, novelSeriesName } = req.body;
 
         if (!req.files || req.files.length === 0) {
             res.status(400);
@@ -173,7 +173,6 @@ const createArtwork = async (req, res, next) => {
             images: finalImages,
             tags: tagIds,
             ageRating,
-            gifNotes: gifNotes || '',
         };
 
         // Set novel-specific fields

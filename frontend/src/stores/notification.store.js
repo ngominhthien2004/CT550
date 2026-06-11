@@ -34,7 +34,6 @@ export const useNotificationStore = defineStore('notifications', {
           return {
             ...item,
             isRead: true,
-            readAt: new Date().toISOString(),
           }
         })
         this.unreadCount = this.items.filter((item) => !item.isRead).length

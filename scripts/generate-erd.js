@@ -33,6 +33,8 @@ const entities = [
       'string googleId',
       'string facebookId',
       'string twitterId',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -42,6 +44,8 @@ const entities = [
       'ObjectId _id PK',
       'ObjectId follower FK "ref User — who follows"',
       'ObjectId following FK "ref User — being followed"',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -51,6 +55,8 @@ const entities = [
       'ObjectId _id PK',
       'ObjectId blocker FK "ref User"',
       'ObjectId blocked FK "ref User"',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -60,6 +66,8 @@ const entities = [
       'string _id PK "singleton key: global"',
       'boolean aiDetectionEnabled',
       'number aiDetectionThreshold "0-100"',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -74,6 +82,8 @@ const entities = [
       'boolean isRead',
       'datetime readAt',
       'array deletedFor "ref User[]"',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -87,7 +97,8 @@ const entities = [
       'string type "follow|like|bookmark|comment|request|system"',
       'string message',
       'boolean isRead',
-      'datetime readAt',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -107,7 +118,6 @@ const entities = [
       'number bookmarkCount',
       'number commentCount',
       'number reportCount',
-      'json gifNotes',
       'string novelContent',
       'string novelFormat "oneshot|series"',
       'string novelSeriesName',
@@ -117,6 +127,8 @@ const entities = [
       'ObjectId hiddenBy FK "ref User — moderator"',
       'datetime hiddenAt',
       'string hiddenReason',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -127,6 +139,8 @@ const entities = [
       'string name UK',
       'json translations "embedded {en,vi,ja}"',
       'number usageCount',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -139,6 +153,8 @@ const entities = [
       'string content',
       'ObjectId parentComment FK "ref Comment — self for replies"',
       'string stickerUrl',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -148,6 +164,8 @@ const entities = [
       'ObjectId _id PK',
       'ObjectId user FK "ref User"',
       'ObjectId artwork FK "ref Artwork"',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -158,6 +176,8 @@ const entities = [
       'ObjectId user FK "ref User"',
       'ObjectId artwork FK "ref Artwork"',
       'string folder',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -170,6 +190,8 @@ const entities = [
       'string content',
       'number chapterNumber "unique per artwork"',
       'number wordCount',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -183,6 +205,8 @@ const entities = [
       'number progressPercent',
       'number scrollPosition',
       'datetime lastReadAt',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -198,6 +222,8 @@ const entities = [
       'ObjectId resolvedBy FK "ref User"',
       'datetime resolvedAt',
       'string resolutionNote',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -220,6 +246,8 @@ const entities = [
       'array strengths',
       'json commercialUse "embedded {allowed,feeMultiplier,notes}"',
       'boolean isOpen',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -252,6 +280,8 @@ const entities = [
       'number extensionDays',
       'datetime chatClosedAt',
       'string licenseTier',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -264,6 +294,8 @@ const entities = [
       'string content',
       'array attachments "embedded"',
       'boolean isSystem',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -277,6 +309,8 @@ const entities = [
       'string fromStatus',
       'string toStatus',
       'json metadata "Mixed"',
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
   {
@@ -288,7 +322,8 @@ const entities = [
       'ObjectId requester FK "ref User"',
       'number round "1|2 — unique per request"',
       'string notes',
-
+      'datetime createdAt',
+      'datetime updatedAt',
     ],
   },
 ];
