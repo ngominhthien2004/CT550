@@ -17,14 +17,14 @@ const props = defineProps({
 const commentStore = useCommentStore()
 const authStore = useAuthStore()
 const commentContent = ref('')
-const stickerUrl = ref('')
+const emoji = ref('')
 const showStickerInput = ref(false)
 const stickerPresets = ['❤️', '😊', '👍', '🔥', '🎉', '💛', '💜', '✨', '💪', '🙌', '🌈', '⭐']
 const isSubmitting = ref(false)
 const expandedRepliesByCommentId = ref({})
 const showReplyInputByCommentId = ref({})
 const replyContentByCommentId = ref({})
-const replyStickerUrlByCommentId = ref({})
+const replyEmojiByCommentId = ref({})
 const showReplyStickerInputByCommentId = ref({})
 const submittingReplyByCommentId = ref({})
 
@@ -59,17 +59,17 @@ const handleSubmit = async () => {
   if (isSubmitting.value) return
 
   const normalizedContent = commentContent.value.trim()
-  const normalizedStickerUrl = stickerUrl.value.trim()
-  if (!normalizedContent && !normalizedStickerUrl) return
+  const normalizedEmoji = emoji.value.trim()
+  if (!normalizedContent && !normalizedEmoji) return
 
   isSubmitting.value = true
   try {
     await commentStore.addComment(props.artworkId, {
       content: normalizedContent,
-      stickerUrl: normalizedStickerUrl,
+      emoji: normalizedEmoji,
     })
     commentContent.value = ''
-    stickerUrl.value = ''
+    emoji.value = ''
     showStickerInput.value = false
     if (textareaRef.value) {
       textareaRef.value.style.height = 'auto'
@@ -85,7 +85,7 @@ const toggleStickerInput = () => {
 }
 
 function selectSticker(url) {
-  stickerUrl.value = url
+  emoji.value = url
   showStickerInput.value = false
   handleSubmit()
 }
@@ -140,8 +140,8 @@ const toggleReplies = async (comment) => {
 
 const handleReplySubmit = async (commentId) => {
   const normalizedContent = (replyContentByCommentId.value[commentId] || '').trim()
-  const normalizedStickerUrl = (replyStickerUrlByCommentId.value[commentId] || '').trim()
-  if (!normalizedContent && !normalizedStickerUrl) return
+  const normalizedEmoji = (replyEmojiByCommentId.value[commentId] || '').trim()
+  if (!normalizedContent && !normalizedEmoji) return
   if (submittingReplyByCommentId.value[commentId]) return
 
   submittingReplyByCommentId.value = {
@@ -153,15 +153,15 @@ const handleReplySubmit = async (commentId) => {
     await commentStore.addComment(props.artworkId, {
       parentCommentId: commentId,
       content: normalizedContent,
-      stickerUrl: normalizedStickerUrl,
+      emoji: normalizedEmoji,
     })
 
     replyContentByCommentId.value = {
       ...replyContentByCommentId.value,
       [commentId]: '',
     }
-    replyStickerUrlByCommentId.value = {
-      ...replyStickerUrlByCommentId.value,
+    replyEmojiByCommentId.value = {
+      ...replyEmojiByCommentId.value,
       [commentId]: '',
     }
     showReplyStickerInputByCommentId.value = {
@@ -254,13 +254,13 @@ const getAvatar = (user) => {
           @keydown.enter.ctrl="handleSubmit"
           @input="autoResize"
         ></textarea>
-        <button class="emoji-btn" aria-label="Toggle sticker picker" title="Toggle sticker picker" @click="toggleStickerInput">
+        <button class="emoji-btn"     aria-label="Toggle emoji picker" title="Toggle emoji picker" @click="toggleStickerInput">
           <i class="far fa-laugh" aria-hidden="true"></i>
         </button>
       </div>
       <button 
         class="send-btn" 
-        :disabled="(!commentContent.trim() && !stickerUrl.trim()) || isSubmitting"
+        :disabled="(!commentContent.trim() && !emoji.trim()) || isSubmitting"
         @click="handleSubmit"
       >
         {{ isSubmitting ? '...' : 'Send' }}
@@ -293,7 +293,7 @@ const getAvatar = (user) => {
             <div class="author-info">
               <span class="user-name">{{ comment.user?.displayName || comment.user?.username }}</span>
               <p v-if="comment.content" class="comment-text comment-content mt-1 mb-2">{{ comment.content }}</p>
-              <span v-if="comment.stickerUrl" class="comment-sticker comment-content sticker-display mt-1 mb-2">{{ comment.stickerUrl }}</span>
+              <span v-if="comment.emoji" class="comment-sticker comment-content sticker-display mt-1 mb-2">{{ comment.emoji }}</span>
               <div class="comment-meta d-flex align-items-center gap-3">
                 <span class="comment-date text-muted">{{ formatDate(comment.createdAt) }}</span>
                 <button class="btn-reply p-0 border-0 bg-transparent" @click="toggleReplyInput(comment._id)">
@@ -321,15 +321,15 @@ const getAvatar = (user) => {
             <div class="d-flex align-items-center gap-2 mt-2">
               <button
                 class="btn-reply-action"
-                aria-label="Toggle reply sticker URL"
-                title="Toggle reply sticker URL"
+                aria-label="Toggle reply emoji"
+                title="Toggle reply emoji"
                 @click="toggleReplyStickerInput(comment._id)"
               >
           <i class="far fa-image" aria-hidden="true"></i>
               </button>
               <button
                 class="btn-reply-action btn-reply-send"
-                :disabled="(!(replyContentByCommentId[comment._id] || '').trim() && !(replyStickerUrlByCommentId[comment._id] || '').trim()) || submittingReplyByCommentId[comment._id]"
+                :disabled="(!(replyContentByCommentId[comment._id] || '').trim() && !(replyEmojiByCommentId[comment._id] || '').trim()) || submittingReplyByCommentId[comment._id]"
                 @click="handleReplySubmit(comment._id)"
               >
                 {{ submittingReplyByCommentId[comment._id] ? '...' : 'Send Reply' }}
@@ -338,7 +338,7 @@ const getAvatar = (user) => {
 
             <input
               v-if="showReplyStickerInputByCommentId[comment._id]"
-              v-model="replyStickerUrlByCommentId[comment._id]"
+              v-model="replyEmojiByCommentId[comment._id]"
               class="form-control form-control-sm mt-2"
               type="url"
               placeholder="Sticker image URL (optional)"
@@ -364,7 +364,7 @@ const getAvatar = (user) => {
                   <div class="author-info">
                     <span class="user-name">{{ reply.user?.displayName || reply.user?.username }}</span>
                     <p v-if="reply.content" class="comment-text comment-content mt-1 mb-2">{{ reply.content }}</p>
-                    <span v-if="reply.stickerUrl" class="comment-sticker comment-content sticker-display mt-1 mb-2">{{ reply.stickerUrl }}</span>
+                    <span v-if="reply.emoji" class="comment-sticker comment-content sticker-display mt-1 mb-2">{{ reply.emoji }}</span>
                     <div class="comment-meta d-flex align-items-center gap-3">
                       <span class="comment-date text-muted">{{ formatDate(reply.createdAt) }}</span>
                       <button

@@ -121,7 +121,7 @@ erDiagram
     ObjectId user FK "ref User — author"
     string content
     ObjectId parentComment FK "ref Comment — self for replies"
-    string stickerUrl
+    string emoji
     datetime createdAt
     datetime updatedAt
   }
@@ -194,7 +194,7 @@ erDiagram
     string rules
     array forbiddenTopics
     array preferredStyles
-    array strengths
+    string strengths
     json commercialUse "embedded {allowed,feeMultiplier,notes}"
     boolean isOpen
     datetime createdAt

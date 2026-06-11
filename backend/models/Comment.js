@@ -22,7 +22,7 @@ const commentSchema = mongoose.Schema({
         ref: 'Comment',
         default: null
     },
-    stickerUrl: {
+    emoji: {
         type: String,
         trim: true
     }
@@ -32,9 +32,9 @@ const commentSchema = mongoose.Schema({
 
 commentSchema.path('content').validate(function (value) {
     const hasContent = Boolean(value && value.trim());
-    const hasSticker = Boolean(this.stickerUrl && this.stickerUrl.trim());
+    const hasSticker = Boolean(this.emoji && this.emoji.trim());
     return hasContent || hasSticker;
-}, 'Either content or stickerUrl is required');
+}, 'Either content or emoji is required');
 
 commentSchema.index({ artwork: 1, createdAt: -1 });
 commentSchema.index({ artwork: 1, parentComment: 1, createdAt: 1 });

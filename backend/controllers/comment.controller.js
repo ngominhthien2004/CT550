@@ -5,18 +5,18 @@ const { createNotification } = require('../utils/notification');
 
 const createComment = async (req, res, next) => {
     try {
-        const { artworkId, content, parentCommentId, stickerUrl } = req.body;
+        const { artworkId, content, parentCommentId, emoji } = req.body;
         const normalizedContent = typeof content === 'string' ? content.trim() : '';
-        const normalizedStickerUrl = typeof stickerUrl === 'string' ? stickerUrl.trim() : '';
+        const normalizedEmoji = typeof emoji === 'string' ? emoji.trim() : '';
 
         if (!artworkId) {
             res.status(400);
             return next(new Error('artworkId is required'));
         }
 
-        if (!normalizedContent && !normalizedStickerUrl) {
+        if (!normalizedContent && !normalizedEmoji) {
             res.status(400);
-            return next(new Error('At least one of content or stickerUrl is required'));
+            return next(new Error('At least one of content or emoji is required'));
         }
 
         const artwork = await Artwork.findById(artworkId).select('user');
@@ -76,7 +76,7 @@ const createComment = async (req, res, next) => {
             user: req.user._id,
             content: normalizedContent || undefined,
             parentComment: parentComment ? parentComment._id : null,
-            stickerUrl: normalizedStickerUrl || undefined
+            emoji: normalizedEmoji || undefined
         });
 
         await Artwork.findByIdAndUpdate(artworkId, { $inc: { commentCount: 1 } });

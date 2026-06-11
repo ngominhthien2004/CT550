@@ -54,7 +54,7 @@ Thực thể **USER** là thực thể trung tâm của toàn bộ nền tảng,
 | `location` | string | — | Địa điểm |
 | `birthday` | date | — | Ngày sinh |
 | `website` | string | — | Trang web cá nhân |
-| `socialLinks` | json | — | Nhúng {x,facebook,instagram} |
+| `socialLinks` | json | — | Liên kết mạng xã hội (X, Facebook, Instagram) — object nhúng trong document User |
 | `role` | string | — | Vai trò: user | admin |
 | `password` | string | — | Mật khẩu (đã mã hoá) |
 | `googleId` | string | — | ID tài khoản Google (dùng cho đăng nhập OAuth) |
@@ -203,7 +203,7 @@ Thực thể **COMMENT** lưu trữ các bình luận của người dùng trên
 | `user` | ObjectId | FK | Tác giả bình luận |
 | `content` | string | — | Nội dung bình luận |
 | `parentComment` | ObjectId | FK | Bình luận cha (tự tham chiếu cho trả lời) |
-| `stickerUrl` | string | — | Đường dẫn sticker (nếu có) |
+| `emoji` | string | — | Biểu tượng cảm xúc (emoji) đính kèm bình luận |
 | `createdAt` | datetime | — | Thời điểm tạo |
 | `updatedAt` | datetime | — | Thời điểm cập nhật gần nhất |
 
@@ -312,8 +312,8 @@ Thực thể **REQUEST_TERM** lưu trữ các điều khoản ủy thác do ngư
 | `rules` | string | — | Nội quy / quy tắc khi đặt hàng |
 | `forbiddenTopics` | array | — | Danh sách chủ đề không nhận |
 | `preferredStyles` | array | — | Phong cách ưa thích |
-| `strengths` | array | — | Thế mạnh của người sáng tạo |
-| `commercialUse` | json | — | Nhúng {allowed,feeMultiplier,notes} |
+| `strengths` | string | — | Thế mạnh của người sáng tạo |
+| `commercialUse` | json | — | Cấu hình sử dụng thương mại {allowed, feeMultiplier, notes} — object nhúng trong RequestTerm |
 | `isOpen` | boolean | — | Đang mở nhận ủy thác hay không |
 | `createdAt` | datetime | — | Thời điểm tạo |
 | `updatedAt` | datetime | — | Thời điểm cập nhật gần nhất |
@@ -334,17 +334,17 @@ Thực thể **REQUEST** lưu trữ các yêu cầu ủy thác cá nhân giữa 
 | `description` | string | — | Mô tả chi tiết yêu cầu |
 | `workType` | string | — | Loại công việc yêu cầu |
 | `tags` | array | — | Danh sách thẻ liên quan |
-| `specifics` | json | — | Nhúng {pose,outfit,mood,lighting,angle,other} |
+| `specifics` | json | — | Chi tiết yêu cầu {pose, outfit, mood, lighting, angle, other} — object nhúng trong Request |
 | `proposedAmount` | number | — | Số tiền đề xuất |
 | `currency` | string | — | Đơn vị tiền tệ |
 | `visibility` | string | — | Chế độ hiển thị (public | private) |
 | `isAnonymous` | boolean | — | Yêu cầu có ẩn danh hay không |
 | `ageRating` | string | — | Độ tuổi của yêu cầu |
 | `status` | string | — | pending|accepted|in_progress|draft_submitted|revision|completed|rejected|cancelled |
-| `referenceImages` | array | — | Nhúng |
-| `draftFiles` | array | — | Nhúng |
-| `finalFiles` | array | — | Nhúng |
-| `giftFiles` | array | — | Nhúng |
+| `referenceImages` | array | — | Danh sách ảnh tham khảo (mảng object nhúng, không phải ref) |
+| `draftFiles` | array | — | Danh sách tệp nháp (mảng object nhúng) |
+| `finalFiles` | array | — | Danh sách tệp hoàn thiện (mảng object nhúng) |
+| `giftFiles` | array | — | Danh sách tệp quà tặng (mảng object nhúng) |
 | `revisionCount` | number | — | Số lần chỉnh sửa đã thực hiện |
 | `autoCompleteAt` | datetime | — | Thời điểm tự động đánh dấu hoàn thành |
 | `dueAt` | datetime | — | Thời hạn hoàn thành |
@@ -386,7 +386,7 @@ Thực thể **REQUEST_EVENT** lưu trữ nhật ký các sự kiện trên yêu
 | `type` | string | — | Loại sự kiện (request_submitted, accepted, rejected, ...) |
 | `fromStatus` | string | — | Trạng thái trước khi chuyển |
 | `toStatus` | string | — | Trạng thái sau khi chuyển |
-| `metadata` | json | — | Mixed |
+| `metadata` | json | — | Dữ liệu ngữ cảnh động, chứa thông tin chi tiết theo từng loại sự kiện (VD: lý do từ chối, thông tin revision, số ngày gia hạn, chi tiết báo cáo) |
 | `createdAt` | datetime | — | Thời điểm tạo |
 | `updatedAt` | datetime | — | Thời điểm cập nhật gần nhất |
 

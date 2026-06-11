@@ -303,6 +303,7 @@ const fieldDescriptionsVI = {
   'USER.birthday': 'Ngày sinh',
 
   'USER.website': 'Trang web cá nhân',
+  'USER.socialLinks': 'Liên kết mạng xã hội (X, Facebook, Instagram) — object nhúng trong document User',
 
   'USER.googleId': 'ID tài khoản Google (dùng cho đăng nhập OAuth)',
   'USER.facebookId': 'ID tài khoản Facebook (dùng cho đăng nhập OAuth)',
@@ -312,8 +313,6 @@ const fieldDescriptionsVI = {
   'USER.username': 'Tên người dùng (duy nhất)',
   'USER.role': 'Vai trò: user | admin',
   'USER.status': 'Trạng thái tài khoản',
-  'USER.followerCount': 'Số người theo dõi (duy trì tự động)',
-  'USER.followingCount': 'Số người đang theo dõi (duy trì tự động)',
 
   // ── FOLLOW ──
   'FOLLOW._id': 'Mã theo dõi (tự động sinh)',
@@ -390,7 +389,7 @@ const fieldDescriptionsVI = {
   'COMMENT.createdAt': 'Thời điểm tạo',
   'COMMENT.updatedAt': 'Thời điểm cập nhật gần nhất',
   'COMMENT.content': 'Nội dung bình luận',
-  'COMMENT.stickerUrl': 'Đường dẫn sticker (nếu có)',
+  'COMMENT.emoji': 'Biểu tượng cảm xúc (emoji) đính kèm bình luận',
   'COMMENT.artwork': 'Tác phẩm được bình luận',
   'COMMENT.user': 'Tác giả bình luận',
   'COMMENT.parentComment': 'Bình luận cha (tự tham chiếu cho trả lời)',
@@ -458,6 +457,7 @@ const fieldDescriptionsVI = {
   'REQUEST_TERM.forbiddenTopics': 'Danh sách chủ đề không nhận',
   'REQUEST_TERM.preferredStyles': 'Phong cách ưa thích',
   'REQUEST_TERM.strengths': 'Thế mạnh của người sáng tạo',
+  'REQUEST_TERM.commercialUse': 'Cấu hình sử dụng thương mại {allowed, feeMultiplier, notes} — object nhúng trong RequestTerm',
   'REQUEST_TERM.isOpen': 'Đang mở nhận ủy thác hay không',
   'REQUEST_TERM.creator': 'Người sáng tạo (cung cấp dịch vụ)',
 
@@ -469,11 +469,16 @@ const fieldDescriptionsVI = {
   'REQUEST.description': 'Mô tả chi tiết yêu cầu',
   'REQUEST.workType': 'Loại công việc yêu cầu',
   'REQUEST.tags': 'Danh sách thẻ liên quan',
+  'REQUEST.specifics': 'Chi tiết yêu cầu {pose, outfit, mood, lighting, angle, other} — object nhúng trong Request',
   'REQUEST.proposedAmount': 'Số tiền đề xuất',
   'REQUEST.currency': 'Đơn vị tiền tệ',
   'REQUEST.visibility': 'Chế độ hiển thị (public | private)',
   'REQUEST.isAnonymous': 'Yêu cầu có ẩn danh hay không',
   'REQUEST.ageRating': 'Độ tuổi của yêu cầu',
+  'REQUEST.referenceImages': 'Danh sách ảnh tham khảo (mảng object nhúng, không phải ref)',
+  'REQUEST.draftFiles': 'Danh sách tệp nháp (mảng object nhúng)',
+  'REQUEST.finalFiles': 'Danh sách tệp hoàn thiện (mảng object nhúng)',
+  'REQUEST.giftFiles': 'Danh sách tệp quà tặng (mảng object nhúng)',
   'REQUEST.revisionCount': 'Số lần chỉnh sửa đã thực hiện',
   'REQUEST.autoCompleteAt': 'Thời điểm tự động đánh dấu hoàn thành',
   'REQUEST.dueAt': 'Thời hạn hoàn thành',
@@ -504,6 +509,7 @@ const fieldDescriptionsVI = {
   'REQUEST_EVENT.toStatus': 'Trạng thái sau khi chuyển',
   'REQUEST_EVENT.request': 'Yêu cầu chứa sự kiện',
   'REQUEST_EVENT.actor': 'Người thực hiện hành động',
+  'REQUEST_EVENT.metadata': 'Dữ liệu ngữ cảnh động, chứa thông tin chi tiết theo từng loại sự kiện (VD: lý do từ chối, thông tin revision, số ngày gia hạn, chi tiết báo cáo)',
 
   // ── REQUEST_REVISION ──
   'REQUEST_REVISION._id': 'Mã chỉnh sửa (tự động sinh)',
