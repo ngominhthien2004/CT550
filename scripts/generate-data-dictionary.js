@@ -276,6 +276,162 @@ function buildDataDictionary() {
 }
 
 // ---------------------------------------------------------------------------
+// Vietnamese descriptions for every field (when entity definition has none)
+// ---------------------------------------------------------------------------
+const fieldDescriptionsVI = {
+  // ── USER ──
+  'USER._id': 'Mã người dùng (tự động sinh)',
+  'USER.displayName': 'Tên hiển thị của người dùng',
+  'USER.avatar': 'Đường dẫn ảnh đại diện',
+  'USER.coverImage': 'Đường dẫn ảnh bìa',
+  'USER.bio': 'Tiểu sử người dùng',
+  'USER.gender': 'Giới tính',
+  'USER.location': 'Địa điểm',
+  'USER.birthday': 'Ngày sinh',
+  'USER.occupation': 'Nghề nghiệp',
+  'USER.website': 'Trang web cá nhân',
+  'USER.aiDetectionEnabled': 'Bật/tắt phát hiện AI',
+  'USER.googleId': 'ID tài khoản Google (dùng cho đăng nhập OAuth)',
+  'USER.facebookId': 'ID tài khoản Facebook (dùng cho đăng nhập OAuth)',
+  'USER.twitterId': 'ID tài khoản Twitter (dùng cho đăng nhập OAuth)',
+
+  // ── FOLLOW ──
+  'FOLLOW._id': 'Mã theo dõi (tự động sinh)',
+
+  // ── USER_BLOCK ──
+  'USER_BLOCK._id': 'Mã chặn (tự động sinh)',
+  'USER_BLOCK.blocker': 'Người thực hiện chặn',
+  'USER_BLOCK.blocked': 'Người bị chặn',
+
+  // ── MESSAGE ──
+  'MESSAGE._id': 'Mã tin nhắn (tự động sinh)',
+  'MESSAGE.sender': 'Người gửi tin nhắn',
+  'MESSAGE.recipient': 'Người nhận tin nhắn',
+  'MESSAGE.content': 'Nội dung tin nhắn',
+  'MESSAGE.images': 'Danh sách ảnh đính kèm',
+  'MESSAGE.isRead': 'Đánh dấu đã đọc',
+  'MESSAGE.readAt': 'Thời điểm người nhận đọc tin nhắn',
+  'MESSAGE.deletedFor': 'Danh sách người dùng đã xóa tin nhắn này',
+
+  // ── NOTIFICATION ──
+  'NOTIFICATION._id': 'Mã thông báo (tự động sinh)',
+  'NOTIFICATION.type': 'Loại thông báo: follow | like | bookmark | comment | request | system',
+  'NOTIFICATION.message': 'Nội dung thông báo',
+  'NOTIFICATION.isRead': 'Đánh dấu đã đọc',
+  'NOTIFICATION.readAt': 'Thời điểm đọc thông báo',
+
+  // ── ARTWORK ──
+  'ARTWORK._id': 'Mã tác phẩm (tự động sinh)',
+  'ARTWORK.title': 'Tiêu đề tác phẩm',
+  'ARTWORK.description': 'Mô tả tác phẩm',
+  'ARTWORK.type': 'Loại tác phẩm: illust | manga | gif | novel',
+  'ARTWORK.images': 'Danh sách đường dẫn ảnh/tệp của tác phẩm',
+  'ARTWORK.viewCount': 'Số lượt xem',
+  'ARTWORK.likeCount': 'Số lượt thích',
+  'ARTWORK.bookmarkCount': 'Số lượt đánh dấu',
+  'ARTWORK.commentCount': 'Số bình luận',
+  'ARTWORK.reportCount': 'Số lần bị báo cáo',
+  'ARTWORK.gifNotes': 'Ghi chú GIF (thời gian hiển thị từng khung hình)',
+  'ARTWORK.novelContent': 'Nội dung tiểu thuyết (dạng văn bản)',
+  'ARTWORK.novelFormat': 'Định dạng tiểu thuyết: oneshot (một chương) | series (nhiều chương)',
+  'ARTWORK.novelSeriesName': 'Tên series tiểu thuyết',
+  'ARTWORK.chapterCount': 'Số chương (nếu là series)',
+  'ARTWORK.wordCount': 'Số từ',
+  'ARTWORK.isHidden': 'Tác phẩm có bị ẩn (bởi kiểm duyệt) hay không',
+  'ARTWORK.hiddenAt': 'Thời điểm bị ẩn',
+  'ARTWORK.hiddenReason': 'Lý do bị ẩn',
+
+  // ── TAG ──
+  'TAG._id': 'Mã thẻ (tự động sinh)',
+  'TAG.name': 'Tên thẻ (duy nhất)',
+  'TAG.translations': 'Bản dịch đa ngôn ngữ {en,vi,ja}',
+  'TAG.usageCount': 'Số lần thẻ được sử dụng',
+  'TAG.isLocked': 'Thẻ có bị khoá (không cho xoá/sửa) hay không',
+
+  // ── COMMENT ──
+  'COMMENT._id': 'Mã bình luận (tự động sinh)',
+  'COMMENT.content': 'Nội dung bình luận',
+  'COMMENT.stickerUrl': 'Đường dẫn sticker (nếu có)',
+
+  // ── LIKE ──
+  'LIKE._id': 'Mã lượt thích (tự động sinh)',
+
+  // ── BOOKMARK ──
+  'BOOKMARK._id': 'Mã đánh dấu (tự động sinh)',
+  'BOOKMARK.folder': 'Tên thư mục lưu đánh dấu',
+
+  // ── CHAPTER ──
+  'CHAPTER._id': 'Mã chương (tự động sinh)',
+  'CHAPTER.title': 'Tiêu đề chương',
+  'CHAPTER.content': 'Nội dung chương',
+  'CHAPTER.wordCount': 'Số từ trong chương',
+
+  // ── READING_PROGRESS ──
+  'READING_PROGRESS._id': 'Mã tiến độ đọc (tự động sinh)',
+  'READING_PROGRESS.progressPercent': 'Phần trăm hoàn thành (0-100)',
+  'READING_PROGRESS.scrollPosition': 'Vị trí cuộc đang đọc (dùng để khôi phục)',
+  'READING_PROGRESS.lastReadAt': 'Thời điểm đọc gần nhất',
+
+  // ── ARTWORK_REPORT ──
+  'ARTWORK_REPORT._id': 'Mã báo cáo (tự động sinh)',
+  'ARTWORK_REPORT.description': 'Mô tả chi tiết lý do báo cáo',
+  'ARTWORK_REPORT.status': 'Trạng thái xử lý: pending | resolved | dismissed',
+  'ARTWORK_REPORT.resolvedAt': 'Thời điểm xử lý báo cáo',
+  'ARTWORK_REPORT.resolutionNote': 'Ghi chú của người xử lý',
+
+  // ── REQUEST_TERM ──
+  'REQUEST_TERM._id': 'Mã điều khoản (tự động sinh)',
+  'REQUEST_TERM.title': 'Tiêu đề gói điều khoản',
+  'REQUEST_TERM.tier': 'Hạng mục (cấp độ dịch vụ)',
+  'REQUEST_TERM.targetPrice': 'Giá mục tiêu cho một yêu cầu',
+  'REQUEST_TERM.currency': 'Đơn vị tiền tệ (VD: USD, VND)',
+  'REQUEST_TERM.acceptedWorkTypes': 'Danh sách loại công việc chấp nhận',
+  'REQUEST_TERM.estimatedDays': 'Số ngày ước tính hoàn thành',
+  'REQUEST_TERM.maxOpenRequests': 'Số yêu cầu mở tối đa cùng lúc',
+  'REQUEST_TERM.acceptedAgeRatings': 'Độ tuổi chấp nhận (all, r-18, r-18g)',
+  'REQUEST_TERM.rules': 'Nội quy / quy tắc khi đặt hàng',
+  'REQUEST_TERM.forbiddenTopics': 'Danh sách chủ đề không nhận',
+  'REQUEST_TERM.preferredStyles': 'Phong cách ưa thích',
+  'REQUEST_TERM.strengths': 'Thế mạnh của người sáng tạo',
+  'REQUEST_TERM.isOpen': 'Đang mở nhận ủy thác hay không',
+
+  // ── REQUEST ──
+  'REQUEST._id': 'Mã yêu cầu (tự động sinh)',
+  'REQUEST.title': 'Tiêu đề yêu cầu',
+  'REQUEST.description': 'Mô tả chi tiết yêu cầu',
+  'REQUEST.workType': 'Loại công việc yêu cầu',
+  'REQUEST.tags': 'Danh sách thẻ liên quan',
+  'REQUEST.proposedAmount': 'Số tiền đề xuất',
+  'REQUEST.currency': 'Đơn vị tiền tệ',
+  'REQUEST.visibility': 'Chế độ hiển thị (public | private)',
+  'REQUEST.isAnonymous': 'Yêu cầu có ẩn danh hay không',
+  'REQUEST.ageRating': 'Độ tuổi của yêu cầu',
+  'REQUEST.revisionCount': 'Số lần chỉnh sửa đã thực hiện',
+  'REQUEST.autoCompleteAt': 'Thời điểm tự động đánh dấu hoàn thành',
+  'REQUEST.dueAt': 'Thời hạn hoàn thành',
+  'REQUEST.extensionRequestedAt': 'Thời điểm yêu cầu gia hạn',
+  'REQUEST.extensionDays': 'Số ngày gia hạn thêm',
+  'REQUEST.chatClosedAt': 'Thời điểm đóng chat của yêu cầu',
+  'REQUEST.licenseTier': 'Cấp giấy phép sử dụng: personal | commercial',
+
+  // ── REQUEST_CHAT_MESSAGE ──
+  'REQUEST_CHAT_MESSAGE._id': 'Mã tin nhắn (tự động sinh)',
+  'REQUEST_CHAT_MESSAGE.content': 'Nội dung tin nhắn',
+  'REQUEST_CHAT_MESSAGE.attachments': 'Tệp đính kèm (hình ảnh, tệp)',
+  'REQUEST_CHAT_MESSAGE.isSystem': 'Tin nhắn hệ thống (tự động sinh bởi state machine)',
+
+  // ── REQUEST_EVENT ──
+  'REQUEST_EVENT._id': 'Mã sự kiện (tự động sinh)',
+  'REQUEST_EVENT.type': 'Loại sự kiện (request_submitted, accepted, rejected, ...)',
+  'REQUEST_EVENT.fromStatus': 'Trạng thái trước khi chuyển',
+  'REQUEST_EVENT.toStatus': 'Trạng thái sau khi chuyển',
+
+  // ── REQUEST_REVISION ──
+  'REQUEST_REVISION._id': 'Mã chỉnh sửa (tự động sinh)',
+  'REQUEST_REVISION.notes': 'Nội dung yêu cầu chỉnh sửa',
+};
+
+// ---------------------------------------------------------------------------
 // Build MongoDB Schema (CSV-like table for each collection)
 // ---------------------------------------------------------------------------
 function buildMongoDBSchema() {
@@ -347,6 +503,12 @@ function buildMongoDBSchema() {
         .replace('1|2 — unique per request', '1 | 2 — duy nhất trong yêu cầu')
         .replace('unique per artwork', 'Duy nhất trong tác phẩm')
         .replace('unique per request', 'Duy nhất trong yêu cầu');
+
+      // If still empty, try to use the hardcoded Vietnamese descriptions
+      if (viDesc === '—' || viDesc === '') {
+        const key = `${entity.label}.${name}`;
+        viDesc = fieldDescriptionsVI[key] || '—';
+      }
 
       if (viDesc === '—' || viDesc === '') {
         viDesc = '—';
