@@ -1,6 +1,7 @@
 const Artwork = require('../models/Artwork');
 const ArtworkReport = require('../models/ArtworkReport');
 const User = require('../models/User');
+const Setting = require('../models/Setting');
 const Chapter = require('../models/Chapter');
 const ReadingProgress = require('../models/ReadingProgress');
 const Tag = require('../models/Tag');
@@ -23,18 +24,8 @@ const MAX_ARTWORK_IMAGES = 50;
 
 async function runAiDetection(primaryImagePath) {
     try {
-        // Check if AI detection is enabled by admin
-        let aiEnabled = true;
-        try {
-            const adminSettings = await User.findOne({ role: 'admin' }).select('aiDetectionEnabled');
-            if (adminSettings) {
-                aiEnabled = adminSettings.aiDetectionEnabled;
-            }
-        } catch (_) {
-            // If query fails, default to enabled
-        }
-
-        if (!aiEnabled) {
+        const settings = await Setting.getSettings();
+        if (!settings.aiDetectionEnabled) {
             return { success: false, error: 'AI detection disabled by admin', disabled: true };
         }
 

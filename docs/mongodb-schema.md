@@ -1,7 +1,7 @@
 # IlluWrl — MongoDB Schema (Tiếng Việt)
 
 > **Ngày tạo:** 2026-06-11
-> **Số collection:** 18
+> **Số collection:** 19
 > **Mô tả:** Chi tiết các collection trong MongoDB, bao gồm kiểu dữ liệu, khoá chính, khoá ngoại, ràng buộc Not Null và diễn giải.
 
 ---
@@ -45,6 +45,14 @@
 | `_id` | objectId | X |  | X | Mã chặn (tự động sinh) |
 | `blocker` | objectId |  | X | X | Tham chiếu User |
 | `blocked` | objectId |  | X | X | Tham chiếu User |
+
+## SETTING — Cấu hình hệ thống
+
+| Tên thuộc tính | Kiểu dữ liệu | Khóa chính | Khóa ngoại | NN | Diễn giải |
+|----------------|-------------|:----------:|:----------:|:--:|-----------|
+| `_id` | string | X |  | X | singleton key: global |
+| `aiDetectionEnabled` | boolean |  |  |  | Bật/tắt tính năng phát hiện AI trên toàn hệ thống |
+| `aiDetectionThreshold` | number |  |  |  | 0-100 |
 
 ## MESSAGE — Tin nhắn
 
@@ -261,4 +269,4 @@
 | `notes` | string |  |  |  | Nội dung yêu cầu chỉnh sửa |
 
 ---
-*Được tạo bởi `scripts/generate-data-dictionary.js` vào 2026-06-11 — 18 collection.*
+*Được tạo bởi `scripts/generate-data-dictionary.js` vào 2026-06-11 — 19 collection.*

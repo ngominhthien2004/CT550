@@ -31,6 +31,7 @@ const entityCommentsVI = {
   REQUEST_CHAT_MESSAGE: 'Tin nhắn trò chuyện trong một yêu cầu ủy thác',
   REQUEST_EVENT: 'Nhật ký kiểm tra state machine cho yêu cầu ủy thác',
   REQUEST_REVISION: 'Yêu cầu chỉnh sửa trên một ủy thác (tối đa 2 vòng)',
+  SETTING: 'Cấu hình toàn cục — các cờ thiết lập cho toàn bộ nền tảng',
 };
 
 // ---------------------------------------------------------------------------
@@ -56,6 +57,7 @@ function entityLabelVI(label) {
     REQUEST_CHAT_MESSAGE: 'Tin nhắn ủy thác',
     REQUEST_EVENT: 'Sự kiện ủy thác',
     REQUEST_REVISION: 'Chỉnh sửa ủy thác',
+    SETTING: 'Cấu hình hệ thống',
   };
   return map[label] || label;
 }
@@ -82,6 +84,7 @@ const entityDescriptionsVI = {
   REQUEST_CHAT_MESSAGE: 'Thực thể **REQUEST_CHAT_MESSAGE** lưu trữ các tin nhắn trao đổi trong quá trình thực hiện yêu cầu ủy thác.',
   REQUEST_EVENT: 'Thực thể **REQUEST_EVENT** lưu trữ nhật ký các sự kiện trên yêu cầu ủy thác, bao gồm thay đổi trạng thái, gia hạn và báo cáo.',
   REQUEST_REVISION: 'Thực thể **REQUEST_REVISION** lưu trữ các yêu cầu chỉnh sửa trên một ủy thác, giới hạn tối đa 2 vòng chỉnh sửa.',
+  SETTING: 'Thực thể **SETTING** lưu trữ cấu hình toàn cục của hệ thống dưới dạng singleton, bao gồm các cờ bật/tắt tính năng và ngưỡng thiết lập cho toàn bộ nền tảng.',
 };
 
 // ---------------------------------------------------------------------------
@@ -160,7 +163,7 @@ function buildRelationshipParagraphs() {
 
   lines.push('## Các quan hệ');
   lines.push('');
-  lines.push('Mô hình dữ liệu mức quan niệm gồm có 18 thực thể. Trong đó, thực thể **USER** (Người dùng) là thực thể trung tâm, với khoá chính là `_id`.');
+  lines.push('Mô hình dữ liệu mức quan niệm gồm có 19 thực thể. Trong đó, thực thể **USER** (Người dùng) là thực thể trung tâm, với khoá chính là `_id`.');
   lines.push('');
 
   // ── USER relationships ──
@@ -429,6 +432,25 @@ const fieldDescriptionsVI = {
   // ── REQUEST_REVISION ──
   'REQUEST_REVISION._id': 'Mã chỉnh sửa (tự động sinh)',
   'REQUEST_REVISION.notes': 'Nội dung yêu cầu chỉnh sửa',
+
+  // ── SETTING ──
+  'SETTING._id': 'Khoá singleton (global)',
+  'SETTING.aiDetectionEnabled': 'Bật/tắt tính năng phát hiện AI trên toàn hệ thống',
+  'SETTING.aiDetectionThreshold': 'Ngưỡng phát hiện AI (0-100%), mặc định 70%',
+};
+
+// ---------------------------------------------------------------------------
+// Type mapping — expanded type names → MongoDB type labels
+// ---------------------------------------------------------------------------
+const typeMap = {
+  ObjectId: 'objectId',
+  string: 'string',
+  number: 'number',
+  boolean: 'boolean',
+  date: 'date',
+  datetime: 'date',
+  array: 'array',
+  json: 'object',
 };
 
 // ---------------------------------------------------------------------------
@@ -446,18 +468,6 @@ function buildMongoDBSchema() {
   parts.push('');
   parts.push('---');
   parts.push('');
-
-  // Map type abbreviations
-  const typeMap = {
-    ObjectId: 'objectId',
-    string: 'string',
-    number: 'number',
-    boolean: 'boolean',
-    date: 'date',
-    datetime: 'date',
-    array: 'array',
-    json: 'object',
-  };
 
   for (const entity of entities) {
     const viName = entityLabelVI(entity.label);
@@ -527,6 +537,126 @@ function buildMongoDBSchema() {
 }
 
 // ---------------------------------------------------------------------------
+// Build HTML version for Word
+// ---------------------------------------------------------------------------
+function buildHtmlSchema() {
+  const now = new Date().toISOString().split('T')[0];
+  const tableStyle = 'border-collapse:collapse;border:1px solid #333;font-family:Consolas;font-size:11pt;margin-bottom:30px;width:100%;';
+  const thStyle = 'background:#2c3e50;color:white;padding:6px 10px;border:1px solid #333;text-align:center;font-weight:bold;';
+  const tdStyle = 'padding:5px 10px;border:1px solid #999;vertical-align:top;';
+  const pkFkStyle = 'text-align:center;font-weight:bold;color:#c0392b;';
+
+  let html = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>IlluWrl — MongoDB Schema</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 30px; }
+    h1 { color: #2c3e50; border-bottom: 3px solid #2c3e50; padding-bottom: 8px; }
+    h2 { color: #34495e; margin-top: 30px; }
+    .meta { color: #666; font-style: italic; margin-bottom: 20px; }
+    table { ${tableStyle} }
+    th { ${thStyle} }
+    td { ${tdStyle} }
+    .pk { ${pkFkStyle} color:#c0392b; }
+    .fk { ${pkFkStyle} color:#2980b9; }
+    .both { ${pkFkStyle} color:#8e44ad; }
+    .nn { text-align:center; font-weight:bold; color:#27ae60; }
+    td:first-child { font-weight:bold; white-space:nowrap; }
+    .even { background:#f8f9fa; }
+    .footer { margin-top:30px; font-size:10pt; color:#999; border-top:1px solid #ccc; padding-top:10px; }
+  </style>
+</head>
+<body>
+  <h1>IlluWrl — MongoDB Schema</h1>
+  <div class="meta">
+    <p><strong>Ngày tạo:</strong> ${now}</p>
+    <p><strong>Số collection:</strong> ${entities.length}</p>
+    <p><strong>Tổng số fields:</strong> ${entities.reduce((s, e) => s + e.fields.length, 0)}</p>
+  </div>
+`;
+
+  for (const entity of entities) {
+    const viName = entityLabelVI(entity.label);
+    const viComment = entityCommentsVI[entity.label] || entity.comment;
+    html += `\n  <h2>${entity.label} — ${viName}</h2>\n  <p><em>${viComment}</em></p>\n`;
+    html += `  <table>\n    <thead>\n      <tr>`;
+    html += `<th>Tên thuộc tính</th><th>Kiểu dữ liệu</th><th>Khoá chính</th><th>Khoá ngoại</th><th>NN</th><th>Diễn giải</th>`;
+    html += `</tr>\n    </thead>\n    <tbody>\n`;
+
+    for (const field of entity.fields) {
+      const { type, name, constraints, description } = parseField(field);
+      const mongoType = typeMap[type] || type;
+      const isPK = constraints.includes('PK');
+      const isFK = constraints.includes('FK');
+
+      // Vietnamese description lookup
+      let viDesc = description
+        .replace('ref User — who follows', 'Người theo dõi')
+        .replace('ref User — being followed', 'Người được theo dõi')
+        .replace('ref User — recipient', 'Người nhận thông báo')
+        .replace('ref User — trigger', 'Người kích hoạt thông báo')
+        .replace('ref Artwork — optional context', 'Tác phẩm liên quan (tuỳ chọn)')
+        .replace('ref User — creator', 'Người sáng tạo')
+        .replace('ref User — moderator', 'Người kiểm duyệt')
+        .replace('ref User — author', 'Tác giả bình luận')
+        .replace('ref User — provider', 'Người cung cấp dịch vụ')
+        .replace('ref User — client', 'Khách hàng')
+        .replace('ref User', 'Tham chiếu User')
+        .replace('ref Artwork', 'Tham chiếu Artwork')
+        .replace('ref Request', 'Tham chiếu Request')
+        .replace('ref Comment — self for replies', 'Tham chiếu Comment (tự tham chiếu cho trả lời)')
+        .replace('ref Comment', 'Tham chiếu Comment')
+        .replace('ref Chapter', 'Tham chiếu Chapter')
+        .replace('ref Tag[]', 'Tham chiếu Tag')
+        .replace('ref RequestTerm', 'Tham chiếu RequestTerm')
+        .replace('unique login email', 'Email đăng nhập duy nhất')
+        .replace('unique display handle', 'Tên hiển thị duy nhất')
+        .replace('hashed', 'Đã mã hoá')
+        .replace('user | admin', 'Người dùng | Quản trị viên')
+        .replace('embedded', 'Nhúng')
+        .replace('Mixed', 'Linh hoạt')
+        .replace('all|r-18|r-18g', 'Tất cả | R-18 | R-18G')
+        .replace('1|2 — unique per artwork', '1 | 2 — duy nhất trong tác phẩm')
+        .replace('1|2 — unique per request', '1 | 2 — duy nhất trong yêu cầu')
+        .replace('unique per artwork', 'Duy nhất trong tác phẩm')
+        .replace('unique per request', 'Duy nhất trong yêu cầu')
+        ;
+
+      if (viDesc === '—' || viDesc === '') {
+        const key = `${entity.label}.${name}`;
+        viDesc = fieldDescriptionsVI[key] || '—';
+      }
+
+      // Zebra striping for rows
+      const rowClass = '';
+      const pkClass = isPK ? (isFK ? 'both' : 'pk') : (isFK ? 'fk' : '');
+      const pkMark = isPK ? 'X' : '';
+      const fkMark = isFK ? 'X' : '';
+      const nn = (name === '_id' || isFK) ? '<span class="nn">X</span>' : '';
+
+      html += `    <tr${rowClass}>`;
+
+      html += `<td>${name}</td>`;
+      html += `<td style="font-style:italic;color:#555">${mongoType}</td>`;
+      html += `<td class="${pkClass}" style="width:60px">${pkMark}</td>`;
+      html += `<td class="${pkClass}" style="width:60px">${fkMark}</td>`;
+      html += `<td style="text-align:center;width:40px">${nn}</td>`;
+      html += `<td>${viDesc}</td>`;
+      html += `</tr>\n`;
+    }
+
+    html += `    </tbody>\n  </table>\n`;
+  }
+
+  html += `  <div class="footer">Được tạo bởi scripts/generate-data-dictionary.js vào ${now} — ${entities.length} collection.</div>\n`;
+  html += `</body>\n</html>`;
+
+  return html;
+}
+
+// ---------------------------------------------------------------------------
 // Ghi file
 // ---------------------------------------------------------------------------
 const outputPath = path.resolve(__dirname, '..', 'docs', 'data-dictionary.md');
@@ -546,3 +676,11 @@ fs.writeFileSync(schemaOutputPath, schemaContent, 'utf-8');
 console.log(`✅ MongoDB Schema generated: ${schemaOutputPath}`);
 console.log(`   • Collections: ${entities.length}`);
 console.log(`   • File size: ${(Buffer.byteLength(schemaContent) / 1024).toFixed(1)} KB`);
+
+// ── Write HTML file ──
+const htmlOutputPath = path.resolve(__dirname, '..', 'docs', 'mongodb-schema.html');
+const htmlContent = buildHtmlSchema();
+
+fs.writeFileSync(htmlOutputPath, htmlContent, 'utf-8');
+console.log(`✅ HTML Schema generated: ${htmlOutputPath}`);
+console.log(`   • File size: ${(Buffer.byteLength(htmlContent) / 1024).toFixed(1)} KB`);

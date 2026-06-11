@@ -56,6 +56,15 @@ const entities = [
     ],
   },
   {
+    label: 'SETTING',
+    comment: 'Global system settings singleton — configuration flags for the entire platform',
+    fields: [
+      'string _id PK "singleton key: global"',
+      'boolean aiDetectionEnabled',
+      'number aiDetectionThreshold "0-100"',
+    ],
+  },
+  {
     label: 'MESSAGE',
     comment: 'Direct messages between users',
     fields: [
@@ -338,6 +347,8 @@ const relationships = [
 
   // ── Comment (self-referencing — skipped for simplicity, but noted) ───────
   // COMMENT -> COMMENT (self) would be: COMMENT ||--o{ COMMENT : "replies to"
+
+  // ── Setting (singleton, no FK relationships) ──────────────────────────
 ];
 
 // ---------------------------------------------------------------------------
@@ -364,7 +375,7 @@ function buildMarkdown() {
   parts.push('# IlluWrl — Entity-Relationship Diagram');
   parts.push('');
   parts.push(`> **Generated:** ${now}`);
-  parts.push('> **Entities:** 18 Mongoose models across 5 domain groups');
+  parts.push('> **Entities:** 19 Mongoose models across 5 domain groups');
   parts.push('> **Description:** Comprehensive ERD of the IlluWrl (Pixiv-clone) data model');
   parts.push('');
   parts.push('---');
@@ -400,6 +411,7 @@ function buildMarkdown() {
   parts.push('| **Content System** | ARTWORK, TAG, COMMENT, LIKE, BOOKMARK, CHAPTER, READING_PROGRESS | Primary creative content and engagement |');
   parts.push('| **Reporting & Moderation** | ARTWORK_REPORT | Content flagging and resolution |');
   parts.push('| **Commission System** | REQUEST_TERM, REQUEST, REQUEST_CHAT_MESSAGE, REQUEST_EVENT, REQUEST_REVISION | Commission marketplace and state machine |');
+  parts.push('| **Core System Config** | SETTING | Singleton global system configuration |');
   parts.push('');
   parts.push('### Cardinality Notation');
   parts.push('');
@@ -445,6 +457,7 @@ function buildMarkdown() {
     REQUEST_CHAT_MESSAGE: 'Commission System',
     REQUEST_EVENT: 'Commission System',
     REQUEST_REVISION: 'Commission System',
+    SETTING: 'Core System Config',
   };
   let idx = 0;
   for (const entity of entities) {

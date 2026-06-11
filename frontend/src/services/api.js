@@ -140,8 +140,8 @@ export const adminApi = {
   deleteTag: (tagId) => api.delete(`/tags/admin/${tagId}`),
 
   // AI settings
-  getAiSettings: () => api.get('/users/admin/ai-settings'),
-  updateAiSettings: (payload) => api.patch('/users/admin/ai-settings', payload),
+  getAiSettings: () => api.get('/settings'),
+  updateAiSettings: (payload) => api.put('/settings', payload),
 
   // Artwork moderation
   getReportedArtworks: (params = {}) => api.get('/artworks/admin/reported', { params }),

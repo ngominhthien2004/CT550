@@ -20,8 +20,6 @@ const {
 	getAdminUsers,
 	updateAdminUser,
     searchUsers,
-    getAiSettings,
-    updateAiSettings,
 } = require('../controllers/user.controller');
 const { protect, admin } = require('../middlewares/auth.middleware');
 
@@ -70,8 +68,6 @@ const upload = multer({
 
 router.get('/admin/overview', protect, admin, getAdminOverview);
 router.get('/admin/list', protect, admin, getAdminUsers);
-router.get('/admin/ai-settings', protect, admin, getAiSettings);
-router.patch('/admin/ai-settings', protect, admin, updateAiSettings);
 router.patch('/admin/:id', protect, admin, updateAdminUser);
 
 router.get('/search', searchUsers);

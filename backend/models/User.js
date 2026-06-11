@@ -47,10 +47,6 @@ const userSchema = mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user'
     },
-    aiDetectionEnabled: {
-        type: Boolean,
-        default: true
-    },
 }, {
     timestamps: true
 });

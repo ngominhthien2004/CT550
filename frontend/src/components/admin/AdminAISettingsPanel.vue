@@ -33,7 +33,7 @@ async function toggleAiDetection() {
     const newValue = !aiDetectionEnabled.value
     const { data } = await adminApi.updateAiSettings({ aiDetectionEnabled: newValue })
     aiDetectionEnabled.value = data.aiDetectionEnabled
-    successMsg.value = data.message || `AI detection ${data.aiDetectionEnabled ? 'enabled' : 'disabled'}`
+    successMsg.value = `AI detection ${data.aiDetectionEnabled ? 'enabled' : 'disabled'}`
     setTimeout(() => { successMsg.value = '' }, 3000)
   } catch (toggleError) {
     error.value = toggleError?.response?.data?.message || 'Failed to update AI settings'

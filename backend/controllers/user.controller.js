@@ -484,51 +484,6 @@ const updateAdminUser = async (req, res, next) => {
     }
 };
 
-const getAiSettings = async (req, res, next) => {
-    try {
-        const adminUser = await User.findOne({ role: 'admin' }).select('aiDetectionEnabled username email');
-        if (!adminUser) {
-            res.status(404);
-            return next(new Error('No admin user found'));
-        }
-        res.json({
-            aiDetectionEnabled: adminUser.aiDetectionEnabled,
-            managedBy: {
-                username: adminUser.username,
-                email: adminUser.email,
-            }
-        });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const updateAiSettings = async (req, res, next) => {
-    try {
-        const { aiDetectionEnabled } = req.body;
-        if (typeof aiDetectionEnabled !== 'boolean') {
-            res.status(400);
-            return next(new Error('aiDetectionEnabled must be a boolean'));
-        }
-
-        const adminUser = await User.findOne({ role: 'admin' });
-        if (!adminUser) {
-            res.status(404);
-            return next(new Error('No admin user found'));
-        }
-
-        adminUser.aiDetectionEnabled = aiDetectionEnabled;
-        await adminUser.save();
-
-        res.json({
-            message: `AI detection ${aiDetectionEnabled ? 'enabled' : 'disabled'} successfully`,
-            aiDetectionEnabled: adminUser.aiDetectionEnabled,
-        });
-    } catch (error) {
-        next(error);
-    }
-};
-
 module.exports = {
     getUserProfile,
     updateUserProfile,
@@ -548,6 +503,4 @@ module.exports = {
     searchUsers,
     postPresence,
     getPresenceHandler,
-    getAiSettings,
-    updateAiSettings,
 };

@@ -21,6 +21,7 @@ const notificationRoutes = require('./routes/notification.routes');
 const messageRoutes = require('./routes/message.routes');
 const aiRoutes = require('./routes/ai.routes');
 const requestRoutes = require('./routes/request.routes');
+const settingRoutes = require('./routes/setting.routes');
 const path = require('path');
 
 // Force IPv4 DNS resolution to avoid timeout issues with IPv6 (e.g., HuggingFace API)
@@ -76,6 +77,7 @@ app.use('/api/tags', tagRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/settings', settingRoutes);
 app.use('/api/requests', requestRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
