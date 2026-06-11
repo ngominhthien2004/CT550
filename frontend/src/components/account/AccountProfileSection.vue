@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import ProfileCoverBanner from '../profile/ProfileCoverBanner.vue'
 import ProfileSummarySection from '../profile/ProfileSummarySection.vue'
 import ProfilePrimaryTabs from '../profile/ProfilePrimaryTabs.vue'
@@ -8,7 +9,7 @@ import ProfileCoverModal from '../profile/ProfileCoverModal.vue'
 import ProfileEditModal from '../profile/ProfileEditModal.vue'
 import ProfileAvatarModal from '../profile/ProfileAvatarModal.vue'
 
-defineProps({
+const props = defineProps({
   user: { type: Object, required: true },
   profileCoverImage: { type: String, default: '' },
   isOwnProfile: { type: Boolean, default: false },
@@ -74,6 +75,23 @@ const emit = defineEmits([
   'load-more-bookmarks',
   'load-more-likes',
 ])
+
+const profileGender = computed(() => {
+  const g = props.user?.gender || ''
+  return g === 'rather_not_say' ? '' : g
+})
+
+const profileBirthday = computed(() => {
+  const year = props.user?.birthYear
+  const month = props.user?.birthdayMonth
+  const day = props.user?.birthdayDay
+  if (!year && !month && !day) return ''
+  const parts = []
+  if (month) parts.push(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][month - 1] || '')
+  if (day) parts.push(String(day))
+  if (year) parts.push(String(year))
+  return parts.length ? `Born ${parts.join(' ')}` : ''
+})
 </script>
 
 <template>
@@ -92,6 +110,8 @@ const emit = defineEmits([
         :following-count="followingCount"
         :followers-count="followersCount"
         :profile-location="profileLocation"
+        :profile-gender="profileGender"
+        :profile-birthday="profileBirthday"
         :is-own-profile="isOwnProfile"
         :is-following="isFollowingProfile"
         :follow-loading="followLoading"

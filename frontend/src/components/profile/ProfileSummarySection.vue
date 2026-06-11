@@ -22,6 +22,14 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  profileGender: {
+    type: String,
+    default: '',
+  },
+  profileBirthday: {
+    type: String,
+    default: '',
+  },
   isOwnProfile: {
     type: Boolean,
     default: true,
@@ -74,6 +82,18 @@ const socialLinks = computed(() => {
   ]
 
   return rows.filter((item) => typeof item.href === 'string' && item.href.trim())
+})
+
+const genderIcon = computed(() => {
+  if (props.profileGender === 'male') return 'fa-solid fa-mars'
+  if (props.profileGender === 'female') return 'fa-solid fa-venus'
+  return ''
+})
+
+const genderLabel = computed(() => {
+  if (props.profileGender === 'male') return 'Male'
+  if (props.profileGender === 'female') return 'Female'
+  return ''
 })
 
 const emit = defineEmits(['toggle-follow', 'edit-profile', 'edit-avatar', 'open-requests'])
@@ -182,6 +202,14 @@ async function handleShare() {
         <p class="profile-subtle">
           <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
           {{ profileLocation }}
+        </p>
+        <p v-if="profileGender" class="profile-subtle">
+          <i :class="genderIcon" aria-hidden="true"></i>
+          {{ genderLabel }}
+        </p>
+        <p v-if="profileBirthday" class="profile-subtle">
+          <i class="fa-solid fa-cake-candles" aria-hidden="true"></i>
+          {{ profileBirthday }}
         </p>
         <button v-if="isOwnProfile" type="button" class="profile-link profile-link-btn" @click="emit('edit-profile')">Change</button>
         <div v-if="socialLinks.length" class="profile-socials" aria-label="Social media links">

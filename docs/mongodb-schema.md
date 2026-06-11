@@ -20,11 +20,9 @@
 | `gender` | string |  |  |  | Giới tính |
 | `location` | string |  |  |  | Địa điểm |
 | `birthday` | date |  |  |  | Ngày sinh |
-| `occupation` | string |  |  |  | Nghề nghiệp |
 | `website` | string |  |  |  | Trang web cá nhân |
 | `socialLinks` | object |  |  |  | Nhúng {x,facebook,instagram} |
 | `role` | string |  |  |  | Vai trò: user | admin |
-| `aiDetectionEnabled` | boolean |  |  |  | Bật/tắt phát hiện AI |
 | `password` | string |  |  |  | Mật khẩu (đã mã hoá) |
 | `googleId` | string |  |  |  | ID tài khoản Google (dùng cho đăng nhập OAuth) |
 | `facebookId` | string |  |  |  | ID tài khoản Facebook (dùng cho đăng nhập OAuth) |

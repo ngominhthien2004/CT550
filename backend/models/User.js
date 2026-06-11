@@ -38,7 +38,6 @@ const userSchema = mongoose.Schema({
     birthYear: { type: Number, default: null },
     birthdayMonth: { type: Number, default: null },
     birthdayDay: { type: Number, default: null },
-    occupation: { type: String, default: '' },
     website: { type: String, default: '' },
     socialLinks: { type: socialLinksSchema, default: () => ({}) },
 

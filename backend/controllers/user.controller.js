@@ -33,7 +33,6 @@ const updateUserProfile = async (req, res, next) => {
             if (req.body.birthYear) user.birthYear = parseInt(req.body.birthYear, 10);
             if (req.body.birthdayMonth) user.birthdayMonth = parseInt(req.body.birthdayMonth, 10);
             if (req.body.birthdayDay) user.birthdayDay = parseInt(req.body.birthdayDay, 10);
-            user.occupation = req.body.occupation || user.occupation;
             if (req.body.socialLinks) {
                 user.socialLinks = { ...user.socialLinks, ...req.body.socialLinks };
             }
@@ -85,7 +84,6 @@ const updateUserProfile = async (req, res, next) => {
                 birthYear: updatedUser.birthYear,
                 birthdayMonth: updatedUser.birthdayMonth,
                 birthdayDay: updatedUser.birthdayDay,
-                occupation: updatedUser.occupation,
                 socialLinks: updatedUser.socialLinks,
                 role: updatedUser.role,
             });

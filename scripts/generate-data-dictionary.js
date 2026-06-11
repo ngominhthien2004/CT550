@@ -299,9 +299,9 @@ const fieldDescriptionsVI = {
   'USER.gender': 'Giới tính',
   'USER.location': 'Địa điểm',
   'USER.birthday': 'Ngày sinh',
-  'USER.occupation': 'Nghề nghiệp',
+
   'USER.website': 'Trang web cá nhân',
-  'USER.aiDetectionEnabled': 'Bật/tắt phát hiện AI',
+
   'USER.googleId': 'ID tài khoản Google (dùng cho đăng nhập OAuth)',
   'USER.facebookId': 'ID tài khoản Facebook (dùng cho đăng nhập OAuth)',
   'USER.twitterId': 'ID tài khoản Twitter (dùng cho đăng nhập OAuth)',

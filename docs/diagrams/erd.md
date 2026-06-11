@@ -19,11 +19,9 @@ erDiagram
     string gender
     string location
     date birthday
-    string occupation
     string website
     json socialLinks "embedded {x,facebook,instagram}"
     string role "user | admin"
-    boolean aiDetectionEnabled
     string password "hashed"
     string googleId
     string facebookId
@@ -304,7 +302,7 @@ erDiagram
 
 | # | Entity | Fields | Key Relationships | Group |
 |---|--------|--------|-------------------|-------|
-| 1 | **USER** | 19 | 22 relationships | Core User System |
+| 1 | **USER** | 17 | 22 relationships | Core User System |
 | 2 | **FOLLOW** | 3 | 2 relationships | Core User System |
 | 3 | **USER_BLOCK** | 3 | 2 relationships | Core User System |
 | 4 | **SETTING** | 3 | 0 relationships | Core System Config |

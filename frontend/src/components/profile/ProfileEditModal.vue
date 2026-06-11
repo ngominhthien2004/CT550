@@ -18,12 +18,6 @@ const form = reactive({
   birthYear: null,
   birthdayMonth: 1,
   birthdayDay: 1,
-  occupation: '',
-  visibilityGender: 'Public',
-  visibilityLocation: 'Public',
-  visibilityBirthYear: 'Public',
-  visibilityBirthday: 'Public',
-  visibilityOccupation: 'Public',
 })
 
 const genderOptions = [
@@ -68,7 +62,6 @@ watch(() => props.user, (u) => {
   form.birthYear = u.birthYear || null
   form.birthdayMonth = u.birthdayMonth || 1
   form.birthdayDay = u.birthdayDay || 1
-  form.occupation = u.occupation || ''
 }, { immediate: true })
 
 function handleSave() {
@@ -82,7 +75,6 @@ function handleSave() {
   if (form.birthYear) fd.append('birthYear', form.birthYear)
   fd.append('birthdayMonth', form.birthdayMonth)
   fd.append('birthdayDay', form.birthdayDay)
-  fd.append('occupation', form.occupation)
   emit('save', fd)
 }
 </script>
@@ -152,10 +144,6 @@ function handleSave() {
                 <span class="radio-text">{{ opt.label }}</span>
               </label>
             </div>
-            <select v-model="form.visibilityGender" class="visibility-select">
-              <option>Public</option>
-              <option>Private</option>
-            </select>
           </div>
         </div>
 
@@ -169,10 +157,6 @@ function handleSave() {
               <option value="Japan">Japan</option>
               <option value="USA">USA</option>
             </select>
-            <select v-model="form.visibilityLocation" class="visibility-select">
-              <option>Public</option>
-              <option>Private</option>
-            </select>
           </div>
         </div>
 
@@ -182,10 +166,6 @@ function handleSave() {
           <div class="split-row">
             <select v-model="form.birthYear" class="form-select full-width">
               <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
-            </select>
-            <select v-model="form.visibilityBirthYear" class="visibility-select">
-              <option>Public</option>
-              <option>Private</option>
             </select>
           </div>
         </div>
@@ -202,27 +182,6 @@ function handleSave() {
                 <option v-for="d in days" :key="d" :value="d">{{ d }}{{ getDaySuffix(d) }}</option>
               </select>
             </div>
-            <select v-model="form.visibilityBirthday" class="visibility-select">
-              <option>Public</option>
-              <option>Private</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Occupation -->
-        <div class="form-group">
-          <label class="field-label">Occupation</label>
-          <div class="split-row">
-            <select v-model="form.occupation" class="form-select full-width">
-              <option value="">----</option>
-              <option value="Artist">Artist</option>
-              <option value="Designer">Designer</option>
-              <option value="Student">Student</option>
-            </select>
-            <select v-model="form.visibilityOccupation" class="visibility-select">
-              <option>Public</option>
-              <option>Private</option>
-            </select>
           </div>
         </div>
 
@@ -334,15 +293,6 @@ function handleSave() {
 
 .full-width {
   flex: 1;
-}
-
-.visibility-select {
-  width: 110px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 8px;
-  background: #f8f9fa;
-  font-size: 0.85rem;
 }
 
 .radio-group {
