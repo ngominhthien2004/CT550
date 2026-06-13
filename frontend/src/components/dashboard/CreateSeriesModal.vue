@@ -93,7 +93,7 @@ function removeArtwork(artworkId) {
 
 // Extract thumbnail URL from an artwork (handles both populated and plain objects)
 function getArtworkThumb(artwork) {
-  return artwork.images?.[0]?.url || artwork.thumbnailUrl || artwork.imageUrl || artwork.fileUrl || ''
+  return artwork.images?.[0] || artwork.thumbnailUrl || artwork.imageUrl || artwork.fileUrl || ''
 }
 
 // Submit

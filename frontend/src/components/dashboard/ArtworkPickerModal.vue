@@ -96,7 +96,7 @@ onBeforeUnmount(() => {
             @click="toggleArtwork(artwork)"
           >
             <img
-              :src="artwork.thumbnailUrl || artwork.imageUrl || artwork.fileUrl"
+              :src="artwork.images?.[0] || artwork.thumbnailUrl || artwork.imageUrl || artwork.fileUrl"
               :alt="artwork.title"
               loading="lazy"
               class="picker-thumb"
