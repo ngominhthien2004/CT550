@@ -5,6 +5,7 @@ import ProfileSummarySection from '../profile/ProfileSummarySection.vue'
 import ProfilePrimaryTabs from '../profile/ProfilePrimaryTabs.vue'
 import ArtworkGridSection from '../profile/ArtworkGridSection.vue'
 import ProfileRequestsSection from '../profile/ProfileRequestsSection.vue'
+import ProfileSeriesSection from '../profile/ProfileSeriesSection.vue'
 import ProfileCoverModal from '../profile/ProfileCoverModal.vue'
 import ProfileEditModal from '../profile/ProfileEditModal.vue'
 import ProfileAvatarModal from '../profile/ProfileAvatarModal.vue'
@@ -51,6 +52,9 @@ const props = defineProps({
   bookmarkLimit: { type: Number, default: 24 },
   likeHasMore: { type: Boolean, default: false },
   likeLimit: { type: Number, default: 24 },
+  profileSeries: { type: Array, default: () => [] },
+  profileSeriesLoading: { type: Boolean, default: false },
+  profileSeriesError: { type: String, default: '' },
 })
 
 const emit = defineEmits([
@@ -199,6 +203,13 @@ const profileBirthday = computed(() => {
         :is-own-profile="isOwnProfile"
         :loading="requestTermsLoading"
         :error="requestTermsError"
+      />
+
+      <ProfileSeriesSection
+        v-else-if="activeMainTab === 'series'"
+        :series="profileSeries"
+        :loading="profileSeriesLoading"
+        :error="profileSeriesError"
       />
 
       <section v-else-if="(activeMainTab === 'bookmarks' || activeMainTab === 'likes') && !isOwnProfile" class="bookmarks-placeholder">

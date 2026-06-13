@@ -116,6 +116,7 @@ export const userApi = {
   searchPublic: (params = {}) => api.get('/users/search', { params }),
   postPresence: (userId, payload = {}) => api.post(`/users/${userId}/presence`, payload),
   getPresence: (userId) => api.get(`/users/${userId}/presence`),
+  getUserSeries: (userId, params = {}) => api.get(`/users/${userId}/series`, { params }),
 }
 
 export const adminApi = {
@@ -193,6 +194,7 @@ export const getFollowing = (userId) => userApi.getFollowing(userId)
 export const getFollowStatus = (userId) => userApi.getFollowStatus(userId)
 export const followUser = (userId) => userApi.follow(userId)
 export const unfollowUser = (userId) => userApi.unfollow(userId)
+export const getUserSeries = (userId, params) => userApi.getUserSeries(userId, params)
 
 export const getMyMessages = (params = {}) => messageApi.getMine(params)
 export const createMessage = (payload) => messageApi.create(payload)

@@ -10,7 +10,7 @@ import { useBookmarkStore } from '../stores/bookmark.store'
 import { useLikeStore } from '../stores/like.store'
 import { useFollowStore } from '../stores/follow.store'
 import { useRequestStore } from '../stores/request.store'
-import { getArtworks, getMyBookmarks, getMyLikes, userApi } from '../services/api'
+import { getArtworks, getMyBookmarks, getMyLikes, getUserSeries, userApi } from '../services/api'
 import { getApiErrorMessage } from '../utils/apiErrors'
 import { toggleNavCollapsed } from '../utils/viewNavigation'
 import { useToast } from '../composables/useToast'
@@ -46,6 +46,9 @@ const showEditModal = ref(false)
 const showCoverModal = ref(false)
 const showAvatarModal = ref(false)
 const confirmDeleteCover = ref(false)
+const profileSeries = ref([])
+const profileSeriesLoading = ref(false)
+const profileSeriesError = ref('')
 
 // Pagination state
 const ARTWORKS_PER_PAGE = 24
@@ -343,6 +346,24 @@ async function loadFollowStats() {
   ])
 }
 
+async function loadSeries() {
+  if (!viewingUserId.value) {
+    profileSeries.value = []
+    return
+  }
+  profileSeriesLoading.value = true
+  profileSeriesError.value = ''
+  try {
+    const { data } = await getUserSeries(viewingUserId.value)
+    profileSeries.value = Array.isArray(data) ? data : []
+  } catch (err) {
+    profileSeriesError.value = err?.response?.data?.message || 'Failed to load series'
+    profileSeries.value = []
+  } finally {
+    profileSeriesLoading.value = false
+  }
+}
+
 async function loadRequestTerms() {
   if (!viewingUserId.value) {
     requestTerms.value = []
@@ -503,6 +524,7 @@ function loadAllProfileData() {
   loadLikes()
   loadFollowStats()
   loadRequestTerms()
+  loadSeries()
 }
 
 onMounted(() => {
@@ -571,6 +593,9 @@ watch(showEditModal, (val) => {
       :bookmark-limit="BOOKMARKS_PER_PAGE"
       :like-has-more="likeHasMore"
       :like-limit="LIKES_PER_PAGE"
+      :profile-series="profileSeries"
+      :profile-series-loading="profileSeriesLoading"
+      :profile-series-error="profileSeriesError"
       @load-more-works="loadMoreWorks"
       @load-more-bookmarks="loadMoreBookmarks"
       @load-more-likes="loadMoreLikes"

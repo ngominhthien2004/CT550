@@ -5,6 +5,7 @@ const UserBlock = require('../models/UserBlock');
 const Artwork = require('../models/Artwork');
 const Comment = require('../models/Comment');
 const { createNotification } = require('../utils/notification');
+const Series = require('../models/Series');
 
 const getUserProfile = async (req, res, next) => {
     try {
@@ -482,6 +483,53 @@ const updateAdminUser = async (req, res, next) => {
     }
 };
 
+// @desc    Get a user's series (public)
+// @route   GET /api/users/:id/series
+// @access  Public
+const getUserSeries = async (req, res, next) => {
+    try {
+        const { type } = req.query;
+
+        const filter = { user: req.params.id };
+        if (type && ['manga', 'novel', 'illust'].includes(type)) {
+            filter.type = type;
+        }
+
+        const series = await Series.find(filter)
+            .populate('user', 'username avatar')
+            .populate('tags', 'name')
+            .populate('artworks', 'title images type viewCount likeCount commentCount')
+            .populate('novelArtwork', 'title type chapterCount wordCount viewCount likeCount commentCount')
+            .sort({ createdAt: -1 });
+
+        // Compute aggregated stats
+        const enriched = series.map((s) => {
+            const doc = s.toObject();
+            if (doc.type === 'novel' && doc.novelArtwork) {
+                doc.totalViews = doc.novelArtwork.viewCount || 0;
+                doc.totalLikes = doc.novelArtwork.likeCount || 0;
+                doc.totalComments = doc.novelArtwork.commentCount || 0;
+                doc.episodeCount = doc.novelArtwork.chapterCount || 0;
+            } else if ((doc.type === 'manga' || doc.type === 'illust') && doc.artworks?.length > 0) {
+                doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0);
+                doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);
+                doc.totalComments = doc.artworks.reduce((sum, a) => sum + (a.commentCount || 0), 0);
+                doc.episodeCount = doc.artworks.length;
+            } else {
+                doc.totalViews = 0;
+                doc.totalLikes = 0;
+                doc.totalComments = 0;
+                doc.episodeCount = 0;
+            }
+            return doc;
+        });
+
+        res.json(enriched);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getUserProfile,
     updateUserProfile,
@@ -499,6 +547,7 @@ module.exports = {
     getAdminUsers,
     updateAdminUser,
     searchUsers,
+    getUserSeries,
     postPresence,
     getPresenceHandler,
 };
