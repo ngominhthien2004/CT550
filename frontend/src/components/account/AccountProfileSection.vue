@@ -55,6 +55,10 @@ const props = defineProps({
   profileSeries: { type: Array, default: () => [] },
   profileSeriesLoading: { type: Boolean, default: false },
   profileSeriesError: { type: String, default: '' },
+  showFeaturedWorks: { type: Boolean, default: true },
+  showIllustSeries: { type: Boolean, default: true },
+  showMangaSeries: { type: Boolean, default: true },
+  showNovelSeries: { type: Boolean, default: true },
 })
 
 const emit = defineEmits([
@@ -131,36 +135,92 @@ const profileBirthday = computed(() => {
       <p v-if="profileError" class="text-danger mb-1">{{ profileError }}</p>
       <ProfilePrimaryTabs :active-tab="activeMainTab" :is-own-profile="isOwnProfile" @select="emit('select-main-tab', $event)" />
 
-      <ArtworkGridSection
-        v-if="activeMainTab === 'home'"
-        heading="Illustrations and Manga"
-        show-featured
-        :preview-limit="8"
-        :tabs="typeTabs"
-        :active-type="activeType"
-        :items="visibleArtworks"
-        :loading="loadingArtworks"
-        :error="artworksError"
-        :has-more="worksHasMore"
-        :limit="worksLimit"
-        @select-type="emit('select-type', $event)"
-        @show-all="emit('show-all-works')"
-        @load-more="emit('load-more-works')"
-      />
+      <!-- ════ HOME TAB ════ -->
+      <template v-if="activeMainTab === 'home'">
+        <ProfileSeriesSection
+          :series="profileSeries"
+          :loading="profileSeriesLoading"
+          :error="profileSeriesError"
+        />
+        <ArtworkGridSection
+          heading="Illustrations and Manga"
+          :show-featured="showFeaturedWorks"
+          :preview-limit="8"
+          :tabs="typeTabs"
+          :active-type="activeType"
+          :items="visibleArtworks"
+          :loading="loadingArtworks"
+          :error="artworksError"
+          :has-more="worksHasMore"
+          :limit="worksLimit"
+          @select-type="emit('select-type', $event)"
+          @show-all="emit('show-all-works')"
+          @load-more="emit('load-more-works')"
+        />
+      </template>
 
-      <ArtworkGridSection
-        v-else-if="activeMainTab === 'illustrations'"
-        heading="All works"
-        :tabs="typeTabs"
-        :active-type="activeType"
-        :items="visibleArtworks"
-        :loading="loadingArtworks"
-        :error="artworksError"
-        :has-more="worksHasMore"
-        :limit="worksLimit"
-        @select-type="emit('select-type', $event)"
-        @load-more="emit('load-more-works')"
-      />
+      <!-- ════ ILLUSTRATIONS TAB ════ -->
+      <template v-else-if="activeMainTab === 'illustrations'">
+        <ProfileSeriesSection
+          v-if="showIllustSeries"
+          :series="profileSeries.filter(s => s.type === 'illust')"
+          :loading="profileSeriesLoading"
+          :error="profileSeriesError"
+        />
+        <ArtworkGridSection
+          heading="Illustrations"
+          :tabs="[]"
+          :active-type="activeType"
+          :items="visibleArtworks"
+          :loading="loadingArtworks"
+          :error="artworksError"
+          :has-more="worksHasMore"
+          :limit="worksLimit"
+          @load-more="emit('load-more-works')"
+        />
+      </template>
+
+      <!-- ════ MANGA TAB ════ -->
+      <template v-else-if="activeMainTab === 'manga'">
+        <ProfileSeriesSection
+          v-if="showMangaSeries"
+          :series="profileSeries.filter(s => s.type === 'manga')"
+          :loading="profileSeriesLoading"
+          :error="profileSeriesError"
+        />
+        <ArtworkGridSection
+          heading="Manga"
+          :tabs="[]"
+          :active-type="activeType"
+          :items="visibleArtworks"
+          :loading="loadingArtworks"
+          :error="artworksError"
+          :has-more="worksHasMore"
+          :limit="worksLimit"
+          @load-more="emit('load-more-works')"
+        />
+      </template>
+
+      <!-- ════ NOVELS TAB ════ -->
+      <template v-else-if="activeMainTab === 'novels'">
+        <ProfileSeriesSection
+          v-if="showNovelSeries"
+          :series="profileSeries.filter(s => s.type === 'novel')"
+          :loading="profileSeriesLoading"
+          :error="profileSeriesError"
+        />
+        <ArtworkGridSection
+          heading="Novels"
+          :tabs="[]"
+          :active-type="activeType"
+          :items="visibleArtworks"
+          :loading="loadingArtworks"
+          :error="artworksError"
+          :has-more="worksHasMore"
+          :limit="worksLimit"
+          @load-more="emit('load-more-works')"
+        />
+      </template>
 
       <ArtworkGridSection
         v-else-if="activeMainTab === 'bookmarks' && isOwnProfile"
@@ -203,13 +263,6 @@ const profileBirthday = computed(() => {
         :is-own-profile="isOwnProfile"
         :loading="requestTermsLoading"
         :error="requestTermsError"
-      />
-
-      <ProfileSeriesSection
-        v-else-if="activeMainTab === 'series'"
-        :series="profileSeries"
-        :loading="profileSeriesLoading"
-        :error="profileSeriesError"
       />
 
       <section v-else-if="(activeMainTab === 'bookmarks' || activeMainTab === 'likes') && !isOwnProfile" class="bookmarks-placeholder">

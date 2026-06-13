@@ -49,6 +49,7 @@ const confirmDeleteCover = ref(false)
 const profileSeries = ref([])
 const profileSeriesLoading = ref(false)
 const profileSeriesError = ref('')
+const showFeaturedWorks = ref(true)
 
 // Pagination state
 const ARTWORKS_PER_PAGE = 24
@@ -185,6 +186,16 @@ function selectLikeType(type) {
 
 function selectMainTab(tab) {
   activeMainTab.value = tab
+  if (tab === 'home') {
+    activeType.value = ''
+    showFeaturedWorks.value = true
+  } else if (tab === 'illustrations') {
+    activeType.value = 'illust'
+  } else if (tab === 'manga') {
+    activeType.value = 'manga'
+  } else if (tab === 'novels') {
+    activeType.value = 'novel'
+  }
 }
 
 function openRequestsTab() {
@@ -197,7 +208,7 @@ function openRequestsTab() {
 }
 
 function showAllWorks() {
-  activeMainTab.value = 'illustrations'
+  showFeaturedWorks.value = false
 }
 
 async function loadUserArtworks(append = false) {
@@ -596,6 +607,7 @@ watch(showEditModal, (val) => {
       :profile-series="profileSeries"
       :profile-series-loading="profileSeriesLoading"
       :profile-series-error="profileSeriesError"
+      :show-featured-works="showFeaturedWorks"
       @load-more-works="loadMoreWorks"
       @load-more-bookmarks="loadMoreBookmarks"
       @load-more-likes="loadMoreLikes"
