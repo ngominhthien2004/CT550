@@ -11,6 +11,7 @@ const chapterSchema = mongoose.Schema({
         type: String,
         required: true,
         trim: true,
+        maxlength: 200,
     },
     content: {
         type: String,

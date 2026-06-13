@@ -129,8 +129,13 @@ onMounted(() => {
       </div>
     </div>
 
+    <!-- Error -->
+    <p v-if="seriesStore.error" class="state-note state-note--error">
+      {{ seriesStore.error }}
+    </p>
+
     <!-- Loading -->
-    <p v-if="seriesStore.loading && seriesStore.seriesList.length === 0" class="state-note">
+    <p v-if="seriesStore.listLoading && seriesStore.seriesList.length === 0" class="state-note">
       Loading series...
     </p>
 

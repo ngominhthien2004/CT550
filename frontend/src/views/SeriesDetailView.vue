@@ -186,9 +186,9 @@ onMounted(async () => {
 
 <template>
   <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
-    <div class="series-detail-page" v-if="!seriesStore.loading || series">
+    <div class="series-detail-page" v-if="!seriesStore.detailLoading || series">
       <!-- Loading -->
-      <div v-if="!series && seriesStore.loading" class="state-loading">
+      <div v-if="!series && seriesStore.detailLoading" class="state-loading">
         <p>Loading series...</p>
       </div>
 

@@ -9,7 +9,8 @@ const artworkSchema = mongoose.Schema({
     title: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        maxlength: 200,
     },
     description: {
         type: String,

@@ -5,14 +5,16 @@ import { seriesApi } from '@/services/api'
 export const useSeriesStore = defineStore('series', () => {
   const seriesList = ref([])
   const currentSeries = ref(null)
-  const loading = ref(false)
+  const listLoading = ref(false)
+  const detailLoading = ref(false)
+  const mutationLoading = ref(false)
   const error = ref('')
 
   const mangaSeries = computed(() => seriesList.value.filter(s => s.type === 'manga'))
   const novelSeries = computed(() => seriesList.value.filter(s => s.type === 'novel'))
 
   async function fetchMySeries(type = null, sort = 'newest') {
-    loading.value = true
+    listLoading.value = true
     error.value = ''
     try {
       const params = {}
@@ -24,12 +26,12 @@ export const useSeriesStore = defineStore('series', () => {
       error.value = err?.response?.data?.message || 'Failed to load series'
       seriesList.value = []
     } finally {
-      loading.value = false
+      listLoading.value = false
     }
   }
 
   async function createSeries(payload) {
-    loading.value = true
+    mutationLoading.value = true
     error.value = ''
     try {
       const { data } = await seriesApi.create(payload)
@@ -39,12 +41,12 @@ export const useSeriesStore = defineStore('series', () => {
       error.value = err?.response?.data?.message || 'Failed to create series'
       throw err
     } finally {
-      loading.value = false
+      mutationLoading.value = false
     }
   }
 
   async function fetchSeriesById(seriesId) {
-    loading.value = true
+    detailLoading.value = true
     error.value = ''
     try {
       const { data } = await seriesApi.getById(seriesId)
@@ -54,12 +56,12 @@ export const useSeriesStore = defineStore('series', () => {
       error.value = err?.response?.data?.message || 'Failed to load series'
       throw err
     } finally {
-      loading.value = false
+      detailLoading.value = false
     }
   }
 
   async function updateSeries(seriesId, payload) {
-    loading.value = true
+    mutationLoading.value = true
     error.value = ''
     try {
       const { data } = await seriesApi.update(seriesId, payload)
@@ -70,12 +72,12 @@ export const useSeriesStore = defineStore('series', () => {
       error.value = err?.response?.data?.message || 'Failed to update series'
       throw err
     } finally {
-      loading.value = false
+      mutationLoading.value = false
     }
   }
 
   async function deleteSeries(seriesId) {
-    loading.value = true
+    mutationLoading.value = true
     error.value = ''
     try {
       await seriesApi.delete(seriesId)
@@ -85,12 +87,12 @@ export const useSeriesStore = defineStore('series', () => {
       error.value = err?.response?.data?.message || 'Failed to delete series'
       throw err
     } finally {
-      loading.value = false
+      mutationLoading.value = false
     }
   }
 
   async function addArtworkToSeries(seriesId, artworkId) {
-    loading.value = true
+    mutationLoading.value = true
     error.value = ''
     try {
       const { data } = await seriesApi.addArtwork(seriesId, artworkId)
@@ -101,12 +103,12 @@ export const useSeriesStore = defineStore('series', () => {
       error.value = err?.response?.data?.message || 'Failed to add artwork'
       throw err
     } finally {
-      loading.value = false
+      mutationLoading.value = false
     }
   }
 
   async function removeArtworkFromSeries(seriesId, artworkId) {
-    loading.value = true
+    mutationLoading.value = true
     error.value = ''
     try {
       const { data } = await seriesApi.removeArtwork(seriesId, artworkId)
@@ -117,14 +119,16 @@ export const useSeriesStore = defineStore('series', () => {
       error.value = err?.response?.data?.message || 'Failed to remove artwork'
       throw err
     } finally {
-      loading.value = false
+      mutationLoading.value = false
     }
   }
 
   return {
     seriesList,
     currentSeries,
-    loading,
+    listLoading,
+    detailLoading,
+    mutationLoading,
     error,
     mangaSeries,
     novelSeries,
