@@ -52,7 +52,7 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
   - ✅ Gộp thẻ (Tag merge) — quản trị viên
 - **Cài đặt hiển thị & Bảo mật:**
   - ✅ Chế độ Công khai / Nháp (isDraft)
-  - ✅ Phân loại độ tuổi (All ages, R-18, R-18G)
+  - ✅ Phân loại độ tuổi (All ages, R-18)
   - ❌ Quản lý bản quyền chuyên biệt cho tác giả
 
 ### C. Tính năng AI tích hợp

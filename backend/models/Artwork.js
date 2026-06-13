@@ -32,7 +32,7 @@ const artworkSchema = mongoose.Schema({
     ageRating: {
         type: String,
         required: true,
-        enum: ['all', 'r-18', 'r-18g'],
+        enum: ['all', 'r-18'],
         default: 'all'
     },
     viewCount: {

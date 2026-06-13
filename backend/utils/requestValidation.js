@@ -1,6 +1,6 @@
 const WORK_TYPES = ['illust', 'manga', 'gif', 'novel'];
 const VISIBILITY_VALUES = ['public', 'private'];
-const AGE_RATINGS = ['all', 'r-18', 'r-18g'];
+const AGE_RATINGS = ['all', 'r-18'];
 
 const REQUEST_STATUSES = {
     PENDING: 'pending',

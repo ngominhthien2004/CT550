@@ -73,7 +73,7 @@ const visibleItems = computed(() => {
     filtered = filtered.filter((item) => item.ageRating === 'all' || !item.ageRating)
   } else if (activeR18Tab.value === 'r18') {
     filtered = filtered.filter(
-      (item) => item.ageRating === 'r-18' || item.ageRating === 'r-18g',
+      (item) => item.ageRating === 'r-18',
     )
   }
 

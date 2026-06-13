@@ -100,7 +100,7 @@
 | `type` | string |  |  |  | Loại tác phẩm: illust | manga | gif | novel |
 | `images` | array |  |  |  | Danh sách đường dẫn ảnh/tệp của tác phẩm |
 | `tags` | array |  |  |  | Danh sách thẻ gắn vào tác phẩm |
-| `ageRating` | string |  |  |  | Tất cả | R-18 | R-18G |
+| `ageRating` | string |  |  |  | Tất cả | R-18 |
 | `viewCount` | number |  |  |  | Số lượt xem (duy trì tự động bằng $inc) |
 | `likeCount` | number |  |  |  | Số lượt thích (duy trì tự động bằng $inc) |
 | `bookmarkCount` | number |  |  |  | Số lượt đánh dấu (duy trì tự động bằng $inc) |
@@ -219,7 +219,7 @@
 | `acceptedWorkTypes` | array |  |  |  | Danh sách loại công việc chấp nhận |
 | `estimatedDays` | number |  |  |  | Số ngày ước tính hoàn thành |
 | `maxOpenRequests` | number |  |  |  | Số yêu cầu mở tối đa cùng lúc |
-| `acceptedAgeRatings` | array |  |  |  | Độ tuổi chấp nhận (all, r-18, r-18g) |
+| `acceptedAgeRatings` | array |  |  |  | Độ tuổi chấp nhận (all, r-18) |
 | `rules` | string |  |  |  | Nội quy / quy tắc khi đặt hàng |
 | `forbiddenTopics` | array |  |  |  | Danh sách chủ đề không nhận |
 | `preferredStyles` | array |  |  |  | Phong cách ưa thích |

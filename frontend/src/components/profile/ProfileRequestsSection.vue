@@ -237,7 +237,6 @@ watch(
           <select v-model="form.ageRating">
             <option value="all">All ages</option>
             <option value="r-18">R-18</option>
-            <option value="r-18g">R-18G</option>
           </select>
         </label>
         <label class="file-field">

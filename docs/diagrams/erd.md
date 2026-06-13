@@ -87,7 +87,7 @@ erDiagram
     string type "illust|manga|gif|novel"
     array images
     array tags "ref Tag[]"
-    string ageRating "all|r-18|r-18g"
+    string ageRating "all|r-18"
     number viewCount
     number likeCount
     number bookmarkCount

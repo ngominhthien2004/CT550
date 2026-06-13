@@ -16,7 +16,7 @@ test('validates request term payload for supported work type, target price, deli
         acceptedWorkTypes: ['illust'],
         estimatedDays: 21,
         maxOpenRequests: 3,
-        rules: 'No R-18G. Soft lighting preferred.',
+        rules: 'No explicit content. Soft lighting preferred.',
         strengths: 'Character portrait and expressive color.',
     });
 

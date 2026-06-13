@@ -149,7 +149,7 @@ function parseField(fieldStr) {
     .replace(/unique \(display handle\)/, 'duy nhất (tên hiển thị)')
     .replace(/hashed/, 'đã mã hoá')
     .replace(/user \| admin/, 'người dùng | quản trị viên')
-    .replace(/all\^Hr-18\^Hr-18g/, 'tất cả | r-18 | r-18g')
+    .replace(/all\^Hr-18/, 'tất cả | r-18')
     .replace(/1\|2/, '1 | 2');
 
   return { type, name, constraints: constraints.length > 0 ? constraints.join(', ') : '—', description };
@@ -452,7 +452,7 @@ const fieldDescriptionsVI = {
   'REQUEST_TERM.acceptedWorkTypes': 'Danh sách loại công việc chấp nhận',
   'REQUEST_TERM.estimatedDays': 'Số ngày ước tính hoàn thành',
   'REQUEST_TERM.maxOpenRequests': 'Số yêu cầu mở tối đa cùng lúc',
-  'REQUEST_TERM.acceptedAgeRatings': 'Độ tuổi chấp nhận (all, r-18, r-18g)',
+  'REQUEST_TERM.acceptedAgeRatings': 'Độ tuổi chấp nhận (all, r-18)',
   'REQUEST_TERM.rules': 'Nội quy / quy tắc khi đặt hàng',
   'REQUEST_TERM.forbiddenTopics': 'Danh sách chủ đề không nhận',
   'REQUEST_TERM.preferredStyles': 'Phong cách ưa thích',
@@ -600,7 +600,7 @@ function buildMongoDBSchema() {
           .replace('user | admin', 'Người dùng | Quản trị viên')
           .replace('embedded', 'Nhúng')
           .replace('Mixed', 'Linh hoạt')
-          .replace('all|r-18|r-18g', 'Tất cả | R-18 | R-18G')
+          .replace('all|r-18', 'Tất cả | R-18')
           .replace('1|2 — unique per artwork', '1 | 2 — duy nhất trong tác phẩm')
           .replace('1|2 — unique per request', '1 | 2 — duy nhất trong yêu cầu')
           .replace('unique per artwork', 'Duy nhất trong tác phẩm')
@@ -708,7 +708,7 @@ function buildHtmlSchema() {
           .replace('user | admin', 'Người dùng | Quản trị viên')
           .replace('embedded', 'Nhúng')
           .replace('Mixed', 'Linh hoạt')
-          .replace('all|r-18|r-18g', 'Tất cả | R-18 | R-18G')
+          .replace('all|r-18', 'Tất cả | R-18')
           .replace('1|2 — unique per artwork', '1 | 2 — duy nhất trong tác phẩm')
           .replace('1|2 — unique per request', '1 | 2 — duy nhất trong yêu cầu')
           .replace('unique per artwork', 'Duy nhất trong tác phẩm')

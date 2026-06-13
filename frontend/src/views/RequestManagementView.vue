@@ -37,7 +37,7 @@ const termForm = reactive({
 })
 
 const workTypes = ['illust', 'manga', 'gif', 'novel']
-const ageRatings = ['all', 'r-18', 'r-18g']
+const ageRatings = ['all', 'r-18']
 const requests = computed(() => requestStore.requests)
 const terms = computed(() => requestStore.terms)
 const loading = computed(() => requestStore.loading)
@@ -214,7 +214,7 @@ onMounted(loadAll)
             <label>Rules<textarea v-model="termForm.rules" rows="4" required></textarea></label>
             <label>Strengths<textarea v-model="termForm.strengths" rows="4" required></textarea></label>
             <label>Preferred styles<input v-model="termForm.preferredStyles" type="text" placeholder="soft color, portrait" /></label>
-            <label>Forbidden topics<input v-model="termForm.forbiddenTopics" type="text" placeholder="R-18G, gore, trademarked logos" /></label>
+            <label>Forbidden topics<input v-model="termForm.forbiddenTopics" type="text" placeholder="gore, trademarked logos" /></label>
           </div>
 
           <label class="inline-check">

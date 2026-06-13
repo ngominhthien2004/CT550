@@ -164,7 +164,7 @@ const visibleItems = computed(() => {
       return false
     }
 
-    const isR18 = item.ageRating === 'r-18' || item.ageRating === 'r-18g' || item.isR18 === true
+    const isR18 = item.ageRating === 'r-18' || item.isR18 === true
     if (ageFilter.value === 'safe' && isR18) {
       return false
     }

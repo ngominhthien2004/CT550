@@ -39,11 +39,6 @@ const props = defineProps({
             <span class="radio-indicator"></span>
             <span class="radio-label">R-18</span>
           </label>
-          <label class="custom-radio">
-            <input v-model="props.form.ageRating" type="radio" name="ageRating" value="r-18g" />
-            <span class="radio-indicator"></span>
-            <span class="radio-label">R-18G</span>
-          </label>
         </div>
       </div>
       <div class="row-right">
