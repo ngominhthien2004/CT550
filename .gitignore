@@ -29,6 +29,7 @@ backend/.server-output.tmp
 
 # Local-only artifacts (keep on machine, do not push)
 test-artifacts/
+scripts/
 tmp-chrome-user-data/
 tmp-chrome-user-date/
 .playwright-mcp/

@@ -1,4 +1,10 @@
 <script setup>
+const props = defineProps({
+  modelValue: { type: String, default: 'home' }
+})
+
+const emit = defineEmits(['update:modelValue'])
+
 const tabs = [
   { key: 'home', label: 'Home' },
   { key: 'works', label: 'Works' },
@@ -6,6 +12,10 @@ const tabs = [
   { key: 'analytics', label: 'Access analytics' },
   { key: 'ranking', label: 'Ranking report' },
 ]
+
+function selectTab(key) {
+  emit('update:modelValue', key)
+}
 </script>
 
 <template>
@@ -15,7 +25,8 @@ const tabs = [
       :key="tab.key"
       type="button"
       class="dashboard-tab"
-      :class="{ 'dashboard-tab--active': tab.key === 'home' }"
+      :class="{ 'dashboard-tab--active': tab.key === modelValue }"
+      @click="selectTab(tab.key)"
     >
       {{ tab.label }}
     </button>
@@ -41,12 +52,17 @@ const tabs = [
   display: inline-flex;
   align-items: center;
   gap: 0.22rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dashboard-tab:hover {
+  color: #374151;
+  background: #f1f5f9;
 }
 
 .dashboard-tab--active {
   color: #111827;
   background: #f1f5f9;
 }
-
-
 </style>

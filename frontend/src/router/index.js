@@ -27,6 +27,7 @@ import FollowUsersView from '../views/FollowUsersView.vue'
 import AIView from '../views/AIView.vue'
 import DrawingView from '../views/DrawingView.vue'
 import RequestManagementView from '../views/RequestManagementView.vue'
+import SeriesDetailView from '../views/SeriesDetailView.vue'
 import { useAuthStore } from '../stores/auth.store'
 
 const routes = [
@@ -101,6 +102,7 @@ const routes = [
   { path: '/novels/:id', name: 'novel-detail', component: ArtworkDetailView },
   { path: '/artworks/:id', name: 'artwork-detail', component: ArtworkDetailView },
   { path: '/artworks/:id/comments', name: 'artwork-comments', component: ArtworkCommentsView },
+  { path: '/series/:id', name: 'series-detail', component: SeriesDetailView },
   { path: '/tags/:tagName', name: 'tag-detail', component: TagDetailView },
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView },
 ]

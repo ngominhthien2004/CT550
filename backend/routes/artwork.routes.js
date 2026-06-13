@@ -7,7 +7,7 @@ const {
     createArtwork, getArtworks, getArtworkById,
     getAdminArtworks, deleteArtwork,
     updateNovelContent,
-    getChapters, getChapter, createChapter, deleteChapter,
+    getChapters, getChapter, createChapter, updateChapter, deleteChapter,
     saveReadingProgress, getReadingProgress,
     reportArtwork,
     getReportedArtworks,
@@ -112,6 +112,7 @@ router.route('/:id/chapters')
 
 router.route('/:id/chapters/:chapterId')
     .get(getChapter)
+    .put(protect, updateChapter)
     .delete(protect, deleteChapter);
 
 // Reading progress

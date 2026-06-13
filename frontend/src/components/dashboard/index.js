@@ -3,3 +3,6 @@ export { default as CreatorRecentlyUploadedPanel } from './CreatorRecentlyUpload
 export { default as CreatorReactionsCard } from './CreatorReactionsCard.vue'
 export { default as CreatorThemeCard } from './CreatorThemeCard.vue'
 export { default as CreatorContestCard } from './CreatorContestCard.vue'
+export { default as DashboardWorksPanel } from './DashboardWorksPanel.vue'
+export { default as DashboardSeriesPanel } from './DashboardSeriesPanel.vue'
+export { default as CreateSeriesModal } from './CreateSeriesModal.vue'

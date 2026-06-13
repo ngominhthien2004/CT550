@@ -211,9 +211,25 @@ export const getChapters = (artworkId) => api.get(`/artworks/${artworkId}/chapte
 export const getChapter = (artworkId, chapterId) => api.get(`/artworks/${artworkId}/chapters/${chapterId}`)
 export const createChapter = (artworkId, data) => api.post(`/artworks/${artworkId}/chapters`, data)
 export const deleteChapter = (artworkId, chapterId) => api.delete(`/artworks/${artworkId}/chapters/${chapterId}`)
+export const updateChapter = (artworkId, chapterId, data) => api.put(`/artworks/${artworkId}/chapters/${chapterId}`, data)
 
 // Reading Progress APIs
 export const getReadingProgress = (artworkId) => api.get(`/artworks/${artworkId}/reading-progress`)
 export const saveReadingProgress = (artworkId, data) => api.post(`/artworks/${artworkId}/reading-progress`, data)
+
+// Series APIs
+export const seriesApi = {
+  getMySeries: (params = {}) => api.get('/series', { params }),
+  create: (payload) => api.post('/series', payload),
+  getById: (seriesId) => api.get(`/series/${seriesId}`),
+  update: (seriesId, payload) => api.put(`/series/${seriesId}`, payload),
+  delete: (seriesId) => api.delete(`/series/${seriesId}`),
+  uploadCover: (seriesId, formData) => api.put(`/series/${seriesId}/cover`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  addArtwork: (seriesId, artworkId) => api.post(`/series/${seriesId}/artworks`, { artworkId }),
+  removeArtwork: (seriesId, artworkId) => api.delete(`/series/${seriesId}/artworks/${artworkId}`),
+  reorder: (seriesId, artworkIds) => api.put(`/series/${seriesId}/reorder`, { artworkIds }),
+}
 
 export default api

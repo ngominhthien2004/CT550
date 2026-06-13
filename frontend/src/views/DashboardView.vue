@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { CreatorDashboardTabs, CreatorRecentlyUploadedPanel, CreatorReactionsCard, CreatorThemeCard, CreatorContestCard } from '@/components/dashboard'
+import DashboardWorksPanel from '@/components/dashboard/DashboardWorksPanel.vue'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
 import { getArtworks } from '../services/api'
@@ -17,6 +18,7 @@ const error = ref('')
 const onboardingStep = ref(0)
 const hasSeenGuide = ref(false)
 const onboardingKeyPrefix = 'dashboardOnboardingSeen:'
+const activeTab = ref('home')
 
 const latestArtwork = computed(() => artworks.value[0] || null)
 
@@ -164,36 +166,47 @@ watch(
               {{ guideLabel }}
             </button>
           </div>
-          <CreatorDashboardTabs />
+          <CreatorDashboardTabs v-model="activeTab" />
         </header>
 
-        <CreatorRecentlyUploadedPanel :latest-artwork="latestArtwork" @post="goUpload" />
+        <!-- Home tab content -->
+        <template v-if="activeTab === 'home'">
+          <CreatorRecentlyUploadedPanel :latest-artwork="latestArtwork" @post="goUpload" />
 
-        <div class="dashboard-grid" v-if="!loading && !error">
-          <CreatorReactionsCard :stats="reactionStats" />
-          <CreatorThemeCard />
-          <CreatorContestCard />
-          <article class="pr-card">PR</article>
-        </div>
-
-        <p v-if="loading" class="state-note">Loading dashboard...</p>
-        <p v-else-if="error" class="state-note error">{{ error }}</p>
-
-        <div v-if="onboardingStep > 0" class="coachmark-backdrop" @click.self="finishOnboarding">
-          <div class="coachmark-card">
-            <p v-if="onboardingStep === 1" class="coachmark-text">
-              Up to three recent posts will be displayed.
-              The numbers are updated in real-time and the increase since your last visit to the Dashboard is shown in blue text.
-            </p>
-            <p v-else class="coachmark-text">
-              Other content will be displayed, making it easier for you to get feedback on your work,
-              as well as finding new content recommended for you. This content changes regularly.
-            </p>
-
-            <button type="button" class="coachmark-btn" @click="onboardingStep === 1 ? nextOnboardingStep() : finishOnboarding()">
-              {{ onboardingStep === 1 ? 'Next' : 'Try it now' }}
-            </button>
+          <div class="dashboard-grid" v-if="!loading && !error">
+            <CreatorReactionsCard :stats="reactionStats" />
+            <CreatorThemeCard />
+            <CreatorContestCard />
+            <article class="pr-card">PR</article>
           </div>
+
+          <p v-if="loading" class="state-note">Loading dashboard...</p>
+          <p v-else-if="error" class="state-note error">{{ error }}</p>
+
+          <div v-if="onboardingStep > 0" class="coachmark-backdrop" @click.self="finishOnboarding">
+            <div class="coachmark-card">
+              <p v-if="onboardingStep === 1" class="coachmark-text">
+                Up to three recent posts will be displayed.
+                The numbers are updated in real-time and the increase since your last visit to the Dashboard is shown in blue text.
+              </p>
+              <p v-else class="coachmark-text">
+                Other content will be displayed, making it easier for you to get feedback on your work,
+                as well as finding new content recommended for you. This content changes regularly.
+              </p>
+
+              <button type="button" class="coachmark-btn" @click="onboardingStep === 1 ? nextOnboardingStep() : finishOnboarding()">
+                {{ onboardingStep === 1 ? 'Next' : 'Try it now' }}
+              </button>
+            </div>
+          </div>
+        </template>
+
+        <!-- Works tab content -->
+        <DashboardWorksPanel v-if="activeTab === 'works'" />
+
+        <!-- Placeholder tabs -->
+        <div v-if="activeTab !== 'home' && activeTab !== 'works'" class="tab-placeholder">
+          <p>{{ activeTab }} tab — coming soon</p>
         </div>
       </div>
     </section>
@@ -273,6 +286,15 @@ watch(
   padding: 0.75rem 0.9rem;
   color: #374151;
   font-weight: 700;
+}
+
+.tab-placeholder {
+  margin-top: 1rem;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
 .state-note {

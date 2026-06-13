@@ -23,6 +23,35 @@ const errorHandler = (err, req, res, next) => {
         res.status(400);
     }
 
+    // Handle Mongoose validation errors — return 400 instead of 500
+    if (err.name === 'ValidationError') {
+        res.status(400);
+        const messages = Object.values(err.errors).map(e => e.message).join(', ');
+        return res.json({
+            message: messages || 'Validation failed',
+            stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+        });
+    }
+
+    // Handle Mongoose CastError (invalid ObjectId format) — return 400
+    if (err.name === 'CastError') {
+        res.status(400);
+        return res.json({
+            message: `Invalid ${err.path}: ${err.value}`,
+            stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+        });
+    }
+
+    // Handle MongoDB duplicate key errors — return 409
+    if (err.code === 11000) {
+        res.status(409);
+        const field = Object.keys(err.keyValue).join(', ');
+        return res.json({
+            message: `Duplicate value for: ${field}`,
+            stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+        });
+    }
+
     res.json({
         message: err.message,
         stack: process.env.NODE_ENV === 'production' ? null : err.stack,

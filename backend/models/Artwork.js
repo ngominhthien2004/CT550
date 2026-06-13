@@ -78,6 +78,12 @@ const artworkSchema = mongoose.Schema({
         type: Number,
         default: 0,
     },
+    // Series link (for manga artworks belonging to a series)
+    series: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Series',
+        default: null,
+    },
     // Moderation fields
     isHidden: { type: Boolean, default: false },
     hiddenBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },

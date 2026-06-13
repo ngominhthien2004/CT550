@@ -219,7 +219,7 @@ const getArtworks = async (req, res, next) => {
     try {
         const {
             type, ageRating, user, tag, q, limit: rawLimit,
-            sortBy, novelFormat, minWords, maxWords,
+            sortBy, novelFormat, minWords, maxWords, series,
         } = req.query;
         const query = { isHidden: { $ne: true } };
         const parsedLimit = Number.parseInt(rawLimit, 10);
@@ -228,6 +228,7 @@ const getArtworks = async (req, res, next) => {
         if (type) query.type = type;
         if (ageRating) query.ageRating = ageRating;
         if (user) query.user = user;
+        if (series) query.series = series;
         if (tag) {
             const foundTag = await Tag.findOne({ name: normalizeTagName(tag) });
             if (foundTag) query.tags = foundTag._id;
@@ -484,7 +485,7 @@ const createChapter = async (req, res, next) => {
             return next(new Error('Artwork not found'));
         }
         if (artwork.user.toString() !== req.user._id.toString()) {
-            res.status(401);
+            res.status(403);
             return next(new Error('Not authorized'));
         }
 
@@ -525,7 +526,7 @@ const deleteChapter = async (req, res, next) => {
 
         const artwork = await Artwork.findById(req.params.id);
         if (artwork.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-            res.status(401);
+            res.status(403);
             return next(new Error('Not authorized'));
         }
 
@@ -781,6 +782,44 @@ const getHiddenArtworks = async (req, res, next) => {
     }
 };
 
+// ─── Update Chapter ────────────────────────────────────────────────────────────
+const updateChapter = async (req, res, next) => {
+    try {
+        const chapter = await Chapter.findOne({
+            _id: req.params.chapterId,
+            artwork: req.params.id,
+        });
+        if (!chapter) {
+            res.status(404);
+            return next(new Error('Chapter not found'));
+        }
+
+        const artwork = await Artwork.findById(req.params.id);
+        if (!artwork) {
+            res.status(404);
+            return next(new Error('Artwork not found'));
+        }
+        if (artwork.user.toString() !== req.user._id.toString()) {
+            res.status(403);
+            return next(new Error('Not authorized'));
+        }
+
+        if (!req.body || (req.body.title === undefined && req.body.content === undefined)) {
+            res.status(400);
+            return next(new Error('Nothing to update - provide title or content'));
+        }
+
+        const { title, content } = req.body;
+        if (title !== undefined) chapter.title = title;
+        if (content !== undefined) chapter.content = content;
+
+        await chapter.save();
+        res.json(chapter);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createArtwork,
     getArtworks,
@@ -791,6 +830,7 @@ module.exports = {
     getChapters,
     getChapter,
     createChapter,
+    updateChapter,
     deleteChapter,
     saveReadingProgress,
     getReadingProgress,
