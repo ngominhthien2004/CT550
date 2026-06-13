@@ -1,4 +1,6 @@
 <script setup>
+import { useRouter } from 'vue-router'
+
 const props = defineProps({
   latestArtwork: {
     type: Object,
@@ -7,6 +9,14 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['post'])
+
+const router = useRouter()
+
+function goToArtwork() {
+  if (props.latestArtwork?._id) {
+    router.push(`/artworks/${props.latestArtwork._id}`)
+  }
+}
 
 function formatDate(value) {
   if (!value) {
@@ -40,7 +50,7 @@ function formatDate(value) {
           <p class="work-time">{{ formatDate(latestArtwork.createdAt) }}</p>
         </div>
 
-        <button type="button" class="edit-btn" aria-label="Edit artwork">
+        <button type="button" class="edit-btn" aria-label="Edit artwork" @click="goToArtwork">
           <i class="fa-solid fa-pen" aria-hidden="true"></i>
         </button>
 
