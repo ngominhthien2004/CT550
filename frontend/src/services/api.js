@@ -75,6 +75,7 @@ export const getComments = (params = {}) => api.get('/comments', { params })
 export const getCommentReplies = (params = {}) => api.get('/comments/replies', { params })
 export const createComment = (payload) => api.post('/comments', payload)
 export const deleteComment = (commentId) => api.delete(`/comments/${commentId}`)
+export const getCreatorReactions = (params = {}) => api.get('/users/dashboard/reactions', { params })
 
 export const bookmarkApi = {
   getMine: (params = {}) => api.get('/bookmarks', { params }),

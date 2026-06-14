@@ -10,6 +10,8 @@ const props = defineProps({
     }),
   },
 })
+
+defineEmits(['view-details'])
 </script>
 
 <template>
@@ -23,7 +25,7 @@ const props = defineProps({
       <li><span><i class="fa-regular fa-comment" aria-hidden="true"></i> Comments</span><strong>{{ stats.comments }}</strong></li>
     </ul>
 
-    <button type="button" class="detail-btn">View details <span class="badge">P</span></button>
+    <button type="button" class="detail-btn" @click="$emit('view-details')">View details</button>
     <p class="update-note">Latest update: April 6, 2026 2:00</p>
   </article>
 </template>
@@ -81,9 +83,6 @@ const props = defineProps({
   font-weight: 700;
 }
 
-.badge {
-  color: #f59e0b;
-}
 
 .update-note {
   margin-top: 0.52rem;

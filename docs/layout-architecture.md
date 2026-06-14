@@ -503,14 +503,8 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 │  │  │    (bảng upload gần đây)                          │ │
 │  │  │                                                   │ │
 │  │  └── .dashboard-grid (3 columns)                     │ │
-│  │       ├── <CreatorReactionsCard>                     │ │
-│  │       │    (thống kê tương tác)                      │ │
-│  │       ├── <CreatorThemeCard>                         │ │
-│  │       │    (cài đặt theme)                           │ │
-│  │       ├── <CreatorContestCard>                       │ │
-│  │       │    (thông tin contest)                       │ │
-│  │       └── .pr-card                                   │ │
-│  │            (thẻ khác - promotion)                    │ │
+│  │       └── <CreatorReactionsCard>                     │ │
+│  │            (thống kê tương tác)                      │ │
 │  └──────────────────────────────────────────────────────┘ │
 └──────────────────────────────────────────────────────────┘
 ```

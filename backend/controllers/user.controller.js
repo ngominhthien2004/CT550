@@ -4,6 +4,8 @@ const Follow = require('../models/Follow');
 const UserBlock = require('../models/UserBlock');
 const Artwork = require('../models/Artwork');
 const Comment = require('../models/Comment');
+const Like = require('../models/Like');
+const Bookmark = require('../models/Bookmark');
 const { createNotification } = require('../utils/notification');
 const Series = require('../models/Series');
 
@@ -530,6 +532,82 @@ const getUserSeries = async (req, res, next) => {
     }
 };
 
+const getCreatorReactions = async (req, res, next) => {
+    try {
+        const { type } = req.query;
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 20;
+        const skip = (page - 1) * limit;
+
+        if (!['comments', 'likes', 'bookmarks'].includes(type)) {
+            res.status(400);
+            return next(new Error('Invalid type query parameter. Must be one of comments, likes, bookmarks'));
+        }
+
+        // Find all artworks belonging to the user
+        const userArtworks = await Artwork.find({ user: req.user._id }).select('_id');
+        const artworkIds = userArtworks.map((art) => art._id);
+
+        if (artworkIds.length === 0) {
+            return res.json({
+                data: [],
+                total: 0,
+                page,
+                pages: 0,
+            });
+        }
+
+        let data = [];
+        let total = 0;
+
+        const filter = { artwork: { $in: artworkIds }, user: { $ne: req.user._id } };
+
+        if (type === 'comments') {
+            [data, total] = await Promise.all([
+                Comment.find(filter)
+                    .populate('user', 'username displayName avatar')
+                    .populate('artwork', 'title images type')
+                    .sort({ createdAt: -1 })
+                    .skip(skip)
+                    .limit(limit)
+                    .lean(),
+                Comment.countDocuments(filter),
+            ]);
+        } else if (type === 'likes') {
+            [data, total] = await Promise.all([
+                Like.find(filter)
+                    .populate('user', 'username displayName avatar')
+                    .populate('artwork', 'title images type')
+                    .sort({ createdAt: -1 })
+                    .skip(skip)
+                    .limit(limit)
+                    .lean(),
+                Like.countDocuments(filter),
+            ]);
+        } else if (type === 'bookmarks') {
+            [data, total] = await Promise.all([
+                Bookmark.find(filter)
+                    .populate('user', 'username displayName avatar')
+                    .populate('artwork', 'title images type')
+                    .sort({ createdAt: -1 })
+                    .skip(skip)
+                    .limit(limit)
+                    .lean(),
+                Bookmark.countDocuments(filter),
+            ]);
+        }
+
+        res.json({
+            data,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getUserProfile,
     updateUserProfile,
@@ -550,4 +628,5 @@ module.exports = {
     getUserSeries,
     postPresence,
     getPresenceHandler,
+    getCreatorReactions,
 };

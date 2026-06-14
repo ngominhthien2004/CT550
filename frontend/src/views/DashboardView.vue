@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import { CreatorDashboardTabs, CreatorRecentlyUploadedPanel, CreatorReactionsCard, CreatorThemeCard, CreatorContestCard } from '@/components/dashboard'
+import { CreatorDashboardTabs, CreatorRecentlyUploadedPanel, CreatorReactionsCard, DashboardReactionsPanel } from '@/components/dashboard'
 import DashboardWorksPanel from '@/components/dashboard/DashboardWorksPanel.vue'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
@@ -174,10 +174,7 @@ watch(
           <CreatorRecentlyUploadedPanel :latest-artwork="latestArtwork" @post="goUpload" />
 
           <div class="dashboard-grid" v-if="!loading && !error">
-            <CreatorReactionsCard :stats="reactionStats" />
-            <CreatorThemeCard />
-            <CreatorContestCard />
-            <article class="pr-card">PR</article>
+            <CreatorReactionsCard :stats="reactionStats" @view-details="activeTab = 'reactions'" />
           </div>
 
           <p v-if="loading" class="state-note">Loading dashboard...</p>
@@ -204,8 +201,11 @@ watch(
         <!-- Works tab content -->
         <DashboardWorksPanel v-if="activeTab === 'works'" />
 
+        <!-- Reactions tab content -->
+        <DashboardReactionsPanel v-if="activeTab === 'reactions'" />
+
         <!-- Placeholder tabs -->
-        <div v-if="activeTab !== 'home' && activeTab !== 'works'" class="tab-placeholder">
+        <div v-if="activeTab !== 'home' && activeTab !== 'works' && activeTab !== 'reactions'" class="tab-placeholder">
           <p>{{ activeTab }} tab — coming soon</p>
         </div>
       </div>
@@ -278,15 +278,6 @@ watch(
   align-items: start;
 }
 
-.pr-card {
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  border-radius: 18px;
-  min-height: 68px;
-  padding: 0.75rem 0.9rem;
-  color: #374151;
-  font-weight: 700;
-}
 
 .tab-placeholder {
   margin-top: 1rem;
@@ -375,10 +366,6 @@ watch(
 
   .dashboard-grid {
     grid-template-columns: 300px 1fr 300px;
-  }
-
-  .pr-card {
-    grid-column: 1 / 2;
   }
 }
 </style>

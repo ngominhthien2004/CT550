@@ -100,7 +100,7 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
 - ✅ **Kiểm duyệt bình luận (Admin):** Xem danh sách, tìm kiếm, xóa bình luận
 - ✅ **Quản lý thẻ (Admin):** Sửa tên/bản dịch/isLocked, gộp thẻ, xóa thẻ
 - ⚠️ **Tối ưu hóa CDN:** Cloudinary cho upload artwork và avatar/cover (có fallback local)
-- ❌ **Sự kiện/Cuộc thi (Contests):** Đã có `CreatorContestCard.vue` trong dashboard nhưng chưa có hệ thống cuộc thi hoàn chỉnh
+- ❌ **Sự kiện/Cuộc thi (Contests):** Đã loại bỏ (Removed) hoàn toàn khỏi hệ thống (bao gồm CreatorContestCard và các menu liên quan)
 - ✅ **Báo cáo (Report):** Xử lý báo cáo vi phạm request — backend + `AdminReportReviewPanel.vue`
 - ✅ **Triển khai (Deployment):** Cấu hình Render.com (`render.yaml`), Cloudflare (`wrangler.*`)
 - ✅ **Kiểm thử đơn vị:** 2 file test (paymentValidation, requestValidation) — 10 test cases

@@ -65,4 +65,4 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
 - Dashboard quản trị: Kiểm duyệt nội dung, quản lý người dùng và thống kê lưu lượng.
 - Báo cáo (Report): Hệ thống xử lý báo cáo vi phạm bản quyền hoặc nội dung không phù hợp.
 - Tối ưu hóa: Sử dụng CDN để tải ảnh chất lượng cao tốc độ cao.
-- Sự kiện/Cuộc thi (Contests): Trang chuyên biệt cho các cuộc thi vẽ theo chủ đề.
+- Sự kiện/Cuộc thi (Contests): (Đã loại bỏ / Removed)
