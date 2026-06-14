@@ -1,5 +1,6 @@
 const Artwork = require('../models/Artwork');
 const Follow = require('../models/Follow');
+const User = require('../models/User');
 
 const getFeed = async (req, res, next) => {
     try {
@@ -42,9 +43,12 @@ const getRankings = async (req, res, next) => {
         const period = req.query.period || 'daily';
         const type = req.query.type || 'all';
         const limit = parseInt(req.query.limit, 10) || 50;
+        const page = parseInt(req.query.page, 10) || 1;
+        const skip = (page - 1) * limit;
 
         const startDate = new Date();
         const filter = {};
+        filter.isHidden = { $ne: true };
 
         if (type !== 'all') {
             filter.type = type;
@@ -63,20 +67,24 @@ const getRankings = async (req, res, next) => {
             // Artworks by users who joined in the last 30 days
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-            const rookieUsers = await require('../models/User').find({
+            const rookieUsers = await User.find({
                 createdAt: { $gte: thirtyDaysAgo }
             }).select('_id');
             const rookieUserIds = rookieUsers.map(u => u._id);
             filter.user = { $in: rookieUserIds };
         }
 
-        const artworks = await Artwork.find(filter)
-            .populate('user', 'username displayName avatar')
-            .populate('tags', 'name')
-            .sort({ likeCount: -1, bookmarkCount: -1, viewCount: -1, createdAt: -1 })
-            .limit(limit);
+        const [artworks, total] = await Promise.all([
+            Artwork.find(filter)
+                .populate('user', 'username displayName avatar')
+                .populate('tags', 'name')
+                .sort({ likeCount: -1, bookmarkCount: -1, viewCount: -1, createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            Artwork.countDocuments(filter)
+        ]);
 
-        res.json({ period, type, artworks });
+        res.json({ period, type, artworks, total, page, pages: Math.ceil(total / limit) });
     } catch (error) {
         next(error);
     }

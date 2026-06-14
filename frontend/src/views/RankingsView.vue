@@ -4,6 +4,9 @@ import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { navItems } from '../constants/navigation'
 import { useFeedStore } from '../stores/feed.store'
+import { useLikeStore } from '../stores/like.store'
+import { useBookmarkStore } from '../stores/bookmark.store'
+import { useAuthStore } from '../stores/auth.store'
 
 const TYPE_OPTIONS = [
   { value: 'all', label: 'Overall' },
@@ -22,10 +25,18 @@ const PERIOD_OPTIONS = [
 const route = useRoute()
 const router = useRouter()
 const feedStore = useFeedStore()
+const likeStore = useLikeStore()
+const bookmarkStore = useBookmarkStore()
+const authStore = useAuthStore()
 
 const isNavCollapsed = ref(true)
 const period = ref('daily')
 const type = ref('all')
+const loadingMore = ref(false)
+
+// Track local like/bookmark state per artwork
+const localLikes = ref({})
+const localBookmarks = ref({})
 
 const rankings = computed(() => feedStore.rankings)
 
@@ -33,11 +44,22 @@ function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
 }
 
-async function loadRankings() {
+async function loadRankings(append = false) {
+  if (append) {
+    loadingMore.value = true
+  }
   await feedStore.fetchRankings({ 
     period: period.value,
-    type: type.value === 'all' ? undefined : type.value
+    type: type.value === 'all' ? undefined : type.value,
+    page: append ? feedStore.rankingsPage + 1 : 1,
+    append
   })
+  loadingMore.value = false
+}
+
+function loadMore() {
+  if (loadingMore.value || feedStore.rankingsPage >= feedStore.rankingsPages) return
+  loadRankings(true)
 }
 
 async function updateFilter(newPeriod, newType) {
@@ -53,6 +75,8 @@ async function updateFilter(newPeriod, newType) {
     path: '/rankings',
     query: { period: p, type: t },
   })
+  
+  await loadRankings(false)
 }
 
 function normalizeFromRoute() {
@@ -63,20 +87,129 @@ function normalizeFromRoute() {
   type.value = TYPE_OPTIONS.some(o => o.value === qType) ? qType : 'all'
 }
 
-const formattedDate = computed(() => {
-  const d = new Date()
-  d.setDate(d.getDate() - 1)
-  return d.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })
+const periodLabel = computed(() => {
+  const now = new Date()
+  switch (period.value) {
+    case 'daily':
+      const yesterday = new Date(now)
+      yesterday.setDate(yesterday.getDate() - 1)
+      return yesterday.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })
+    case 'weekly':
+      const weekAgo = new Date(now)
+      weekAgo.setDate(weekAgo.getDate() - 7)
+      return `${weekAgo.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+    case 'monthly':
+      const monthAgo = new Date(now)
+      monthAgo.setMonth(monthAgo.getMonth() - 1)
+      return `${monthAgo.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} - ${now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+    case 'rookie':
+      return 'All-time rookie artworks'
+    default:
+      return ''
+  }
 })
+
+const emptyStateMessage = computed(() => {
+  const periodLabel_map = {
+    daily: 'No artworks ranked in the last 24 hours',
+    weekly: 'No artworks ranked in the last 7 days',
+    monthly: 'No artworks ranked in the last 30 days',
+    rookie: 'No artworks from rookie creators yet'
+  }
+  return periodLabel_map[period.value] || 'No rankings found for this category.'
+})
+
+async function handleLikeToggle(item) {
+  if (!authStore.isAuthenticated) {
+    await router.push({ name: 'login', query: { redirect: '/rankings' } })
+    return
+  }
+  
+  const id = item._id
+  const currentStatus = localLikes.value[id] !== undefined ? localLikes.value[id] : Boolean(item.isLiked)
+  if (likeStore.isTogglingLike(id)) return
+  
+  // Optimistic update
+  localLikes.value[id] = !currentStatus
+  if (!localLikes.value[id]) {
+    item.likeCount = Math.max(0, (item.likeCount || 0) - 1)
+  } else {
+    item.likeCount = (item.likeCount || 0) + 1
+  }
+  
+  try {
+    await likeStore.toggleLikeByArtwork(id)
+    localLikes.value[id] = likeStore.getLikeStatus(id)
+  } catch {
+    // Revert on error
+    localLikes.value[id] = currentStatus
+    item.likeCount = currentStatus ? (item.likeCount || 0) + 1 : Math.max(0, (item.likeCount || 0) - 1)
+  }
+}
+
+async function handleBookmarkToggle(item) {
+  if (!authStore.isAuthenticated) {
+    await router.push({ name: 'login', query: { redirect: '/rankings' } })
+    return
+  }
+  
+  const id = item._id
+  const currentStatus = localBookmarks.value[id] !== undefined ? localBookmarks.value[id] : Boolean(item.isBookmarked)
+  if (bookmarkStore.isTogglingBookmark(id)) return
+  
+  // Optimistic update
+  localBookmarks.value[id] = !currentStatus
+  if (!localBookmarks.value[id]) {
+    item.bookmarkCount = Math.max(0, (item.bookmarkCount || 0) - 1)
+  } else {
+    item.bookmarkCount = (item.bookmarkCount || 0) + 1
+  }
+  
+  try {
+    await bookmarkStore.toggleBookmarkByArtwork(id)
+    localBookmarks.value[id] = bookmarkStore.getBookmarkStatus(id)
+  } catch {
+    // Revert on error
+    localBookmarks.value[id] = currentStatus
+    item.bookmarkCount = currentStatus ? (item.bookmarkCount || 0) + 1 : Math.max(0, (item.bookmarkCount || 0) - 1)
+  }
+}
+
+function getLikeStatus(item) {
+  const id = item._id
+  if (localLikes.value[id] !== undefined) return localLikes.value[id]
+  return Boolean(item.isLiked)
+}
+
+function getBookmarkStatus(item) {
+  const id = item._id
+  if (localBookmarks.value[id] !== undefined) return localBookmarks.value[id]
+  return Boolean(item.isBookmarked)
+}
+
+function isTogglingLike(item) {
+  return likeStore.isTogglingLike(item._id)
+}
+
+function isTogglingBookmark(item) {
+  return bookmarkStore.isTogglingBookmark(item._id)
+}
+
+function formatCount(num) {
+  if (!num) return '0'
+  if (num >= 10000) return (num / 10000).toFixed(1) + 'w'
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'k'
+  return num.toString()
+}
 
 onMounted(async () => {
   normalizeFromRoute()
-  await loadRankings()
+  await loadRankings(false)
 })
 
 watch(() => [route.query.period, route.query.type], async () => {
   normalizeFromRoute()
-  await loadRankings()
+  await loadRankings(false)
 })
 
 function pickCover(item) {
@@ -120,22 +253,46 @@ function getRankClass(rank) {
           </button>
         </div>
         <div class="date-indicator">
-          {{ formattedDate }}
+          {{ periodLabel }}
         </div>
       </div>
 
       <!-- Ranking Content -->
       <section class="ranking-content">
-        <div v-if="feedStore.loading" class="loading-overlay">
+        <div v-if="feedStore.loading && rankings.length === 0" class="loading-overlay">
           <div class="spinner"></div>
         </div>
 
-        <div v-else-if="feedStore.error" class="error-msg">
-          {{ feedStore.error }}
+        <div v-else-if="feedStore.error && rankings.length === 0" class="empty-state">
+          <div class="empty-icon error">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <h3 class="empty-title">Something went wrong</h3>
+          <p class="empty-desc">{{ feedStore.error }}</p>
+          <button class="empty-retry-btn" @click="loadRankings(false)">
+            <i class="fa-solid fa-rotate-right"></i> Try Again
+          </button>
         </div>
 
-        <div v-else-if="rankings.length === 0" class="empty-msg">
-          No rankings found for this category.
+        <div v-else-if="rankings.length === 0 && !feedStore.loading" class="empty-state">
+          <div class="empty-icon">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <h3 class="empty-title">No artworks ranked</h3>
+          <p class="empty-desc">{{ emptyStateMessage }}</p>
+          <div class="empty-hints">
+            <p class="empty-hint-label">Try:</p>
+            <div class="empty-hint-chips">
+              <button 
+                v-for="opt in PERIOD_OPTIONS.filter(o => o.value !== period)" 
+                :key="opt.value"
+                class="hint-chip"
+                @click="updateFilter(opt.value, null)"
+              >
+                {{ opt.label }}
+              </button>
+            </div>
+          </div>
         </div>
 
         <div v-else class="ranking-list">
@@ -148,7 +305,7 @@ function getRankClass(rank) {
             </div>
 
             <router-link :to="`/artworks/${item._id}`" class="rank-image-link">
-              <img :src="pickCover(item)" :alt="item.title" class="rank-thumb" />
+              <img :src="pickCover(item)" :alt="item.title" class="rank-thumb" loading="lazy" />
             </router-link>
 
             <div class="rank-info">
@@ -161,18 +318,56 @@ function getRankClass(rank) {
                   <span class="author-name">{{ item.user?.displayName || item.user?.username }}</span>
                 </router-link>
               </div>
+              <div class="rank-stats-row">
+                <span class="stat-label">
+                  <i class="fa-regular fa-eye"></i>
+                  {{ formatCount(item.viewCount || 0) }}
+                </span>
+                <span class="stat-label">
+                  <i class="fa-regular fa-heart"></i>
+                  {{ formatCount(item.likeCount || 0) }}
+                </span>
+                <span class="stat-label">
+                  <i class="fa-regular fa-bookmark"></i>
+                  {{ formatCount(item.bookmarkCount || 0) }}
+                </span>
+              </div>
             </div>
 
             <div class="rank-actions">
-              <div class="stat-item">
-                <i class="fa-solid fa-heart"></i>
-                <span>{{ item.likeCount || 0 }}</span>
-              </div>
-              <button class="bookmark-btn-round">
-                <i class="fa-regular fa-bookmark"></i>
+              <button 
+                class="action-btn like-btn" 
+                :class="{ 'is-active': getLikeStatus(item) }"
+                :disabled="isTogglingLike(item)"
+                @click="handleLikeToggle(item)"
+                aria-label="Like"
+              >
+                <i :class="getLikeStatus(item) ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
+                <span>{{ formatCount(item.likeCount || 0) }}</span>
+              </button>
+              <button 
+                class="action-btn bookmark-btn" 
+                :class="{ 'is-active': getBookmarkStatus(item) }"
+                :disabled="isTogglingBookmark(item)"
+                @click="handleBookmarkToggle(item)"
+                aria-label="Bookmark"
+              >
+                <i :class="getBookmarkStatus(item) ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'"></i>
               </button>
             </div>
           </article>
+        </div>
+
+        <!-- Load More -->
+        <div v-if="feedStore.rankingsPage < feedStore.rankingsPages" class="load-more-wrap">
+          <button 
+            class="load-more-btn" 
+            :disabled="loadingMore"
+            @click="loadMore"
+          >
+            <span v-if="loadingMore" class="spinner-sm"></span>
+            <span v-else>Load More</span>
+          </button>
         </div>
       </section>
     </div>
@@ -191,14 +386,14 @@ function getRankClass(rank) {
   display: flex;
   gap: 8px;
   margin-top: 24px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--line);
 }
 
 .type-tab-btn {
   padding: 12px 24px;
   font-size: 15px;
   font-weight: 700;
-  color: #5c5c5c;
+  color: var(--muted);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -207,11 +402,11 @@ function getRankClass(rank) {
 }
 
 .type-tab-btn:hover {
-  color: #0096fa;
+  color: var(--accent);
 }
 
 .type-tab-btn.active {
-  color: #0096fa;
+  color: var(--accent);
 }
 
 .type-tab-btn.active::after {
@@ -221,7 +416,7 @@ function getRankClass(rank) {
   left: 0;
   right: 0;
   height: 3px;
-  background: #0096fa;
+  background: var(--accent);
   border-radius: 3px 3px 0 0;
 }
 
@@ -237,7 +432,7 @@ function getRankClass(rank) {
 .period-tabs {
   display: flex;
   gap: 4px;
-  background: #f1f5f9;
+  background: var(--surface-alt);
   padding: 4px;
   border-radius: 8px;
 }
@@ -246,7 +441,7 @@ function getRankClass(rank) {
   padding: 6px 16px;
   font-size: 14px;
   font-weight: 500;
-  color: #64748b;
+  color: var(--muted);
   background: transparent;
   border: none;
   border-radius: 6px;
@@ -255,28 +450,28 @@ function getRankClass(rank) {
 }
 
 .period-tab-btn:hover {
-  color: #0f172a;
+  color: var(--text);
 }
 
 .period-tab-btn.active {
-  background: #ffffff;
-  color: #0096fa;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: var(--shadow-sm);
 }
 
 .date-indicator {
   font-size: 14px;
-  color: #64748b;
+  color: var(--muted);
   font-weight: 500;
 }
 
 /* List Items */
 .ranking-content {
   margin-top: 24px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 12px;
-  min-height: 400px;
+  min-height: 600px;
   position: relative;
 }
 
@@ -284,7 +479,7 @@ function getRankClass(rank) {
   display: flex;
   align-items: center;
   padding: 24px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--line);
   transition: background 0.2s;
 }
 
@@ -293,7 +488,7 @@ function getRankClass(rank) {
 }
 
 .ranking-item:hover {
-  background: #fafafa;
+  background: var(--surface-alt);
 }
 
 .rank-side {
@@ -308,7 +503,7 @@ function getRankClass(rank) {
 .rank-number {
   font-size: 24px;
   font-weight: 900;
-  color: #94a3b8;
+  color: var(--muted);
 }
 
 .rank-top-1 { color: #facc15; font-size: 32px; }
@@ -317,7 +512,7 @@ function getRankClass(rank) {
 
 .rank-trend {
   font-size: 10px;
-  color: #94a3b8;
+  color: var(--muted);
   margin-top: 4px;
 }
 
@@ -327,7 +522,7 @@ function getRankClass(rank) {
   flex-shrink: 0;
   border-radius: 8px;
   overflow: hidden;
-  background: #f8fafc;
+  background: var(--surface-alt);
   display: block;
 }
 
@@ -347,7 +542,7 @@ function getRankClass(rank) {
   padding: 0 24px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .rank-title {
@@ -357,7 +552,7 @@ function getRankClass(rank) {
 }
 
 .rank-title a {
-  color: #1f2937;
+  color: var(--text);
   text-decoration: none;
 }
 
@@ -375,12 +570,12 @@ function getRankClass(rank) {
   align-items: center;
   gap: 8px;
   text-decoration: none;
-  color: #6b7280;
+  color: var(--muted);
   font-size: 14px;
 }
 
 .author-link:hover .author-name {
-  color: #0096fa;
+  color: var(--accent);
 }
 
 .author-avatar {
@@ -390,41 +585,118 @@ function getRankClass(rank) {
   object-fit: cover;
 }
 
-.rank-actions {
+.rank-stats-row {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
   gap: 16px;
-  width: 120px;
+  font-size: 13px;
+  color: var(--muted);
 }
 
-.stat-item {
+.stat-label {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #ef4444;
-  font-weight: 700;
-  font-size: 15px;
 }
 
-.bookmark-btn-round {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  color: #9ca3af;
+.rank-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100px;
+}
+
+.action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
   transition: all 0.2s;
+  width: 100%;
 }
 
-.bookmark-btn-round:hover {
-  background: #f3f4f6;
-  color: #3b82f6;
-  border-color: #3b82f6;
+.action-btn:hover {
+  background: var(--surface-alt);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.action-btn.is-active {
+  color: #ef4444;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.action-btn.is-active:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+}
+
+.action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bookmark-btn.is-active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+}
+
+.like-btn span {
+  font-size: 13px;
+}
+
+/* Load More */
+.load-more-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.load-more-btn {
+  padding: 10px 40px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.load-more-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--surface-alt);
+}
+
+.load-more-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner-sm {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--line);
+  border-top: 2px solid var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 .loading-overlay {
@@ -434,11 +706,115 @@ function getRankClass(rank) {
   height: 300px;
 }
 
+/* Empty & Error States */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  text-align: center;
+  min-height: 400px;
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  font-size: 32px;
+  color: var(--muted);
+}
+
+.empty-icon.error {
+  background: #fef2f2;
+  color: var(--danger);
+}
+
+.empty-title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.empty-desc {
+  margin: 0 0 24px;
+  font-size: 15px;
+  color: var(--muted);
+  max-width: 360px;
+  line-height: 1.5;
+}
+
+.empty-hints {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.empty-hint-label {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.empty-hint-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.hint-chip {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hint-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--surface-alt);
+}
+
+.empty-retry-btn {
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty-retry-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--surface-alt);
+}
+
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #3b82f6;
+  border: 3px solid var(--line);
+  border-top: 3px solid var(--accent);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -461,6 +837,17 @@ function getRankClass(rank) {
   }
   .rank-info {
     padding: 0 12px;
+  }
+  .rank-actions {
+    width: 60px;
+  }
+  .action-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .rank-stats-row {
+    flex-wrap: wrap;
+    gap: 8px;
   }
 }
 </style>
