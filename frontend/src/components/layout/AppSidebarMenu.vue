@@ -48,6 +48,7 @@ const illuWrlStyleSections = computed(() => {
         { id: 'rankings', label: 'Rankings', to: '/rankings', icon: 'fa-solid fa-crown' },
         { id: 'latest-all', label: 'Newest by all', to: '/newest_by_all', icon: 'fa-solid fa-wand-sparkles' },
         ...manageGroup,
+        { id: 'ai-chat', label: 'AI Chat', to: '/chat', icon: 'fa-solid fa-robot' },
       ],
     ]
   }

@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import AppSidebarMenu from './AppSidebarMenu.vue'
 import AppTopBar from './AppTopBar.vue'
 
@@ -10,49 +10,74 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  isNavCollapsed: {
-    type: Boolean,
-    default: false,
-  },
   siteName: {
     type: String,
     default: 'IlluWrl',
   },
 })
 
-defineEmits(['toggle-sidebar'])
+const isNavCollapsed = ref(false)
+const showBackToTop = ref(false)
+let scrollHandler = null
+
+function toggleSidebar() {
+  isNavCollapsed.value = !isNavCollapsed.value
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 
 watch(
-  () => props.isNavCollapsed,
+  isNavCollapsed,
   (isCollapsed) => {
     document.body.style.overflow = isCollapsed ? '' : 'hidden'
   },
   { immediate: true },
 )
 
+onMounted(() => {
+  scrollHandler = () => {
+    showBackToTop.value = window.scrollY > 300
+  }
+  window.addEventListener('scroll', scrollHandler, { passive: true })
+})
+
 onBeforeUnmount(() => {
   document.body.style.overflow = ''
+  if (scrollHandler) {
+    window.removeEventListener('scroll', scrollHandler)
+  }
 })
 </script>
 
 <template>
   <div class="app-layout">
-    <div v-if="!isNavCollapsed" class="sidebar-backdrop" :style="{ zIndex: SIDEBAR_Z_INDEX - 1 }" @click="$emit('toggle-sidebar')"></div>
+    <div v-if="!isNavCollapsed" class="sidebar-backdrop" :style="{ zIndex: SIDEBAR_Z_INDEX - 1 }" @click="toggleSidebar"></div>
 
     <AppSidebarMenu
       :nav-items="navItems"
       :site-name="siteName"
       :is-nav-collapsed="isNavCollapsed"
       :style="{ zIndex: SIDEBAR_Z_INDEX }"
-      @close-sidebar="$emit('toggle-sidebar')"
+      @close-sidebar="toggleSidebar"
     />
 
     <section class="main-pane">
-      <AppTopBar :site-name="siteName" @toggle-sidebar="$emit('toggle-sidebar')" />
+      <AppTopBar :site-name="siteName" @toggle-sidebar="toggleSidebar" />
       <div class="main-content">
         <slot />
       </div>
     </section>
+
+    <button
+      v-show="showBackToTop"
+      class="back-to-top"
+      @click="scrollToTop"
+      aria-label="Back to top"
+    >
+      <i class="fa-solid fa-arrow-up"></i>
+    </button>
   </div>
 </template>
 
@@ -101,5 +126,31 @@ onBeforeUnmount(() => {
     margin: 0 18px;
     gap: 0.6rem;
   }
+}
+
+.back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow, 0 2px 8px rgba(0,0,0,0.15));
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  z-index: 1050;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.back-to-top:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-2px);
 }
 </style>

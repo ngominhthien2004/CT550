@@ -28,6 +28,7 @@ import AIView from '../views/AIView.vue'
 import DrawingView from '../views/DrawingView.vue'
 import RequestManagementView from '../views/RequestManagementView.vue'
 import SeriesDetailView from '../views/SeriesDetailView.vue'
+import ChatView from '../views/ChatView.vue'
 import { useAuthStore } from '../stores/auth.store'
 
 const routes = [
@@ -79,6 +80,7 @@ const routes = [
   { path: '/requests/manage', name: 'request-management', component: RequestManagementView, meta: { requiresAuth: true } },
   { path: '/draw', name: 'draw', component: DrawingView, meta: { requiresAuth: true } },
   { path: '/ai', name: 'ai', component: AIView },
+  { path: '/chat', name: 'chat', component: ChatView, meta: { requiresAuth: true } },
   { path: '/signup', name: 'signup', component: SignUpView },
   { path: '/login', name: 'login', component: LoginView },
   { path: '/auth/callback', name: 'auth-callback', component: AuthCallbackView },
