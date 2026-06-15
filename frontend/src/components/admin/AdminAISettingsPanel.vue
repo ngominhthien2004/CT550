@@ -7,8 +7,10 @@ const props = defineProps({
 })
 
 const aiDetectionEnabled = ref(true)
+const autoTaggingEnabled = ref(false)
 const loading = ref(false)
 const saving = ref(false)
+const autoTagSaving = ref(false)
 const error = ref('')
 const successMsg = ref('')
 
@@ -18,6 +20,7 @@ async function loadSettings() {
   try {
     const { data } = await adminApi.getAiSettings()
     aiDetectionEnabled.value = data.aiDetectionEnabled
+    autoTaggingEnabled.value = data.autoTaggingEnabled
   } catch (fetchError) {
     error.value = fetchError?.response?.data?.message || 'Failed to load AI settings'
   } finally {
@@ -44,6 +47,25 @@ async function toggleAiDetection() {
   }
 }
 
+async function toggleAutoTagging() {
+  autoTagSaving.value = true
+  error.value = ''
+  successMsg.value = ''
+  try {
+    const newValue = !autoTaggingEnabled.value
+    const { data } = await adminApi.updateAiSettings({ autoTaggingEnabled: newValue })
+    autoTaggingEnabled.value = data.autoTaggingEnabled
+    successMsg.value = `Auto-tagging ${data.autoTaggingEnabled ? 'enabled' : 'disabled'}`
+    setTimeout(() => { successMsg.value = '' }, 3000)
+  } catch (toggleError) {
+    error.value = toggleError?.response?.data?.message || 'Failed to update auto-tagging settings'
+    // revert on error
+    autoTaggingEnabled.value = !autoTaggingEnabled.value
+  } finally {
+    autoTagSaving.value = false
+  }
+}
+
 watch(() => props.activeTab, (tab) => {
   if (tab === 'ai') {
     loadSettings()
@@ -57,7 +79,7 @@ watch(() => props.activeTab, (tab) => {
 
     <div v-else class="ai-settings-content">
       <h2>AI Feature Settings</h2>
-      <p class="text-secondary">Control the availability of AI-powered features on the platform.</p>
+      <p class="text-secondary">Control the availability of AI-powered features and automation on the platform.</p>
 
       <p v-if="error" class="error-note">{{ error }}</p>
       <p v-if="successMsg" class="success-note">{{ successMsg }}</p>
@@ -79,6 +101,26 @@ watch(() => props.activeTab, (tab) => {
           />
           <span class="toggle-slider"></span>
           <span class="toggle-label">{{ aiDetectionEnabled ? 'Enabled' : 'Disabled' }}</span>
+        </label>
+      </div>
+
+      <div class="ai-toggle-card">
+        <div class="ai-toggle-info">
+          <strong>Auto Image Tagging</strong>
+          <span class="text-secondary small">
+            When enabled, uploaded images will be automatically analyzed to suggest relevant tags.
+            Users will see auto-generated tag suggestions during upload.
+          </span>
+        </div>
+        <label class="toggle-switch" :class="{ 'is-disabled': autoTagSaving }">
+          <input
+            type="checkbox"
+            :checked="autoTaggingEnabled"
+            :disabled="autoTagSaving"
+            @change="toggleAutoTagging"
+          />
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">{{ autoTaggingEnabled ? 'Enabled' : 'Disabled' }}</span>
         </label>
       </div>
 

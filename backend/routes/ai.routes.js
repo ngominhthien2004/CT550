@@ -6,6 +6,7 @@ const {
     searchByAI,
     summarizeArtwork,
     detectAIImage,
+    autoTagUpload,
 } = require('../controllers/ai.controller.js');
 const { protect } = require('../middlewares/auth.middleware');
 
@@ -17,5 +18,6 @@ router.post('/recommend', protect, recommendArtworks);
 router.post('/search', protect, searchByAI);
 router.post('/summarize/:artworkId', protect, summarizeArtwork);
 router.post('/detect-image', protect, upload.single('image'), detectAIImage);
+router.post('/auto-tag', protect, upload.single('image'), autoTagUpload);
 
 module.exports = router;

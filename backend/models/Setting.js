@@ -4,6 +4,7 @@ const settingSchema = mongoose.Schema({
   _id: { type: String, required: true },  // singleton key: 'global'
   aiDetectionEnabled: { type: Boolean, default: true },
   aiDetectionThreshold: { type: Number, default: 70, min: 0, max: 100 },
+  autoTaggingEnabled: { type: Boolean, default: false },
 }, { timestamps: true });
 
 // In-memory cache

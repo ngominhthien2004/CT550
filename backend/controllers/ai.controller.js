@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const { chatWithAI, generateWithPrompt } = require('../services/ai.service.js');
 const { detectAIWithHuggingFace, detectWithMetadataAnalysis } = require('../services/huggingface.service.js');
+const { autoTagImage } = require('../services/autoTag.service.js');
 const User = require('../models/User');
 const Setting = require('../models/Setting');
 
@@ -121,10 +122,35 @@ const detectAIImage = asyncHandler(async (req, res) => {
     res.json(result);
 });
 
+const autoTagUpload = asyncHandler(async (req, res) => {
+    if (!req.file) {
+        res.status(400);
+        throw new Error('Please upload an image');
+    }
+
+    const settings = await Setting.getSettings();
+    if (!settings.autoTaggingEnabled) {
+        res.status(403);
+        throw new Error('Auto-tagging is currently disabled by admin');
+    }
+
+    const imageBuffer = req.file.buffer;
+    const base64Image = imageBuffer.toString('base64');
+
+    const tags = await autoTagImage(base64Image);
+
+    res.json({
+        success: true,
+        tags,
+        count: tags.length,
+    });
+});
+
 module.exports = {
     chat,
     recommendArtworks,
     searchByAI,
     summarizeArtwork,
-    detectAIImage
+    detectAIImage,
+    autoTagUpload
 };

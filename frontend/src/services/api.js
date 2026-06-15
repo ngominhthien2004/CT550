@@ -71,6 +71,11 @@ export const reportArtwork = (artworkId, payload) => api.post(`/artworks/${artwo
 export const getTags = (params = {}) => api.get('/tags', { params })
 export const getTagDetail = (tagName) => api.get(`/tags/${encodeURIComponent(tagName)}`)
 
+// Auto-tag image via AI
+export const autoTagImage = (formData) => api.post('/ai/auto-tag', formData, {
+  headers: { 'Content-Type': 'multipart/form-data' },
+})
+
 export const getComments = (params = {}) => api.get('/comments', { params })
 export const getCommentReplies = (params = {}) => api.get('/comments/replies', { params })
 export const createComment = (payload) => api.post('/comments', payload)

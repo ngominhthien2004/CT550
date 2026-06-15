@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { UploadTypeHero, UploadTagSelector, UploadContentDetails, UploadPublicationSettings } from '@/components/upload'
 import { navItems } from '../constants/navigation'
-import api, { getTags } from '../services/api'
+import api, { autoTagImage, getTags } from '../services/api'
 import { useArtworkStore } from '../stores/artwork.store'
 import { getApiErrorMessage } from '../utils/apiErrors'
 import { toggleNavCollapsed } from '../utils/viewNavigation'
@@ -50,6 +50,9 @@ const aiDetectionError = ref('')
 const aiDetectionLoading = ref(false)
 const detectRequestId = ref(0)
 const defaultAiThreshold = 70
+const autoTagLoading = ref(false)
+const autoTagError = ref('')
+let autoTagRequestId = 0
 
 const createDefaultForm = () => ({
   title: '',
@@ -189,6 +192,9 @@ function resetPreviewState() {
   aiDetectionError.value = ''
   aiDetectionLoading.value = false
   detectRequestId.value += 1
+  autoTagLoading.value = false
+  autoTagError.value = ''
+  autoTagRequestId += 1
 }
 
 function handlePrimaryFileChange(file) {
@@ -198,6 +204,7 @@ function handlePrimaryFileChange(file) {
   }
   previewUrl.value = URL.createObjectURL(file)
   runAiDetection(file)
+  runAutoTagging(file)
 }
 
 async function runAiDetection(file) {
@@ -227,6 +234,39 @@ async function runAiDetection(file) {
   } finally {
     if (requestId === detectRequestId.value) {
       aiDetectionLoading.value = false
+    }
+  }
+}
+
+async function runAutoTagging(file) {
+  const requestId = (autoTagRequestId += 1)
+  autoTagLoading.value = true
+  autoTagError.value = ''
+
+  try {
+    const formData = new FormData()
+    formData.append('image', file)
+    const { data } = await autoTagImage(formData)
+    if (requestId !== autoTagRequestId) return
+
+    if (data?.success && Array.isArray(data?.tags) && data.tags.length > 0) {
+      // Auto-add tags that aren't already in the form
+      for (const tagName of data.tags) {
+        const normalized = normalizeTagName(tagName)
+        if (normalized && !form.tags.includes(normalized) && form.tags.length < 10) {
+          form.tags.push(normalized)
+        }
+      }
+    }
+  } catch (error) {
+    if (requestId !== autoTagRequestId) return
+    // Silently fail for auto-tagging - it's a convenience feature
+    if (error?.response?.status !== 403) {
+      autoTagError.value = getApiErrorMessage(error, '')
+    }
+  } finally {
+    if (requestId === autoTagRequestId) {
+      autoTagLoading.value = false
     }
   }
 }
