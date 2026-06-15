@@ -24,8 +24,7 @@ dist-ssr
 *.sw?
 
 # Server runtime artifacts
-backend/.server-errors.tmp
-backend/.server-output.tmp
+backend/.server*.tmp
 
 # Local-only artifacts (keep on machine, do not push)
 test-artifacts/

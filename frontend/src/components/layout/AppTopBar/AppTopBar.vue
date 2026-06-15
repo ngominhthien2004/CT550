@@ -125,7 +125,7 @@ const userMainLinks = computed(() => {
 const userLibraryLinks = [
   { label: 'My Favorite', to: '/favorites' },
   { label: 'Bookmarks', to: '/bookmarks' },
-  { label: 'Browsing history', to: '/feed' },
+  { label: 'Browsing history', to: '/history' },
   { label: 'Markers', to: '/rankings' },
 ]
 

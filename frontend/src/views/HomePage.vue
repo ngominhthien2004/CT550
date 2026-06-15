@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid, HomeFeedColumn, HomeHeroBanner, HomeRecommendedUsers, HomeTabs, HomeTagStrip } from '@/components/home'
 import { getArtworks, getTags } from '../services/api'
+import api from '../services/api'
 import { navItems } from '../constants/navigation'
 import heroImage from '../assets/hero.png'
 import { useFollowStore } from '../stores/follow.store'
@@ -12,6 +13,7 @@ const isNavCollapsed = ref(true)
 const liveWorks = ref([])
 const liveTags = ref([])
 const recommendedUsers = ref([])
+const forYouWorks = ref([])
 const heroSlide = {
   title: 'Featured gallery',
   image: heroImage,
@@ -28,6 +30,12 @@ const normalizedWorks = computed(() =>
 
 const spotlightWorks = computed(() => normalizedWorks.value.slice(0, 12))
 const feedWorks = computed(() => normalizedWorks.value.slice(12, 26))
+const displayFeedWorks = computed(() => {
+  if (authStore.isAuthenticated && forYouWorks.value.length > 0) {
+    return forYouWorks.value
+  }
+  return feedWorks.value
+})
 
 function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
@@ -101,8 +109,21 @@ async function loadHomeTags() {
   }
 }
 
+async function loadForYou() {
+  if (!authStore.isAuthenticated) return
+  try {
+    const { data } = await api.get('/feed/for-you?limit=14')
+    if (data?.artworks?.length) {
+      forYouWorks.value = data.artworks
+    }
+  } catch (_error) {
+    // Silently fall back to default feed
+  }
+}
+
 onMounted(async () => {
   await Promise.all([loadHomeArtworks(), loadHomeTags()])
+  await loadForYou()
 })
 
 async function toggleFollowFromHome(userId) {
@@ -124,7 +145,7 @@ async function toggleFollowFromHome(userId) {
         <HomeArtworkGrid :works="spotlightWorks" />
 
         <div class="home-feed-layout">
-          <HomeFeedColumn :works="feedWorks" />
+          <HomeFeedColumn :works="displayFeedWorks" />
 
           <aside class="home-feed-sidebar">
             <HomeRecommendedUsers

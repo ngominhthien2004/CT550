@@ -28,6 +28,25 @@ const protect = async (req, res, next) => {
     }
 };
 
+const optionalAuth = async (req, res, next) => {
+    const authHeader = req.headers.authorization || '';
+    if (!authHeader.startsWith('Bearer ')) {
+        return next();
+    }
+
+    const token = authHeader.split(' ')[1];
+    try {
+        const decoded = jwt.verify(token, getJwtSecret());
+        const user = await User.findById(decoded.id).select('-password');
+        if (user) {
+            req.user = user;
+        }
+    } catch (error) {
+        // Token invalid or expired — just continue without user
+    }
+    next();
+};
+
 const admin = (req, res, next) => {
     if (req.user && req.user.role === 'admin') {
         next();
@@ -37,4 +56,4 @@ const admin = (req, res, next) => {
     }
 };
 
-module.exports = { protect, admin };
+module.exports = { protect, admin, optionalAuth };

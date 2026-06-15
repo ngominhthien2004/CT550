@@ -1,6 +1,10 @@
 const Artwork = require('../models/Artwork');
 const Follow = require('../models/Follow');
 const User = require('../models/User');
+const Bookmark = require('../models/Bookmark');
+const Like = require('../models/Like');
+const BrowseHistory = require('../models/BrowseHistory');
+const { getForYouArtworks } = require('../services/recommendation.service');
 
 const getFeed = async (req, res, next) => {
     try {
@@ -123,8 +127,25 @@ const getDiscovery = async (req, res, next) => {
     }
 };
 
+const getForYou = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Authentication required' });
+    }
+
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 20;
+
+    const result = await getForYouArtworks(req.user._id, page, limit);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
     getFeed,
     getRankings,
-    getDiscovery
+    getDiscovery,
+    getForYou,
 };

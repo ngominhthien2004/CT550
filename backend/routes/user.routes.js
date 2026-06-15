@@ -24,6 +24,8 @@ const {
     postPresence,
     getPresenceHandler,
     getCreatorReactions,
+    getBrowseHistory,
+    clearBrowseHistory,
 } = require('../controllers/user.controller');
 const { protect, admin } = require('../middlewares/auth.middleware');
 
@@ -88,6 +90,9 @@ router.get('/blocked', protect, getBlockedUsers);
 router.get('/:id/block-status', protect, getBlockStatus);
 router.get('/:id/followers', getFollowers);
 router.get('/:id/following', getFollowing);
+
+router.get('/me/history', protect, getBrowseHistory);
+router.delete('/me/history', protect, clearBrowseHistory);
 
 router.post('/:id/presence', protect, postPresence);
 router.get('/:id/presence', protect, getPresenceHandler);

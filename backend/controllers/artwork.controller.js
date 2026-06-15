@@ -5,6 +5,7 @@ const Setting = require('../models/Setting');
 const Chapter = require('../models/Chapter');
 const ReadingProgress = require('../models/ReadingProgress');
 const Tag = require('../models/Tag');
+const BrowseHistory = require('../models/BrowseHistory');
 const { createNotification } = require('../utils/notification');
 const { detectAIWithHuggingFace } = require('../services/huggingface.service');
 const { getAiDetectionThreshold } = require('../config/env');
@@ -300,6 +301,29 @@ const getArtworkById = async (req, res, next) => {
             // Increment view count atomically
             await Artwork.findByIdAndUpdate(req.params.id, { $inc: { viewCount: 1 } });
             artwork.viewCount = (artwork.viewCount || 0) + 1;
+
+            // Track browse history for authenticated users
+            if (req.user) {
+                await BrowseHistory.findOneAndUpdate(
+                    { user: req.user._id, artwork: artwork._id },
+                    { $set: { createdAt: new Date() } },
+                    { upsert: true }
+                );
+                // Cleanup: keep only last 200 entries per user
+                const count = await BrowseHistory.countDocuments({ user: req.user._id });
+                if (count > 200) {
+                    const oldestToKeep = await BrowseHistory.find({ user: req.user._id })
+                        .sort({ createdAt: -1 })
+                        .skip(200)
+                        .limit(1);
+                    if (oldestToKeep.length > 0) {
+                        await BrowseHistory.deleteMany({
+                            user: req.user._id,
+                            createdAt: { $lt: oldestToKeep[0].createdAt },
+                        });
+                    }
+                }
+            }
 
             // For novels, include chapter count from Chapter model
             let chapters = [];

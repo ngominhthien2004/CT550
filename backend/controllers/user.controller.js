@@ -6,6 +6,7 @@ const Artwork = require('../models/Artwork');
 const Comment = require('../models/Comment');
 const Like = require('../models/Like');
 const Bookmark = require('../models/Bookmark');
+const BrowseHistory = require('../models/BrowseHistory');
 const { createNotification } = require('../utils/notification');
 const Series = require('../models/Series');
 
@@ -608,6 +609,43 @@ const getCreatorReactions = async (req, res, next) => {
     }
 };
 
+const getBrowseHistory = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 20;
+    const skip = (page - 1) * limit;
+
+    const [entries, total] = await Promise.all([
+      BrowseHistory.find({ user: req.user._id })
+        .populate({
+          path: 'artwork',
+          populate: [
+            { path: 'user', select: 'username displayName avatar' },
+            { path: 'tags', select: 'name' },
+          ],
+        })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      BrowseHistory.countDocuments({ user: req.user._id }),
+    ]);
+
+    res.json({ entries, total, page, pages: Math.ceil(total / limit) });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const clearBrowseHistory = async (req, res, next) => {
+  try {
+    await BrowseHistory.deleteMany({ user: req.user._id });
+    res.json({ message: 'Browse history cleared' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
     getUserProfile,
     updateUserProfile,
@@ -629,4 +667,6 @@ module.exports = {
     postPresence,
     getPresenceHandler,
     getCreatorReactions,
+    getBrowseHistory,
+    clearBrowseHistory,
 };

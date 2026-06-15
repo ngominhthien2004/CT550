@@ -26,6 +26,7 @@ const illuWrlStyleSections = computed(() => {
     const manageGroup = [
       { id: 'dashboard', label: 'Dashboard', to: '/dashboard', icon: 'fa-solid fa-gauge-high' },
       { id: 'requests', label: 'Requests', to: '/requests/manage', icon: 'fa-regular fa-comments' },
+      { id: 'history', label: 'Browsing history', to: '/history', icon: 'fa-regular fa-clock' },
     ]
 
     if (authStore.user?.role === 'admin') {

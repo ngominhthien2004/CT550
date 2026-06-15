@@ -16,7 +16,7 @@ const {
     unhideArtwork,
     getHiddenArtworks,
 } = require('../controllers/artwork.controller');
-const { protect, admin } = require('../middlewares/auth.middleware');
+const { protect, admin, optionalAuth } = require('../middlewares/auth.middleware');
 const { getMaxUploadFileSizeBytes } = require('../config/env');
 
 const ALLOWED_ARTWORK_TYPES = new Set(['illust', 'manga', 'gif', 'novel']);
@@ -98,7 +98,7 @@ router.route('/admin/list')
     .get(protect, admin, getAdminArtworks);
 
 router.route('/:id')
-    .get(getArtworkById)
+    .get(optionalAuth, getArtworkById)
     .delete(protect, deleteArtwork);
 
 // Novel content update
