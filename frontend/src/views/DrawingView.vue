@@ -64,6 +64,16 @@
           <i class="fa-solid fa-download" /> JPG
         </button>
         <div class="tb-separator" />
+        <button class="tb-btn save-btn" @click="saveCurrentDrawing" title="Save to slot">
+          <i class="fa-solid fa-floppy-disk" />
+        </button>
+        <button class="tb-btn" @click="openSlotsDialog" title="Saved slots">
+          <i class="fa-solid fa-folder-open" />
+        </button>
+        <button class="tb-btn post-btn" @click="openPostDialog" title="Post drawing">
+          <i class="fa-solid fa-upload" />
+        </button>
+        <div class="tb-separator" />
         <button class="tb-btn" @click="fitToScreen" title="Fit to screen (0)">
           <i class="fa-solid fa-expand" />
         </button>
@@ -260,10 +270,91 @@
       @change="handleFileImport"
     />
   </div>
+
+  <!-- Save Slots Dialog -->
+  <Teleport to="body">
+    <div v-if="showSlotsDialog" class="modal-overlay" @click.self="showSlotsDialog = false">
+      <div class="modal-content modal-content--wide">
+        <div class="modal-header">
+          <h2>Saved Drawings</h2>
+          <button class="modal-close-btn" @click="showSlotsDialog = false">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div v-if="savedSlots.length === 0" class="empty-state">
+            <p>No saved drawings yet.</p>
+          </div>
+          <div v-else class="slots-grid">
+            <div v-for="slot in savedSlots" :key="slot.id" class="slot-card">
+              <img :src="slot.thumbnail" :alt="slot.name" class="slot-thumb" />
+              <div class="slot-info">
+                <span class="slot-name">{{ slot.name }}</span>
+                <span class="slot-date">{{ formatDate(slot.timestamp) }}</span>
+              </div>
+              <div class="slot-actions">
+                <button class="slot-btn load" @click="loadSlot(slot)">Load</button>
+                <button class="slot-btn delete" @click="handleDeleteSlot(slot.id)">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+
+  <!-- Post to Upload Dialog -->
+  <Teleport to="body">
+    <div v-if="showPostDialog" class="modal-overlay" @click.self="showPostDialog = false">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Post Drawing</h2>
+          <button class="modal-close-btn" @click="showPostDialog = false">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div v-if="postPreviewUrl" class="post-preview">
+            <img :src="postPreviewUrl" alt="Drawing preview" />
+          </div>
+          <div class="form-group">
+            <label>Title *</label>
+            <input v-model="postTitle" type="text" placeholder="Enter title" class="form-input" maxlength="100" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Type</label>
+              <select v-model="postType" class="form-select">
+                <option value="illust">Illustration</option>
+                <option value="manga">Manga</option>
+                <option value="novel">Novel</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Age Rating</label>
+              <select v-model="postAgeRating" class="form-select">
+                <option value="all-ages">All Ages</option>
+                <option value="r-18">R-18</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Tags (comma-separated)</label>
+            <input v-model="postTags" type="text" placeholder="e.g. fanart, original character" class="form-input" />
+          </div>
+          <p v-if="postError" class="form-error">{{ postError }}</p>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn cancel" @click="showPostDialog = false">Cancel</button>
+          <button class="modal-btn submit" :disabled="postSubmitting" @click="submitPost">
+            {{ postSubmitting ? 'Posting...' : 'Post' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
+import { createArtwork } from '../services/api.js'
 import { Stage as VStage, Layer as VLayer, Line as VLine, Rect as VRect, Image as VImage } from 'vue-konva'
 
 // ─── Constants ────────────────────────────────────────────────────────
@@ -469,6 +560,7 @@ function handleStageMouseUp(_e) {
       undoMap[lid].push(JSON.parse(JSON.stringify(line)))
       redoMap[lid] = []
     }
+    triggerAutoSave()
   }
 }
 
@@ -641,6 +733,7 @@ function handleFileImport(e) {
         y: (CANVAS_HEIGHT - h) / 2,
         width: w,
         height: h,
+        src: evt.target.result,
       })
     }
     img.onerror = () => {
@@ -805,6 +898,7 @@ onMounted(() => {
   nextTick(() => {
     handleResize()
     fitToScreen()
+    restoreAutosave()
   })
 })
 
@@ -813,7 +907,321 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyDown)
   window.removeEventListener('keyup', handleKeyUp)
   clearTimeout(zoomIndicatorTimer)
+  clearTimeout(autoSaveTimer)
 })
+
+// ─── Save Slots (localStorage) ──────────────────────────────────────────
+const SAVE_SLOTS_KEY = 'drawing_slots'
+const AUTO_SAVE_KEY = 'drawing_autosave'
+const MAX_SLOTS = 10
+const MAX_THUMB_W = 320
+const MAX_THUMB_H = 180
+const router = useRouter()
+
+const showSlotsDialog = ref(false)
+const savedSlots = ref([])
+
+function getSavedSlots() {
+  try {
+    return JSON.parse(localStorage.getItem(SAVE_SLOTS_KEY)) || []
+  } catch {
+    return []
+  }
+}
+
+function saveSlotsToStorage(slots) {
+  localStorage.setItem(SAVE_SLOTS_KEY, JSON.stringify(slots))
+}
+
+function serializeLayers() {
+  return layers.map(function (l) {
+    return {
+      id: l.id,
+      name: l.name,
+      visible: l.visible,
+      lines: l.lines.map(function (line) {
+        return JSON.parse(JSON.stringify(line))
+      }),
+      images: l.images.map(function (img) {
+        return {
+          x: img.x,
+          y: img.y,
+          width: img.width,
+          height: img.height,
+          src: img.src || '',
+        }
+      }),
+    }
+  })
+}
+
+async function generateThumbnail() {
+  var stage = stageRef.value.getStage()
+  if (!stage) return ''
+  var scale = Math.min(MAX_THUMB_W / CANVAS_WIDTH, MAX_THUMB_H / CANVAS_HEIGHT)
+  var offscreen = document.createElement('canvas')
+  offscreen.width = CANVAS_WIDTH * scale
+  offscreen.height = CANVAS_HEIGHT * scale
+  var ctx = offscreen.getContext('2d')
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, offscreen.width, offscreen.height)
+
+  for (var kLayer of stage.getLayers()) {
+    if (!kLayer.isVisible()) continue
+    try {
+      var dataURL = kLayer.toDataURL({
+        x: 0,
+        y: 0,
+        width: CANVAS_WIDTH,
+        height: CANVAS_HEIGHT,
+        pixelRatio: scale,
+      })
+      var img = await loadImage(dataURL)
+      ctx.drawImage(img, 0, 0, offscreen.width, offscreen.height)
+    } catch (_) { /* skip */ }
+  }
+  return offscreen.toDataURL('image/png')
+}
+
+function formatDate(isoStr) {
+  try {
+    var d = new Date(isoStr)
+    return d.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  } catch (_) {
+    return isoStr
+  }
+}
+
+async function saveCurrentDrawing() {
+  var slots = getSavedSlots()
+  var name = 'Drawing #' + (slots.length + 1)
+  var id = Date.now()
+  var thumbnail = await generateThumbnail()
+  var layersData = serializeLayers()
+  var slot = {
+    id: id,
+    name: name,
+    timestamp: new Date().toISOString(),
+    thumbnail: thumbnail,
+    layers: layersData,
+  }
+
+  if (slots.length >= MAX_SLOTS) {
+    slots.sort(function (a, b) {
+      return new Date(a.timestamp) - new Date(b.timestamp)
+    })
+    slots.shift()
+  }
+  slots.push(slot)
+  saveSlotsToStorage(slots)
+}
+
+function openSlotsDialog() {
+  savedSlots.value = getSavedSlots()
+  showSlotsDialog.value = true
+}
+
+function loadSlot(slot) {
+  if (confirm('Load this drawing? Current drawing will be replaced.')) {
+    loadFromSlot(slot)
+    showSlotsDialog.value = false
+  }
+}
+
+function handleDeleteSlot(slotId) {
+  if (confirm('Delete this saved drawing?')) {
+    var slots = getSavedSlots()
+    savedSlots.value = slots.filter(function (s) { return s.id !== slotId })
+    saveSlotsToStorage(savedSlots.value)
+  }
+}
+
+function loadFromSlot(slot) {
+  layers.splice(0, layers.length)
+  slot.layers.forEach(function (savedLayer) {
+    var newLayer = {
+      id: savedLayer.id,
+      name: savedLayer.name,
+      visible: savedLayer.visible,
+      lines: savedLayer.lines.map(function (line) { return { ...line } }),
+      images: [],
+    }
+    savedLayer.images.forEach(function (imgData) {
+      if (imgData.src) {
+        var img = new window.Image()
+        img.crossOrigin = 'Anonymous'
+        img.src = imgData.src
+        newLayer.images.push({
+          image: img,
+          x: imgData.x,
+          y: imgData.y,
+          width: imgData.width,
+          height: imgData.height,
+          src: imgData.src,
+        })
+      }
+    })
+    layers.push(newLayer)
+  })
+  activeLayerIndex.value = 0
+  var keys1 = Object.keys(undoMap)
+  for (var i1 = 0; i1 < keys1.length; i1++) { delete undoMap[keys1[i1]] }
+  var keys2 = Object.keys(redoMap)
+  for (var i2 = 0; i2 < keys2.length; i2++) { delete redoMap[keys2[i2]] }
+  nextTick(function () { fitToScreen() })
+}
+
+// ─── Auto-save ─────────────────────────────────────────────────────────
+var autoSaveTimer = null
+
+function triggerAutoSave() {
+  clearTimeout(autoSaveTimer)
+  autoSaveTimer = setTimeout(function () {
+    var data = serializeLayers()
+    localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(data))
+  }, 2000)
+}
+
+function restoreFromData(data) {
+  layers.splice(0, layers.length)
+  data.forEach(function (savedLayer) {
+    var newLayer = {
+      id: savedLayer.id,
+      name: savedLayer.name,
+      visible: savedLayer.visible,
+      lines: savedLayer.lines.map(function (line) { return { ...line } }),
+      images: [],
+    }
+    savedLayer.images.forEach(function (imgData) {
+      if (imgData.src) {
+        var img = new window.Image()
+        img.crossOrigin = 'Anonymous'
+        img.src = imgData.src
+        newLayer.images.push({
+          image: img,
+          x: imgData.x,
+          y: imgData.y,
+          width: imgData.width,
+          height: imgData.height,
+          src: imgData.src,
+        })
+      }
+    })
+    layers.push(newLayer)
+  })
+  activeLayerIndex.value = 0
+  var keys1 = Object.keys(undoMap)
+  for (var i1 = 0; i1 < keys1.length; i1++) { delete undoMap[keys1[i1]] }
+  var keys2 = Object.keys(redoMap)
+  for (var i2 = 0; i2 < keys2.length; i2++) { delete redoMap[keys2[i2]] }
+  nextTick(function () { fitToScreen() })
+}
+
+function restoreAutosave() {
+  try {
+    var autosave = localStorage.getItem(AUTO_SAVE_KEY)
+    if (!autosave) return
+    var data = JSON.parse(autosave)
+    var hasExistingContent = layers.some(function (l) {
+      return l.lines.length > 0 || l.images.length > 0
+    })
+    if (!hasExistingContent) {
+      restoreFromData(data)
+    } else if (confirm('You have an unsaved autosave. Restore it?')) {
+      restoreFromData(data)
+    }
+  } catch (_) { /* ignore */ }
+}
+
+// ─── Post to Upload ────────────────────────────────────────────────────
+const showPostDialog = ref(false)
+const postTitle = ref('')
+const postType = ref('illust')
+const postAgeRating = ref('all-ages')
+const postTags = ref('')
+const postSubmitting = ref(false)
+const postError = ref('')
+const postPreviewUrl = ref('')
+
+async function openPostDialog() {
+  postPreviewUrl.value = ''
+  postTitle.value = ''
+  postType.value = 'illust'
+  postAgeRating.value = 'all-ages'
+  postTags.value = ''
+  postError.value = ''
+  var blob = await exportToBlob()
+  if (blob) {
+    postPreviewUrl.value = URL.createObjectURL(blob)
+  }
+  showPostDialog.value = true
+}
+
+async function submitPost() {
+  if (!postTitle.value.trim()) {
+    postError.value = 'Title is required'
+    return
+  }
+  postSubmitting.value = true
+  postError.value = ''
+  try {
+    var blob = await exportToBlob()
+    if (!blob) throw new Error('Failed to export drawing')
+
+    var fd = new FormData()
+    fd.append('images', blob, 'drawing.png')
+    fd.append('title', postTitle.value.trim())
+    fd.append('type', postType.value)
+    fd.append('ageRating', postAgeRating.value)
+    if (postTags.value.trim()) {
+      fd.append('tags', postTags.value.trim())
+    }
+
+    var res = await createArtwork(fd)
+    var artworkId = res.data?.artwork?._id || res.data?._id
+    if (artworkId) {
+      showPostDialog.value = false
+      router.push('/artworks/' + artworkId)
+    }
+  } catch (err) {
+    postError.value = err?.response?.data?.message || err.message || 'Failed to post drawing'
+  } finally {
+    postSubmitting.value = false
+  }
+}
+
+async function exportToBlob() {
+  var stage = stageRef.value.getStage()
+  if (!stage) return null
+  var offscreen = document.createElement('canvas')
+  offscreen.width = CANVAS_WIDTH
+  offscreen.height = CANVAS_HEIGHT
+  var ctx = offscreen.getContext('2d')
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+
+  for (var kLayer of stage.getLayers()) {
+    if (!kLayer.isVisible()) continue
+    try {
+      var dataURL = kLayer.toDataURL({
+        x: 0,
+        y: 0,
+        width: CANVAS_WIDTH,
+        height: CANVAS_HEIGHT,
+        pixelRatio: 1,
+      })
+      var img = await loadImage(dataURL)
+      ctx.drawImage(img, 0, 0)
+    } catch (_) { /* skip */ }
+  }
+  return new Promise(function (resolve) { offscreen.toBlob(resolve, 'image/png') })
+}
 </script>
 
 <style scoped>
@@ -1335,5 +1743,275 @@ onBeforeUnmount(() => {
   .top-bar-right .tb-btn span {
     display: none;
   }
+}
+
+/* ─── Modals ──────────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #222226;
+  border: 1px solid #333338;
+  border-radius: 12px;
+  width: 460px;
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  color: #e0e0e0;
+}
+
+.modal-content--wide {
+  width: 640px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #333338;
+}
+
+.modal-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.modal-close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #888;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-btn:hover {
+  background: #33333a;
+  color: #fff;
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid #333338;
+}
+
+.modal-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modal-btn.cancel {
+  background: #33333a;
+  color: #aaa;
+}
+
+.modal-btn.cancel:hover {
+  background: #444;
+  color: #fff;
+}
+
+.modal-btn.submit {
+  background: #4a6cf7;
+  color: #fff;
+}
+
+.modal-btn.submit:hover:not(:disabled) {
+  background: #5b7df8;
+}
+
+.modal-btn.submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Post preview */
+.post-preview {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  max-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.post-preview img {
+  max-width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+}
+
+/* Form fields */
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: #1a1a1e;
+  color: #e0e0e0;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.form-input:focus,
+.form-select:focus {
+  border-color: #4a6cf7;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.form-error {
+  color: #ff4757;
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
+/* Save slots grid */
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.slot-card {
+  background: #1a1a1e;
+  border: 1px solid #333338;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+.slot-card:hover {
+  border-color: #4a6cf7;
+}
+
+.slot-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  background: #fff;
+}
+
+.slot-info {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.slot-name {
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slot-date {
+  font-size: 11px;
+  color: #888;
+}
+
+.slot-actions {
+  display: flex;
+  border-top: 1px solid #333338;
+}
+
+.slot-btn {
+  flex: 1;
+  padding: 6px;
+  border: none;
+  background: transparent;
+  color: #aaa;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.slot-btn:hover {
+  background: #33333a;
+}
+
+.slot-btn.load {
+  border-right: 1px solid #333338;
+  color: #4a6cf7;
+}
+
+.slot-btn.delete:hover {
+  color: #ff4757;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #888;
+  font-size: 14px;
+}
+
+/* Top bar save/post button accents */
+.tb-btn.save-btn {
+  color: #4ade80;
+}
+
+.tb-btn.save-btn:hover {
+  color: #6ee7a0;
+}
+
+.tb-btn.post-btn {
+  color: #4a6cf7;
+  font-weight: 600;
 }
 </style>
