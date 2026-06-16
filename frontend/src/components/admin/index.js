@@ -8,3 +8,5 @@ export { default as AdminTagManagementPanel } from './AdminTagManagementPanel.vu
 export { default as AdminAISettingsPanel } from './AdminAISettingsPanel.vue'
 export { default as AdminArtworkReportPanel } from './AdminArtworkReportPanel.vue'
 export { default as AdminHiddenArtworksPanel } from './AdminHiddenArtworksPanel.vue'
+export { default as AdminCommentReportPanel } from './AdminCommentReportPanel.vue'
+export { default as AdminUserReportPanel } from './AdminUserReportPanel.vue'

@@ -80,6 +80,7 @@ export const getComments = (params = {}) => api.get('/comments', { params })
 export const getCommentReplies = (params = {}) => api.get('/comments/replies', { params })
 export const createComment = (payload) => api.post('/comments', payload)
 export const deleteComment = (commentId) => api.delete(`/comments/${commentId}`)
+export const reportComment = (commentId, payload) => api.post(`/comments/${commentId}/report`, payload)
 export const getCreatorReactions = (params = {}) => api.get('/users/dashboard/reactions', { params })
 
 export const bookmarkApi = {
@@ -156,6 +157,19 @@ export const adminApi = {
   getHiddenArtworks: (params = {}) => api.get('/artworks/admin/hidden', { params }),
   hideArtwork: (artworkId, payload) => api.patch(`/artworks/admin/${artworkId}/hide`, payload),
   unhideArtwork: (artworkId) => api.patch(`/artworks/admin/${artworkId}/unhide`),
+}
+
+export const reportApi = {
+  // Comment reports
+  getReportedComments: (params = {}) => api.get('/comments/admin/reported', { params }),
+  resolveCommentReport: (reportId, payload) => api.patch(`/comments/admin/reports/${reportId}/resolve`, payload),
+
+  // User reports
+  reportUser: (userId, payload) => api.post(`/user-reports/${userId}/report`, payload),
+  getMyReports: (params = {}) => api.get('/user-reports/me/reports', { params }),
+  getAdminUserReports: (params = {}) => api.get('/user-reports/admin/reports', { params }),
+  resolveUserReport: (reportId, payload) => api.patch(`/user-reports/admin/reports/${reportId}/resolve`, payload),
+  getModerationCaseDetail: (params = {}) => api.get('/user-reports/admin/reports/detail', { params }),
 }
 
 export const messageApi = {

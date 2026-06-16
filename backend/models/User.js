@@ -46,6 +46,7 @@ const userSchema = mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user'
     },
+    isSuspended: { type: Boolean, default: false },
 }, {
     timestamps: true
 });

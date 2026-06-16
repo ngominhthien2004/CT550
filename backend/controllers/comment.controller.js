@@ -1,5 +1,7 @@
 const Comment = require('../models/Comment');
+const CommentReport = require('../models/CommentReport');
 const Artwork = require('../models/Artwork');
+const User = require('../models/User');
 const UserBlock = require('../models/UserBlock');
 const { createNotification } = require('../utils/notification');
 
@@ -277,10 +279,128 @@ const getAdminComments = async (req, res, next) => {
     }
 };
 
+// ─── Report Comment ─────────────────────────────────────────────────────────────
+const reportComment = async (req, res, next) => {
+    try {
+        const comment = await Comment.findById(req.params.id);
+        if (!comment) {
+            res.status(404);
+            return next(new Error('Comment not found'));
+        }
+
+        // Check existing pending report from the same user
+        const existingReport = await CommentReport.findOne({
+            comment: comment._id,
+            reportedBy: req.user._id,
+            status: 'pending',
+        });
+        if (existingReport) {
+            res.status(400);
+            return next(new Error('You have already reported this comment'));
+        }
+
+        await CommentReport.create({
+            comment: comment._id,
+            reportedBy: req.user._id,
+            reason: req.body.reason || 'other',
+            description: req.body.description || '',
+        });
+
+        // Notify all admins
+        const admins = await User.find({ role: 'admin' }).select('_id').limit(20);
+        await Promise.all(admins.map((admin) =>
+            createNotification({
+                userId: admin._id,
+                actorId: req.user._id,
+                type: 'system',
+                message: `Comment reported: "${comment.content ? comment.content.substring(0, 50) : 'emoji'}"`,
+            })
+        ));
+
+        res.status(201).json({ message: 'Comment report submitted for review' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// ─── Admin: Get Reported Comments ───────────────────────────────────────────────
+const getReportedComments = async (req, res, next) => {
+    try {
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
+        const skip = (page - 1) * limit;
+
+        const status = req.query.status || 'pending';
+        const filter = { status };
+
+        const [reports, total] = await Promise.all([
+            CommentReport.find(filter)
+                .populate('comment', 'content emoji artwork user')
+                .populate('reportedBy', 'username displayName')
+                .populate('resolvedBy', 'username displayName')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            CommentReport.countDocuments(filter),
+        ]);
+
+        // Populate nested fields for each report's comment
+        const populatedReports = await CommentReport.populate(reports, [
+            { path: 'comment.artwork', select: 'title type' },
+            { path: 'comment.user', select: 'username displayName' },
+        ]);
+
+        res.json({
+            reports: populatedReports,
+            total,
+            page,
+            pages: Math.ceil(total / limit) || 1,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// ─── Admin: Resolve Comment Report ──────────────────────────────────────────────
+const resolveCommentReport = async (req, res, next) => {
+    try {
+        const { id: reportId } = req.params;
+        const { action, note } = req.body;
+
+        const report = await CommentReport.findById(reportId);
+        if (!report) {
+            res.status(404);
+            return next(new Error('Report not found'));
+        }
+
+        report.status = action === 'dismiss' ? 'dismissed' : 'resolved';
+        report.resolvedBy = req.user._id;
+        report.resolvedAt = new Date();
+        report.resolutionNote = note || '';
+        await report.save();
+
+        // If action is 'delete', remove the reported comment
+        if (action === 'delete') {
+            const comment = await Comment.findById(report.comment);
+            if (comment) {
+                await comment.deleteOne();
+            }
+        }
+
+        res.json({ message: `Comment report ${report.status}`, reportId: report._id });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createComment,
     getComments,
     getReplies,
     deleteComment,
     getAdminComments,
+    reportComment,
+    getReportedComments,
+    resolveCommentReport,
 };

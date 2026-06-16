@@ -2,6 +2,7 @@
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useCommentStore } from '../../../stores/comment.store.js'
 import { useAuthStore } from '../../../stores/auth.store.js'
+import CommentReportModal from '../../comments/CommentReportModal.vue'
 
 const props = defineProps({
   artworkId: {
@@ -19,6 +20,8 @@ const authStore = useAuthStore()
 const commentContent = ref('')
 const emoji = ref('')
 const showStickerInput = ref(false)
+const reportModalComment = ref(null)
+const showReportModal = ref(false)
 const stickerPresets = ['❤️', '😊', '👍', '🔥', '🎉', '💛', '💜', '✨', '💪', '🙌', '🌈', '⭐']
 const isSubmitting = ref(false)
 const expandedRepliesByCommentId = ref({})
@@ -53,6 +56,22 @@ const canDeleteComment = (comment) => {
   return isAdmin.value 
     || comment?.user?._id === currentUserId.value 
     || props.artworkOwnerId === currentUserId.value
+}
+
+const canReportComment = (comment) => {
+  if (!currentUserId.value) return false
+  if (isAdmin.value) return false
+  return comment?.user?._id !== currentUserId.value
+}
+
+function openReportModal(comment) {
+  reportModalComment.value = comment
+  showReportModal.value = true
+}
+
+function closeReportModal() {
+  showReportModal.value = false
+  reportModalComment.value = null
 }
 
 const handleSubmit = async () => {
@@ -307,6 +326,13 @@ const getAvatar = (user) => {
                 >
                   {{ confirmDeleteId === comment._id ? 'Confirm?' : 'Delete' }}
                 </button>
+                <button
+                  v-if="canReportComment(comment)"
+                  class="btn-report p-0 border-0 bg-transparent"
+                  @click="openReportModal(comment)"
+                >
+                  <i class="fa-regular fa-flag me-1"></i>Report
+                </button>
               </div>
             </div>
           </div>
@@ -389,6 +415,14 @@ const getAvatar = (user) => {
         No comments yet. Be the first to comment!
       </div>
     </div>
+
+    <!-- Report Comment Modal -->
+    <CommentReportModal
+      :visible="showReportModal"
+      :comment="reportModalComment"
+      @close="closeReportModal"
+      @reported="closeReportModal"
+    />
   </div>
 </template>
 
@@ -537,6 +571,18 @@ const getAvatar = (user) => {
   color: #ff4444;
   font-weight: 800;
   animation: pulse 1s infinite;
+}
+
+.btn-report {
+  color: var(--muted, #6b7280);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-report:hover {
+  color: var(--accent, #3b82f6);
+  text-decoration: underline;
 }
 
 @keyframes pulse {

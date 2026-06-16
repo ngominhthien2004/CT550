@@ -9,10 +9,11 @@ import {
   AdminReportReviewPanel, AdminTagManagementPanel,
   AdminAISettingsPanel,
   AdminArtworkReportPanel, AdminHiddenArtworksPanel,
+  AdminCommentReportPanel, AdminUserReportPanel,
 } from '@/components/admin'
 import { navItems } from '../constants/navigation'
 import { useAuthStore } from '../stores/auth.store'
-import { adminApi } from '../services/api'
+import { adminApi, reportApi } from '../services/api'
 
 const isNavCollapsed = ref(true)
 const router = useRouter()
@@ -83,6 +84,18 @@ const hiddenArtworks = ref([])
 const loadingHiddenArtworks = ref(false)
 const hiddenArtworkPagination = ref({ page: 1, pages: 1, total: 0 })
 
+// Comment report state
+const commentReports = ref([])
+const loadingCommentReports = ref(false)
+const commentReportPagination = ref({ page: 1, pages: 1, total: 0 })
+const commentReportStatusFilter = ref('pending')
+
+// User report state
+const userReports = ref([])
+const loadingUserReports = ref(false)
+const userReportPagination = ref({ page: 1, pages: 1, total: 0 })
+const userReportStatusFilter = ref('pending')
+
 const activeTab = ref('users')
 
 const adminTabs = [
@@ -91,6 +104,8 @@ const adminTabs = [
   { id: 'artwork-reports', label: 'Artwork reports' },
   { id: 'comments', label: 'Comment moderation' },
   { id: 'hidden-artworks', label: 'Hidden artworks' },
+  { id: 'comment-reports', label: 'Comment reports' },
+  { id: 'user-reports', label: 'User reports' },
   { id: 'reports', label: 'Report review' },
   { id: 'tags', label: 'Tag management' },
   { id: 'ai', label: 'AI Settings' },
@@ -440,6 +455,92 @@ async function goToHiddenArtworkPage(nextPage) {
   await loadHiddenArtworks(nextPage)
 }
 
+// --- Comment reports ---
+async function loadCommentReports(nextPage = 1) {
+  loadingCommentReports.value = true
+  error.value = ''
+  try {
+    const params = { limit: 20, page: nextPage, status: commentReportStatusFilter.value }
+    const { data } = await reportApi.getReportedComments(params)
+    commentReports.value = data?.comments || []
+    commentReportPagination.value = {
+      page: data?.page || nextPage,
+      pages: data?.pages || 1,
+      total: data?.total || 0,
+    }
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to load comment reports'
+    commentReports.value = []
+    commentReportPagination.value = { page: 1, pages: 1, total: 0 }
+  } finally {
+    loadingCommentReports.value = false
+  }
+}
+
+async function resolveCommentReport(reportId, action = 'dismissed') {
+  if (mutating.value) return
+  const note = window.prompt('Resolution note (optional):')
+  if (note === null) return
+  mutating.value = true
+  error.value = ''
+  try {
+    await reportApi.resolveCommentReport(reportId, { action, note: note || '' })
+    commentReports.value = commentReports.value.filter((r) => r._id !== reportId)
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to resolve comment report'
+  } finally {
+    mutating.value = false
+  }
+}
+
+async function goToCommentReportPage(nextPage) {
+  if (nextPage < 1 || nextPage > commentReportPagination.value.pages || loadingCommentReports.value) return
+  await loadCommentReports(nextPage)
+}
+
+// --- User reports ---
+async function loadUserReports(nextPage = 1) {
+  loadingUserReports.value = true
+  error.value = ''
+  try {
+    const params = { limit: 20, page: nextPage, status: userReportStatusFilter.value }
+    const { data } = await reportApi.getAdminUserReports(params)
+    userReports.value = data?.reports || []
+    userReportPagination.value = {
+      page: data?.page || nextPage,
+      pages: data?.pages || 1,
+      total: data?.total || 0,
+    }
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to load user reports'
+    userReports.value = []
+    userReportPagination.value = { page: 1, pages: 1, total: 0 }
+  } finally {
+    loadingUserReports.value = false
+  }
+}
+
+async function resolveUserReport(reportId, action = 'dismiss') {
+  if (mutating.value) return
+  const note = window.prompt('Resolution note (optional):')
+  if (note === null) return
+  mutating.value = true
+  error.value = ''
+  try {
+    await reportApi.resolveUserReport(reportId, { action, note: note || '' })
+    userReports.value = userReports.value.filter((r) => r._id !== reportId)
+  } catch (fetchError) {
+    error.value = fetchError?.response?.data?.message || 'Failed to resolve user report'
+  } finally {
+    mutating.value = false
+  }
+}
+
+async function goToUserReportPage(nextPage) {
+  if (nextPage < 1 || nextPage > userReportPagination.value.pages || loadingUserReports.value) return
+  await loadUserReports(nextPage)
+}
+
 // --- Tag management ---
 async function loadTags(nextPage = 1) {
   loadingTags.value = true
@@ -520,7 +621,7 @@ function formatDate(dateValue) {
 
 onMounted(async () => {
   if (!isAdmin.value) return
-  await Promise.all([loadOverview(), loadUsers(1), loadArtworks(1), loadArtworkReports(1), loadHiddenArtworks(1)])
+  await Promise.all([loadOverview(), loadUsers(1), loadArtworks(1), loadArtworkReports(1), loadHiddenArtworks(1), loadCommentReports(1), loadUserReports(1)])
 })
 </script>
 
@@ -629,6 +730,32 @@ onMounted(async () => {
         :format-date="formatDate"
         @unhide-artwork="unhideArtwork"
         @go-page="goToHiddenArtworkPage"
+      />
+
+      <AdminCommentReportPanel
+        :active-tab="activeTab"
+        :comment-reports="commentReports"
+        :loading-reports="loadingCommentReports"
+        :mutating="mutating"
+        :report-pagination="commentReportPagination"
+        :report-status-filter="commentReportStatusFilter"
+        :format-date="formatDate"
+        @resolve-report="resolveCommentReport"
+        @go-page="goToCommentReportPage"
+        @update:report-status-filter="commentReportStatusFilter = $event; loadCommentReports(1)"
+      />
+
+      <AdminUserReportPanel
+        :active-tab="activeTab"
+        :user-reports="userReports"
+        :loading-reports="loadingUserReports"
+        :mutating="mutating"
+        :report-pagination="userReportPagination"
+        :report-status-filter="userReportStatusFilter"
+        :format-date="formatDate"
+        @resolve-report="resolveUserReport"
+        @go-page="goToUserReportPage"
+        @update:report-status-filter="userReportStatusFilter = $event; loadUserReports(1)"
       />
 
       <AdminReportReviewPanel

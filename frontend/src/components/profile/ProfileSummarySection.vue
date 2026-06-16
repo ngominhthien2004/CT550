@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { userApi } from '../../services/api'
 import { useAuthStore } from '../../stores/auth.store'
+import UserReportModal from '../user/UserReportModal.vue'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
@@ -104,6 +105,7 @@ const blockedByMe = ref(false)
 const blockedMe = ref(false)
 const blockLoading = ref(false)
 const blockError = ref('')
+const showReportModal = ref(false)
 
 async function fetchBlockStatus() {
   if (props.isOwnProfile || !props.user?._id || !authStore.isAuthenticated) {
@@ -163,6 +165,20 @@ async function handleShare() {
     shareTooltip.value = 'Copy failed'
     setTimeout(() => { shareTooltip.value = '' }, 2000)
   }
+}
+
+const canReportUser = computed(() => {
+  if (!authStore.isAuthenticated) return false
+  if (props.isOwnProfile) return false
+  return true
+})
+
+function openReportModal() {
+  showReportModal.value = true
+}
+
+function closeReportModal() {
+  showReportModal.value = false
 }
 </script>
 
@@ -282,10 +298,28 @@ async function handleShare() {
         </button>
         <span v-if="shareTooltip" class="share-tooltip">{{ shareTooltip }}</span>
       </div>
+      <button
+        v-if="canReportUser"
+        type="button"
+        class="report-user-btn"
+        aria-label="Report user"
+        title="Report user"
+        @click="openReportModal"
+      >
+        <i class="fa-regular fa-flag" aria-hidden="true"></i>
+      </button>
     </div>
       <div v-if="blockedMe" class="blocked-notice">
         <i class="fa-solid fa-ban"></i> You have been blocked by this user.
       </div>
+
+    <!-- Report User Modal -->
+    <UserReportModal
+      :visible="showReportModal"
+      :user="user"
+      @close="closeReportModal"
+      @reported="closeReportModal"
+    />
   </div>
 </template>
 
@@ -652,5 +686,26 @@ async function handleShare() {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+.report-user-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.report-user-btn:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
 }
 </style>
