@@ -28,6 +28,11 @@ const blockSubmittingId = ref('')
 const sortMode = ref(typeof route.query.order === 'string' ? route.query.order : 'newest')
 const showTags = ref(true)
 const isSearchOptionsOpen = ref(false)
+const userFilterType = ref('creator') // 'creator' | 'all'
+const userSortMode = ref('newest') // 'newest' | 'popular'
+const userPage = ref(1)
+const userHasMore = ref(false)
+const userLoadingMore = ref(false)
 
 // Novel-specific filters
 const novelSortBy = ref('newest')
@@ -475,38 +480,58 @@ async function loadSearchItems() {
   }
 }
 
-async function loadUserResults() {
+async function loadUserResults(loadMore) {
   if (!isUserSearch.value) {
-    userResults.value = []
-    userTotal.value = 0
+    if (!loadMore) {
+      userResults.value = []
+      userTotal.value = 0
+      userPage.value = 1
+      userHasMore.value = false
+    }
     userError.value = ''
     userLoading.value = false
     return
   }
 
-  userLoading.value = true
+  if (!loadMore) {
+    userPage.value = 1
+  }
+  userLoading.value = !loadMore
   userError.value = ''
 
   try {
     const q = searchKeyword.value
-    const { data } = await userApi.searchPublic({
+    const params = {
       q: q || undefined,
       limit: 30,
-    })
+      page: userPage.value,
+      sort: userSortMode.value,
+      role: userFilterType.value,
+    }
+    const { data } = await userApi.searchPublic(params)
 
     const users = Array.isArray(data?.users) ? data.users : []
-    userResults.value = users
+    if (loadMore) {
+      userResults.value = [...userResults.value, ...users]
+    } else {
+      userResults.value = users
+    }
     userTotal.value = typeof data?.total === 'number' ? data.total : users.length
+    userHasMore.value = typeof data?.pages === 'number' ? data.page < data.pages : false
 
     if (authStore.isAuthenticated) {
       await Promise.all(users.map((user) => followStore.fetchFollowStatus(user._id).catch(() => null)))
     }
   } catch (fetchError) {
     userError.value = fetchError?.response?.data?.message || 'Failed to fetch users'
-    userResults.value = []
-    userTotal.value = 0
+    if (!loadMore) {
+      userResults.value = []
+      userTotal.value = 0
+    }
+    userHasMore.value = false
   } finally {
     userLoading.value = false
+    userLoadingMore.value = false
   }
 }
 
@@ -520,6 +545,21 @@ async function handleToggleFollow(userId) {
   }
 
   await followStore.toggleFollowByUser(userId)
+}
+
+async function loadMoreUsers() {
+  if (userLoadingMore.value || !userHasMore.value) return
+  userLoadingMore.value = true
+  userPage.value++
+  await loadUserResults(true)
+  userLoadingMore.value = false
+}
+
+function reloadUserSearch() {
+  userPage.value = 1
+  userResults.value = []
+  userHasMore.value = false
+  loadUserResults()
 }
 
 onMounted(() => {
@@ -581,20 +621,33 @@ watch(
           :class="{ active: activeType === tab.key }"
           :to="buildTypeRoute(tab.key)"
         >
-          {{ tab.label }} <span v-if="!isUserSearch" class="tab-count">{{ tabCounts[tab.key].toLocaleString() }}</span>
+          {{ tab.label }} <span class="tab-count">{{ tabCounts[tab.key].toLocaleString() }}</span>
         </router-link>
         <button v-if="!isUserSearch" type="button" class="search-option-note" @click="openSearchOptions">Search option</button>
       </nav>
 
       <div v-if="isUserSearch" class="user-search-filter-row">
         <div class="user-filter-tabs" aria-label="User search filters">
-          <button type="button" class="user-filter-chip is-active">Creators</button>
-          <button type="button" class="user-filter-link">All accounts</button>
+          <button
+            type="button"
+            class="user-filter-chip"
+            :class="{ 'is-active': userFilterType === 'creator' }"
+            @click="userFilterType = 'creator'; reloadUserSearch()"
+          >Creators</button>
+          <button
+            type="button"
+            class="user-filter-link"
+            :class="{ 'is-active': userFilterType === 'all' }"
+            @click="userFilterType = 'all'; reloadUserSearch()"
+          >All accounts</button>
         </div>
-        <button type="button" class="search-option-note user-search-option" @click="openSearchOptions">
-          <i class="fa-solid fa-list" aria-hidden="true"></i>
-          Search option
-        </button>
+        <!-- Sort dropdown for user search -->
+        <label class="order-select">
+          <select v-model="userSortMode" @change="reloadUserSearch()">
+            <option value="newest">Newest</option>
+            <option value="popular">Popular</option>
+          </select>
+        </label>
       </div>
 
       <div v-if="!isUserSearch" class="filter-row">
@@ -728,6 +781,17 @@ watch(
               </div>
             </div>
           </article>
+
+          <div v-if="userHasMore" class="pagination-wrapper">
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-load-more"
+              :disabled="userLoadingMore"
+              @click="loadMoreUsers"
+            >
+              {{ userLoadingMore ? 'Loading...' : 'Load more' }}
+            </button>
+          </div>
         </section>
         <p v-else class="state-note">No users found for this search.</p>
       </template>

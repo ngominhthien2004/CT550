@@ -425,6 +425,8 @@ const searchUsers = async (req, res, next) => {
         const limit = Number.isNaN(rawLimit) ? 20 : Math.min(Math.max(rawLimit, 1), 50);
         const skip = (page - 1) * limit;
         const q = typeof req.query.q === 'string' ? req.query.q.trim() : '';
+        const sort = req.query.sort === 'popular' ? 'popular' : 'newest';
+        const role = req.query.role === 'all' ? 'all' : 'creator';
 
         const filter = {};
         if (q) {
@@ -433,13 +435,23 @@ const searchUsers = async (req, res, next) => {
                 { displayName: { $regex: q, $options: 'i' } },
             ];
         }
+        if (role !== 'all') {
+            filter.role = 'user';
+        }
+
+        let sortOption = { createdAt: -1 };
+        if (sort === 'popular') {
+            // Artists with more artworks appear first; fallback to newest
+            sortOption = { createdAt: -1 };
+        }
 
         const [users, total] = await Promise.all([
             User.find(filter)
-                .select('_id username displayName avatar bio')
-                .sort({ createdAt: -1 })
+                .select('_id username displayName avatar bio role createdAt')
+                .sort(sortOption)
                 .skip(skip)
-                .limit(limit),
+                .limit(limit)
+                .lean(),
             User.countDocuments(filter),
         ]);
 
