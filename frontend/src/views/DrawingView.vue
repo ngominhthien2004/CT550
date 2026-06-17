@@ -32,13 +32,14 @@ import PostDrawingModal from '../components/drawing/PostDrawingModal.vue'
 const store = useDrawingStore()
 
 onBeforeRouteLeave((_to, _from, next) => {
-  if (store.hasContent) {
+  if (store.hasContent && !store.isGoHomeIntentConfirmed()) {
     const answer = window.confirm('You have unsaved drawing content. Leave anyway?')
     if (!answer) {
       next(false)
       return
     }
   }
+  store.clearGoHomeIntent()
   next()
 })
 

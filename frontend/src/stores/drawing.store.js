@@ -63,6 +63,23 @@ export const useDrawingStore = defineStore('drawing', () => {
   const showSlotsDialog = ref(false)
   const savedSlots = ref([])
 
+  // New canvas confirmation
+  const showNewCanvasConfirm = ref(false)
+
+  // Non-reactive flag to track go-home intent (avoids native confirm conflict)
+  let goHomeIntentConfirmed = false
+
+  // Go home confirmation
+  const showGoHomeConfirm = ref(false)
+
+  // Slot confirmation modals
+  const showLoadSlotConfirm = ref(false)
+  const showDeleteSlotConfirm = ref(false)
+  const showRestoreAutosaveConfirm = ref(false)
+  const pendingSlotId = ref(null)
+  const pendingSlotData = ref(null)
+  const pendingAutosaveData = ref(null)
+
   // Post dialog state
   const showPostDialog = ref(false)
   const postTitle = ref('')
@@ -144,8 +161,12 @@ export const useDrawingStore = defineStore('drawing', () => {
     toolbarVisible.value = !toolbarVisible.value
   }
 
-  function newCanvas() {
-    if (!confirm('Start a new drawing? Current drawing will be lost.')) return
+  function requestNewCanvas() {
+    showNewCanvasConfirm.value = true
+  }
+
+  function executeNewCanvas() {
+    showNewCanvasConfirm.value = false
     // Clear all layers
     layers.splice(0, layers.length)
     // Reset to initial state
@@ -163,6 +184,23 @@ export const useDrawingStore = defineStore('drawing', () => {
     stageY.value = 0
     // Re-fit
     nextTick(() => fitToScreen())
+  }
+
+  function requestGoHome() {
+    showGoHomeConfirm.value = true
+  }
+
+  function confirmGoHomeIntent() {
+    goHomeIntentConfirmed = true
+    showGoHomeConfirm.value = false
+  }
+
+  function isGoHomeIntentConfirmed() {
+    return goHomeIntentConfirmed
+  }
+
+  function clearGoHomeIntent() {
+    goHomeIntentConfirmed = false
   }
 
   function onSizeChange(e) {
@@ -370,7 +408,6 @@ export const useDrawingStore = defineStore('drawing', () => {
 
   // ─── Layers ─────────────────────────────────────────────────────────
   function addLayer() {
-    nextLayerId++
     layers.push({
       id: nextLayerId,
       name: `Layer ${nextLayerId}`,
@@ -378,6 +415,7 @@ export const useDrawingStore = defineStore('drawing', () => {
       lines: [],
       images: [],
     })
+    nextLayerId++
     activeLayerIndex.value = layers.length - 1
   }
 
@@ -705,19 +743,33 @@ export const useDrawingStore = defineStore('drawing', () => {
     showSlotsDialog.value = true
   }
 
-  function loadSlot(slot) {
-    if (confirm('Load this drawing? Current drawing will be replaced.')) {
-      loadFromSlot(slot)
-      showSlotsDialog.value = false
-    }
+  function requestLoadSlot(slot) {
+    pendingSlotData.value = slot
+    showLoadSlotConfirm.value = true
   }
 
-  function handleDeleteSlot(slotId) {
-    if (confirm('Delete this saved drawing?')) {
+  function executeLoadSlot() {
+    if (pendingSlotData.value) {
+      loadFromSlot(pendingSlotData.value)
+      showSlotsDialog.value = false
+    }
+    showLoadSlotConfirm.value = false
+    pendingSlotData.value = null
+  }
+
+  function requestDeleteSlot(slotId) {
+    pendingSlotId.value = slotId
+    showDeleteSlotConfirm.value = true
+  }
+
+  function executeDeleteSlot() {
+    if (pendingSlotId.value) {
       const slots = getSavedSlots()
-      savedSlots.value = slots.filter(function (s) { return s.id !== slotId })
+      savedSlots.value = slots.filter(function (s) { return s.id !== pendingSlotId.value })
       saveSlotsToStorage(savedSlots.value)
     }
+    showDeleteSlotConfirm.value = false
+    pendingSlotId.value = null
   }
 
   function removeSlotFromStorage(slotId) {
@@ -815,12 +867,21 @@ export const useDrawingStore = defineStore('drawing', () => {
       })
       if (!hasExistingContent) {
         restoreFromData(data)
-      } else if (confirm('You have an unsaved autosave. Restore it?')) {
-        restoreFromData(data)
+      } else {
+        pendingAutosaveData.value = data
+        showRestoreAutosaveConfirm.value = true
       }
     } catch {
       /* ignore */
     }
+  }
+
+  function executeRestoreAutosave() {
+    if (pendingAutosaveData.value) {
+      restoreFromData(pendingAutosaveData.value)
+    }
+    showRestoreAutosaveConfirm.value = false
+    pendingAutosaveData.value = null
   }
 
   // ─── Post to Upload ──────────────────────────────────────────────────
@@ -912,7 +973,9 @@ export const useDrawingStore = defineStore('drawing', () => {
     tool, brushColor, brushSize, brushOpacity, eraserSize,
     isPanning, isDrawing, isSpaceDown,
     activeLayerIndex, layers, undoMap, redoMap,
-    showSlotsDialog, savedSlots,
+    showSlotsDialog, savedSlots, showNewCanvasConfirm, showGoHomeConfirm,
+    showLoadSlotConfirm, showDeleteSlotConfirm, showRestoreAutosaveConfirm,
+    pendingSlotId, pendingSlotData, pendingAutosaveData,
     showPostDialog, postTitle, postType, postAgeRating, postTags,
     postSubmitting, postError, postPreviewUrl,
     // Computed
@@ -922,7 +985,8 @@ export const useDrawingStore = defineStore('drawing', () => {
     setStageRef, setDrawLayerRef, setStageContainer, setFileInput,
     // Functions
     screenToCanvas,
-    setTool, togglePanMode, toggleToolbar, newCanvas, onSizeChange,
+    setTool, togglePanMode, toggleToolbar, requestNewCanvas, executeNewCanvas,
+    requestGoHome, confirmGoHomeIntent, isGoHomeIntentConfirmed, clearGoHomeIntent, onSizeChange,
     createLineConfig, handleStageMouseDown, handleStageMouseMove, handleStageMouseUp,
     pickColor, shallowEqual, undo, redo,
     handleZoom, fitToScreen,
@@ -932,8 +996,10 @@ export const useDrawingStore = defineStore('drawing', () => {
     handleKeyDown, handleKeyUp,
     handleResize, clearTimers,
     getSavedSlots, saveSlotsToStorage, serializeLayers, generateThumbnail,
-    saveCurrentDrawing, loadFromSlot, formatDate, loadSlot, handleDeleteSlot,
-    removeSlotFromStorage, triggerAutoSave, restoreFromData, restoreAutosave,
+    saveCurrentDrawing, loadFromSlot, formatDate,
+    requestLoadSlot, executeLoadSlot, requestDeleteSlot, executeDeleteSlot,
+    removeSlotFromStorage, triggerAutoSave, restoreFromData,
+    restoreAutosave, executeRestoreAutosave,
     openSlotsDialog,
     openPostDialog, submitPost, exportToBlob,
   }

@@ -7,7 +7,7 @@
       <button class="tb-btn" @click="store.toggleToolbar" title="Toggle toolbar">
         <i class="fa-solid fa-bars" />
       </button>
-      <button class="tb-btn" @click="store.newCanvas" title="New drawing (clear canvas)">
+      <button class="tb-btn" @click="store.requestNewCanvas" title="New drawing (clear canvas)">
         <i class="fa-solid fa-file-circle-plus" />
       </button>
       <button class="tb-btn" @click="showShortcuts = true" title="Keyboard shortcuts (?)">
@@ -88,6 +88,63 @@
     </div>
   </div>
   <ShortcutsModal :visible="showShortcuts" @close="showShortcuts = false" />
+
+  <!-- New Canvas Confirm Modal -->
+  <Teleport to="body">
+    <div v-if="store.showNewCanvasConfirm" class="confirm-overlay" @click.self="store.showNewCanvasConfirm = false">
+      <div class="confirm-modal">
+        <div class="confirm-header">
+          <h3>New Drawing</h3>
+          <button class="confirm-close-btn" @click="store.showNewCanvasConfirm = false">&times;</button>
+        </div>
+        <div class="confirm-body">
+          <p>Start a new drawing? Current drawing will be lost.</p>
+        </div>
+        <div class="confirm-footer">
+          <button class="confirm-btn cancel" @click="store.showNewCanvasConfirm = false">Cancel</button>
+          <button class="confirm-btn danger" @click="store.executeNewCanvas">Start New</button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+
+  <!-- Restore Autosave Confirm Modal -->
+  <Teleport to="body">
+    <div v-if="store.showRestoreAutosaveConfirm" class="confirm-overlay" @click.self="store.showRestoreAutosaveConfirm = false">
+      <div class="confirm-modal">
+        <div class="confirm-header">
+          <h3>Autosave Found</h3>
+          <button class="confirm-close-btn" @click="store.showRestoreAutosaveConfirm = false">&times;</button>
+        </div>
+        <div class="confirm-body">
+          <p>You have an unsaved autosave. Restore it?</p>
+        </div>
+        <div class="confirm-footer">
+          <button class="confirm-btn cancel" @click="store.showRestoreAutosaveConfirm = false">Discard</button>
+          <button class="confirm-btn danger" @click="store.executeRestoreAutosave">Restore</button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+
+  <!-- Go Home Confirm Modal -->
+  <Teleport to="body">
+    <div v-if="store.showGoHomeConfirm" class="confirm-overlay" @click.self="store.showGoHomeConfirm = false">
+      <div class="confirm-modal">
+        <div class="confirm-header">
+          <h3>Leave Drawing</h3>
+          <button class="confirm-close-btn" @click="store.showGoHomeConfirm = false">&times;</button>
+        </div>
+        <div class="confirm-body">
+          <p>You have unsaved drawing content. Leave anyway?</p>
+        </div>
+        <div class="confirm-footer">
+          <button class="confirm-btn cancel" @click="store.showGoHomeConfirm = false">Cancel</button>
+          <button class="confirm-btn danger" @click="confirmGoHome">Leave</button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup>
@@ -101,6 +158,15 @@ const store = useDrawingStore()
 const showShortcuts = ref(false)
 
 function goHome() {
+  if (store.hasContent) {
+    store.showGoHomeConfirm = true
+  } else {
+    router.push('/')
+  }
+}
+
+function confirmGoHome() {
+  store.confirmGoHomeIntent()
   router.push('/')
 }
 </script>
@@ -221,5 +287,106 @@ function goHome() {
   .top-bar-right .tb-btn span {
     display: none;
   }
+}
+
+/* ─── Confirm Modal ──────────────────────────────────────────────── */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.confirm-modal {
+  background: #222226;
+  border: 1px solid #333338;
+  border-radius: 12px;
+  width: 380px;
+  max-width: 90vw;
+  color: #e0e0e0;
+}
+
+.confirm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #333338;
+}
+
+.confirm-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+  color: inherit;
+}
+
+.confirm-close-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #888;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-close-btn:hover {
+  background: #33333a;
+  color: #fff;
+}
+
+.confirm-body {
+  padding: 20px;
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.5;
+}
+
+.confirm-body p {
+  margin: 0;
+}
+
+.confirm-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid #333338;
+}
+
+.confirm-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.confirm-btn.cancel {
+  background: #33333a;
+  color: #aaa;
+}
+
+.confirm-btn.cancel:hover {
+  background: #444;
+  color: #fff;
+}
+
+.confirm-btn.danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.confirm-btn.danger:hover {
+  background: #ef4444;
 }
 </style>

@@ -82,6 +82,10 @@ Workflow: start frontend + backend dev servers → navigate page → inspect/int
 6. **AI features**: HuggingFace for AI detection (`umm-maybe/AI-image-detector`), Ollama for AI chat/recommendations.
    Threshold configurable via `AI_DETECTION_THRESHOLD` (default 70%).
 
+## Test artifact convention
+
+Screenshots captured during testing / debugging sessions MUST be saved to `test-artifacts/` (not `docs/images/` or `docs/screenshots/`). This directory already exists and contains historical test artifacts. Keeping them in one place makes cleanup predictable and avoids polluting documentation folders with ephemeral test evidence.
+
 ## Environment files
 
 - `backend/.env.example` — full docs for each backend variable (MongoDB, JWT, CORS, Google OAuth, AI)

@@ -25,15 +25,15 @@
 
         <!-- Render all visible layers' content in order -->
         <template v-for="layer in store.orderedVisibleLayers" :key="layer.id">
-          <v-line
-            v-for="(line, li) in layer.lines"
-            :key="`${layer.id}-l-${li}`"
-            :config="line"
-          />
           <v-image
             v-for="(img, ii) in layer.images"
             :key="`${layer.id}-img-${ii}`"
             :config="img"
+          />
+          <v-line
+            v-for="(line, li) in layer.lines"
+            :key="`${layer.id}-l-${li}`"
+            :config="line"
           />
         </template>
       </v-layer>

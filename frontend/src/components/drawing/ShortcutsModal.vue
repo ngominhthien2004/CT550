@@ -75,6 +75,7 @@ defineEmits(['close'])
   font-size: 16px;
   font-weight: 600;
   margin: 0;
+  color: inherit;
 }
 .shortcuts-close-btn {
   width: 32px;

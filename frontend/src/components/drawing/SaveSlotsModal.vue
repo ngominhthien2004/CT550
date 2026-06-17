@@ -18,11 +18,49 @@
                 <span class="slot-date">{{ store.formatDate(slot.timestamp) }}</span>
               </div>
               <div class="slot-actions">
-                <button class="slot-btn load" @click="store.loadSlot(slot)">Load</button>
-                <button class="slot-btn delete" @click="store.handleDeleteSlot(slot.id)">Delete</button>
+                <button class="slot-btn load" @click="store.requestLoadSlot(slot)">Load</button>
+                <button class="slot-btn delete" @click="store.requestDeleteSlot(slot.id)">Delete</button>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+
+  <!-- Load Slot Confirm Modal -->
+  <Teleport to="body">
+    <div v-if="store.showLoadSlotConfirm" class="confirm-overlay" @click.self="store.showLoadSlotConfirm = false">
+      <div class="confirm-modal">
+        <div class="confirm-header">
+          <h3>Load Drawing</h3>
+          <button class="confirm-close-btn" @click="store.showLoadSlotConfirm = false">&times;</button>
+        </div>
+        <div class="confirm-body">
+          <p>Load this drawing? Current drawing will be replaced.</p>
+        </div>
+        <div class="confirm-footer">
+          <button class="confirm-btn cancel" @click="store.showLoadSlotConfirm = false">Cancel</button>
+          <button class="confirm-btn danger" @click="store.executeLoadSlot">Load</button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+
+  <!-- Delete Slot Confirm Modal -->
+  <Teleport to="body">
+    <div v-if="store.showDeleteSlotConfirm" class="confirm-overlay" @click.self="store.showDeleteSlotConfirm = false">
+      <div class="confirm-modal">
+        <div class="confirm-header">
+          <h3>Delete Drawing</h3>
+          <button class="confirm-close-btn" @click="store.showDeleteSlotConfirm = false">&times;</button>
+        </div>
+        <div class="confirm-body">
+          <p>Delete this saved drawing?</p>
+        </div>
+        <div class="confirm-footer">
+          <button class="confirm-btn cancel" @click="store.showDeleteSlotConfirm = false">Cancel</button>
+          <button class="confirm-btn danger" @click="store.executeDeleteSlot">Delete</button>
         </div>
       </div>
     </div>
@@ -74,6 +112,7 @@ const store = useDrawingStore()
   font-size: 16px;
   font-weight: 600;
   margin: 0;
+  color: inherit;
 }
 
 .modal-close-btn {
@@ -182,5 +221,108 @@ const store = useDrawingStore()
   padding: 40px 20px;
   color: #888;
   font-size: 14px;
+}
+
+/* Confirm modal styles */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.confirm-modal {
+  background: #222226;
+  border: 1px solid #333338;
+  border-radius: 12px;
+  width: 380px;
+  max-width: 90vw;
+  color: #e0e0e0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.confirm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #333338;
+}
+
+.confirm-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: inherit;
+}
+
+.confirm-close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #888;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-close-btn:hover {
+  background: #33333a;
+  color: #fff;
+}
+
+.confirm-body {
+  padding: 20px;
+}
+
+.confirm-body p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #c0c0c0;
+}
+
+.confirm-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid #333338;
+}
+
+.confirm-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.confirm-btn.cancel {
+  background: #33333a;
+  color: #aaa;
+}
+
+.confirm-btn.cancel:hover {
+  background: #3a3a42;
+  color: #e0e0e0;
+}
+
+.confirm-btn.danger {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.confirm-btn.danger:hover {
+  background: #c0392b;
 }
 </style>
