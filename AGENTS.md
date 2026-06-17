@@ -81,6 +81,8 @@ Workflow: start frontend + backend dev servers → navigate page → inspect/int
 5. **Express 5**: Note that Express 5 does not support `app.get('*', ...)` — the SPA fallback uses `app.use` instead.
 6. **AI features**: HuggingFace for AI detection (`umm-maybe/AI-image-detector`), Ollama for AI chat/recommendations.
    Threshold configurable via `AI_DETECTION_THRESHOLD` (default 70%).
+7. **vue-konva must be registered in main.js**: The npm packages `konva` and `vue-konva` are declared in `frontend/package.json`, but Vue does NOT auto-register them. You MUST add `import VueKonva from 'vue-konva'` and `app.use(VueKonva)` in `frontend/src/main.js`. Without this, `<v-stage>`, `<v-layer>`, `<v-rect>`, `<v-line>`, `<v-image>` components fail with "Failed to resolve component" warnings and the canvas never renders.
+8. **Bootstrap global heading colors override Vue scoped CSS**: Bootstrap sets global colors on `h1`–`h6` (e.g. `h2 { color: #0f172a }`). In Vue `scoped` components, if you don't explicitly set `color` on a heading, Bootstrap's global rule wins — even on dark backgrounds. Always set `color: inherit` (or an explicit light color) on heading elements inside dark-themed modals/panels.
 
 ## Test artifact convention
 
@@ -102,6 +104,7 @@ Screenshots captured during testing / debugging sessions MUST be saved to `test-
 - Bootstrap 5 CSS and Font Awesome are installed and used for layout/utility classes and icons.
 - Design tokens in `src/assets/styles/global.css` (CSS custom properties: `--bg`, `--text`, `--brand`, etc.).
 - Full layout architecture documented in `docs/layout-architecture.md`.
+- **Drawing Tool module**: `DrawingView.vue` composes 6 child components under `components/drawing/`: `DrawingTopBar`, `DrawingToolPanel`, `DrawingCanvas`, `DrawingLayersPanel`, `PostDrawingModal`, `SaveSlotsModal`. State lives in `stores/drawing.store.js` (Pinia). Drawing uses Konva.js via vue-konva — see quirk #7.
 
 ## Deployment
 
