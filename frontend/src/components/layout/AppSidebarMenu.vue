@@ -20,6 +20,7 @@ const props = defineProps({
 defineEmits(['close-sidebar'])
 
 const authStore = useAuthStore()
+const { logout } = useAuthStore()
 
 const illuWrlStyleSections = computed(() => {
   if (Array.isArray(props.navItems) && props.navItems.length > 0) {
@@ -35,23 +36,32 @@ const illuWrlStyleSections = computed(() => {
     }
 
     return [
-      props.navItems.slice(0, 1),
-      [
-        { id: 'illust', label: 'Illustrations', to: '/illustrations', icon: 'fa-regular fa-image' },
-        { id: 'manga', label: 'Manga', to: '/manga', icon: 'fa-regular fa-square' },
-        { id: 'novels', label: 'Novels', to: '/novels', icon: 'fa-regular fa-rectangle-list' },
-      ],
-      [
-        { id: 'following', label: 'Newest by followed', to: '/newest_by_followed', icon: 'fa-solid fa-users' },
-        { id: 'discovery', label: 'Discovery', to: '/discovery', icon: 'fa-regular fa-compass' },
-        { id: 'favorites', label: 'My Favorite', to: '/favorites', icon: 'fa-regular fa-heart' },
-      ],
-      [
-        { id: 'rankings', label: 'Rankings', to: '/rankings', icon: 'fa-solid fa-crown' },
-        { id: 'latest-all', label: 'Newest by all', to: '/newest_by_all', icon: 'fa-solid fa-wand-sparkles' },
-        ...manageGroup,
-        { id: 'ai-chat', label: 'AI Chat', to: '/chat', icon: 'fa-solid fa-robot' },
-      ],
+      { label: '', items: props.navItems.slice(0, 1) },
+      {
+        label: 'Nội dung',
+        items: [
+          { id: 'illust', label: 'Illustrations', to: '/illustrations', icon: 'fa-regular fa-image' },
+          { id: 'manga', label: 'Manga', to: '/manga', icon: 'fa-regular fa-square' },
+          { id: 'novels', label: 'Novels', to: '/novels', icon: 'fa-regular fa-rectangle-list' },
+        ],
+      },
+      {
+        label: 'Khám phá',
+        items: [
+          { id: 'following', label: 'Newest by followed', to: '/newest_by_followed', icon: 'fa-solid fa-users' },
+          { id: 'discovery', label: 'Discovery', to: '/discovery', icon: 'fa-regular fa-compass' },
+          { id: 'favorites', label: 'My Favorite', to: '/favorites', icon: 'fa-regular fa-heart' },
+        ],
+      },
+      {
+        label: 'Tiện ích',
+        items: [
+          { id: 'rankings', label: 'Rankings', to: '/rankings', icon: 'fa-solid fa-crown' },
+          { id: 'latest-all', label: 'Newest by all', to: '/newest_by_all', icon: 'fa-solid fa-wand-sparkles' },
+          ...manageGroup,
+          { id: 'ai-chat', label: 'AI Chat', to: '/chat', icon: 'fa-solid fa-robot' },
+        ],
+      },
     ]
   }
 
@@ -71,14 +81,29 @@ const illuWrlStyleSections = computed(() => {
     <nav>
       <ul class="nav-list">
         <li v-for="(group, groupIndex) in illuWrlStyleSections" :key="`group-${groupIndex}`" class="nav-group">
-          <router-link v-for="item in group" :key="item.id" :to="item.to" class="nav-link-item">
+          <span v-if="group.label" class="nav-group-label">{{ group.label }}</span>
+          <router-link v-for="item in group.items" :key="item.id" :to="item.to" class="nav-link-item">
             <i :class="item.icon" aria-hidden="true"></i>
             <span>{{ item.label }}</span>
           </router-link>
         </li>
       </ul>
     </nav>
-    <router-link to="/login" class="nav-ghost">Yeu cau dang nhap</router-link>
+
+    <router-link v-if="!authStore.user" to="/login" class="nav-ghost">Đăng nhập để khám phá thêm</router-link>
+
+    <div v-if="authStore.user" class="sidebar-user">
+      <router-link to="/account" class="sidebar-user-link">
+        <img :src="authStore.user.avatar || '/default-avatar.png'" alt="" class="sidebar-avatar" />
+        <div class="sidebar-user-info">
+          <span class="sidebar-user-name">{{ authStore.user.displayName || authStore.user.username }}</span>
+          <span class="sidebar-user-id">@{{ authStore.user.username }}</span>
+        </div>
+      </router-link>
+      <button class="sidebar-logout-btn" @click="logout" title="Đăng xuất">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
   </aside>
 </template>
 
@@ -95,6 +120,8 @@ const illuWrlStyleSections = computed(() => {
   background: var(--surface-alt);
   border-right: 1px solid var(--line);
   transform: translateX(0%);
+  display: flex;
+  flex-direction: column;
 }
 
 .left-nav.collapsed {
@@ -127,7 +154,8 @@ const illuWrlStyleSections = computed(() => {
 }
 
 .left-nav nav {
-  display: block;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .nav-list {
@@ -158,12 +186,24 @@ const illuWrlStyleSections = computed(() => {
   color: var(--muted);
 }
 
+.nav-group-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  padding: 0.3rem 0.9rem 0.4rem;
+}
+
 .nav-link-item:hover {
-  background: var(--surface-alt);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .nav-link-item.router-link-active {
-  background: var(--surface-alt);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border-left: 3px solid var(--accent);
+  padding-left: calc(0.9rem - 3px);
   color: var(--accent);
   font-weight: 700;
 }
@@ -185,6 +225,86 @@ const illuWrlStyleSections = computed(() => {
   padding: 0.62rem 0.7rem;
   font-weight: 700;
   cursor: pointer;
+}
+
+.sidebar-user {
+  margin-top: auto;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sidebar-user-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  flex: 1;
+  min-width: 0;
+  padding: 0.4rem 0.4rem;
+  border-radius: 10px;
+  transition: background 0.18s ease;
+}
+
+.sidebar-user-link:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.sidebar-avatar {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--surface);
+}
+
+.sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sidebar-user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-user-id {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-logout-btn {
+  flex-shrink: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.sidebar-logout-btn:hover {
+  background: color-mix(in srgb, var(--danger, #ef4444) 10%, transparent);
+  color: var(--danger, #ef4444);
+  border-color: var(--danger, #ef4444);
 }
 
 @media (max-width: 920px) {
