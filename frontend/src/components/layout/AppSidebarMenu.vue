@@ -51,6 +51,7 @@ const illuWrlStyleSections = computed(() => {
           { id: 'following', label: 'Newest by followed', to: '/newest_by_followed', icon: 'fa-solid fa-users' },
           { id: 'discovery', label: 'Discovery', to: '/discovery', icon: 'fa-regular fa-compass' },
           { id: 'favorites', label: 'My Favorite', to: '/favorites', icon: 'fa-regular fa-heart' },
+          { id: 'bookmarks', label: 'Bookmarks', to: '/bookmarks', icon: 'fa-regular fa-bookmark' },
         ],
       },
       {
@@ -60,6 +61,7 @@ const illuWrlStyleSections = computed(() => {
           { id: 'latest-all', label: 'Newest by all', to: '/newest_by_all', icon: 'fa-solid fa-wand-sparkles' },
           ...manageGroup,
           { id: 'ai-chat', label: 'AI Chat', to: '/chat', icon: 'fa-solid fa-robot' },
+          { id: 'draw', label: 'Vẽ tranh', to: '/draw', icon: 'fa-solid fa-pen-nib' },
         ],
       },
     ]
@@ -139,7 +141,7 @@ const illuWrlStyleSections = computed(() => {
   text-decoration: none;
   color: var(--accent);
   font-weight: 800;
-  font-size: 3rem;
+  font-size: 1.75rem;
   line-height: 1;
   letter-spacing: -0.03em;
 }
