@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { getFeed } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { ArtworkCard } from '@/components/artwork'
-import { navItems } from '../constants/navigation'
+
 
 const artworks = ref([])
 const totalArtworks = ref(0)
@@ -98,7 +98,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="following-newest-page">
       
       <div class="top-nav-container">

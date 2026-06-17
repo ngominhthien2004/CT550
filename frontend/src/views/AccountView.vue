@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useRoute } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { AccountProfileSection, AccountLoggedOutPrompt } from '@/components/account'
-import { navItems } from '../constants/navigation'
+
 import { useAuthStore } from '../stores/auth.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
 import { useLikeStore } from '../stores/like.store'
@@ -560,7 +560,7 @@ watch(showEditModal, (val) => {
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <AccountProfileSection
       v-if="user"
       :user="user"

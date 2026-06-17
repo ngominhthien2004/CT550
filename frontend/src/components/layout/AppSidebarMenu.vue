@@ -1,12 +1,9 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useAuthStore } from '../../stores/auth.store'
+import { navItems } from '../../constants/navigation.js'
 
 const props = defineProps({
-  navItems: {
-    type: Array,
-    default: () => [],
-  },
   siteName: {
     type: String,
     default: 'IlluWrl',
@@ -57,51 +54,47 @@ const authStore = useAuthStore()
 const { logout } = useAuthStore()
 
 const illuWrlStyleSections = computed(() => {
-  if (Array.isArray(props.navItems) && props.navItems.length > 0) {
-    const manageGroup = [
-      { id: 'dashboard', label: 'Dashboard', to: '/dashboard', icon: 'fa-solid fa-gauge-high' },
-      { id: 'requests', label: 'Requests', to: '/requests/manage', icon: 'fa-regular fa-comments' },
-      { id: 'history', label: 'Browsing history', to: '/history', icon: 'fa-regular fa-clock' },
-      { id: 'my-reports', label: 'My Reports', to: '/my-reports', icon: 'fa-regular fa-flag' },
-    ]
+  const manageGroup = [
+    { id: 'dashboard', label: 'Dashboard', to: '/dashboard', icon: 'fa-solid fa-gauge-high' },
+    { id: 'requests', label: 'Requests', to: '/requests/manage', icon: 'fa-regular fa-comments' },
+    { id: 'history', label: 'Browsing history', to: '/history', icon: 'fa-regular fa-clock' },
+    { id: 'my-reports', label: 'My Reports', to: '/my-reports', icon: 'fa-regular fa-flag' },
+  ]
 
-    if (authStore.user?.role === 'admin') {
-      manageGroup.push({ id: 'admin', label: 'Admin management', to: '/admin', icon: 'fa-solid fa-shield-halved' })
-    }
-
-    return [
-      { label: '', items: props.navItems.slice(0, 1) },
-      {
-        label: 'Nội dung',
-        items: [
-          { id: 'illust', label: 'Illustrations', to: '/illustrations', icon: 'fa-regular fa-image' },
-          { id: 'manga', label: 'Manga', to: '/manga', icon: 'fa-regular fa-square' },
-          { id: 'novels', label: 'Novels', to: '/novels', icon: 'fa-regular fa-rectangle-list' },
-        ],
-      },
-      {
-        label: 'Khám phá',
-        items: [
-          { id: 'following', label: 'Newest by followed', to: '/newest_by_followed', icon: 'fa-solid fa-users' },
-          { id: 'discovery', label: 'Discovery', to: '/discovery', icon: 'fa-regular fa-compass' },
-          { id: 'favorites', label: 'My Favorite', to: '/favorites', icon: 'fa-regular fa-heart' },
-          { id: 'bookmarks', label: 'Bookmarks', to: '/bookmarks', icon: 'fa-regular fa-bookmark' },
-        ],
-      },
-      {
-        label: 'Tiện ích',
-        items: [
-          { id: 'rankings', label: 'Rankings', to: '/rankings', icon: 'fa-solid fa-crown' },
-          { id: 'latest-all', label: 'Newest by all', to: '/newest_by_all', icon: 'fa-solid fa-wand-sparkles' },
-          ...manageGroup,
-          { id: 'ai-chat', label: 'AI Chat', to: '/chat', icon: 'fa-solid fa-robot' },
-          { id: 'draw', label: 'Vẽ tranh', to: '/draw', icon: 'fa-solid fa-pen-nib' },
-        ],
-      },
-    ]
+  if (authStore.user?.role === 'admin') {
+    manageGroup.push({ id: 'admin', label: 'Admin management', to: '/admin', icon: 'fa-solid fa-shield-halved' })
   }
 
-  return []
+  return [
+    { label: '', items: navItems.slice(0, 1) },
+    {
+      label: 'Content',
+      items: [
+        { id: 'illust', label: 'Illustrations', to: '/illustrations', icon: 'fa-regular fa-image' },
+        { id: 'manga', label: 'Manga', to: '/manga', icon: 'fa-regular fa-square' },
+        { id: 'novels', label: 'Novels', to: '/novels', icon: 'fa-regular fa-rectangle-list' },
+      ],
+    },
+    {
+      label: 'Explore',
+      items: [
+        { id: 'following', label: 'Newest by followed', to: '/newest_by_followed', icon: 'fa-solid fa-users' },
+        { id: 'discovery', label: 'Discovery', to: '/discovery', icon: 'fa-regular fa-compass' },
+        { id: 'favorites', label: 'My Favorite', to: '/favorites', icon: 'fa-regular fa-heart' },
+        { id: 'bookmarks', label: 'Bookmarks', to: '/bookmarks', icon: 'fa-regular fa-bookmark' },
+      ],
+    },
+    {
+      label: 'Utilities',
+      items: [
+        { id: 'rankings', label: 'Rankings', to: '/rankings', icon: 'fa-solid fa-crown' },
+        { id: 'latest-all', label: 'Newest by all', to: '/newest_by_all', icon: 'fa-solid fa-wand-sparkles' },
+        ...manageGroup,
+        { id: 'ai-chat', label: 'AI Chat', to: '/chat', icon: 'fa-solid fa-robot' },
+        { id: 'draw', label: 'Drawing', to: '/draw', icon: 'fa-solid fa-pen-nib' },
+      ],
+    },
+  ]
 })
 </script>
 
@@ -166,7 +159,7 @@ const illuWrlStyleSections = computed(() => {
       </ul>
     </nav>
 
-    <router-link v-if="!authStore.user" to="/login" class="nav-ghost">Đăng nhập để khám phá thêm</router-link>
+    <router-link v-if="!authStore.user" to="/login" class="nav-ghost">Log in to explore more</router-link>
 
     <div v-if="authStore.user" class="sidebar-user">
       <router-link to="/account" class="sidebar-user-link" :title="sidebarCompact ? authStore.user.displayName || authStore.user.username : undefined">
@@ -176,7 +169,7 @@ const illuWrlStyleSections = computed(() => {
           <span class="sidebar-user-id">@{{ authStore.user.username }}</span>
         </div>
       </router-link>
-      <button class="sidebar-logout-btn" @click="logout" title="Đăng xuất">
+      <button class="sidebar-logout-btn" @click="logout" title="Log out">
         <i class="fa-solid fa-right-from-bracket"></i>
       </button>
     </div>
@@ -198,6 +191,24 @@ const illuWrlStyleSections = computed(() => {
   transform: translateX(0%);
   display: flex;
   flex-direction: column;
+}
+
+/* ── Custom scrollbar ── */
+.left-nav::-webkit-scrollbar {
+  width: 5px;
+}
+
+.left-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.left-nav::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 999px;
+}
+
+.left-nav::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
 }
 
 .left-nav.collapsed {
@@ -365,6 +376,23 @@ const illuWrlStyleSections = computed(() => {
 .left-nav nav {
   flex: 1;
   overflow-y: auto;
+}
+
+.left-nav nav::-webkit-scrollbar {
+  width: 5px;
+}
+
+.left-nav nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.left-nav nav::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 999px;
+}
+
+.left-nav nav::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
 }
 
 .nav-list {

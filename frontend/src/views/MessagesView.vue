@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import { navItems } from '../constants/navigation'
+
 import { useAuthStore } from '../stores/auth.store'
 import { getMyMessages, markMessageRead, userApi, messageApi } from '../services/api'
 import { useMessageStore } from '../stores/message.store'
@@ -724,7 +724,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section v-if="authStore.isAuthenticated" :class="['message-shell page-block', { 'mobile-chat-open': selectedThreadId }]">
       
       <aside class="thread-list-pane">

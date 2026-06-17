@@ -1,5 +1,5 @@
 export const navItems = [
-  { id: 'n1', label: 'Trang chu', to: '/', icon: 'fa-solid fa-house' },
+  { id: 'n1', label: 'Home', to: '/', icon: 'fa-solid fa-house' },
   { id: 'n2', label: 'Feed', to: '/feed', icon: 'fa-solid fa-compass' },
   { id: 'n3', label: 'My Favorite', to: '/favorites', icon: 'fa-regular fa-heart' },
   { id: 'n4', label: 'Bookmarks', to: '/bookmarks', icon: 'fa-regular fa-bookmark' },

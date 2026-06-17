@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { UploadTypeHero, UploadTagSelector, UploadContentDetails, UploadPublicationSettings } from '@/components/upload'
-import { navItems } from '../constants/navigation'
+
 import api, { autoTagImage, getTags } from '../services/api'
 import { useArtworkStore } from '../stores/artwork.store'
 import { getApiErrorMessage } from '../utils/apiErrors'
@@ -503,7 +503,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="upload-page page-block p-3 p-md-4">
       <UploadTypeHero
         :current-kind="currentKind"

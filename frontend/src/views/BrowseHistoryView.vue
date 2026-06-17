@@ -3,7 +3,7 @@ import { onMounted, computed } from 'vue'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import { useBrowseHistoryStore } from '@/stores/browseHistory.store'
 import { useAuthStore } from '@/stores/auth.store'
-import { navItems as NAV_ITEMS } from '@/constants/navigation'
+
 
 const browseHistoryStore = useBrowseHistoryStore()
 const authStore = useAuthStore()
@@ -54,7 +54,7 @@ function timeAgo(dateStr) {
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="NAV_ITEMS" site-name="IlluWrl">
+  <MainLayoutTemplate>
     <div class="browse-history-page">
       <div class="page-header">
         <h1><i class="fa-regular fa-clock me-2"></i>Browsing History</h1>

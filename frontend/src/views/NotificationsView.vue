@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import { navItems } from '../constants/navigation'
+
 import { useAuthStore } from '../stores/auth.store'
 import { useNotificationStore } from '../stores/notification.store'
 
@@ -44,7 +44,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section v-if="authStore.isAuthenticated" class="page-block p-3 p-md-4 d-grid gap-3">
       <header class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>

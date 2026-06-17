@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import { navItems } from '../constants/navigation'
+
 import { useAuthStore } from '../stores/auth.store'
 import { useRequestStore } from '../stores/request.store'
 import RequestDetailPanel from '../components/request/RequestDetailPanel.vue'
@@ -132,7 +132,7 @@ onMounted(loadAll)
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="request-management page-block">
       <header class="request-header">
         <div>

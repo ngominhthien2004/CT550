@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import SearchOptionsModal from '../components/search/SearchOptionsModal.vue'
 import { getArtworks, userApi } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import { navItems } from '../constants/navigation'
+
 import { useAuthStore } from '../stores/auth.store'
 import { useFollowStore } from '../stores/follow.store'
 
@@ -585,7 +585,7 @@ watch(
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="search-result-page page-block" :class="searchResultPageClass">
       <header class="result-header">
         <div class="result-title-stack">

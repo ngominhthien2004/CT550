@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid, HomeFeedColumn, HomeHeroBanner, HomeRecommendedUsers, HomeTabs, HomeTagStrip } from '@/components/home'
 import { getArtworks } from '../services/api'
-import { navItems } from '../constants/navigation'
+
 import heroImage from '../assets/hero.png'
 import { useFollowStore } from '../stores/follow.store'
 import { useAuthStore } from '../stores/auth.store'
@@ -170,7 +170,7 @@ watch(
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="typed-home-page">
       <div class="typed-home-main-column">
         <HomeTabs />

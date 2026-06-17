@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid } from '@/components/home'
-import { navItems } from '../constants/navigation'
+
 import { useTagStore } from '../stores/tag.store'
 import { useAuthStore } from '../stores/auth.store'
 
@@ -113,7 +113,7 @@ watch(favoriteTagKey, loadFavoriteTagStatus)
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="tag-detail d-grid gap-3">
       <div class="page-block p-3 p-md-4 d-grid gap-2">
         <div class="tag-head">

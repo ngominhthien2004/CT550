@@ -5,7 +5,7 @@ import { useSeriesStore } from '@/stores/series.store'
 import { useAuthStore } from '@/stores/auth.store'
 import { getChapters, createChapter, deleteChapter, updateChapter } from '@/services/api'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
-import { navItems } from '../constants/navigation'
+
 
 const route = useRoute()
 const router = useRouter()
@@ -185,7 +185,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <div class="series-detail-page" v-if="!seriesStore.detailLoading || series">
       <!-- Loading -->
       <div v-if="!series && seriesStore.detailLoading" class="state-loading">

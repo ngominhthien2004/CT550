@@ -6,10 +6,6 @@ import AppTopBar from './AppTopBar.vue'
 const SIDEBAR_Z_INDEX = 1040
 
 const props = defineProps({
-  navItems: {
-    type: Array,
-    default: () => [],
-  },
   siteName: {
     type: String,
     default: 'IlluWrl',
@@ -61,7 +57,6 @@ onBeforeUnmount(() => {
     <div v-if="!isNavCollapsed" class="sidebar-backdrop" :style="{ zIndex: SIDEBAR_Z_INDEX - 1 }" @click="toggleSidebar"></div>
 
     <AppSidebarMenu
-      :nav-items="navItems"
       :site-name="siteName"
       :is-nav-collapsed="isNavCollapsed"
       :sidebar-compact="isSidebarCompact"

@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ArtworkDetailCard, ArtworkDetailSidebar, ArtworkDetailCommentsCard, ArtworkDetailRelatedGrid } from '@/components/artwork'
 import { NovelReader, ChapterManager } from '@/components/novel'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import { navItems } from '../constants/navigation'
+
 import { getArtworks, getChapters, getChapter, getReadingProgress, saveReadingProgress } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useArtworkStore } from '../stores/artwork.store'
@@ -400,7 +400,7 @@ watch(
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="detail-page-content d-grid gap-3">
       <p v-if="artworkStore.loading" class="text-secondary mb-0">Loading artwork detail...</p>
       <p v-else-if="artworkStore.error" class="text-danger mb-0">{{ artworkStore.error }}</p>

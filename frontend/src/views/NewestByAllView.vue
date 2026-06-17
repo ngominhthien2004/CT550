@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { getDiscovery } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { ArtworkCard } from '@/components/artwork'
-import { navItems } from '../constants/navigation'
+
 
 const artworks = ref([])
 const loading = ref(false)
@@ -96,9 +96,7 @@ onMounted(() => loadFeedData(1, false))
 
 <template>
   <MainLayoutTemplate
-    :nav-items="navItems"
     :is-nav-collapsed="isNavCollapsed"
-    site-name="IlluWrl"
     @toggle-sidebar="toggleLeftNav"
   >
     <section class="newest-all-page">

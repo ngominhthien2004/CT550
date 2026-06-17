@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import { navItems } from '../constants/navigation'
+
 import { useFeedStore } from '../stores/feed.store'
 import { useLikeStore } from '../stores/like.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
@@ -225,7 +225,7 @@ function getRankClass(rank) {
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <div class="rankings-container">
       <!-- Pixiv-style Header Tabs -->
       <nav class="type-tabs">

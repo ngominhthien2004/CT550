@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { NovelSection, NovelCreators } from '@/components/novel'
 import { HomeTabs, HomeHeroBanner, HomeTagStrip } from '@/components/home'
-import { navItems } from '../constants/navigation'
+
 import { getArtworks } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useFollowStore } from '../stores/follow.store'
@@ -289,7 +289,7 @@ onMounted(loadNovelTopPage)
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <div class="novel-top-page">
       <HomeTabs />
       <HomeTagStrip :tags="liveTags" compact />

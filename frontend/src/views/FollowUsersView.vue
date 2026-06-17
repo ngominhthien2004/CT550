@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import FollowUserCard from '../components/follow/FollowUserCard.vue'
-import { navItems } from '../constants/navigation'
+
 import { getArtworks, userApi } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useFollowStore } from '../stores/follow.store'
@@ -160,7 +160,7 @@ watch(
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="follow-users-page page-block">
       <div class="profile-hero">
         <button type="button" class="hero-edit" aria-label="Edit profile cover">

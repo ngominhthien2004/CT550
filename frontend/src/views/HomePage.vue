@@ -4,7 +4,7 @@ import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid, HomeFeedColumn, HomeHeroBanner, HomeRecommendedUsers, HomeTabs, HomeTagStrip } from '@/components/home'
 import { getArtworks, getTags } from '../services/api'
 import api from '../services/api'
-import { navItems } from '../constants/navigation'
+
 import heroImage from '../assets/hero.png'
 import { useFollowStore } from '../stores/follow.store'
 import { useAuthStore } from '../stores/auth.store'
@@ -136,7 +136,7 @@ async function toggleFollowFromHome(userId) {
 </script>
 
 <template>
-  <MainLayoutTemplate :nav-items="navItems" :is-nav-collapsed="isNavCollapsed" site-name="IlluWrl" @toggle-sidebar="toggleLeftNav">
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="home-page">
       <div class="home-main-column">
         <HomeTabs />
