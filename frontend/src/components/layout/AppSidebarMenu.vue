@@ -53,6 +53,13 @@ function isGroupExpanded(index) {
 const authStore = useAuthStore()
 const { logout } = useAuthStore()
 
+const DEFAULT_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
+function onAvatarError(e) {
+  if (e.target?.src !== DEFAULT_AVATAR) {
+    e.target.src = DEFAULT_AVATAR
+  }
+}
+
 const illuWrlStyleSections = computed(() => {
   const manageGroup = [
     { id: 'dashboard', label: 'Dashboard', to: '/dashboard', icon: 'fa-solid fa-gauge-high' },
@@ -163,7 +170,7 @@ const illuWrlStyleSections = computed(() => {
 
     <div v-if="authStore.user" class="sidebar-user">
       <router-link to="/account" class="sidebar-user-link" :title="sidebarCompact ? authStore.user.displayName || authStore.user.username : undefined">
-        <img :src="authStore.user.avatar || '/default-avatar.png'" alt="" class="sidebar-avatar" />
+        <img :src="authStore.user.avatar || DEFAULT_AVATAR" alt="" class="sidebar-avatar" @error="onAvatarError" />
         <div class="sidebar-user-info">
           <span class="sidebar-user-name">{{ authStore.user.displayName || authStore.user.username }}</span>
           <span class="sidebar-user-id">@{{ authStore.user.username }}</span>
