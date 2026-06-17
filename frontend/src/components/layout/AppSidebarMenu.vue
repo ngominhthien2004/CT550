@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useAuthStore } from '../../stores/auth.store'
 
 const props = defineProps({
@@ -18,6 +18,36 @@ const props = defineProps({
 })
 
 defineEmits(['close-sidebar'])
+
+/* ── Sidebar group collapse state ── */
+const expandedGroups = ref(loadExpandedState())
+
+function loadExpandedState() {
+  try {
+    const saved = localStorage.getItem('sidebar-collapsed-groups')
+    if (saved) {
+      const parsed = JSON.parse(saved)
+      return parsed
+    }
+  } catch { /* ignore corrupt data */ }
+  // Default: all groups expanded (indices 1, 2, 3 — 0 has no label)
+  return { 1: true, 2: true, 3: true }
+}
+
+function saveExpandedState() {
+  localStorage.setItem('sidebar-collapsed-groups', JSON.stringify(expandedGroups.value))
+}
+
+function toggleGroup(index) {
+  expandedGroups.value[index] = !expandedGroups.value[index]
+  saveExpandedState()
+}
+
+function isGroupExpanded(index) {
+  // Group 0 (Home) is always expanded — no collapse for it
+  if (index === 0) return true
+  return expandedGroups.value[index] !== false
+}
 
 const authStore = useAuthStore()
 const { logout } = useAuthStore()
@@ -83,11 +113,32 @@ const illuWrlStyleSections = computed(() => {
     <nav>
       <ul class="nav-list">
         <li v-for="(group, groupIndex) in illuWrlStyleSections" :key="`group-${groupIndex}`" class="nav-group">
-          <span v-if="group.label" class="nav-group-label">{{ group.label }}</span>
-          <router-link v-for="item in group.items" :key="item.id" :to="item.to" class="nav-link-item">
-            <i :class="item.icon" aria-hidden="true"></i>
-            <span>{{ item.label }}</span>
-          </router-link>
+          <!-- Header row (only for groups with a label) -->
+          <div
+            v-if="group.label"
+            class="nav-group-header"
+            @click="toggleGroup(groupIndex)"
+            role="button"
+            :aria-expanded="isGroupExpanded(groupIndex)"
+            tabindex="0"
+            @keydown.enter="toggleGroup(groupIndex)"
+            @keydown.space.prevent="toggleGroup(groupIndex)"
+          >
+            <span class="nav-group-label">{{ group.label }}</span>
+            <i
+              class="fa-solid fa-chevron-down nav-group-chevron"
+              :class="{ collapsed: !isGroupExpanded(groupIndex) }"
+              aria-hidden="true"
+            ></i>
+          </div>
+
+          <!-- Items container -->
+          <div class="nav-group-items" v-show="isGroupExpanded(groupIndex)">
+            <router-link v-for="item in group.items" :key="item.id" :to="item.to" class="nav-link-item">
+              <i :class="item.icon" aria-hidden="true"></i>
+              <span>{{ item.label }}</span>
+            </router-link>
+          </div>
         </li>
       </ul>
     </nav>
@@ -188,14 +239,41 @@ const illuWrlStyleSections = computed(() => {
   color: var(--muted);
 }
 
+.nav-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  padding: 0.3rem 0.9rem 0.4rem;
+  border-radius: 8px;
+}
+
+.nav-group-header:hover {
+  opacity: 0.8;
+}
+
+.nav-group-header .nav-group-label {
+  padding: 0;
+}
+
+.nav-group-chevron {
+  font-size: 0.65rem;
+  color: var(--muted);
+  transition: transform 0.2s ease;
+}
+
+.nav-group-chevron.collapsed {
+  transform: rotate(-90deg);
+}
+
 .nav-group-label {
-  display: block;
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--muted);
-  padding: 0.3rem 0.9rem 0.4rem;
+  display: block;
 }
 
 .nav-link-item:hover {
