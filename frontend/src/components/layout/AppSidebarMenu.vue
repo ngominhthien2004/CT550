@@ -15,9 +15,13 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  sidebarCompact: {
+    type: Boolean,
+    default: false,
+  },
 })
 
-defineEmits(['close-sidebar'])
+defineEmits(['close-sidebar', 'toggle-compact'])
 
 /* ── Sidebar group collapse state ── */
 const expandedGroups = ref(loadExpandedState())
@@ -102,12 +106,24 @@ const illuWrlStyleSections = computed(() => {
 </script>
 
 <template>
-  <aside class="left-nav" :class="{ collapsed: isNavCollapsed }">
+  <aside class="left-nav" :class="{ collapsed: isNavCollapsed, 'icon-only': sidebarCompact }">
     <div class="sidebar-head">
       <button type="button" class="menu-toggle" aria-label="Close menu" @click="$emit('close-sidebar')">
         <i class="fa-solid fa-bars" aria-hidden="true"></i>
       </button>
-      <router-link to="/" class="brand">{{ siteName }}</router-link>
+      <router-link to="/" class="brand">
+        <span class="brand-full">{{ siteName }}</span>
+        <span class="brand-short">IW</span>
+      </router-link>
+      <button
+        type="button"
+        class="compact-toggle"
+        :aria-label="sidebarCompact ? 'Expand sidebar' : 'Collapse to icons'"
+        :title="sidebarCompact ? 'Expand sidebar' : 'Collapse to icons'"
+        @click="$emit('toggle-compact')"
+      >
+        <i :class="sidebarCompact ? 'fa-solid fa-chevron-right' : 'fa-solid fa-chevron-left'" aria-hidden="true"></i>
+      </button>
     </div>
 
     <nav>
@@ -128,15 +144,22 @@ const illuWrlStyleSections = computed(() => {
             <i
               class="fa-solid fa-chevron-down nav-group-chevron"
               :class="{ collapsed: !isGroupExpanded(groupIndex) }"
+              :style="{ display: sidebarCompact ? 'none' : '' }"
               aria-hidden="true"
             ></i>
           </div>
 
           <!-- Items container -->
           <div class="nav-group-items" v-show="isGroupExpanded(groupIndex)">
-            <router-link v-for="item in group.items" :key="item.id" :to="item.to" class="nav-link-item">
+            <router-link
+              v-for="item in group.items"
+              :key="item.id"
+              :to="item.to"
+              class="nav-link-item"
+              :title="sidebarCompact ? item.label : undefined"
+            >
               <i :class="item.icon" aria-hidden="true"></i>
-              <span>{{ item.label }}</span>
+              <span class="nav-item-label">{{ item.label }}</span>
             </router-link>
           </div>
         </li>
@@ -146,7 +169,7 @@ const illuWrlStyleSections = computed(() => {
     <router-link v-if="!authStore.user" to="/login" class="nav-ghost">Đăng nhập để khám phá thêm</router-link>
 
     <div v-if="authStore.user" class="sidebar-user">
-      <router-link to="/account" class="sidebar-user-link">
+      <router-link to="/account" class="sidebar-user-link" :title="sidebarCompact ? authStore.user.displayName || authStore.user.username : undefined">
         <img :src="authStore.user.avatar || '/default-avatar.png'" alt="" class="sidebar-avatar" />
         <div class="sidebar-user-info">
           <span class="sidebar-user-name">{{ authStore.user.displayName || authStore.user.username }}</span>
@@ -169,7 +192,7 @@ const illuWrlStyleSections = computed(() => {
   top: 0;
   height: 100vh;
   overflow: auto;
-  transition: transform 0.22s ease;
+  transition: transform 0.22s ease, width 0.22s ease;
   background: var(--surface-alt);
   border-right: 1px solid var(--line);
   transform: translateX(0%);
@@ -181,11 +204,108 @@ const illuWrlStyleSections = computed(() => {
   transform: translateX(-100%);
 }
 
+/* ── Icon-only mode ── */
+.left-nav.icon-only {
+  width: 68px;
+}
+
+.left-nav.icon-only .brand-full {
+  display: none;
+}
+
+.left-nav:not(.icon-only) .brand-short {
+  display: none;
+}
+
+.left-nav.icon-only .nav-item-label,
+.left-nav.icon-only .nav-group-label,
+.left-nav.icon-only .sidebar-user-info,
+.left-nav.icon-only .nav-ghost {
+  display: none;
+}
+
+.left-nav.icon-only .nav-link-item {
+  justify-content: center;
+  padding: 0.58rem 0;
+  gap: 0;
+}
+
+.left-nav.icon-only .nav-link-item i {
+  width: auto;
+  font-size: 1.15rem;
+}
+
+.left-nav.icon-only .nav-link-item.router-link-active {
+  padding-left: 0;
+  border-left: none;
+  border-right: 3px solid var(--accent);
+}
+
+.left-nav.icon-only .sidebar-head {
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.left-nav.icon-only .menu-toggle {
+  display: none;
+}
+
+.left-nav.icon-only .compact-toggle {
+  position: absolute;
+  right: -0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  z-index: 1;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.left-nav.icon-only .compact-toggle:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.left-nav.icon-only .sidebar-user-link {
+  justify-content: center;
+  padding: 0.4rem 0;
+}
+
+.left-nav.icon-only .sidebar-user {
+  justify-content: center;
+}
+
+.left-nav.icon-only .sidebar-logout-btn {
+  display: none;
+}
+
+.left-nav.icon-only .nav-group-header {
+  justify-content: center;
+  padding: 0.3rem 0 0.4rem;
+}
+
+.left-nav.icon-only .nav-group-header .nav-group-chevron {
+  display: none !important;
+}
+
+/* ── End icon-only mode ── */
+
 .sidebar-head {
   display: flex;
   align-items: center;
   gap: 0.82rem;
   padding: 0.05rem 0.35rem 1rem;
+  position: relative;
 }
 
 .brand {
@@ -197,6 +317,11 @@ const illuWrlStyleSections = computed(() => {
   letter-spacing: -0.03em;
 }
 
+.brand-short {
+  font-size: 1.3rem;
+  letter-spacing: 0;
+}
+
 .menu-toggle {
   width: 2.1rem;
   height: 2.1rem;
@@ -204,6 +329,37 @@ const illuWrlStyleSections = computed(() => {
   border: 1px solid var(--line);
   background: var(--surface);
   color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s ease;
+}
+
+.menu-toggle:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.compact-toggle {
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  margin-left: auto;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.compact-toggle:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .left-nav nav {
@@ -231,12 +387,14 @@ const illuWrlStyleSections = computed(() => {
   display: flex;
   align-items: center;
   gap: 0.8rem;
+  transition: background 0.18s ease, color 0.18s ease;
 }
 
 .nav-link-item i {
   width: 1.15rem;
   text-align: center;
   color: var(--muted);
+  transition: color 0.18s ease;
 }
 
 .nav-group-header {
@@ -396,8 +554,16 @@ const illuWrlStyleSections = computed(() => {
     transform: translateX(-102%);
   }
 
-  .brand {
+  .left-nav:not(.icon-only) .brand {
     font-size: 2.4rem;
+  }
+
+  .left-nav.icon-only {
+    width: 62px;
+  }
+
+  .left-nav.icon-only .compact-toggle {
+    display: none;
   }
 }
 </style>

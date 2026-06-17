@@ -17,11 +17,16 @@ const props = defineProps({
 })
 
 const isNavCollapsed = ref(false)
+const isSidebarCompact = ref(false)
 const showBackToTop = ref(false)
 let scrollHandler = null
 
 function toggleSidebar() {
   isNavCollapsed.value = !isNavCollapsed.value
+}
+
+function toggleCompact() {
+  isSidebarCompact.value = !isSidebarCompact.value
 }
 
 function scrollToTop() {
@@ -59,11 +64,13 @@ onBeforeUnmount(() => {
       :nav-items="navItems"
       :site-name="siteName"
       :is-nav-collapsed="isNavCollapsed"
+      :sidebar-compact="isSidebarCompact"
       :style="{ zIndex: SIDEBAR_Z_INDEX }"
       @close-sidebar="toggleSidebar"
+      @toggle-compact="toggleCompact"
     />
 
-    <section class="main-pane">
+    <section class="main-pane" :class="{ 'sidebar-compact-active': !isNavCollapsed && isSidebarCompact }">
       <AppTopBar :site-name="siteName" @toggle-sidebar="toggleSidebar" />
       <div class="main-content">
         <slot />
@@ -92,6 +99,12 @@ onBeforeUnmount(() => {
   padding: 0.35rem 40px 1rem;
   display: grid;
   gap: 0;
+  transition: margin-left 0.22s ease;
+  margin-left: 240px;
+}
+
+.main-pane.sidebar-compact-active {
+  margin-left: 68px;
 }
 
 .main-content {
@@ -119,7 +132,12 @@ onBeforeUnmount(() => {
 
 @media (max-width: 920px) {
   .main-pane {
+    margin-left: 0;
     padding-inline: 0.65rem;
+  }
+
+  .main-pane.sidebar-compact-active {
+    margin-left: 0;
   }
 
   .main-content {
