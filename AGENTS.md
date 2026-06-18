@@ -83,6 +83,7 @@ Workflow: start frontend + backend dev servers → navigate page → inspect/int
    Threshold configurable via `AI_DETECTION_THRESHOLD` (default 70%).
 7. **vue-konva must be registered in main.js**: The npm packages `konva` and `vue-konva` are declared in `frontend/package.json`, but Vue does NOT auto-register them. You MUST add `import VueKonva from 'vue-konva'` and `app.use(VueKonva)` in `frontend/src/main.js`. Without this, `<v-stage>`, `<v-layer>`, `<v-rect>`, `<v-line>`, `<v-image>` components fail with "Failed to resolve component" warnings and the canvas never renders.
 8. **Bootstrap global heading colors override Vue scoped CSS**: Bootstrap sets global colors on `h1`–`h6` (e.g. `h2 { color: #0f172a }`). In Vue `scoped` components, if you don't explicitly set `color` on a heading, Bootstrap's global rule wins — even on dark backgrounds. Always set `color: inherit` (or an explicit light color) on heading elements inside dark-themed modals/panels.
+9. **Chrome DevTools tab management**: Before opening a new tab with `chrome-devtools_new_page`, ALWAYS call `chrome-devtools_list_pages` first to check what tabs already exist. Reuse existing isolated contexts (`isolatedContext`) for the same user session instead of creating new tabs. This prevents accumulating too many open tabs (max 5 recommended). When done with a test session, close unused tabs with `chrome-devtools_close_page`.
 
 ## Test artifact convention
 
@@ -122,6 +123,7 @@ Screenshots captured during testing / debugging sessions MUST be saved to `test-
 - `docs/layout-architecture.md` — detailed frontend page layout diagrams
 - `docs/tasks/feature-tracker.md` — current feature implementation status
 - `docs/PRD.yaml` — product requirements for individual features
+- `docs/action-flow/request-action-flows.md` — complete request/commission action flow documentation with state machine, API endpoints, auth matrix, and validation rules
 
 ## Per-backend-file convention caveat
 
