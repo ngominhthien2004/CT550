@@ -65,7 +65,10 @@ onBeforeUnmount(() => {
       @toggle-compact="toggleCompact"
     />
 
-    <section class="main-pane" :class="{ 'sidebar-compact-active': !isNavCollapsed && isSidebarCompact }">
+    <section class="main-pane" :class="{ 
+      'sidebar-compact-active': !isNavCollapsed && isSidebarCompact,
+      'sidebar-hidden': isNavCollapsed 
+    }">
       <AppTopBar :site-name="siteName" @toggle-sidebar="toggleSidebar" />
       <div class="main-content">
         <slot />
@@ -102,6 +105,10 @@ onBeforeUnmount(() => {
   margin-left: 68px;
 }
 
+.main-pane.sidebar-hidden {
+  margin-left: 0;
+}
+
 .main-content {
   margin: 0 72px;
   display: grid;
@@ -132,6 +139,10 @@ onBeforeUnmount(() => {
   }
 
   .main-pane.sidebar-compact-active {
+    margin-left: 0;
+  }
+
+  .main-pane.sidebar-hidden {
     margin-left: 0;
   }
 
