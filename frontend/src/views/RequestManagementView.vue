@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
@@ -19,6 +19,7 @@ const selectedRequestId = ref(null)
 const selectedRequestDetail = ref(null)
 const detailLoading = ref(false)
 const detailPanelRef = ref(null)
+const saveAttempted = ref(false)
 
 const termForm = reactive({
   title: 'Basic Request',
@@ -73,6 +74,7 @@ async function loadAll() {
 }
 
 async function saveTerm() {
+  saveAttempted.value = true
   saveMessage.value = ''
   try {
     await requestStore.createTerm({
@@ -114,21 +116,29 @@ async function selectRequest(requestId) {
 }
 
 async function handleChatMessage(formData) {
+  actionError.value = ''
   if (!selectedRequestId.value) return
   detailPanelRef.value?.setChatLoading(true)
   try {
     await requestStore.sendChat(selectedRequestId.value, formData)
-    // Reload chat
     const messages = await requestStore.getChat(selectedRequestId.value)
     detailPanelRef.value?.updateChatMessages(messages)
-  } catch (_e) {
-    // ignore
+  } catch (e) {
+    actionError.value = e?.response?.data?.message || 'Failed to send chat message'
   } finally {
     detailPanelRef.value?.setChatLoading(false)
   }
 }
 
 onMounted(loadAll)
+
+watch(
+  () => ({ ...termForm }),
+  () => {
+    requestStore.error = ''
+  },
+  { deep: true }
+)
 </script>
 
 <template>
@@ -187,11 +197,13 @@ onMounted(loadAll)
                 :key="type"
                 type="button"
                 :class="{ active: termForm.acceptedWorkTypes.includes(type) }"
+                :title="termForm.acceptedWorkTypes.includes(type) ? 'Click to remove' : 'Click to add'"
                 @click="toggleListValue(termForm.acceptedWorkTypes, type)"
               >
                 {{ type }}
               </button>
             </div>
+            <p v-if="!termForm.acceptedWorkTypes.length && saveAttempted" class="field-error">Select at least one work type.</p>
 
             <div class="chip-row" aria-label="Accepted age ratings">
               <button
@@ -256,22 +268,24 @@ onMounted(loadAll)
             <span v-for="term in terms" :key="term._id">{{ term.title }} · {{ term.currency }} {{ term.targetPrice }}</span>
           </div>
 
-          <article v-for="item in requests" :key="item._id" class="request-row" @click="selectRequest(item._id)">
-            <div>
-              <p class="status-pill">{{ statusLabel(item.status) }}</p>
-              <h3>{{ item.title }}</h3>
-              <p class="meta">
-                {{ item.workType }} · {{ item.currency }} {{ item.proposedAmount }} ·
-                {{ activeRole === 'creator' ? item.requester?.displayName || item.requester?.username : item.creator?.displayName || item.creator?.username }}
-              </p>
-            </div>
-            <div v-if="activeRole === 'creator'" class="row-actions">
-              <button v-if="item.status === 'pending'" type="button" @click="runAction(item._id, 'accept')">Accept</button>
-              <button v-if="item.status === 'pending'" type="button" class="ghost-danger" @click="runAction(item._id, 'reject')">Reject</button>
-              <button v-if="item.status === 'accepted'" type="button" @click="runAction(item._id, 'start')">Start</button>
-              <button v-if="['accepted', 'in_progress'].includes(item.status)" type="button" class="ghost-danger" @click="runAction(item._id, 'cancel')">Cancel</button>
-            </div>
-          </article>
+          <TransitionGroup name="request-list" tag="div" class="request-list-items">
+            <article v-for="item in requests" :key="item._id" class="request-row" @click="selectRequest(item._id)">
+              <div>
+                <p class="status-pill">{{ statusLabel(item.status) }}</p>
+                <h3>{{ item.title }}</h3>
+                <p class="meta">
+                  {{ item.workType }} · {{ item.currency }} {{ item.proposedAmount }} ·
+                  {{ activeRole === 'creator' ? item.requester?.displayName || item.requester?.username : item.creator?.displayName || item.creator?.username }}
+                </p>
+              </div>
+              <div v-if="activeRole === 'creator'" class="row-actions">
+                <button v-if="item.status === 'pending'" type="button" @click.stop="runAction(item._id, 'accept')">Accept</button>
+                <button v-if="item.status === 'pending'" type="button" class="ghost-danger" @click.stop="runAction(item._id, 'reject')">Reject</button>
+                <button v-if="item.status === 'accepted'" type="button" @click.stop="runAction(item._id, 'start')">Start</button>
+                <button v-if="['accepted', 'in_progress'].includes(item.status)" type="button" class="ghost-danger" @click.stop="runAction(item._id, 'cancel')">Cancel</button>
+              </div>
+            </article>
+          </TransitionGroup>
 
           <p v-if="!loading && !requests.length" class="empty">No requests in this view.</p>
         </div>
@@ -548,5 +562,36 @@ textarea {
   .form-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.field-error {
+  color: #dc2626;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.request-list-items {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.request-list-enter-active,
+.request-list-leave-active {
+  transition: all 0.3s ease;
+}
+
+.request-list-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.request-list-leave-to {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.request-list-move {
+  transition: transform 0.3s ease;
 }
 </style>

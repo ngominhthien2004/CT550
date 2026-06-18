@@ -117,15 +117,17 @@ async function addSystemChat(requestId, senderId, content) {
 
 function ensureParticipant(request, userId) {
     const id = userId.toString();
-    return request.creator.toString() === id || request.requester.toString() === id;
+    const creatorId = (request.creator?._id || request.creator).toString();
+    const requesterId = (request.requester?._id || request.requester).toString();
+    return creatorId === id || requesterId === id;
 }
 
 function ensureCreator(request, userId) {
-    return request.creator.toString() === userId.toString();
+    return (request.creator?._id || request.creator).toString() === userId.toString();
 }
 
 function ensureRequester(request, userId) {
-    return request.requester.toString() === userId.toString();
+    return (request.requester?._id || request.requester).toString() === userId.toString();
 }
 
 async function populateRequest(query) {
