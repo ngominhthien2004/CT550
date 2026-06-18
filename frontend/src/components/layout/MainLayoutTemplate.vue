@@ -12,7 +12,7 @@ const props = defineProps({
   },
 })
 
-const isNavCollapsed = ref(false)
+const isNavCollapsed = ref(true)
 const isSidebarCompact = ref(false)
 const showBackToTop = ref(false)
 let scrollHandler = null
