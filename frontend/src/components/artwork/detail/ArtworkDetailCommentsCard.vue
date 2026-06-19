@@ -231,6 +231,29 @@ function onClickOutsideDelete(event) {
   }
 }
 
+const processedComments = computed(() =>
+  commentStore.items.map(comment => {
+    const replyList = repliesFor(comment._id)
+    return {
+      ...comment,
+      _avatar: getAvatar(comment.user),
+      _createdAt: formatDate(comment.createdAt),
+      _canDelete: canDeleteComment(comment),
+      _canReport: canReportComment(comment),
+      _hasReplies: hasReplies(comment),
+      _isExpanded: isRepliesExpanded(comment._id),
+      _replyCount: comment.replyCount || replyList.length,
+      _replyCountDisplay: comment.replyCount || replyList.length,
+      _replies: replyList.map(reply => ({
+        ...reply,
+        _avatar: getAvatar(reply.user),
+        _createdAt: formatDate(reply.createdAt),
+        _canDelete: canDeleteComment(reply),
+      })),
+    }
+  })
+)
+
 onMounted(() => {
   document.addEventListener('click', onClickOutsideDelete)
 })
@@ -289,8 +312,8 @@ const getAvatar = (user) => {
     <div v-if="showStickerInput" class="sticker-picker-row mb-4">
       <div class="sticker-grid">
         <button
-          v-for="(sticker, i) in stickerPresets"
-          :key="i"
+          v-for="sticker in stickerPresets"
+          :key="sticker"
           class="sticker-option"
           @click="selectSticker(sticker)"
         >
@@ -305,8 +328,8 @@ const getAvatar = (user) => {
     </div>
 
     <div v-else class="comment-list d-grid gap-4">
-      <div v-for="comment in commentStore.items" :key="comment._id" class="comment-item d-flex gap-3">
-        <img :src="getAvatar(comment.user)" alt="Avatar" class="avatar avatar--sm" />
+      <div v-for="comment in processedComments" :key="comment._id" class="comment-item d-flex gap-3">
+        <img :src="comment._avatar" alt="Avatar" class="avatar avatar--sm" />
         <div class="comment-content flex-grow-1">
           <div>
             <div class="author-info">
@@ -314,12 +337,12 @@ const getAvatar = (user) => {
               <p v-if="comment.content" class="comment-text comment-content mt-1 mb-2">{{ comment.content }}</p>
               <span v-if="comment.emoji" class="comment-sticker comment-content sticker-display mt-1 mb-2">{{ comment.emoji }}</span>
               <div class="comment-meta d-flex align-items-center gap-3">
-                <span class="comment-date text-muted">{{ formatDate(comment.createdAt) }}</span>
+                <span class="comment-date text-muted">{{ comment._createdAt }}</span>
                 <button class="btn-reply p-0 border-0 bg-transparent" @click="toggleReplyInput(comment._id)">
                   Reply
                 </button>
                 <button
-                  v-if="canDeleteComment(comment)"
+                  v-if="comment._canDelete"
                   class="btn-delete p-0 border-0 bg-transparent"
                   :class="{ 'confirming': confirmDeleteId === comment._id }"
                   @click="handleDelete(comment._id)"
@@ -327,7 +350,7 @@ const getAvatar = (user) => {
                   {{ confirmDeleteId === comment._id ? 'Confirm?' : 'Delete' }}
                 </button>
                 <button
-                  v-if="canReportComment(comment)"
+                  v-if="comment._canReport"
                   class="btn-report p-0 border-0 bg-transparent"
                   @click="openReportModal(comment)"
                 >
@@ -371,30 +394,30 @@ const getAvatar = (user) => {
             />
           </div>
 
-          <div v-if="hasReplies(comment)" class="mt-2 text-start">
+          <div v-if="comment._hasReplies" class="mt-2 text-start">
             <button class="btn-display-replies py-1 px-3" @click="toggleReplies(comment)">
-              {{ isRepliesExpanded(comment._id) ? 'Hide Replies' : `Display Replies (${comment.replyCount || repliesFor(comment._id).length})` }}
+              {{ comment._isExpanded ? 'Hide Replies' : `Display Replies (${comment._replyCountDisplay})` }}
             </button>
           </div>
 
-          <div v-if="isRepliesExpanded(comment._id)" class="replies-wrap mt-3 d-grid gap-3">
+          <div v-if="comment._isExpanded" class="replies-wrap mt-3 d-grid gap-3">
             <div v-if="commentStore.loadingRepliesByCommentId[comment._id]" class="text-muted small">Loading replies...</div>
             <template v-else>
               <div
-                v-for="reply in repliesFor(comment._id)"
+                v-for="reply in comment._replies"
                 :key="reply._id"
                 class="reply-item d-flex gap-2"
               >
-                <img :src="getAvatar(reply.user)" alt="Reply avatar" class="avatar avatar--xs" />
+                <img :src="reply._avatar" alt="Reply avatar" class="avatar avatar--xs" />
                 <div class="flex-grow-1">
                   <div class="author-info">
                     <span class="user-name">{{ reply.user?.displayName || reply.user?.username }}</span>
                     <p v-if="reply.content" class="comment-text comment-content mt-1 mb-2">{{ reply.content }}</p>
                     <span v-if="reply.emoji" class="comment-sticker comment-content sticker-display mt-1 mb-2">{{ reply.emoji }}</span>
                     <div class="comment-meta d-flex align-items-center gap-3">
-                      <span class="comment-date text-muted">{{ formatDate(reply.createdAt) }}</span>
+                      <span class="comment-date text-muted">{{ reply._createdAt }}</span>
                       <button
-                        v-if="canDeleteComment(reply)"
+                        v-if="reply._canDelete"
                         class="btn-delete p-0 border-0 bg-transparent"
                         :class="{ 'confirming': confirmDeleteId === reply._id }"
                         @click="handleDelete(reply._id)"
@@ -405,7 +428,7 @@ const getAvatar = (user) => {
                   </div>
                 </div>
               </div>
-              <div v-if="repliesFor(comment._id).length === 0" class="small text-muted">No replies yet.</div>
+              <div v-if="comment._replies.length === 0" class="small text-muted">No replies yet.</div>
             </template>
           </div>
         </div>

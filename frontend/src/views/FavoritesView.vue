@@ -45,10 +45,16 @@ const typeTabs = computed(() => {
 })
 
 const visibleFavorites = computed(() => {
+  let items
   if (!activeType.value) {
-    return likeStore.items
+    items = likeStore.items
+  } else {
+    items = likeStore.items.filter((entry) => String(entry?.artwork?.type || '').toLowerCase() === activeType.value)
   }
-  return likeStore.items.filter((entry) => String(entry?.artwork?.type || '').toLowerCase() === activeType.value)
+  return items.map(entry => ({
+    ...entry,
+    _hasArtworkRoute: typeof entry?.artwork?._id === 'string' && objectIdPattern.test(entry.artwork._id),
+  }))
 })
 
 const totalLikes = computed(() => {
@@ -144,7 +150,7 @@ watch(
 
         <section v-else-if="visibleFavorites.length" class="favorites-grid" aria-label="Favorite artworks list">
           <article v-for="entry in visibleFavorites" :key="entry._id" class="favorite-card">
-            <router-link v-if="hasArtworkRoute(entry)" :to="`/artworks/${entry.artwork._id}`" class="favorite-cover-link">
+            <router-link v-if="entry._hasArtworkRoute" :to="`/artworks/${entry.artwork._id}`" class="favorite-cover-link">
               <img
                 :src="entry.artwork?.images?.[0] || ''"
                 :alt="entry.artwork?.title || 'Artwork'"
@@ -158,7 +164,7 @@ watch(
               loading="lazy"
             />
 
-            <router-link v-if="hasArtworkRoute(entry)" :to="`/artworks/${entry.artwork._id}`" class="favorite-title">
+            <router-link v-if="entry._hasArtworkRoute" :to="`/artworks/${entry.artwork._id}`" class="favorite-title">
               {{ entry.artwork?.title || 'Untitled artwork' }}
             </router-link>
             <p class="favorite-meta">{{ entry.artwork?.type || 'illust' }} · {{ entry.artwork?.ageRating || 'all' }}</p>

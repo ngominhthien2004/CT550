@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSeriesStore } from '@/stores/series.store'
 import CreateSeriesModal from './CreateSeriesModal.vue'
@@ -94,6 +94,14 @@ function getSeriesIcon(type) {
   }
 }
 
+const processedSeriesList = computed(() =>
+  seriesStore.seriesList.map(series => ({
+    ...series,
+    _icon: getSeriesIcon(series.type),
+    _createdAt: formatDate(series.createdAt),
+  }))
+)
+
 onMounted(() => {
   seriesStore.fetchMySeries(null, sortOrder.value)
 })
@@ -157,7 +165,7 @@ onMounted(() => {
 
     <!-- Series list -->
     <div v-else class="series-grid">
-      <div v-for="series in seriesStore.seriesList" :key="series._id" class="series-card" @click="goToSeriesDetail(series._id)">
+      <div v-for="series in processedSeriesList" :key="series._id" class="series-card" @click="goToSeriesDetail(series._id)">
         <!-- Card menu (top-right corner) -->
         <div class="series-card-menu">
           <button type="button" class="series-card-menu-btn" @click.stop="toggleMenu(series._id)">
@@ -181,13 +189,13 @@ onMounted(() => {
             loading="lazy"
           />
           <div v-else class="series-card-nothumb">
-            <i :class="getSeriesIcon(series.type)"></i>
+            <i :class="series._icon"></i>
           </div>
         </div>
         <div class="series-card-info">
           <h4 class="series-card-title">{{ series.title }}</h4>
           <div class="series-card-meta">
-            <span class="series-card-date">{{ formatDate(series.createdAt) }}</span>
+            <span class="series-card-date">{{ series._createdAt }}</span>
             <span class="series-card-separator">&middot;</span>
             <span class="series-card-episodes">{{ series.artworkCount || 0 }} episode(s)</span>
           </div>

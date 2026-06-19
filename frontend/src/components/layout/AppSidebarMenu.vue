@@ -23,6 +23,10 @@ defineEmits(['close-sidebar', 'toggle-compact'])
 /* ── Sidebar group collapse state ── */
 const expandedGroups = ref(loadExpandedState())
 
+const groupExpandedState = computed(() =>
+  illuWrlStyleSections.value.map((_, index) => isGroupExpanded(index))
+)
+
 function loadExpandedState() {
   try {
     const saved = localStorage.getItem('sidebar-collapsed-groups')
@@ -134,7 +138,7 @@ const illuWrlStyleSections = computed(() => {
             class="nav-group-header"
             @click="toggleGroup(groupIndex)"
             role="button"
-            :aria-expanded="isGroupExpanded(groupIndex)"
+            :aria-expanded="groupExpandedState[groupIndex]"
             tabindex="0"
             @keydown.enter="toggleGroup(groupIndex)"
             @keydown.space.prevent="toggleGroup(groupIndex)"
@@ -142,14 +146,14 @@ const illuWrlStyleSections = computed(() => {
             <span class="nav-group-label">{{ group.label }}</span>
             <i
               class="fa-solid fa-chevron-down nav-group-chevron"
-              :class="{ collapsed: !isGroupExpanded(groupIndex) }"
+              :class="{ collapsed: !groupExpandedState[groupIndex] }"
               :style="{ display: sidebarCompact ? 'none' : '' }"
               aria-hidden="true"
             ></i>
           </div>
 
           <!-- Items container -->
-          <div class="nav-group-items" v-show="isGroupExpanded(groupIndex)">
+          <div class="nav-group-items" v-show="groupExpandedState[groupIndex]">
             <router-link
               v-for="item in group.items"
               :key="item.id"

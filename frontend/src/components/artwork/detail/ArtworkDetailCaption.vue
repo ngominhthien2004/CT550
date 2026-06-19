@@ -22,6 +22,17 @@ function formatNumber(value) {
 
 const tagList = computed(() => (Array.isArray(artwork.value?.tags) ? artwork.value.tags : []))
 
+const displayNumbers = computed(() => {
+  const fmt = (v) => new Intl.NumberFormat().format(Number(v) || 0)
+  const a = artwork.value || {}
+  return {
+    viewCount: fmt(a.viewCount),
+    likeCount: fmt(a.likeCount),
+    bookmarkCount: fmt(a.bookmarkCount),
+    commentCount: fmt(a.commentCount),
+  }
+})
+
 // Novel synopsis truncation
 const truncatedDescription = computed(() => {
   const desc = artwork.value?.description || ''
@@ -55,7 +66,7 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
     </div>
 
     <div class="stats-row text-secondary small">
-      <span class="stat-inline"><i class="fa-regular fa-eye" aria-hidden="true"></i> {{ formatNumber(artwork.viewCount) }}</span>
+      <span class="stat-inline"><i class="fa-regular fa-eye" aria-hidden="true"></i> {{ displayNumbers.viewCount }}</span>
       <button
         type="button"
         class="stat-inline stat-button"
@@ -65,7 +76,7 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
         @click="emit('toggle-like')"
       >
         <i :class="[isLiked ? 'fa-solid' : 'fa-regular', 'fa-heart']" aria-hidden="true"></i>
-        {{ formatNumber(artwork.likeCount) }}
+        {{ displayNumbers.likeCount }}
       </button>
       <button
         type="button"
@@ -76,9 +87,9 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
         @click="emit('toggle-bookmark')"
       >
         <i :class="[isBookmarked ? 'fa-solid' : 'fa-regular', 'fa-bookmark']" aria-hidden="true"></i>
-        {{ formatNumber(artwork.bookmarkCount) }}
+        {{ displayNumbers.bookmarkCount }}
       </button>
-      <span class="stat-inline"><i class="fa-regular fa-comment" aria-hidden="true"></i> {{ formatNumber(artwork.commentCount) }}</span>
+      <span class="stat-inline"><i class="fa-regular fa-comment" aria-hidden="true"></i> {{ displayNumbers.commentCount }}</span>
     </div>
 
     <p v-if="uploadedAtLabel" class="text-secondary small mb-0">{{ uploadedAtLabel }}</p>

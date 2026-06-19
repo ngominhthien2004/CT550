@@ -281,7 +281,7 @@ function handleShare() {
       @scroll="onScroll"
     >
       <template v-if="formattedParagraphs.length">
-        <p v-for="(p, index) in formattedParagraphs" :key="index" class="novel-p">
+        <p v-for="(p, index) in formattedParagraphs" :key="'p-' + index" class="novel-p">
           {{ p }}
         </p>
       </template>

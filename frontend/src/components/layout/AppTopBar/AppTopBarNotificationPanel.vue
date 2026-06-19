@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   open: {
     type: Boolean,
     default: false,
@@ -27,6 +29,13 @@ defineProps({
 })
 
 defineEmits(['toggle', 'mark-read'])
+
+const processedItems = computed(() =>
+  props.items.map(item => ({
+    ...item,
+    _time: props.formatTime(item.createdAt),
+  }))
+)
 </script>
 
 <template>
@@ -45,7 +54,7 @@ defineEmits(['toggle', 'mark-read'])
       <p v-else-if="error" class="quick-panel-note error">{{ error }}</p>
       <div v-else-if="items.length" class="quick-panel-list">
         <div
-          v-for="item in items"
+          v-for="item in processedItems"
           :key="item._id"
           class="quick-panel-item"
           :class="{ unread: !item.isRead }"
@@ -53,7 +62,7 @@ defineEmits(['toggle', 'mark-read'])
           <router-link to="/notifications" class="quick-panel-link" role="menuitem">
             <div class="quick-item-top">
               <strong>{{ item.actor?.displayName || item.actor?.username || 'System' }}</strong>
-              <small>{{ formatTime(item.createdAt) }}</small>
+              <small>{{ item._time }}</small>
             </div>
             <span>{{ item.message }}</span>
           </router-link>

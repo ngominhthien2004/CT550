@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
   activeTab: { type: String, required: true },
@@ -47,6 +47,10 @@ function doMerge() {
   mergeSourceId.value = ''
   mergeTargetId.value = ''
 }
+
+const formattedTags = computed(() =>
+  props.tags.map(t => ({ ...t, _createdAt: props.formatDate(t.createdAt) }))
+)
 </script>
 
 <template>
@@ -112,7 +116,7 @@ function doMerge() {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="row in tags" :key="row._id">
+          <tr v-for="row in formattedTags" :key="row._id">
             <td><code>{{ row.name }}</code></td>
             <td><span class="badge bg-secondary-subtle text-secondary-emphasis">{{ row.usageCount }}</span></td>
             <td class="small">
@@ -121,7 +125,7 @@ function doMerge() {
               <span v-if="row.translations?.ja" class="me-1">JA: {{ row.translations.ja }}</span>
               <span v-if="!row.translations?.en && !row.translations?.vi && !row.translations?.ja" class="text-muted">-</span>
             </td>
-            <td>{{ formatDate(row.createdAt) }}</td>
+            <td>{{ row._createdAt }}</td>
             <td class="actions-cell">
               <button class="btn btn-sm btn-outline-danger" :disabled="mutating" @click="emit('delete-tag', row._id)">
                 Delete

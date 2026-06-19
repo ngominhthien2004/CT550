@@ -222,6 +222,21 @@ function getRankClass(rank) {
   if (rank === 3) return 'rank-top-3'
   return ''
 }
+
+const processedRankings = computed(() =>
+  rankings.value.map((item, index) => ({
+    ...item,
+    _rankClass: getRankClass(index + 1),
+    _cover: pickCover(item),
+    _viewCount: formatCount(item.viewCount || 0),
+    _likeCount: formatCount(item.likeCount || 0),
+    _bookmarkCount: formatCount(item.bookmarkCount || 0),
+    _likeStatus: getLikeStatus(item),
+    _bookmarkStatus: getBookmarkStatus(item),
+    _togglingLike: isTogglingLike(item),
+    _togglingBookmark: isTogglingBookmark(item),
+  }))
+)
 </script>
 
 <template>
@@ -296,16 +311,16 @@ function getRankClass(rank) {
         </div>
 
         <div v-else class="ranking-list">
-          <article v-for="(item, index) in rankings" :key="item._id" class="ranking-item">
+          <article v-for="(item, index) in processedRankings" :key="item._id" class="ranking-item">
             <div class="rank-side">
-              <span class="rank-number" :class="getRankClass(index + 1)">{{ index + 1 }}</span>
+              <span class="rank-number" :class="item._rankClass">{{ index + 1 }}</span>
               <div class="rank-trend">
                 <i class="fas fa-minus"></i>
               </div>
             </div>
 
             <router-link :to="`/artworks/${item._id}`" class="rank-image-link">
-              <img :src="pickCover(item)" :alt="item.title" class="rank-thumb" loading="lazy" />
+              <img :src="item._cover" :alt="item.title" class="rank-thumb" loading="lazy" />
             </router-link>
 
             <div class="rank-info">
@@ -321,15 +336,15 @@ function getRankClass(rank) {
               <div class="rank-stats-row">
                 <span class="stat-label">
                   <i class="fa-regular fa-eye"></i>
-                  {{ formatCount(item.viewCount || 0) }}
+                  {{ item._viewCount }}
                 </span>
                 <span class="stat-label">
                   <i class="fa-regular fa-heart"></i>
-                  {{ formatCount(item.likeCount || 0) }}
+                  {{ item._likeCount }}
                 </span>
                 <span class="stat-label">
                   <i class="fa-regular fa-bookmark"></i>
-                  {{ formatCount(item.bookmarkCount || 0) }}
+                  {{ item._bookmarkCount }}
                 </span>
               </div>
             </div>
@@ -337,22 +352,22 @@ function getRankClass(rank) {
             <div class="rank-actions">
               <button 
                 class="action-btn like-btn" 
-                :class="{ 'is-active': getLikeStatus(item) }"
-                :disabled="isTogglingLike(item)"
+                :class="{ 'is-active': item._likeStatus }"
+                :disabled="item._togglingLike"
                 @click="handleLikeToggle(item)"
                 aria-label="Like"
               >
-                <i :class="getLikeStatus(item) ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
-                <span>{{ formatCount(item.likeCount || 0) }}</span>
+                <i :class="item._likeStatus ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
+                <span>{{ item._likeCount }}</span>
               </button>
               <button 
                 class="action-btn bookmark-btn" 
-                :class="{ 'is-active': getBookmarkStatus(item) }"
-                :disabled="isTogglingBookmark(item)"
+                :class="{ 'is-active': item._bookmarkStatus }"
+                :disabled="item._togglingBookmark"
                 @click="handleBookmarkToggle(item)"
                 aria-label="Bookmark"
               >
-                <i :class="getBookmarkStatus(item) ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'"></i>
+                <i :class="item._bookmarkStatus ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'"></i>
               </button>
             </div>
           </article>

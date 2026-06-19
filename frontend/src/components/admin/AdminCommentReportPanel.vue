@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   activeTab: { type: String, required: true },
   commentReports: { type: Array, required: true },
   loadingReports: { type: Boolean, default: false },
@@ -9,6 +11,14 @@ defineProps({
   formatDate: { type: Function, default: (d) => d ? new Date(d).toLocaleDateString() : '-' },
 })
 const emit = defineEmits(['resolve-report', 'go-page', 'update:report-status-filter'])
+
+const formattedReports = computed(() =>
+  props.commentReports.map(r => ({
+    ...r,
+    _createdAt: props.formatDate(r.createdAt),
+    _resolvedAt: props.formatDate(r.resolvedAt),
+  }))
+)
 
 function onStatusFilterChange(event) {
   emit('update:report-status-filter', event.target.value)
@@ -54,7 +64,7 @@ function onStatusFilterChange(event) {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="report in commentReports" :key="report._id">
+        <tr v-for="report in formattedReports" :key="report._id">
           <td class="text-muted small">
             {{ report.target?.content?.substring(0, 60) || report.comment?.content?.substring(0, 60) || '-' }}
           </td>
@@ -66,9 +76,9 @@ function onStatusFilterChange(event) {
           <td>{{ report.reportedBy?.displayName || report.reportedBy?.username || '-' }}</td>
           <td><span class="badge bg-warning-subtle text-warning-emphasis">{{ report.reason }}</span></td>
           <td class="text-muted small">{{ report.description || '-' }}</td>
-          <td>{{ formatDate(report.createdAt) }}</td>
+          <td>{{ report._createdAt }}</td>
           <td>{{ report.resolvedBy?.displayName || report.resolvedBy?.username || '-' }}</td>
-          <td>{{ formatDate(report.resolvedAt) }}</td>
+          <td>{{ report._resolvedAt }}</td>
           <td class="text-muted small" :title="report.resolutionNote">{{ report.resolutionNote || '-' }}</td>
           <td class="actions-cell">
             <template v-if="report.status === 'pending'">

@@ -1,7 +1,9 @@
 <script setup>
+import { computed } from 'vue'
+
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
-defineProps({
+const props = defineProps({
   works: {
     type: Array,
     default: () => [],
@@ -53,6 +55,24 @@ function handleAvatarError(event) {
     event.target.src = DEFAULT_PROFILE_AVATAR
   }
 }
+
+// Pre-compute all display values for works to avoid method calls in template
+const processedWorks = computed(() =>
+  props.works.map(work => {
+    const imgs = visibleImages(work)
+    const count = imgs.length
+    return {
+      ...work,
+      _profileLink: profileLink(work.user?._id),
+      _profileAvatar: profileAvatar(work),
+      _createdAt: formatDate(work.createdAt),
+      _imageGridClass: count <= 1 ? 'is-single' : count === 2 ? 'is-double' : 'is-mosaic',
+      _visibleImages: imgs,
+      _hasMultipleImages: count > 1,
+      _visibleImagesLength: count,
+    }
+  })
+)
 </script>
 
 <template>
@@ -69,19 +89,19 @@ function handleAvatarError(event) {
     </p>
 
     <div v-else class="feed-list">
-      <article v-for="work in works" :key="work._id" class="feed-card">
+      <article v-for="work in processedWorks" :key="work._id" class="feed-card">
         <header class="feed-card-head">
-          <router-link :to="profileLink(work.user?._id)" class="author-link">
+          <router-link :to="work._profileLink" class="author-link">
             <span class="author-avatar">
               <img
-                :src="profileAvatar(work)"
+                :src="work._profileAvatar"
                 :alt="work.user?.displayName || work.user?.username || work.title"
                 @error="handleAvatarError"
               />
             </span>
             <span class="author-meta">
               <strong>{{ work.user?.displayName || work.user?.username || 'Unknown artist' }}</strong>
-              <small>{{ formatDate(work.createdAt) }}</small>
+              <small>{{ work._createdAt }}</small>
             </span>
           </router-link>
           <button type="button" class="feed-more" aria-label="Artwork menu">
@@ -89,19 +109,19 @@ function handleAvatarError(event) {
           </button>
         </header>
 
-        <router-link :to="`/artworks/${work._id}`" class="feed-cover" :class="imageGridClass(work)">
-          <template v-for="image in visibleImages(work)" :key="image">
+        <router-link :to="`/artworks/${work._id}`" class="feed-cover" :class="work._imageGridClass">
+          <template v-for="image in work._visibleImages" :key="image">
             <img :src="image" :alt="work.title" loading="lazy" />
           </template>
 
-          <template v-if="hasMultipleImages(work)">
+          <template v-if="work._hasMultipleImages">
             <span class="feed-arrow left" aria-hidden="true">
               <i class="fa-solid fa-chevron-left"></i>
             </span>
             <span class="feed-arrow right" aria-hidden="true">
               <i class="fa-solid fa-chevron-right"></i>
             </span>
-            <span class="feed-page-count" aria-hidden="true">{{ visibleImages(work).length }}</span>
+            <span class="feed-page-count" aria-hidden="true">{{ work._visibleImagesLength }}</span>
           </template>
         </router-link>
 

@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   activeTab: { type: String, required: true },
   commentPanelFiltersOpen: { type: Boolean, required: true },
   commentQuery: { type: String, required: true },
@@ -9,6 +11,10 @@ defineProps({
   commentPagination: { type: Object, required: true },
   formatDate: { type: Function, required: true },
 })
+
+const formattedComments = computed(() =>
+  props.comments.map(c => ({ ...c, _createdAt: props.formatDate(c.createdAt) }))
+)
 
 const emit = defineEmits([
   'toggle-filters',
@@ -63,11 +69,11 @@ function onQueryInput(event) {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="row in comments" :key="row._id">
+          <tr v-for="row in formattedComments" :key="row._id">
             <td class="text-break" style="max-width: 300px;">{{ row.content || '(sticker)' }}</td>
             <td>{{ row.user?.displayName || row.user?.username || '-' }}</td>
             <td>{{ row.artwork?.title || '-' }}</td>
-            <td>{{ formatDate(row.createdAt) }}</td>
+            <td>{{ row._createdAt }}</td>
             <td>
               <button
                 class="btn btn-sm btn-outline-danger"

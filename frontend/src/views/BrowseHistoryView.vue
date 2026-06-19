@@ -15,6 +15,13 @@ const total = computed(() => browseHistoryStore.total)
 const currentPage = computed(() => browseHistoryStore.page)
 const totalPages = computed(() => browseHistoryStore.pages)
 
+const processedHistory = computed(() =>
+  historyEntries.value.map(entry => ({
+    ...entry,
+    _timeAgo: timeAgo(entry.createdAt),
+  }))
+)
+
 onMounted(() => {
   browseHistoryStore.fetchHistory(1)
 })
@@ -88,7 +95,7 @@ function timeAgo(dateStr) {
 
         <div class="history-grid">
           <div
-            v-for="entry in historyEntries"
+            v-for="entry in processedHistory"
             :key="entry._id"
             class="history-card"
           >
@@ -98,7 +105,7 @@ function timeAgo(dateStr) {
                   :src="entry.artwork.images?.[0] || 'https://via.placeholder.com/200'"
                   :alt="entry.artwork.title"
                 />
-                <span class="history-time-badge">{{ timeAgo(entry.createdAt) }}</span>
+                <span class="history-time-badge">{{ entry._timeAgo }}</span>
               </div>
               <div class="history-info">
                 <h5 class="history-title">{{ entry.artwork.title }}</h5>

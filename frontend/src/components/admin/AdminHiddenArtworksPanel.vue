@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   activeTab: { type: String, required: true },
   hiddenArtworks: { type: Array, required: true },
   loadingHidden: { type: Boolean, default: false },
@@ -8,6 +10,10 @@ defineProps({
   formatDate: { type: Function, default: (d) => d ? new Date(d).toLocaleDateString() : '-' },
 })
 const emit = defineEmits(['unhide-artwork', 'go-page'])
+
+const formattedHidden = computed(() =>
+  props.hiddenArtworks.map(a => ({ ...a, _hiddenAt: props.formatDate(a.hiddenAt) }))
+)
 </script>
 
 <template>
@@ -34,7 +40,7 @@ const emit = defineEmits(['unhide-artwork', 'go-page'])
         </tr>
       </thead>
       <tbody>
-        <tr v-for="art in hiddenArtworks" :key="art._id">
+        <tr v-for="art in formattedHidden" :key="art._id">
           <td>
             <router-link :to="`/artworks/${art._id}`" class="artwork-link">
               {{ art.title }}
@@ -43,7 +49,7 @@ const emit = defineEmits(['unhide-artwork', 'go-page'])
           <td>{{ art.user?.displayName || art.user?.username || '-' }}</td>
           <td>{{ art.hiddenBy?.displayName || art.hiddenBy?.username || '-' }}</td>
           <td class="text-muted small">{{ art.hiddenReason || '-' }}</td>
-          <td>{{ formatDate(art.hiddenAt) }}</td>
+          <td>{{ art._hiddenAt }}</td>
           <td class="actions-cell">
             <button
               class="btn btn-sm btn-outline-success"

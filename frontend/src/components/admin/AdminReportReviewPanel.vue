@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   activeTab: { type: String, required: true },
   loadingReports: { type: Boolean, default: false },
   mutating: { type: Boolean, default: false },
@@ -12,6 +14,10 @@ const emit = defineEmits([
   'resolve-report',
   'go-page',
 ])
+
+const formattedReports = computed(() =>
+  props.reports.map(r => ({ ...r, _lastReportedAt: props.formatDate(r.lastReportedAt) }))
+)
 </script>
 
 <template>
@@ -35,13 +41,13 @@ const emit = defineEmits([
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, $index) in reports" :key="row.request?._id || $index">
+          <tr v-for="(row, $index) in formattedReports" :key="row.request?._id || $index">
             <td><code class="small">{{ row.request?._id?.slice(-8) || '-' }}</code></td>
             <td>{{ row.request?.requester?.displayName || row.request?.requester?.username || '-' }}</td>
             <td>{{ row.request?.creator?.displayName || row.request?.creator?.username || '-' }}</td>
             <td>{{ row.reportedBy?.displayName || row.reportedBy?.username || '-' }}</td>
             <td><span class="badge bg-danger-subtle text-danger-emphasis">{{ row.reportCount }}</span></td>
-            <td>{{ formatDate(row.lastReportedAt) }}</td>
+            <td>{{ row._lastReportedAt }}</td>
             <td>
               <button
                 class="btn btn-sm btn-outline-success"

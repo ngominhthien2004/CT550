@@ -17,9 +17,9 @@ const isMixedGrid = computed(() =>
   props.works.some((w) => w?.type === 'novel') && props.works.some((w) => w?.type !== 'novel'),
 )
 
-function shouldShowNovel(item) {
-  return item?.type === 'novel'
-}
+const processedWorks = computed(() =>
+  props.works.map(w => ({ ...w, _isNovel: w?.type === 'novel' }))
+)
 </script>
 
 <template>
@@ -36,8 +36,8 @@ function shouldShowNovel(item) {
     </p>
 
     <div v-else class="work-grid" :class="{ 'is-novel-grid': isNovelGrid }">
-      <template v-for="work in works" :key="work._id || work.id">
-        <div v-if="shouldShowNovel(work)" class="novel-card-wrapper">
+      <template v-for="work in processedWorks" :key="work._id || work.id">
+        <div v-if="work._isNovel" class="novel-card-wrapper">
           <router-link :to="`/novels/${work._id}`" class="novel-grid-cover">
             <img v-if="work.image" :src="work.image" :alt="work.title" loading="lazy" />
             <div v-else class="novel-grid-fallback">

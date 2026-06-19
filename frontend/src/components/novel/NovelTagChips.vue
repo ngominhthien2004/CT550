@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue'
+
 const props = defineProps({
   tags: {
     type: Array,
@@ -6,23 +8,23 @@ const props = defineProps({
   },
 })
 
-function buildSearchLink(tag) {
-  return {
-    path: '/search',
-    query: {
-      type: 'novel',
-      q: tag.label.replace(/^#/, ''),
+const processedTags = computed(() =>
+  props.tags.map(tag => ({
+    ...tag,
+    _link: {
+      path: '/search',
+      query: { type: 'novel', q: tag.label.replace(/^#/, '') },
     },
-  }
-}
+  }))
+)
 </script>
 
 <template>
   <section class="novel-tag-strip" aria-label="Novel tag chips">
     <router-link
-      v-for="tag in tags"
+      v-for="tag in processedTags"
       :key="tag.label"
-      :to="buildSearchLink(tag)"
+      :to="tag._link"
       class="novel-tag-chip"
     >
       <span>{{ tag.label }}</span>

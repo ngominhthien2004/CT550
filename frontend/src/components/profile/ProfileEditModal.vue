@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, watch } from 'vue'
+import { reactive, computed, watch } from 'vue'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -46,6 +46,8 @@ function getDaySuffix(day) {
     default: return 'th'
   }
 }
+
+const daysWithSuffix = computed(() => days.map(d => ({ value: d, label: `${d}${getDaySuffix(d)}` })))
 
 watch(() => props.user, (u) => {
   if (!u) return
@@ -179,7 +181,7 @@ function handleSave() {
                 <option v-for="m in months" :key="m.value" :value="m.value">{{ m.label }}</option>
               </select>
               <select v-model="form.birthdayDay" class="form-select">
-                <option v-for="d in days" :key="d" :value="d">{{ d }}{{ getDaySuffix(d) }}</option>
+                <option v-for="d in daysWithSuffix" :key="d.value" :value="d.value">{{ d.label }}</option>
               </select>
             </div>
           </div>

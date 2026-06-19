@@ -150,7 +150,7 @@ defineExpose({ updateChatMessages, setChatLoading })
         <div v-for="group in fileArrays" :key="group.label" class="file-group">
           <h4>{{ group.label }} ({{ group.files.length }})</h4>
           <div class="file-grid">
-            <template v-for="(file, idx) in group.files" :key="idx">
+            <template v-for="(file, idx) in group.files" :key="file._id || file.url || idx">
               <a v-if="isImage(file.mimeType)" :href="file.url" target="_blank" class="file-thumb" :title="file.originalName || file.url">
                 <img :src="file.url" :alt="file.originalName || 'Reference image'" loading="lazy" />
                 <span class="file-name">{{ file.originalName || 'Image' }}</span>

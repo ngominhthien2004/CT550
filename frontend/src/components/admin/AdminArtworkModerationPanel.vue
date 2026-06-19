@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue'
+
 defineProps({
   activeTab: {
     type: String,
@@ -45,6 +47,10 @@ const emit = defineEmits([
 function onQueryInput(event) {
   emit('update:artworkQuery', event.target.value)
 }
+
+const formattedArtworks = computed(() =>
+  props.artworks.map(a => ({ ...a, _createdAt: props.formatDate(a.createdAt) }))
+)
 </script>
 
 <template>
@@ -88,19 +94,19 @@ function onQueryInput(event) {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="row in artworks" :key="row._id">
+          <tr v-for="row in formattedArtworks" :key="row._id">
             <td>{{ row.title }}</td>
             <td>{{ row.user?.displayName || row.user?.username || '-' }}</td>
             <td>{{ row.type }}</td>
             <td>{{ row.ageRating }}</td>
-            <td>{{ formatDate(row.createdAt) }}</td>
+            <td>{{ row._createdAt }}</td>
             <td>
               <button class="btn btn-sm btn-outline-danger" :disabled="mutating" @click="emit('remove-artwork', row._id)">
                 Delete
               </button>
             </td>
           </tr>
-          <tr v-if="artworks.length === 0">
+          <tr v-if="formattedArtworks.length === 0">
             <td colspan="6" class="text-center text-muted py-3">No artworks found.</td>
           </tr>
         </tbody>

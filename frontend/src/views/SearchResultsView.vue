@@ -568,12 +568,11 @@ onMounted(() => {
 })
 
 watch(
-  () => route.query,
+  () => ({ ...route.query }),
   () => {
     loadSearchItems()
     loadUserResults()
   },
-  { deep: true },
 )
 </script>
 

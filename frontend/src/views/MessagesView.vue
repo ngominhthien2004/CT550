@@ -661,7 +661,7 @@ watch(threads, () => {
 
 watch(threadMessages, () => {
   scrollChatToBottom()
-}, { deep: true })
+})
 
 watch(
   () => inboxMessages.value.length,
@@ -719,7 +719,7 @@ onUnmounted(() => {
 
         <!-- Skeleton Loader for Threads List -->
         <div v-if="loading" class="pane-skeletons" aria-hidden="true">
-          <div v-for="i in 5" :key="i" class="skeleton-thread-item">
+          <div v-for="i in 5" :key="'sk-thread-' + i" class="skeleton-thread-item">
             <div class="skeleton-avatar shimmer"></div>
             <div class="skeleton-meta">
               <div class="skeleton-line shimmer short"></div>
@@ -792,7 +792,7 @@ onUnmounted(() => {
         <div class="thread-body" ref="chatBodyRef">
           <!-- Skeleton Shimmer Loader for Messages Flow -->
           <div v-if="loading" class="skeleton-flow" aria-hidden="true">
-            <div v-for="i in 4" :key="i" class="skeleton-bubble-wrap" :class="i % 2 === 0 ? 'outgoing' : 'incoming'">
+            <div v-for="i in 4" :key="'sk-bubble-' + i" class="skeleton-bubble-wrap" :class="i % 2 === 0 ? 'outgoing' : 'incoming'">
               <div class="skeleton-bubble shimmer"></div>
             </div>
           </div>
@@ -820,10 +820,10 @@ onUnmounted(() => {
                 <div class="bubble-body-wrap">
                   <p v-if="parseMessageBody(row.item.content).text" class="bubble-body">{{ parseMessageBody(row.item.content).text }}</p>
                   <div v-if="row.item.images && row.item.images.length" class="bubble-images">
-                    <img v-for="(imgUrl, idx) in row.item.images" :key="idx" :src="imgUrl" alt="Message image" class="bubble-image" @error="(e) => e.target.style.display = 'none'" @load="scrollChatToBottom" />
+                    <img v-for="(imgUrl, idx) in row.item.images" :key="imgUrl || idx" :src="imgUrl" alt="Message image" class="bubble-image" @error="(e) => e.target.style.display = 'none'" @load="scrollChatToBottom" />
                   </div>
                   <div v-else-if="parseMessageBody(row.item.content).images.length" class="bubble-images">
-                    <img v-for="(imgUrl, idx) in parseMessageBody(row.item.content).images" :key="idx" :src="imgUrl" alt="Message image" class="bubble-image" @error="(e) => e.target.style.display = 'none'" @load="scrollChatToBottom" />
+                    <img v-for="(imgUrl, idx) in parseMessageBody(row.item.content).images" :key="imgUrl || idx" :src="imgUrl" alt="Message image" class="bubble-image" @error="(e) => e.target.style.display = 'none'" @load="scrollChatToBottom" />
                   </div>
                 </div>
                 

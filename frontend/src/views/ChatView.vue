@@ -69,6 +69,13 @@ function formatTimestamp(ts) {
   if (isToday) return time
   return `${d.toLocaleDateString('vi-VN')} ${time}`
 }
+
+const processedMessages = computed(() =>
+  chatStore.messages.map(msg => ({
+    ...msg,
+    _timestamp: formatTimestamp(msg.timestamp),
+  }))
+)
 </script>
 
 <template>
@@ -101,8 +108,8 @@ function formatTimestamp(ts) {
       <div class="chat-body" ref="chatContainer">
         <!-- Welcome / messages -->
         <div
-          v-for="(msg, index) in chatStore.messages"
-          :key="index"
+          v-for="(msg, index) in processedMessages"
+          :key="'msg-' + index"
           :class="['message', msg.role === 'user' ? 'message-user' : 'message-assistant']"
         >
           <div class="message-avatar">
@@ -113,7 +120,7 @@ function formatTimestamp(ts) {
             <div class="message-bubble">
               <div class="message-text" v-text="msg.content"></div>
               <div class="message-meta">
-                <span class="message-time">{{ formatTimestamp(msg.timestamp) }}</span>
+                <span class="message-time">{{ msg._timestamp }}</span>
                 <span v-if="msg.toolUsed" class="badge bg-info ms-1">Sử dụng công cụ</span>
               </div>
             </div>
@@ -140,8 +147,8 @@ function formatTimestamp(ts) {
         <p class="text-muted small mb-2">Gợi ý nhanh:</p>
         <div class="prompt-chips">
           <button
-            v-for="(prompt, index) in suggestedPrompts"
-            :key="index"
+            v-for="prompt in suggestedPrompts"
+            :key="prompt.prompt"
             class="btn btn-outline-primary btn-sm prompt-chip"
             @click="handleQuickPrompt(prompt.prompt)"
           >

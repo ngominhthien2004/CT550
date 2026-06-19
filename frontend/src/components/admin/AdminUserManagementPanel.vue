@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   activeTab: {
     type: String,
     required: true,
@@ -55,6 +57,10 @@ function onRoleFilterChange(event) {
   emit('update:userRoleFilter', event.target.value)
   emit('apply-filters')
 }
+
+const formattedUsers = computed(() =>
+  props.users.map(u => ({ ...u, _createdAt: props.formatDate(u.createdAt) }))
+)
 </script>
 
 <template>
@@ -102,7 +108,7 @@ function onRoleFilterChange(event) {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="row in users" :key="row._id">
+          <tr v-for="row in formattedUsers" :key="row._id">
             <td>{{ row.displayName || row.username }}</td>
             <td>{{ row.email }}</td>
             <td>
@@ -110,7 +116,7 @@ function onRoleFilterChange(event) {
                 {{ row.role }}
               </span>
             </td>
-            <td>{{ formatDate(row.createdAt) }}</td>
+            <td>{{ row._createdAt }}</td>
             <td class="actions-cell">
               <button
                 class="btn btn-sm btn-outline-danger"

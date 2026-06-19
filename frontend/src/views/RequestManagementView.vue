@@ -152,7 +152,6 @@ watch(
   () => {
     requestStore.error = ''
   },
-  { deep: true }
 )
 </script>
 

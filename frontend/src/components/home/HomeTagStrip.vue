@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   tags: {
     type: Array,
     default: () => [],
@@ -14,12 +16,16 @@ function buildTagRoute(tag) {
   const normalizedTag = (tag || '').toString().replace(/^#/, '').trim().toLowerCase()
   return `/tags/${encodeURIComponent(normalizedTag)}`
 }
+
+const processedTags = computed(() =>
+  props.tags.map(t => ({ tag: t, route: buildTagRoute(t) }))
+)
 </script>
 
 <template>
   <div class="tag-strip" :class="{ compact }">
-    <router-link v-for="tag in tags" :key="tag" :to="buildTagRoute(tag)" class="tag-link">
-      {{ tag }}
+    <router-link v-for="item in processedTags" :key="item.tag" :to="item.route" class="tag-link">
+      {{ item.tag }}
     </router-link>
   </div>
 </template>

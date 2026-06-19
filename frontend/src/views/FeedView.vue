@@ -212,11 +212,10 @@ onMounted(() => {
 })
 
 watch(
-  () => route.query,
+  () => ({ ...route.query }),
   () => {
     loadFeed()
   },
-  { deep: true },
 )
 </script>
 

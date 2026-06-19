@@ -7,14 +7,14 @@ defineProps({
 
 <template>
   <div v-if="type === 'card'" class="skeleton-grid">
-    <div v-for="i in count" :key="i" class="skeleton-card">
+    <div v-for="i in count" :key="'sk-card-' + i" class="skeleton-card">
       <div class="skeleton-image"></div>
       <div class="skeleton-line skeleton-line--short"></div>
       <div class="skeleton-line skeleton-line--medium"></div>
     </div>
   </div>
   <div v-else-if="type === 'text'" class="skeleton-text-block">
-    <div v-for="i in count" :key="i" class="skeleton-line" :class="'skeleton-line--w' + ((i % 4 + 2) * 20)"></div>
+    <div v-for="i in count" :key="'sk-line-' + i" class="skeleton-line" :class="'skeleton-line--w' + ((i % 4 + 2) * 20)"></div>
   </div>
   <div v-else-if="type === 'avatar'" class="skeleton-avatar-wrap">
     <div class="skeleton-avatar"></div>

@@ -24,7 +24,7 @@
             <div v-if="messages.length === 0" class="welcome-msg">
               👋 Xin chào! Tôi có thể giúp bạn tìm tác phẩm, gợi ý tác phẩm hay.
             </div>
-            <div v-for="(msg, i) in messages" :key="i" :class="['message', msg.role]">
+            <div v-for="(msg, i) in messages" :key="'msg-' + i" :class="['message', msg.role]">
               <div class="msg-content">{{ msg.content }}</div>
             </div>
             <div v-if="loading" class="message assistant">

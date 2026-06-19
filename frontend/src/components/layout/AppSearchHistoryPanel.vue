@@ -66,11 +66,10 @@ onMounted(loadFavoriteTags)
 watch(favoriteTagKey, loadFavoriteTags)
 
 watch(
-  favoriteTagList,
-  (value) => {
-    localStorage.setItem(favoriteTagKey.value, JSON.stringify(value))
+  () => JSON.stringify(favoriteTagList.value),
+  (serialized) => {
+    localStorage.setItem(favoriteTagKey.value, serialized)
   },
-  { deep: true },
 )
 </script>
 

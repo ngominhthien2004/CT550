@@ -31,6 +31,14 @@ const firstTag = computed(() => {
 
   return tags[0].label || ''
 })
+function buildTagLink(tag) {
+  const label = String(tag?.label || tag?.name || '').replace(/^#/, '').trim().toLowerCase()
+  if (!label) {
+    return ''
+  }
+  return { path: '/search', query: { type: 'novel', q: label } }
+}
+
 const visibleTags = computed(() => {
   const tags = props.item?.tags
   if (!tags?.length) {
@@ -40,7 +48,10 @@ const visibleTags = computed(() => {
   return tags.slice(0, 4).filter((tag) => {
     const label = String(tag?.label || tag?.name || '').replace(/^#/, '').trim().toLowerCase()
     return label !== ''
-  })
+  }).map(tag => ({
+    ...tag,
+    _link: buildTagLink(tag),
+  }))
 })
 
 const chapterLabel = computed(() => {
@@ -60,14 +71,6 @@ const authorLink = computed(() => {
   return `/account?user=${props.item.userId}`
 })
 
-function buildTagLink(tag) {
-  const label = String(tag?.label || tag?.name || '').replace(/^#/, '').trim().toLowerCase()
-  if (!label) {
-    return ''
-  }
-
-  return { path: '/search', query: { type: 'novel', q: label } }
-}
 </script>
 
 <template>
@@ -103,7 +106,7 @@ function buildTagLink(tag) {
         <router-link
           v-for="tag in visibleTags"
           :key="tag.label || tag.name"
-          :to="buildTagLink(tag)"
+          :to="tag._link"
         >
           {{ tag.label }}
         </router-link>

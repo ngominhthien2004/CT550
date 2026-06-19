@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue'
+
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
 const props = defineProps({
@@ -21,6 +23,18 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['toggle-follow'])
+
+const processedUsers = computed(() =>
+  props.users.map(item => ({
+    ...item,
+    _profileLink: profileLink(item._id),
+    _profileAvatar: profileAvatar(item),
+    _label: getUserLabel(item),
+    _handle: getUserHandle(item),
+    _isFollowing: props.isFollowingUser(item._id),
+    _isToggling: props.isTogglingFollow(item._id),
+  }))
+)
 
 function getUserLabel(item) {
   return item.displayName || item.username || 'Unknown user'
@@ -61,12 +75,12 @@ function handleAvatarError(event) {
     <p v-if="!users.length" class="empty-state mb-0">No recommended users available yet.</p>
 
     <div v-else class="user-grid">
-      <article v-for="item in users" :key="item._id" class="user-card">
-        <router-link :to="profileLink(item._id)" class="user-main-link">
-          <img class="avatar avatar--sm user-avatar" :src="profileAvatar(item)" :alt="getUserLabel(item)" @error="handleAvatarError" />
+      <article v-for="item in processedUsers" :key="item._id" class="user-card">
+        <router-link :to="item._profileLink" class="user-main-link">
+          <img class="avatar avatar--sm user-avatar" :src="item._profileAvatar" :alt="item._label" @error="handleAvatarError" />
           <div class="user-meta">
-            <strong>{{ getUserLabel(item) }}</strong>
-            <small>{{ getUserHandle(item) }}</small>
+            <strong>{{ item._label }}</strong>
+            <small>{{ item._handle }}</small>
             <span class="user-stats">{{ item.artworkCount || 0 }} works</span>
           </div>
         </router-link>
@@ -75,12 +89,12 @@ function handleAvatarError(event) {
           v-if="isAuthenticated"
           type="button"
           class="follow-btn"
-          :class="isFollowingUser(item._id) ? 'following' : 'not-following'"
-          :disabled="isTogglingFollow(item._id)"
-          :aria-label="isFollowingUser(item._id) ? 'Unfollow user' : 'Follow user'"
+          :class="item._isFollowing ? 'following' : 'not-following'"
+          :disabled="item._isToggling"
+          :aria-label="item._isFollowing ? 'Unfollow user' : 'Follow user'"
           @click="emit('toggle-follow', item._id)"
         >
-          {{ isFollowingUser(item._id) ? 'Following' : 'Follow' }}
+          {{ item._isFollowing ? 'Following' : 'Follow' }}
         </button>
         <router-link
           v-else
