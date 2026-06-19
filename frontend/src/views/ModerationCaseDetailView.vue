@@ -339,7 +339,7 @@ onMounted(() => {
 
                 <div class="form-group">
                   <label class="small fw-semibold text-muted">Resolution Note (optional)</label>
-                  <textarea v-model="resolutionNote" class="form-control form-control-sm" rows="3" placeholder="Add a resolution note..."></textarea>
+                  <textarea v-model="resolutionNote" class="form-control form-control-sm" rows="3" placeholder="Add a resolution note..." aria-label="Resolution note"></textarea>
                 </div>
 
                 <!-- Resolve -->

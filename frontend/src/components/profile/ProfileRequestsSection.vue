@@ -154,6 +154,10 @@ watch(
         class="request-plan"
         :class="{ selected: selectedTerm?._id === term._id }"
         @click="syncTermDefaults(term)"
+        @keydown.enter.prevent="syncTermDefaults(term)"
+        @keydown.space.prevent="syncTermDefaults(term)"
+        tabindex="0"
+        role="button"
       >
         <div class="plan-topline">
           <h3>{{ term.title }}</h3>
@@ -188,7 +192,7 @@ watch(
           <p class="eyebrow">Send Request</p>
           <h3>{{ selectedTerm?.title || 'Select a plan' }}</h3>
         </div>
-        <select v-model="selectedTermId" @change="syncTermDefaults(selectedTerm)">
+        <select v-model="selectedTermId" @change="syncTermDefaults(selectedTerm)" aria-label="Select commission plan">
           <option v-for="term in openTerms" :key="term._id" :value="term._id">{{ term.title }}</option>
         </select>
       </div>
@@ -196,21 +200,21 @@ watch(
       <div class="form-grid">
         <label>
           Title
-          <input v-model="form.title" type="text" maxlength="160" required placeholder="Character birthday illustration" />
+          <input v-model="form.title" type="text" maxlength="160" required placeholder="Character birthday illustration" aria-label="Request title" />
         </label>
         <label>
           Proposed amount
-          <input v-model.number="form.proposedAmount" type="number" min="1" required />
+          <input v-model.number="form.proposedAmount" type="number" min="1" required aria-label="Proposed amount" />
         </label>
         <label>
           Work type
-          <select v-model="form.workType">
+          <select v-model="form.workType" aria-label="Work type">
             <option v-for="type in selectedTerm?.acceptedWorkTypes || []" :key="type" :value="type">{{ type }}</option>
           </select>
         </label>
         <label>
           Visibility
-          <select v-model="form.visibility">
+          <select v-model="form.visibility" aria-label="Visibility">
             <option value="private">Private</option>
             <option value="public">Public</option>
           </select>
@@ -219,34 +223,34 @@ watch(
 
       <label>
         Description
-        <textarea v-model="form.description" rows="5" required placeholder="Markdown is OK. Include intent, references, deadline concerns, and usage notes."></textarea>
+        <textarea v-model="form.description" rows="5" required placeholder="Markdown is OK. Include intent, references, deadline concerns, and usage notes." aria-label="Request description"></textarea>
       </label>
 
       <div class="form-grid specifics-grid">
-        <label><span>Pose</span><input v-model="form.pose" type="text" /></label>
-        <label><span>Outfit</span><input v-model="form.outfit" type="text" /></label>
-        <label><span>Mood</span><input v-model="form.mood" type="text" /></label>
-        <label><span>Lighting</span><input v-model="form.lighting" type="text" /></label>
-        <label><span>Angle</span><input v-model="form.angle" type="text" /></label>
-        <label><span>Tags</span><input v-model="form.tags" type="text" placeholder="oc, portrait" /></label>
+        <label><span>Pose</span><input v-model="form.pose" type="text" aria-label="Pose" /></label>
+        <label><span>Outfit</span><input v-model="form.outfit" type="text" aria-label="Outfit" /></label>
+        <label><span>Mood</span><input v-model="form.mood" type="text" aria-label="Mood" /></label>
+        <label><span>Lighting</span><input v-model="form.lighting" type="text" aria-label="Lighting" /></label>
+        <label><span>Angle</span><input v-model="form.angle" type="text" aria-label="Angle" /></label>
+        <label><span>Tags</span><input v-model="form.tags" type="text" placeholder="oc, portrait" aria-label="Tags" /></label>
       </div>
 
       <div class="form-grid">
         <label>
           Age rating
-          <select v-model="form.ageRating">
+          <select v-model="form.ageRating" aria-label="Age rating">
             <option value="all">All ages</option>
             <option value="r-18">R-18</option>
           </select>
         </label>
         <label class="file-field">
           Reference images
-          <input type="file" accept="image/*,.pdf" multiple @change="handleFileChange" />
+          <input type="file" accept="image/*,.pdf" multiple @change="handleFileChange" aria-label="Reference images" />
         </label>
       </div>
 
       <label class="inline-check">
-        <input v-model="form.isAnonymous" type="checkbox" />
+        <input v-model="form.isAnonymous" type="checkbox" aria-label="Send anonymously" />
         Send anonymously on public surfaces
       </label>
 

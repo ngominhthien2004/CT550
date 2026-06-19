@@ -50,6 +50,7 @@ function onQueryInput(event) {
         type="text"
         class="form-control form-control-sm"
         placeholder="Search by content..."
+        aria-label="Search comments by content"
         @input="onQueryInput"
         @keyup.enter="emit('apply-filters')"
       />

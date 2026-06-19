@@ -207,11 +207,12 @@ defineExpose({ updateChatMessages, setChatLoading })
           placeholder="Type a message..."
           rows="2"
           :disabled="sendingMessage"
+          aria-label="Type a message"
         ></textarea>
         <div class="chat-input-actions">
           <label class="file-btn" title="Attach file">
             <i class="fa-regular fa-paperclip"></i>
-            <input type="file" multiple :accept="'image/*,.pdf,.zip,.psd,.clip'" @change="handleChatFileChange" hidden />
+            <input type="file" multiple :accept="'image/*,.pdf,.zip,.psd,.clip'" @change="handleChatFileChange" hidden aria-label="Attach file" />
           </label>
           <span v-if="chatFiles.length" class="file-count">{{ chatFiles.length }} file(s)</span>
           <button type="submit" class="send-btn" :disabled="(!newMessage.trim() && !chatFiles.length) || sendingMessage">

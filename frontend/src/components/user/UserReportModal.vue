@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visible" class="modal-overlay" @click.self="$emit('close')">
+  <div v-if="visible" class="modal-overlay" @click.self="$emit('close')" @keydown.enter.prevent="$emit('close')" @keydown.space.prevent="$emit('close')" tabindex="0" role="button">
     <div class="modal-container" role="dialog" aria-modal="true" aria-labelledby="user-report-modal-title">
       <div class="modal-header">
         <h3 id="user-report-modal-title">Report User</h3>
@@ -12,7 +12,7 @@
           </p>
           <div class="form-group mb-3">
             <label>Reason</label>
-            <select v-model="reason" class="form-select" required>
+            <select v-model="reason" class="form-select" required aria-label="Report reason">
               <option value="" disabled>Select a reason</option>
               <option value="spam">Spam</option>
               <option value="inappropriate">Inappropriate content</option>
@@ -23,7 +23,7 @@
           </div>
           <div class="form-group mb-3">
             <label>Description (optional)</label>
-            <textarea v-model="description" class="form-control" rows="3" maxlength="1000" placeholder="Provide additional details..."></textarea>
+            <textarea v-model="description" class="form-control" rows="3" maxlength="1000" placeholder="Provide additional details..." aria-label="Report description"></textarea>
           </div>
           <p v-if="error" class="text-danger small">{{ error }}</p>
           <p v-if="success" class="text-success small">{{ success }}</p>

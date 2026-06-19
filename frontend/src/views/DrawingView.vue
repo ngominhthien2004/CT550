@@ -12,6 +12,7 @@
       accept="image/png,image/jpeg,image/webp,image/gif"
       style="display: none"
       @change="store.handleFileImport"
+      aria-label="Import image to drawing canvas"
     />
     <SaveSlotsModal />
     <PostDrawingModal />

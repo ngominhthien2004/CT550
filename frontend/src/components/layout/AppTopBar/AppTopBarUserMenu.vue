@@ -56,7 +56,7 @@ defineEmits(['logout'])
 <template>
   <details class="user-menu">
     <summary class="user-menu-trigger" aria-label="Open user menu" title="User menu">
-      <router-link to="/account" class="user-avatar-link" aria-label="Go to account" @click.stop>
+      <router-link to="/account" class="user-avatar-link" aria-label="Go to account" @click.stop @keydown.enter.prevent @keydown.space.prevent>
         <img class="avatar avatar--sm user-avatar" :src="avatarSrc" :alt="avatarAlt" @error="handleAvatarError" />
       </router-link>
       <i class="fa-solid fa-caret-down" aria-hidden="true"></i>

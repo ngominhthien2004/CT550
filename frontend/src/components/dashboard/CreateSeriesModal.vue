@@ -206,7 +206,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="cs-backdrop" @click.self="emit('close')">
+  <div class="cs-backdrop" @click.self="emit('close')" @keydown.enter.prevent="emit('close')" @keydown.space.prevent="emit('close')" tabindex="0" role="button">
     <div class="cs-dialog" role="dialog" aria-modal="true" :aria-label="`${isEditMode ? 'Edit' : 'Create'} ${typeLabel} series`">
       <!-- Header -->
       <div class="cs-header">
@@ -262,6 +262,7 @@ onBeforeUnmount(() => {
               class="cs-input"
               :maxlength="TITLE_MAX"
               placeholder="Series name"
+              aria-label="Series title"
             />
             <span class="cs-counter" :class="{ 'cs-counter--over': titleChars > TITLE_MAX }">
               {{ titleChars }}/{{ TITLE_MAX }}
@@ -279,6 +280,7 @@ onBeforeUnmount(() => {
               :maxlength="DESC_MAX"
               placeholder="Series overview"
               rows="3"
+              aria-label="Series summary"
             ></textarea>
             <span class="cs-counter cs-counter--textarea" :class="{ 'cs-counter--over': descChars > DESC_MAX }">
               {{ descChars }}/{{ DESC_MAX }}

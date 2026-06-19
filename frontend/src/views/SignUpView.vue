@@ -85,22 +85,22 @@ function googleLogin() {
       <form v-if="showEmailForm" class="email-form" @submit.prevent="submitSignUp">
         <label class="d-grid gap-1">
           <span class="auth-label">Username</span>
-          <input v-model="form.username" class="form-control auth-control" placeholder="Choose a username" />
+          <input v-model="form.username" class="form-control auth-control" placeholder="Choose a username" aria-label="Username" />
         </label>
 
         <label class="d-grid gap-1">
           <span class="auth-label">Email</span>
-          <input v-model="form.email" type="email" class="form-control auth-control" placeholder="name@example.com" />
+          <input v-model="form.email" type="email" class="form-control auth-control" placeholder="name@example.com" aria-label="Email" />
         </label>
 
         <label class="d-grid gap-1">
           <span class="auth-label">Password</span>
-          <input v-model="form.password" type="password" class="form-control auth-control" placeholder="At least 8 characters" />
+          <input v-model="form.password" type="password" class="form-control auth-control" placeholder="At least 8 characters" aria-label="Password" />
         </label>
 
         <label class="d-grid gap-1">
           <span class="auth-label">Confirm password</span>
-          <input v-model="form.confirmPassword" type="password" class="form-control auth-control" placeholder="Re-enter your password" />
+          <input v-model="form.confirmPassword" type="password" class="form-control auth-control" placeholder="Re-enter your password" aria-label="Confirm password" />
         </label>
 
         <p v-if="formError" class="text-danger mb-0">{{ formError }}</p>

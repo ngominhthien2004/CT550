@@ -82,7 +82,7 @@ function handleSave() {
 </script>
 
 <template>
-  <div v-if="show" class="modal-backdrop" @click.self="emit('close')">
+  <div v-if="show" class="modal-backdrop" @click.self="emit('close')" @keydown.enter.prevent="emit('close')" @keydown.space.prevent="emit('close')" tabindex="0" role="button">
     <div class="modal-card edit-card">
       <header class="modal-header">
         <h2 class="modal-title">Edit profile</h2>
@@ -96,7 +96,7 @@ function handleSave() {
         <div class="form-group">
           <label class="field-label">Nickname</label>
           <div class="input-with-limit">
-            <input type="text" v-model="form.displayName" maxlength="15" placeholder="Nickname" class="form-input">
+            <input type="text" v-model="form.displayName" maxlength="15" placeholder="Nickname" class="form-input" aria-label="Nickname">
             <span class="char-limit">{{ form.displayName.length }}/15</span>
           </div>
         </div>
@@ -104,13 +104,13 @@ function handleSave() {
         <!-- Self Introduction -->
         <div class="form-group">
           <label class="field-label">Self introduction</label>
-          <textarea v-model="form.bio" placeholder="Tell us about yourself" class="form-textarea" rows="4"></textarea>
+          <textarea v-model="form.bio" placeholder="Tell us about yourself" class="form-textarea" rows="4" aria-label="Self introduction"></textarea>
         </div>
 
         <!-- Website -->
         <div class="form-group">
           <label class="field-label">Website</label>
-          <input type="text" v-model="form.website" class="form-input" placeholder="https://...">
+          <input type="text" v-model="form.website" class="form-input" placeholder="https://..." aria-label="Website">
         </div>
 
         <!-- Social Media -->
@@ -119,19 +119,19 @@ function handleSave() {
           <div class="social-row">
             <div class="social-input-wrap">
               <i class="fa-brands fa-x-twitter social-icon"></i>
-              <input type="text" v-model="form.socialLinks.x" class="social-input" placeholder="X username">
+              <input type="text" v-model="form.socialLinks.x" class="social-input" placeholder="X username" aria-label="X username">
             </div>
           </div>
           <div class="social-row">
             <div class="social-input-wrap">
               <i class="fa-brands fa-facebook social-icon"></i>
-              <input type="text" v-model="form.socialLinks.facebook" class="social-input" placeholder="Facebook username">
+              <input type="text" v-model="form.socialLinks.facebook" class="social-input" placeholder="Facebook username" aria-label="Facebook username">
             </div>
           </div>
           <div class="social-row">
             <div class="social-input-wrap">
               <i class="fa-brands fa-instagram social-icon"></i>
-              <input type="text" v-model="form.socialLinks.instagram" class="social-input" placeholder="Instagram username">
+              <input type="text" v-model="form.socialLinks.instagram" class="social-input" placeholder="Instagram username" aria-label="Instagram username">
             </div>
           </div>
         </div>
@@ -142,7 +142,7 @@ function handleSave() {
           <div class="split-row">
             <div class="radio-group">
               <label v-for="opt in genderOptions" :key="opt.value" class="radio-label">
-                <input type="radio" :value="opt.value" v-model="form.gender">
+                <input type="radio" :value="opt.value" v-model="form.gender" :aria-label="'Gender: ' + opt.label">
                 <span class="radio-text">{{ opt.label }}</span>
               </label>
             </div>
@@ -153,7 +153,7 @@ function handleSave() {
         <div class="form-group">
           <label class="field-label">Location</label>
           <div class="split-row">
-            <select v-model="form.location" class="form-select full-width">
+            <select v-model="form.location" class="form-select full-width" aria-label="Location">
               <option value="">----</option>
               <option value="Vietnam">Vietnam</option>
               <option value="Japan">Japan</option>
@@ -166,7 +166,7 @@ function handleSave() {
         <div class="form-group">
           <label class="field-label">Birth year</label>
           <div class="split-row">
-            <select v-model="form.birthYear" class="form-select full-width">
+            <select v-model="form.birthYear" class="form-select full-width" aria-label="Birth year">
               <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
             </select>
           </div>
@@ -177,10 +177,10 @@ function handleSave() {
           <label class="field-label">Birthday</label>
           <div class="split-row">
             <div class="birthday-inputs">
-              <select v-model="form.birthdayMonth" class="form-select">
+              <select v-model="form.birthdayMonth" class="form-select" aria-label="Birthday month">
                 <option v-for="m in months" :key="m.value" :value="m.value">{{ m.label }}</option>
               </select>
-              <select v-model="form.birthdayDay" class="form-select">
+              <select v-model="form.birthdayDay" class="form-select" aria-label="Birthday day">
                 <option v-for="d in daysWithSuffix" :key="d.value" :value="d.value">{{ d.label }}</option>
               </select>
             </div>

@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <div v-if="store.showPostDialog" class="modal-overlay" @click.self="store.showPostDialog = false">
+    <div v-if="store.showPostDialog" class="modal-overlay" @click.self="store.showPostDialog = false" @keydown.enter.prevent="store.showPostDialog = false" @keydown.space.prevent="store.showPostDialog = false" tabindex="0" role="button">
       <div class="modal-content">
         <div class="modal-header">
           <h2>Post Drawing</h2>
@@ -12,12 +12,12 @@
           </div>
           <div class="form-group">
             <label>Title *</label>
-            <input v-model="store.postTitle" type="text" placeholder="Enter title" class="form-input" maxlength="100" />
+            <input v-model="store.postTitle" type="text" placeholder="Enter title" class="form-input" maxlength="100" aria-label="Drawing title" />
           </div>
           <div class="form-row">
             <div class="form-group">
               <label>Type</label>
-              <select v-model="store.postType" class="form-select">
+              <select v-model="store.postType" class="form-select" aria-label="Post type">
                 <option value="illust">Illustration</option>
                 <option value="manga">Manga</option>
                 <option value="novel">Novel</option>
@@ -25,7 +25,7 @@
             </div>
             <div class="form-group">
               <label>Age Rating</label>
-              <select v-model="store.postAgeRating" class="form-select">
+              <select v-model="store.postAgeRating" class="form-select" aria-label="Age rating">
                 <option value="all-ages">All Ages</option>
                 <option value="r-18">R-18</option>
               </select>
@@ -33,7 +33,7 @@
           </div>
           <div class="form-group">
             <label>Tags (comma-separated)</label>
-            <input v-model="store.postTags" type="text" placeholder="e.g. fanart, original character" class="form-input" />
+            <input v-model="store.postTags" type="text" placeholder="e.g. fanart, original character" class="form-input" aria-label="Tags" />
           </div>
           <p v-if="store.postError" class="form-error">{{ store.postError }}</p>
         </div>

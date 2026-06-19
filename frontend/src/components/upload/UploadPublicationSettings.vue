@@ -30,12 +30,12 @@ const props = defineProps({
       <div class="row-center">
         <div class="options-group" role="radiogroup" aria-label="Visible to age setting">
           <label class="custom-radio">
-            <input v-model="props.form.ageRating" type="radio" name="ageRating" value="all" />
+            <input v-model="props.form.ageRating" type="radio" name="ageRating" value="all" aria-label="Age rating: all ages" />
             <span class="radio-indicator"></span>
             <span class="radio-label">All ages</span>
           </label>
           <label class="custom-radio">
-            <input v-model="props.form.ageRating" type="radio" name="ageRating" value="r-18" />
+            <input v-model="props.form.ageRating" type="radio" name="ageRating" value="r-18" aria-label="Age rating: R-18" />
             <span class="radio-indicator"></span>
             <span class="radio-label">R-18</span>
           </label>
@@ -56,12 +56,12 @@ const props = defineProps({
         <div class="d-flex flex-column gap-1">
           <div class="options-group" role="radiogroup" aria-label="AI generated setting">
             <label class="custom-radio">
-              <input v-model="props.form.aiGenerated" type="radio" name="aiGenerated" value="yes" />
-              <span class="radio-indicator"></span>
-              <span class="radio-label">Yes</span>
-            </label>
-            <label class="custom-radio">
-              <input v-model="props.form.aiGenerated" type="radio" name="aiGenerated" value="no" />
+            <input v-model="props.form.aiGenerated" type="radio" name="aiGenerated" value="yes" aria-label="AI-generated: yes" />
+            <span class="radio-indicator"></span>
+            <span class="radio-label">Yes</span>
+          </label>
+          <label class="custom-radio">
+            <input v-model="props.form.aiGenerated" type="radio" name="aiGenerated" value="no" aria-label="AI-generated: no" />
               <span class="radio-indicator"></span>
               <span class="radio-label">No</span>
             </label>
@@ -86,22 +86,22 @@ const props = defineProps({
       <div class="row-center">
         <div class="options-group" role="radiogroup" aria-label="Post visibility setting">
           <label class="custom-radio">
-            <input v-model="props.form.openTo" type="radio" name="openTo" value="public" />
+            <input v-model="props.form.openTo" type="radio" name="openTo" value="public" aria-label="Visibility: public" />
             <span class="radio-indicator"></span>
             <span class="radio-label">Make public</span>
           </label>
           <label class="custom-radio">
-            <input v-model="props.form.openTo" type="radio" name="openTo" value="logged-in" />
+            <input v-model="props.form.openTo" type="radio" name="openTo" value="logged-in" aria-label="Visibility: logged-in users only" />
             <span class="radio-indicator"></span>
             <span class="radio-label">Logged-in users only</span>
           </label>
           <label class="custom-radio">
-            <input v-model="props.form.openTo" type="radio" name="openTo" value="mypixiv" />
+            <input v-model="props.form.openTo" type="radio" name="openTo" value="mypixiv" aria-label="Visibility: my pixiv only" />
             <span class="radio-indicator"></span>
             <span class="radio-label">My IlluWrl only</span>
           </label>
           <label class="custom-radio">
-            <input v-model="props.form.openTo" type="radio" name="openTo" value="private" />
+            <input v-model="props.form.openTo" type="radio" name="openTo" value="private" aria-label="Visibility: private" />
             <span class="radio-indicator"></span>
             <span class="radio-label">Private</span>
           </label>
@@ -119,12 +119,12 @@ const props = defineProps({
       <div class="row-center">
         <div class="options-group" role="radiogroup" aria-label="Comments setting">
           <label class="custom-radio">
-            <input v-model="props.form.comments" type="radio" name="comments" value="on" />
+            <input v-model="props.form.comments" type="radio" name="comments" value="on" aria-label="Comments: on" />
             <span class="radio-indicator"></span>
             <span class="radio-label">ON</span>
           </label>
           <label class="custom-radio">
-            <input v-model="props.form.comments" type="radio" name="comments" value="off" />
+            <input v-model="props.form.comments" type="radio" name="comments" value="off" aria-label="Comments: off" />
             <span class="radio-indicator"></span>
             <span class="radio-label">OFF</span>
           </label>
@@ -138,12 +138,12 @@ const props = defineProps({
       <div class="row-center">
         <div class="d-grid gap-2">
           <label class="custom-checkbox">
-            <input v-model="props.form.allowCollections" type="checkbox" />
+            <input v-model="props.form.allowCollections" type="checkbox" aria-label="Allow collections" />
             <span class="checkbox-indicator"></span>
             <span class="checkbox-label">Allow your works to be featured in other people collections</span>
           </label>
           <label class="custom-checkbox">
-            <input v-model="props.form.isOriginalWork" type="checkbox" />
+            <input v-model="props.form.isOriginalWork" type="checkbox" aria-label="Original work" />
             <span class="checkbox-indicator"></span>
             <span class="checkbox-label">Original work</span>
           </label>
@@ -159,7 +159,7 @@ const props = defineProps({
         <label for="work-language" class="row-label">Work language</label>
       </div>
       <div class="row-center">
-        <select id="work-language" v-model="props.form.language" class="form-select custom-select">
+        <select id="work-language" v-model="props.form.language" class="form-select custom-select" aria-label="Work language">
           <option v-for="language in props.languageOptions" :key="language" :value="language">{{ language }}</option>
         </select>
       </div>
@@ -175,7 +175,7 @@ const props = defineProps({
       <div class="row-center">
         <div class="d-grid gap-2">
           <label class="custom-checkbox">
-            <input v-model="props.form.scheduleEnabled" type="checkbox" />
+            <input v-model="props.form.scheduleEnabled" type="checkbox" aria-label="Schedule submission" />
             <span class="checkbox-indicator"></span>
             <span class="checkbox-label">Schedule submission</span>
           </label>

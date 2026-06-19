@@ -284,6 +284,10 @@ onMounted(async () => {
               :key="artwork._id"
               class="artwork-card"
               @click="goToArtwork(artwork._id)"
+              @keydown.enter.prevent="goToArtwork(artwork._id)"
+              @keydown.space.prevent="goToArtwork(artwork._id)"
+              tabindex="0"
+              role="button"
             >
               <div class="artwork-card-thumb">
                 <img
@@ -327,6 +331,7 @@ onMounted(async () => {
               placeholder="Chapter title"
               class="chapter-form-input"
               maxlength="200"
+              aria-label="Chapter title"
             />
             <textarea
               v-model="newChapterForm.content"
@@ -334,6 +339,7 @@ onMounted(async () => {
               class="chapter-form-textarea"
               rows="8"
               maxlength="500000"
+              aria-label="Chapter content"
             ></textarea>
             <div class="chapter-form-actions">
               <button type="button" class="chapter-form-btn chapter-form-btn--cancel" @click="showAddForm = false">Cancel</button>
@@ -364,12 +370,14 @@ onMounted(async () => {
                     type="text"
                     class="chapter-form-input"
                     maxlength="200"
+                    aria-label="Edit chapter title"
                   />
                   <textarea
                     v-model="editChapterForm.content"
                     class="chapter-form-textarea"
                     rows="6"
                     maxlength="500000"
+                    aria-label="Edit chapter content"
                   ></textarea>
                   <div class="chapter-form-actions">
                     <button type="button" class="chapter-form-btn chapter-form-btn--cancel" @click="cancelEditChapter">Cancel</button>
@@ -387,7 +395,7 @@ onMounted(async () => {
               <!-- Read mode -->
               <template v-else>
                 <div class="chapter-number">{{ chapter.chapterNumber }}</div>
-                <div class="chapter-info" @click="goToChapter(chapter)">
+                <div class="chapter-info" @click="goToChapter(chapter)" @keydown.enter.prevent="goToChapter(chapter)" @keydown.space.prevent="goToChapter(chapter)" tabindex="0" role="button">
                   <div class="chapter-title">{{ chapter.title }}</div>
                   <div class="chapter-meta">
                     <span>{{ chapter.wordCount?.toLocaleString() || 0 }} words</span>
@@ -403,7 +411,7 @@ onMounted(async () => {
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </div>
-                <div class="chapter-arrow" @click="goToChapter(chapter)">
+                <div class="chapter-arrow" @click="goToChapter(chapter)" @keydown.enter.prevent="goToChapter(chapter)" @keydown.space.prevent="goToChapter(chapter)" tabindex="0" role="button">
                   <i class="fa-solid fa-chevron-right"></i>
                 </div>
               </template>
@@ -415,7 +423,7 @@ onMounted(async () => {
         </div>
 
         <!-- Delete chapter confirmation -->
-        <div v-if="showDeleteConfirm" class="delete-overlay" @click.self="showDeleteConfirm = false">
+        <div v-if="showDeleteConfirm" class="delete-overlay" @click.self="showDeleteConfirm = false" @keydown.enter.prevent="showDeleteConfirm = false" @keydown.space.prevent="showDeleteConfirm = false" tabindex="0" role="button">
           <div class="delete-dialog">
             <h3>Delete Chapter</h3>
             <p>Are you sure you want to delete "{{ deleteChapterTarget?.title }}"? This cannot be undone.</p>

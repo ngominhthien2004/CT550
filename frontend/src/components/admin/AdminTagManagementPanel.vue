@@ -79,6 +79,7 @@ const formattedTags = computed(() =>
         type="text"
         class="form-control form-control-sm"
         placeholder="Search tag name..."
+        aria-label="Search tags by name"
         @input="onQueryInput"
         @keyup.enter="emit('apply-filters')"
       />
@@ -88,12 +89,12 @@ const formattedTags = computed(() =>
     <!-- Merge form -->
     <div v-if="showMergeForm" class="border rounded p-2 mb-2 bg-light">
       <div class="d-flex gap-2 align-items-center flex-wrap">
-        <select v-model="mergeSourceId" class="form-select form-select-sm" style="max-width:200px">
+        <select v-model="mergeSourceId" class="form-select form-select-sm" style="max-width:200px" aria-label="Select source tag for merging">
           <option value="" disabled>Select source tag</option>
           <option v-for="tag in tags" :key="tag._id" :value="tag._id">{{ tag.name }} ({{ tag.usageCount }})</option>
         </select>
         <span class="text-muted">&rarr;</span>
-        <select v-model="mergeTargetId" class="form-select form-select-sm" style="max-width:200px">
+        <select v-model="mergeTargetId" class="form-select form-select-sm" style="max-width:200px" aria-label="Select target tag for merging">
           <option value="" disabled>Select target tag</option>
           <option v-for="tag in tags" :key="tag._id" :value="tag._id">{{ tag.name }} ({{ tag.usageCount }})</option>
         </select>

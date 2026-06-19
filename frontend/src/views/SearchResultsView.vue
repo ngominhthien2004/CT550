@@ -644,7 +644,7 @@ watch(
 
       <div v-if="!isUserSearch" class="filter-row">
         <label class="order-select">
-          <select :value="sortMode" @change="handleSortChange">
+          <select :value="sortMode" @change="handleSortChange" aria-label="Sort by">
             <option value="newest">Newest</option>
             <option value="popular">Sort by popularity</option>
           </select>
@@ -658,7 +658,7 @@ watch(
         <template v-if="isNovelSearch">
           <span class="filter-separator" aria-hidden="true"></span>
           <label class="novel-sort-select">
-            <select v-model="novelSortBy">
+            <select v-model="novelSortBy" aria-label="Novel sort by">
               <option value="newest">Newest</option>
               <option value="views">Most viewed</option>
               <option value="likes">Most liked</option>
@@ -693,6 +693,7 @@ watch(
               class="word-range-input"
               placeholder="Min words"
               min="0"
+              aria-label="Min words"
             />
             <span class="word-range-sep">–</span>
             <input
@@ -701,6 +702,7 @@ watch(
               class="word-range-input"
               placeholder="Max words"
               min="0"
+              aria-label="Max words"
             />
           </label>
         </template>

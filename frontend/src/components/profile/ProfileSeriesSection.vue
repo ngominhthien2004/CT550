@@ -78,6 +78,10 @@ function goToSeries(id) {
             :key="s._id"
             class="series-card"
             @click="goToSeries(s._id)"
+            @keydown.enter.prevent="goToSeries(s._id)"
+            @keydown.space.prevent="goToSeries(s._id)"
+            tabindex="0"
+            role="button"
           >
             <!-- Cover -->
             <div class="series-card-cover">

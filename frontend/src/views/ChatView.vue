@@ -168,6 +168,7 @@ const processedMessages = computed(() =>
             rows="1"
             @keydown="handleKeydown"
             :disabled="chatStore.isLoading"
+            aria-label="Chat message input"
           ></textarea>
           <button type="button"
             class="btn btn-primary send-btn"

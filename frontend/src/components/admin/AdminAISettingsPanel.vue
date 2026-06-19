@@ -98,6 +98,7 @@ watch(() => props.activeTab, (tab) => {
             :checked="aiDetectionEnabled"
             :disabled="saving"
             @change="toggleAiDetection"
+            aria-label="Toggle AI image detection"
           />
           <span class="toggle-slider"></span>
           <span class="toggle-label">{{ aiDetectionEnabled ? 'Enabled' : 'Disabled' }}</span>
@@ -118,6 +119,7 @@ watch(() => props.activeTab, (tab) => {
             :checked="autoTaggingEnabled"
             :disabled="autoTagSaving"
             @change="toggleAutoTagging"
+            aria-label="Toggle auto image tagging"
           />
           <span class="toggle-slider"></span>
           <span class="toggle-label">{{ autoTaggingEnabled ? 'Enabled' : 'Disabled' }}</span>

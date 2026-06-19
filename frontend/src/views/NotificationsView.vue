@@ -53,7 +53,7 @@ onMounted(() => {
         </div>
         <div class="d-flex align-items-center gap-2">
           <label class="form-check mb-0">
-            <input v-model="unreadOnly" class="form-check-input" type="checkbox" @change="loadNotifications" />
+            <input v-model="unreadOnly" class="form-check-input" type="checkbox" @change="loadNotifications" aria-label="Unread only" />
             <span class="form-check-label">Unread only</span>
           </label>
           <button type="button" class="btn btn-outline-secondary btn-sm" @click="loadNotifications">Refresh</button>

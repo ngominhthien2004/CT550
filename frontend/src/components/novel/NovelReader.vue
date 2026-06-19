@@ -260,6 +260,7 @@ function handleShare() {
         class="chapter-select"
         :value="selectedChapterId"
         @change="onSelectChapter"
+        aria-label="Select chapter"
       >
         <option
           v-for="ch in chapters"

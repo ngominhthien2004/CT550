@@ -61,7 +61,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="picker-backdrop" @click.self="emit('close')">
+  <div class="picker-backdrop" @click.self="emit('close')" @keydown.enter.prevent="emit('close')" @keydown.space.prevent="emit('close')" tabindex="0" role="button">
     <div class="picker-dialog" role="dialog" aria-modal="true" aria-label="Select artworks">
       <!-- Header -->
       <div class="picker-header">

@@ -40,7 +40,7 @@ function handleSave() {
 </script>
 
 <template>
-  <div v-if="show" class="modal-backdrop" @click.self="emit('close')">
+  <div v-if="show" class="modal-backdrop" @click.self="emit('close')" @keydown.enter.prevent="emit('close')" @keydown.space.prevent="emit('close')" tabindex="0" role="button">
     <div class="modal-card avatar-card">
       <header class="modal-header">
         <div>
@@ -57,7 +57,7 @@ function handleSave() {
           <div class="avatar-preview">
             <img :src="upload.preview.value || DEFAULT_AVATAR" alt="Avatar preview" />
             <label class="upload-overlay">
-              <input type="file" accept="image/*" hidden @change="upload.selectFile">
+              <input type="file" accept="image/*" hidden @change="upload.selectFile" aria-label="Upload avatar image">
               <span class="avatar-upload-icon">
                 <i class="fa-solid fa-camera" aria-hidden="true"></i>
               </span>

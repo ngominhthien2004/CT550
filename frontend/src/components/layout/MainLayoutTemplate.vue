@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="app-layout">
-    <div v-if="!isNavCollapsed" class="sidebar-backdrop" :style="{ zIndex: SIDEBAR_Z_INDEX - 1 }" @click="toggleSidebar"></div>
+    <div v-if="!isNavCollapsed" class="sidebar-backdrop" :style="{ zIndex: SIDEBAR_Z_INDEX - 1 }" @click="toggleSidebar" @keydown.enter.prevent="toggleSidebar" @keydown.space.prevent="toggleSidebar" tabindex="0" role="button"></div>
 
     <AppSidebarMenu
       :site-name="siteName"

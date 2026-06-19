@@ -108,7 +108,7 @@ async function executeDelete() {
 
     <!-- Add Chapter Modal -->
     <Teleport to="body">
-      <div v-if="showAddForm" class="modal-overlay" @click.self="showAddForm = false">
+      <div v-if="showAddForm" class="modal-overlay" @click.self="showAddForm = false" @keydown.enter.prevent="showAddForm = false" @keydown.space.prevent="showAddForm = false" tabindex="0" role="button">
         <div class="modal-content">
           <div class="modal-header">
             <h3 class="modal-title">Add New Chapter</h3>
@@ -125,6 +125,7 @@ async function executeDelete() {
               class="form-input"
               placeholder="Enter chapter title..."
               maxlength="200"
+              aria-label="Chapter title"
             />
           </div>
 
@@ -137,6 +138,7 @@ async function executeDelete() {
               placeholder="Write chapter content..."
               rows="15"
               maxlength="500000"
+              aria-label="Chapter content"
             ></textarea>
             <span class="char-count">{{ newChapter.content.length }}/500000</span>
           </div>
@@ -159,7 +161,7 @@ async function executeDelete() {
 
     <!-- Delete Confirmation -->
     <Teleport to="body">
-      <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null">
+      <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null" @keydown.enter.prevent="deleteTarget = null" @keydown.space.prevent="deleteTarget = null" tabindex="0" role="button">
         <div class="modal-content confirm-dialog">
           <div class="modal-header">
             <h3 class="modal-title">Delete Chapter {{ deleteTarget.chapterNumber }}?</h3>

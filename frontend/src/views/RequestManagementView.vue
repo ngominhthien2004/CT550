@@ -191,8 +191,9 @@ watch(
                 type="search"
                 placeholder="Search requests..."
                 class="search-input"
+                aria-label="Search requests"
               />
-              <select v-model="statusFilter" @change="loadAll">
+              <select v-model="statusFilter" @change="loadAll" aria-label="Filter by status">
                 <option value="">All status</option>
                 <option value="pending">Pending</option>
                 <option value="accepted">Accepted</option>
@@ -210,7 +211,7 @@ watch(
           <p v-if="loading" class="state">Loading requests...</p>
 
           <TransitionGroup name="request-list" tag="div" class="request-list-items">
-            <article v-for="item in filteredRequests" :key="item._id" class="request-row" @click="selectRequest(item._id)">
+            <article v-for="item in filteredRequests" :key="item._id" class="request-row" @click="selectRequest(item._id)" @keydown.enter.prevent="selectRequest(item._id)" @keydown.space.prevent="selectRequest(item._id)" tabindex="0" role="button">
               <div>
                 <p :class="['status-pill', 'status-' + item.status]">{{ statusLabel(item.status) }}</p>
                 <h3>{{ item.title }}</h3>
@@ -268,8 +269,8 @@ watch(
               <p class="section-hint">Give the plan a name fans can recognize.</p>
             </div>
             <div class="form-grid">
-              <label>Plan title<input v-model="termForm.title" type="text" required /></label>
-              <label>Tier<input v-model="termForm.tier" type="text" /></label>
+              <label>Plan title<input v-model="termForm.title" type="text" required aria-label="Plan title" /></label>
+              <label>Tier<input v-model="termForm.tier" type="text" aria-label="Tier" /></label>
             </div>
           </div>
 
@@ -279,10 +280,10 @@ watch(
               <p class="section-hint">Set minimum price and how many slots you can take.</p>
             </div>
             <div class="form-grid">
-              <label>Target price<input v-model.number="termForm.targetPrice" type="number" min="1" required /></label>
-              <label>Currency<input v-model="termForm.currency" type="text" maxlength="8" /></label>
-              <label>Estimated days<input v-model.number="termForm.estimatedDays" type="number" min="14" max="60" required /></label>
-              <label>Max open requests<input v-model.number="termForm.maxOpenRequests" type="number" min="1" max="20" required /></label>
+              <label>Target price<input v-model.number="termForm.targetPrice" type="number" min="1" required aria-label="Target price" /></label>
+              <label>Currency<input v-model="termForm.currency" type="text" maxlength="8" aria-label="Currency" /></label>
+              <label>Estimated days<input v-model.number="termForm.estimatedDays" type="number" min="14" max="60" required aria-label="Estimated days" /></label>
+              <label>Max open requests<input v-model.number="termForm.maxOpenRequests" type="number" min="1" max="20" required aria-label="Max open requests" /></label>
             </div>
           </div>
 
@@ -323,14 +324,14 @@ watch(
               <h3>Guidelines</h3>
               <p class="section-hint">Clarify rules, strengths, and things you avoid.</p>
             </div>
-            <label>Rules<textarea v-model="termForm.rules" rows="4" required></textarea></label>
-            <label>Strengths<textarea v-model="termForm.strengths" rows="4" required></textarea></label>
-            <label>Preferred styles<input v-model="termForm.preferredStyles" type="text" placeholder="soft color, portrait" /></label>
-            <label>Forbidden topics<input v-model="termForm.forbiddenTopics" type="text" placeholder="gore, trademarked logos" /></label>
+            <label>Rules<textarea v-model="termForm.rules" rows="4" required aria-label="Rules"></textarea></label>
+            <label>Strengths<textarea v-model="termForm.strengths" rows="4" required aria-label="Strengths"></textarea></label>
+            <label>Preferred styles<input v-model="termForm.preferredStyles" type="text" placeholder="soft color, portrait" aria-label="Preferred styles" /></label>
+            <label>Forbidden topics<input v-model="termForm.forbiddenTopics" type="text" placeholder="gore, trademarked logos" aria-label="Forbidden topics" /></label>
           </div>
 
           <label class="inline-check">
-            <input v-model="termForm.isOpen" type="checkbox" />
+            <input v-model="termForm.isOpen" type="checkbox" aria-label="Open this plan for new Requests" />
             Open this plan for new Requests
           </label>
 

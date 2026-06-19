@@ -68,6 +68,7 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
               type="text"
               class="tag-input-field"
               placeholder="Tags"
+              aria-label="Tags input"
               :disabled="!modelAllowTagEdit"
               @keydown="emit('input-keydown', $event)"
             />
@@ -143,7 +144,7 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
       </div>
       <div class="row-center">
         <label class="custom-checkbox">
-          <input v-model="modelAllowTagEdit" type="checkbox" />
+          <input v-model="modelAllowTagEdit" type="checkbox" aria-label="Don't allow other users to edit tags" />
           <span class="checkbox-indicator"></span>
           <span class="checkbox-label">Don't allow other users to edit tags</span>
         </label>

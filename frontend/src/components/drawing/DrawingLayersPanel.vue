@@ -14,6 +14,10 @@
         class="layer-item"
         :class="{ active: store.activeLayerIndex === i }"
         @click="store.activeLayerIndex = i"
+        @keydown.enter.prevent="store.activeLayerIndex = i"
+        @keydown.space.prevent="store.activeLayerIndex = i"
+        tabindex="0"
+        role="button"
       >
         <button type="button"
           class="layer-vis-btn"

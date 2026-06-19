@@ -293,6 +293,7 @@ const getAvatar = (user) => {
           class="comment-textarea"
           placeholder="Leave a comment"
           rows="1"
+          aria-label="Write a comment"
           @keydown.enter.ctrl="handleSubmit"
           @input="autoResize"
         ></textarea>
@@ -366,6 +367,7 @@ const getAvatar = (user) => {
               class="comment-textarea"
               placeholder="Write a reply"
               rows="1"
+              aria-label="Write a reply"
             ></textarea>
             <div class="d-flex align-items-center gap-2 mt-2">
               <button type="button"
@@ -391,6 +393,7 @@ const getAvatar = (user) => {
               class="form-control form-control-sm mt-2"
               type="url"
               placeholder="Sticker image URL (optional)"
+              aria-label="Sticker image URL"
             />
           </div>
 

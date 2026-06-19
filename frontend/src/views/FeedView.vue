@@ -247,7 +247,7 @@ watch(
     <div class="toolbar">
       <label class="toolbar-select">
         <span>Order</span>
-        <select v-model="sortMode">
+        <select v-model="sortMode" aria-label="Sort mode">
           <option value="latest">Newest</option>
           <option value="popular">Sort by popularity</option>
         </select>

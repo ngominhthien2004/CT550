@@ -49,6 +49,7 @@ const props = defineProps({
           required
           aria-required="true"
           placeholder="Title"
+          aria-label="Title"
         />
         <span class="counter-badge">{{ props.titleCount }}/{{ props.titleMax }}</span>
       </div>
@@ -61,6 +62,7 @@ const props = defineProps({
           rows="5"
           maxlength="3000"
           placeholder="Caption"
+          aria-label="Caption"
         ></textarea>
         <span class="counter-badge bottom-right">{{ props.captionCount }}/3000</span>
       </div>
@@ -74,7 +76,7 @@ const props = defineProps({
       </div>
       <div class="row-center">
         <div class="row-inline">
-          <input v-model="props.form.mangaSeriesName" type="text" class="form-control custom-input" placeholder="Series name" />
+          <input v-model="props.form.mangaSeriesName" type="text" class="form-control custom-input" placeholder="Series name" aria-label="Series name" />
           <button type="button" class="btn btn-outline-primary btn-sm custom-btn">Create series</button>
         </div>
       </div>
@@ -89,18 +91,18 @@ const props = defineProps({
       <div class="row-center d-flex flex-column gap-2">
         <div class="options-group" role="radiogroup" aria-label="Novel posting format">
           <label class="custom-radio">
-            <input v-model="props.form.novelFormat" type="radio" name="novelFormat" value="series" />
+            <input v-model="props.form.novelFormat" type="radio" name="novelFormat" value="series" aria-label="Novel format: series" />
             <span class="radio-indicator"></span>
             <span class="radio-label">Series</span>
           </label>
           <label class="custom-radio">
-            <input v-model="props.form.novelFormat" type="radio" name="novelFormat" value="oneshot" />
+            <input v-model="props.form.novelFormat" type="radio" name="novelFormat" value="oneshot" aria-label="Novel format: one-shot" />
             <span class="radio-indicator"></span>
             <span class="radio-label">One-shot</span>
           </label>
         </div>
         <div class="row-inline mt-2">
-          <input v-model="props.form.novelSeriesName" type="text" class="form-control custom-input" placeholder="Series name" />
+          <input v-model="props.form.novelSeriesName" type="text" class="form-control custom-input" placeholder="Series name" aria-label="Novel series name" />
           <button type="button" class="btn btn-outline-primary btn-sm custom-btn">Create series</button>
         </div>
       </div>
@@ -121,6 +123,7 @@ const props = defineProps({
             rows="10"
             maxlength="300000"
             placeholder="Write your novel here."
+            aria-label="Novel text"
           ></textarea>
           <span class="counter-badge bottom-right-textarea">{{ props.novelTextCount }}/300000</span>
         </div>

@@ -48,7 +48,7 @@ function handleUpload() {
 </script>
 
 <template>
-  <div v-if="show" class="modal-backdrop modal-backdrop--top" @click.self="emit('close')">
+  <div v-if="show" class="modal-backdrop modal-backdrop--top" @click.self="emit('close')" @keydown.enter.prevent="emit('close')" @keydown.space.prevent="emit('close')" tabindex="0" role="button">
     <div class="modal-card cover-card">
       <header class="modal-header">
         <h2 class="modal-title">Edit cover image</h2>
@@ -62,7 +62,7 @@ function handleUpload() {
         :style="upload.preview.value ? { backgroundImage: `url(${upload.preview.value})` } : { background: DEFAULT_COVER }"
       >
         <label class="upload-overlay">
-          <input type="file" accept="image/jpeg, image/png, image/gif" hidden @change="upload.selectFile">
+          <input type="file" accept="image/jpeg, image/png, image/gif" hidden @change="upload.selectFile" aria-label="Upload cover image">
           <div class="upload-overlay-content">
             <i class="fa-solid fa-camera" aria-hidden="true"></i>
             <span>Drop the file or click to choose cover image here</span>

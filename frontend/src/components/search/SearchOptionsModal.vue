@@ -72,7 +72,7 @@ watch(
 
 <template>
   <Teleport to="body">
-    <div v-if="modelValue" class="search-options-backdrop" @click.self="closeModal">
+    <div v-if="modelValue" class="search-options-backdrop" @click.self="closeModal" @keydown.enter.prevent="closeModal" @keydown.space.prevent="closeModal" tabindex="0" role="button">
       <section class="search-options-modal" role="dialog" aria-modal="true" aria-label="Search option">
         <header class="search-options-header">
           <h2 class="mb-0">Search option</h2>
@@ -81,23 +81,23 @@ watch(
         <div class="search-options-body">
           <label class="field-block">
             <span class="field-label">Include all keywords</span>
-            <input v-model="formState.includeAll" type="text" placeholder="Search artworks" />
+            <input v-model="formState.includeAll" type="text" placeholder="Search artworks" aria-label="Include all keywords" />
           </label>
 
           <label class="field-block">
             <span class="field-label">Include any keywords</span>
-            <input v-model="formState.includeAny" type="text" placeholder="Search artworks" />
+            <input v-model="formState.includeAny" type="text" placeholder="Search artworks" aria-label="Include any keywords" />
           </label>
 
           <label class="field-block">
             <span class="field-label">Exclude keywords</span>
-            <input v-model="formState.exclude" type="text" placeholder="Search artworks" />
+            <input v-model="formState.exclude" type="text" placeholder="Search artworks" aria-label="Exclude keywords" />
           </label>
 
           <div class="field-grid">
             <label class="field-block">
               <span class="field-label">Targets</span>
-              <select v-model="formState.target">
+              <select v-model="formState.target" aria-label="Search targets">
                 <option value="all">All fields</option>
                 <option value="title">Title only</option>
                 <option value="tags">Tags only</option>
@@ -108,7 +108,7 @@ watch(
 
             <label class="field-block">
               <span class="field-label">Work type</span>
-              <select v-model="formState.type">
+              <select v-model="formState.type" aria-label="Work type filter">
                 <option value="illust">Illustration</option>
                 <option value="manga">Manga</option>
                 <option value="gif">GIF</option>

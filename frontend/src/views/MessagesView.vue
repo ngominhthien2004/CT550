@@ -896,6 +896,7 @@ onUnmounted(() => {
               :disabled="sending || !selectedThreadId"
               @keydown.enter.prevent="e => { if (!e.shiftKey) sendMessage() }"
               @input="onUserTyping"
+              aria-label="Compose message"
             ></textarea>
             
             <button

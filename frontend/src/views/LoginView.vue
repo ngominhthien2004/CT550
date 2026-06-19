@@ -62,12 +62,12 @@ function googleLogin() {
       <form class="d-grid gap-2" @submit.prevent="submitLogin">
         <label class="d-grid gap-1">
           <span class="auth-label">Email</span>
-          <input v-model="form.email" type="email" class="form-control auth-control" placeholder="name@example.com" />
+          <input v-model="form.email" type="email" class="form-control auth-control" placeholder="name@example.com" aria-label="Email" />
         </label>
 
         <label class="d-grid gap-1">
           <span class="auth-label">Password</span>
-          <input v-model="form.password" type="password" class="form-control auth-control" placeholder="Enter your password" />
+          <input v-model="form.password" type="password" class="form-control auth-control" placeholder="Enter your password" aria-label="Password" />
         </label>
 
         <p v-if="formError" class="text-danger mb-0">{{ formError }}</p>

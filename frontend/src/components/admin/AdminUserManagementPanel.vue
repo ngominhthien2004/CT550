@@ -84,10 +84,11 @@ const formattedUsers = computed(() =>
         type="text"
         class="form-control form-control-sm"
         placeholder="Search by username/email"
+        aria-label="Search users by username or email"
         @input="onQueryInput"
         @keyup.enter="emit('apply-filters')"
       />
-      <select :value="userRoleFilter" class="form-select form-select-sm" @change="onRoleFilterChange">
+      <select :value="userRoleFilter" class="form-select form-select-sm" @change="onRoleFilterChange" aria-label="Filter users by role">
         <option value="all">All roles</option>
         <option value="user">User</option>
         <option value="admin">Admin</option>

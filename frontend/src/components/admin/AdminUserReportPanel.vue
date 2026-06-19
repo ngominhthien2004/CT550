@@ -34,6 +34,7 @@ function onStatusFilterChange(event) {
         class="form-select form-select-sm"
         style="width: auto;"
         @change="onStatusFilterChange"
+        aria-label="Filter user reports by status"
       >
         <option value="pending">Pending</option>
         <option value="resolved">Resolved</option>

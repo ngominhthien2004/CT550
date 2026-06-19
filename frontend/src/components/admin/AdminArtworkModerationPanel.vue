@@ -74,6 +74,7 @@ const formattedArtworks = computed(() =>
         type="text"
         class="form-control form-control-sm"
         placeholder="Search by title"
+        aria-label="Search artworks by title"
         @input="onQueryInput"
         @keyup.enter="emit('apply-filters')"
       />

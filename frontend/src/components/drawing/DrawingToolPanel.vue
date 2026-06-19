@@ -19,6 +19,7 @@
           v-model="store.brushColor"
           class="color-input"
           title="Custom color"
+          aria-label="Custom brush color"
         />
         <span class="color-hex">{{ store.brushColor }}</span>
       </div>
@@ -37,6 +38,7 @@
         :max="100"
         :value="store.tool === 'eraser' ? store.eraserSize : store.brushSize"
         @input="store.onSizeChange"
+        aria-label="Brush size"
       />
     </div>
 
@@ -53,6 +55,7 @@
         max="1"
         step="0.01"
         v-model.number="store.brushOpacity"
+        aria-label="Brush opacity"
       />
     </div>
 

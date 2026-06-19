@@ -37,6 +37,7 @@
               v-model="inputMessage" 
               placeholder="Nhập tin nhắn..." 
               :disabled="loading"
+              aria-label="Chat message input"
             />
             <button type="submit" :disabled="loading || !inputMessage.trim()">
               Gửi
@@ -47,13 +48,14 @@
 
       <div v-if="activeTab === 'detect'" class="tab-content">
         <div class="detect-container">
-          <div class="upload-area" @click="triggerFileInput" @dragover.prevent @drop.prevent="handleDrop">
+          <div class="upload-area" @click="triggerFileInput" @keydown.enter.prevent="triggerFileInput" @keydown.space.prevent="triggerFileInput" @dragover.prevent @drop.prevent="handleDrop" tabindex="0" role="button">
             <input 
               ref="fileInput" 
               type="file" 
               accept="image/*" 
               @change="handleFileSelect" 
               hidden
+              aria-label="Upload image for AI detection"
             />
             <div v-if="!previewImage" class="upload-placeholder">
               <span class="upload-icon">📁</span>

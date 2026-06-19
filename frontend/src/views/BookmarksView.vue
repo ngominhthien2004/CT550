@@ -34,10 +34,10 @@ onMounted(() => {
     <h2 class="mb-0">My Bookmarks</h2>
     <div class="row g-2">
       <div class="col-12 col-lg-5">
-        <input v-model="artworkId" class="form-control" placeholder="Artwork ID" />
+        <input v-model="artworkId" class="form-control" placeholder="Artwork ID" aria-label="Artwork ID" />
       </div>
       <div class="col-12 col-lg-4">
-        <input v-model="folder" class="form-control" placeholder="Folder (default)" />
+        <input v-model="folder" class="form-control" placeholder="Folder (default)" aria-label="Bookmark folder" />
       </div>
       <div class="col-12 col-sm-6 col-lg-1 d-grid">
         <button type="button" class="btn btn-primary" @click="submitBookmark">Add</button>

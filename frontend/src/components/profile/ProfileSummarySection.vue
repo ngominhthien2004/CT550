@@ -187,7 +187,7 @@ function closeReportModal() {
     <div class="avatar-shell">
       <div class="avatar-wrap">
         <img :src="avatarSrc" :alt="user.displayName || user.username" @error="handleAvatarError" />
-        <div v-if="isOwnProfile" class="avatar-edit-overlay" @click="emit('edit-avatar')" role="button" aria-label="Edit profile picture">
+        <div v-if="isOwnProfile" class="avatar-edit-overlay" @click="emit('edit-avatar')" @keydown.enter.prevent="emit('edit-avatar')" @keydown.space.prevent="emit('edit-avatar')" role="button" aria-label="Edit profile picture">
           <i class="fa-solid fa-camera" aria-hidden="true"></i>
         </div>
       </div>

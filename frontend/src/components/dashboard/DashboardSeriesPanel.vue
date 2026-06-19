@@ -112,7 +112,7 @@ onMounted(() => {
     <!-- Header with sort and create button -->
     <div class="series-header">
       <div class="series-sort">
-        <select class="series-sort-select" :value="sortOrder" @change="changeSort">
+        <select class="series-sort-select" :value="sortOrder" @change="changeSort" aria-label="Sort series">
           <option value="newest">Newest first</option>
           <option value="oldest">Oldest first</option>
         </select>
@@ -157,7 +157,7 @@ onMounted(() => {
         <button type="button" class="empty-btn" @click="openCreateModal('novel')">
           Create novel series
         </button>
-        <button type="button" class="empty-btn" @click="openCreateModal('illust')">
+        <button type="button" class="empty-btn" @click="openCreateModal('illust')" @keydown.enter.prevent="openCreateModal('illust')" @keydown.space.prevent="openCreateModal('illust')">
           Create illustration series
         </button>
       </div>
@@ -242,7 +242,7 @@ onMounted(() => {
     />
 
     <!-- Delete confirmation -->
-    <div v-if="showDeleteConfirm" class="cs-backdrop" @click.self="showDeleteConfirm = false">
+    <div v-if="showDeleteConfirm" class="cs-backdrop" @click.self="showDeleteConfirm = false" @keydown.enter.prevent="showDeleteConfirm = false" @keydown.space.prevent="showDeleteConfirm = false" tabindex="0" role="button">
       <div class="delete-confirm-dialog">
         <h3 class="delete-confirm-title">Delete series</h3>
         <p class="delete-confirm-text">Are you sure you want to delete "{{ deletingSeries?.title }}"? This action cannot be undone.</p>

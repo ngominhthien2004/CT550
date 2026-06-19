@@ -180,7 +180,7 @@ watch(
           <p v-if="loading" class="state-note">Loading dashboard...</p>
           <p v-else-if="error" class="state-note error">{{ error }}</p>
 
-          <div v-if="onboardingStep > 0" class="coachmark-backdrop" @click.self="finishOnboarding">
+          <div v-if="onboardingStep > 0" class="coachmark-backdrop" @click.self="finishOnboarding" @keydown.enter.prevent="finishOnboarding" @keydown.space.prevent="finishOnboarding" tabindex="0" role="button">
             <div class="coachmark-card">
               <p v-if="onboardingStep === 1" class="coachmark-text">
                 Up to three recent posts will be displayed.

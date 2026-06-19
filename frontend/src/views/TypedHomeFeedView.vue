@@ -198,7 +198,7 @@ watch(
             >Series</button>
           </div>
           <label class="nf-sort">
-            <select v-model="novelSortBy">
+            <select v-model="novelSortBy" aria-label="Novel sort by">
               <option value="newest">Newest</option>
               <option value="views">Most viewed</option>
               <option value="likes">Most liked</option>

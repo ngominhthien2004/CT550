@@ -34,10 +34,10 @@ onMounted(() => {
     <h2 class="mb-0">Artwork Comments</h2>
     <div class="row g-2">
       <div class="col-12 col-lg-3">
-        <input :value="artworkId" class="form-control bg-light" disabled />
+        <input :value="artworkId" class="form-control bg-light" disabled aria-label="Artwork ID" />
       </div>
       <div class="col-12 col-lg-7">
-        <input v-model="content" class="form-control" placeholder="Write a comment..." />
+        <input v-model="content" class="form-control" placeholder="Write a comment..." aria-label="Comment content" />
       </div>
       <div class="col-12 col-lg-2 d-grid">
         <button type="button" class="btn btn-primary" @click="submitComment">Add comment</button>

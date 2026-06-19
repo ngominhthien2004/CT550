@@ -89,6 +89,7 @@ function handleCoverFilesChange(event) {
         multiple
         aria-describedby="upload-media-help"
         @change="handleMediaFilesChange"
+        aria-label="Upload media files"
       />
       <p id="upload-media-help" class="small text-light-emphasis mt-2 mb-0" aria-live="polite">
         {{ props.mediaCount }} file(s) selected for one artwork. Up to {{ props.maxMediaFiles }} images.
@@ -119,10 +120,11 @@ function handleCoverFilesChange(event) {
           id="upload-cover"
           type="file"
           class="form-control"
-        accept=".jpg,.jpeg,.png,.webp,.gif,image/*"
+          accept=".jpg,.jpeg,.png,.webp,.gif,image/*"
           multiple
           aria-describedby="upload-cover-help"
           @change="handleCoverFilesChange"
+          aria-label="Upload cover image"
         />
         <p id="upload-cover-help" class="small text-light-emphasis mt-2 mb-0" aria-live="polite">{{ props.coverCount }} cover file(s) selected</p>
       </div>
