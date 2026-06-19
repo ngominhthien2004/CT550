@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { createComment, deleteComment, getCommentReplies, getComments } from '../services/api'
+import { createComment, deleteComment, getCommentReplies, getComments } from '../services/api.js'
 
 export const useCommentStore = defineStore('comments', {
   state: () => ({

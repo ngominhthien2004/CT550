@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { loginAuthUser, registerAuthUser } from '../services/api'
+import { loginAuthUser, registerAuthUser } from '../services/api.js'
 
 const TOKEN_KEY = 'token'
 const USER_KEY = 'authUser'

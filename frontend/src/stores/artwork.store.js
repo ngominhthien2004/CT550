@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { createArtwork, getArtworkById } from '../services/api'
+import { createArtwork, getArtworkById } from '../services/api.js'
 
 export const useArtworkStore = defineStore('artwork', {
   state: () => ({

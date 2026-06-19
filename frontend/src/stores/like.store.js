@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { createLike, deleteLike, getMyLikes, likeApi } from '../services/api'
+import { createLike, deleteLike, getMyLikes, likeApi } from '../services/api.js'
 
 export const useLikeStore = defineStore('likes', {
   state: () => ({

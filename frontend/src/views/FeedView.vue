@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getArtworks } from '../services/api'
+import { getArtworks } from '../services/api.js'
 import SearchOptionsModal from '../components/search/SearchOptionsModal.vue'
 
 const route = useRoute()
@@ -58,16 +58,12 @@ const currentSearchOptions = computed(() => ({
   type: typeof route.query.type === 'string' ? route.query.type : 'illust',
 }))
 
-const relatedTags = computed(() => {
+function pickTopTags(items) {
   const bucket = {}
-
-  for (const item of feedItems.value) {
+  for (const item of items) {
     for (const tag of item.tags || []) {
       const name = tag?.name?.trim()
-      if (!name) {
-        continue
-      }
-
+      if (!name) continue
       const normalized = name.toLowerCase()
       const existing = bucket[normalized]
       bucket[normalized] = {
@@ -76,18 +72,25 @@ const relatedTags = computed(() => {
       }
     }
   }
-
   return Object.values(bucket)
+    .slice()
     .sort((a, b) => b.count - a.count)
     .slice(0, 9)
-})
+}
+
+const relatedTags = computed(() => pickTopTags(feedItems.value))
+
+function sortByViewCountDesc(items) {
+  const copy = items.slice()
+  copy.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
+  return copy
+}
 
 const visibleItems = computed(() => {
   if (sortMode.value === 'popular') {
-    return [...feedItems.value].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
+    return sortByViewCountDesc(feedItems.value)
   }
-
-  return [...feedItems.value]
+  return feedItems.value.slice()
 })
 
 function normalizeKeywords(raw) {

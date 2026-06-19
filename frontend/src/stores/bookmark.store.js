@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { bookmarkApi, createBookmark, deleteBookmark, getMyBookmarks } from '../services/api'
+import { bookmarkApi, createBookmark, deleteBookmark, getMyBookmarks } from '../services/api.js'
 
 export const useBookmarkStore = defineStore('bookmarks', {
   state: () => ({

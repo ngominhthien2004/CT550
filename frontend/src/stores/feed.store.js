@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getFeed, getRankings } from '../services/api'
+import { getFeed, getRankings } from '../services/api.js'
 
 export const useFeedStore = defineStore('feed', {
   state: () => ({

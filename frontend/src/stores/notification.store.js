@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getMyNotifications, markNotificationRead } from '../services/api'
+import { getMyNotifications, markNotificationRead } from '../services/api.js'
 
 export const useNotificationStore = defineStore('notifications', {
   state: () => ({

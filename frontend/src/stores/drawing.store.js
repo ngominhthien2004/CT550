@@ -15,9 +15,8 @@ export const useDrawingStore = defineStore('drawing', () => {
     '#808080', '#00ffff',
   ]
   const EXTENSIONS = { 'image/png': 'png', 'image/jpeg': 'jpg' }
-  // LocalStorage key constants (not secrets)
-  const SAVE_SLOTS_KEY = 'drawing_slots'
-  const AUTO_SAVE_KEY = 'drawing_autosave'
+  const SAVE_SLOTS_KEY = 'drawing_slots' // LocalStorage key constant (not a secret)
+  const AUTO_SAVE_KEY = 'drawing_autosave' // LocalStorage key constant (not a secret)
   const MAX_SLOTS = 10
   const MAX_THUMB_W = 320
   const MAX_THUMB_H = 180
@@ -102,7 +101,10 @@ export const useDrawingStore = defineStore('drawing', () => {
   )
 
   const orderedVisibleLayers = computed(() =>
-    [...layers.filter((l) => l.visible)].reverse()
+    layers.reduceRight(
+      (visibleLayers, l) => l.visible ? visibleLayers.concat(l) : visibleLayers,
+      []
+    )
   )
 
   const stageConfig = computed(() => ({

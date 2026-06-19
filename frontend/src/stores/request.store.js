@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { requestApi } from '../services/api'
+import { requestApi } from '../services/api.js'
 
 export const useRequestStore = defineStore('requests', {
   state: () => ({

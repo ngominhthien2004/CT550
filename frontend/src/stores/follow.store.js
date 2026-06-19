@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { followUser, getFollowers, getFollowing, getFollowStatus, unfollowUser } from '../services/api'
+import { followUser, getFollowers, getFollowing, getFollowStatus, unfollowUser } from '../services/api.js'
 
 export const useFollowStore = defineStore('follows', {
   state: () => ({

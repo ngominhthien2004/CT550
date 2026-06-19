@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth.store'
-import { createMessage, getMyMessages, markMessageRead, messageApi } from '../services/api'
+import { createMessage, getMyMessages, markMessageRead, messageApi } from '../services/api.js'
 
 function threadKey(message, currentUserId) {
   if (!message) return null

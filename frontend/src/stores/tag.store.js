@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getTagDetail } from '../services/api'
+import { getTagDetail } from '../services/api.js'
 
 export const useTagStore = defineStore('tag', {
   state: () => ({
