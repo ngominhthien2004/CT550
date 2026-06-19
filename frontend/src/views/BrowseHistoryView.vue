@@ -112,6 +112,7 @@ function timeAgo(dateStr) {
                 <div class="history-author">
                   <img
                     :src="entry.artwork.user?.avatar || 'https://via.placeholder.com/24'"
+                    :alt="entry.artwork.user?.displayName || entry.artwork.user?.username || 'User'"
                     class="author-avatar"
                   />
                   <span>{{ entry.artwork.user?.displayName || entry.artwork.user?.username || 'Unknown' }}</span>

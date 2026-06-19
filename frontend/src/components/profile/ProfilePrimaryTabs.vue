@@ -22,6 +22,7 @@ const emit = defineEmits(['select'])
     <button type="button" class="profile-tab" :class="{ active: activeTab === 'requests' }" @click="emit('select', 'requests')">Requests</button>
     <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'bookmarks' }" @click="emit('select', 'bookmarks')">Bookmarks</button>
     <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'likes' }" @click="emit('select', 'likes')">Favorites</button>
+    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'blocked' }" @click="emit('select', 'blocked')">Blocked</button>
   </nav>
 </template>
 

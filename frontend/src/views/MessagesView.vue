@@ -774,7 +774,7 @@ onUnmounted(() => {
               </span>
             </h2>
             <div style="display:flex;gap:0.5rem;align-items:center">
-              <input v-model="threadSearchQuery" placeholder="Search this conversation" class="thread-search-input form-control form-control-sm" style="width:220px" />
+              <input v-model="threadSearchQuery" placeholder="Search this conversation" aria-label="Search this conversation" class="thread-search-input form-control form-control-sm" style="width:220px" />
               <button type="button" class="btn btn-sm btn-outline-primary" @click="searchWithinThread">Search</button>
               <button v-if="searchActive" type="button" class="btn btn-sm btn-outline-secondary" @click="() => { searchActive=false; threadSearchQuery=''; searchResults=[] }">Clear</button>
             </div>
@@ -940,7 +940,7 @@ onUnmounted(() => {
 
           <label class="image-picker-advanced" :class="{ disabled: !selectedThreadId }" aria-label="Add images">
             <i class="fa-regular fa-image" aria-hidden="true"></i>
-            <input ref="fileInputRef" type="file" multiple accept="image/*" :disabled="!selectedThreadId" @change="handleImageSelect" />
+            <input ref="fileInputRef" type="file" multiple accept="image/*" :disabled="!selectedThreadId" aria-label="Upload images" @change="handleImageSelect" />
           </label>
 
           <button 

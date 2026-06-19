@@ -635,7 +635,7 @@ watch(
         </div>
         <!-- Sort dropdown for user search -->
         <label class="order-select">
-          <select v-model="userSortMode" @change="reloadUserSearch()">
+          <select v-model="userSortMode" aria-label="Sort users" @change="reloadUserSearch()">
             <option value="newest">Newest</option>
             <option value="popular">Popular</option>
           </select>

@@ -165,7 +165,7 @@ onMounted(() => {
 
     <!-- Series list -->
     <div v-else class="series-grid">
-      <div v-for="series in processedSeriesList" :key="series._id" class="series-card" @click="goToSeriesDetail(series._id)">
+      <div v-for="series in processedSeriesList" :key="series._id" class="series-card" role="button" tabindex="0" @click="goToSeriesDetail(series._id)" @keydown.enter="goToSeriesDetail(series._id)">
         <!-- Card menu (top-right corner) -->
         <div class="series-card-menu">
           <button type="button" class="series-card-menu-btn" @click.stop="toggleMenu(series._id)">

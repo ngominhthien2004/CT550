@@ -247,6 +247,7 @@ const processedRankings = computed(() =>
         <button 
           v-for="opt in TYPE_OPTIONS" 
           :key="opt.value"
+          type="button"
           class="type-tab-btn"
           :class="{ active: type === opt.value }"
           @click="updateFilter(null, opt.value)"
@@ -329,7 +330,7 @@ const processedRankings = computed(() =>
               </h3>
               <div class="rank-author">
                 <router-link :to="`/users/${item.user?._id}/profile`" class="author-link">
-                  <img :src="item.user?.avatar || 'https://via.placeholder.com/24'" class="author-avatar" />
+                   <img :src="item.user?.avatar || 'https://via.placeholder.com/24'" :alt="item.user?.displayName || item.user?.username || 'User'" class="author-avatar" />
                   <span class="author-name">{{ item.user?.displayName || item.user?.username }}</span>
                 </router-link>
               </div>
