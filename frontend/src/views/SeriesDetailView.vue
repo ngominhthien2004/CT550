@@ -50,6 +50,22 @@ const editChapterForm = ref({
 
 const series = computed(() => seriesStore.currentSeries)
 
+const processedArtworks = computed(() => {
+  if (!series.value?.artworks?.length) return []
+  return series.value.artworks.map(artwork => ({
+    ...artwork,
+    _icon: getSeriesIcon(artwork.type || series.value?.type),
+  }))
+})
+
+const processedChapters = computed(() =>
+  chapters.value.map(chapter => ({
+    ...chapter,
+    _formattedDate: formatDate(chapter.createdAt),
+    _wordCount: (chapter.wordCount || 0).toLocaleString(),
+  }))
+)
+
 const isOwner = computed(() => {
   if (!series.value || !authStore.user) return false
   const seriesUser = series.value.user?._id || series.value.user
@@ -278,9 +294,9 @@ onMounted(async () => {
         <!-- Manga / Illust: Artworks grid -->
         <div v-if="series.type !== 'novel'" class="series-works-section">
           <h2 class="section-title">Works in this series</h2>
-          <div v-if="series.artworks?.length > 0" class="artworks-grid">
+          <div v-if="processedArtworks.length > 0" class="artworks-grid">
             <div
-              v-for="artwork in series.artworks"
+              v-for="artwork in processedArtworks"
               :key="artwork._id"
               class="artwork-card"
               @click="goToArtwork(artwork._id)"
@@ -297,7 +313,7 @@ onMounted(async () => {
                   loading="lazy"
                 />
                 <div v-else class="artwork-card-nothumb">
-                  <i :class="getSeriesIcon(artwork.type || series.type)"></i>
+                  <i :class="artwork._icon"></i>
                 </div>
               </div>
               <div class="artwork-card-title">{{ artwork.title }}</div>
@@ -358,7 +374,7 @@ onMounted(async () => {
           </div>
           <div v-else-if="chapters.length > 0" class="chapters-list">
             <div
-              v-for="chapter in chapters"
+              v-for="chapter in processedChapters"
               :key="chapter._id"
               class="chapter-row"
             >
@@ -398,9 +414,9 @@ onMounted(async () => {
                 <div class="chapter-info" @click="goToChapter(chapter)" @keydown.enter.prevent="goToChapter(chapter)" @keydown.space.prevent="goToChapter(chapter)" tabindex="0" role="button">
                   <div class="chapter-title">{{ chapter.title }}</div>
                   <div class="chapter-meta">
-                    <span>{{ chapter.wordCount?.toLocaleString() || 0 }} words</span>
+                    <span>{{ chapter._wordCount }} words</span>
                     <span class="chapter-sep">&middot;</span>
-                    <span>{{ formatDate(chapter.createdAt) }}</span>
+                    <span>{{ chapter._formattedDate }}</span>
                   </div>
                 </div>
                 <div v-if="isOwner" class="chapter-actions">

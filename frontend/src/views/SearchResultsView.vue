@@ -166,6 +166,14 @@ const tabCounts = computed(() => ({
   user: userCount.value,
 }))
 
+const processedSearchTypeTabs = computed(() =>
+  searchTypeTabs.map(tab => ({
+    ...tab,
+    _route: buildTypeRoute(tab.key),
+    _count: tabCounts.value[tab.key]?.toLocaleString(),
+  }))
+)
+
 const visibleItems = computed(() => {
   const source = searchItems.value.filter((item) => {
     if (activeType.value && item.type !== activeType.value) {
@@ -189,6 +197,18 @@ const visibleItems = computed(() => {
     return source.toSorted((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
   }
 })
+
+const processedVisibleItems = computed(() =>
+  visibleItems.value.map(item => ({
+    ...item,
+    _excerpt: item.description
+      ? item.description.slice(0, 150) + (item.description.length > 150 ? '...' : '')
+      : 'No synopsis has been added for this novel yet.',
+    _tags: (item.tags || []).slice(0, 6),
+    _readTime: Math.ceil((item.wordCount || 0) / 200),
+    _formattedDate: new Date(item.createdAt || Date.now()).toLocaleDateString(),
+  }))
+)
 
 const resultTotal = computed(() => (isUserSearch.value ? userCount.value : visibleItems.value.length))
 
@@ -222,6 +242,9 @@ const enrichedUserResults = computed(() =>
     .map((user) => ({
       ...user,
       previews: userPreviewMap.value.get(user._id) || [],
+      _avatar: getUserAvatar(user),
+      _displayName: getUserDisplayName(user),
+      _shortBio: getShortUserBio(user),
     })),
 )
 
@@ -607,13 +630,13 @@ watch(
 
       <nav class="result-tabs" aria-label="Result tabs">
         <router-link
-          v-for="tab in searchTypeTabs"
+          v-for="tab in processedSearchTypeTabs"
           :key="tab.key"
           class="tab-item"
           :class="{ active: activeType === tab.key }"
-          :to="buildTypeRoute(tab.key)"
+          :to="tab._route"
         >
-          {{ tab.label }} <span class="tab-count">{{ tabCounts[tab.key].toLocaleString() }}</span>
+          {{ tab.label }} <span class="tab-count">{{ tab._count }}</span>
         </router-link>
         <button v-if="!isUserSearch" type="button" class="search-option-note" @click="openSearchOptions">Search option</button>
       </nav>
@@ -716,10 +739,10 @@ watch(
 
           <article v-for="user in enrichedUserResults" :key="user._id" class="user-search-row">
             <div class="user-profile-column">
-              <img :src="getUserAvatar(user)" :alt="getUserDisplayName(user)" class="avatar avatar--xl user-avatar-large" @error="handleAvatarError" />
+              <img :src="user._avatar" :alt="user._displayName" class="avatar avatar--xl user-avatar-large" @error="handleAvatarError" />
               <div class="user-profile-copy">
-                <h3>{{ getUserDisplayName(user) }}</h3>
-                <p class="user-bio">{{ getShortUserBio(user) }}</p>
+                <h3>{{ user._displayName }}</h3>
+                <p class="user-bio">{{ user._shortBio }}</p>
                 <div class="user-actions">
                   <button
                     type="button"
@@ -734,7 +757,7 @@ watch(
                     <button
                       type="button"
                       class="more-user-btn"
-                      :aria-label="`More actions for ${getUserDisplayName(user)}`"
+                      :aria-label="`More actions for ${user._displayName}`"
                       :aria-expanded="activeUserMenuId === user._id"
                       @click="toggleUserMenu(user._id)"
                     >
@@ -801,7 +824,7 @@ watch(
             <span>{{ visibleItems.length.toLocaleString() }} entries</span>
           </div>
 
-          <article v-for="item in visibleItems" :key="item._id" class="novel-card" style="position:relative;">
+          <article v-for="item in processedVisibleItems" :key="item._id" class="novel-card" style="position:relative;">
             <router-link :to="`/artworks/${item._id}`" class="novel-cover">
               <img v-if="item.image" :src="item.image" :alt="item.title" loading="lazy" />
               <div v-else class="novel-cover-fallback">
@@ -824,10 +847,10 @@ watch(
               <div class="novel-author-row">
                 <router-link :to="`/account?user=${item.user?._id}`" class="novel-author">{{ item.user?.displayName || item.user?.username || 'Unknown writer' }}</router-link>
               </div>
-              <p class="novel-excerpt">{{ item.description ? item.description.slice(0, 150) + (item.description.length > 150 ? '...' : '') : 'No synopsis has been added for this novel yet.' }}</p>
+              <p class="novel-excerpt">{{ item._excerpt }}</p>
               <div class="novel-tags" v-if="item.tags?.length">
                 <button
-                  v-for="tag in item.tags.slice(0, 6)"
+                  v-for="tag in item._tags"
                   :key="tag._id || tag.name"
                   type="button"
                   @click="applySearchTag(tag.name)"
@@ -850,12 +873,12 @@ watch(
                 </span>
                 <span v-if="item.wordCount > 0" class="novel-meta-stat">
                   <i class="fa-regular fa-clock" aria-hidden="true"></i>
-                  {{ Math.ceil((item.wordCount || 0) / 200) }} min read
+                  {{ item._readTime }} min read
                 </span>
                 <span v-if="item.novelFormat === 'series'" class="novel-meta-stat">
                   {{ item.chapterCount || 1 }} {{ (item.chapterCount || 1) > 1 ? 'chapters' : 'chapter' }}
                 </span>
-                <span>{{ new Date(item.createdAt || Date.now()).toLocaleDateString() }}</span>
+                <span>{{ item._formattedDate }}</span>
               </footer>
             </div>
             <button type="button" class="novel-bookmark-btn" :aria-label="`bookmark-${item._id}`">

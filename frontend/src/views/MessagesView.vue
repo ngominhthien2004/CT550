@@ -114,7 +114,11 @@ const threads = computed(() => {
 
   return Object.values(entries).toSorted(
     (a, b) => getThreadTimestamp(b.latestMessage) - getThreadTimestamp(a.latestMessage),
-  )
+  ).map((thread) => ({
+    ...thread,
+    _formattedTime: formatMessageTime(thread.latestMessage.createdAt),
+    _previewText: parseMessageBody(thread.latestMessage.content).text || parseMessageContent(thread.latestMessage.content).body,
+  }))
 })
 
 const threadMessages = computed(() => {
@@ -148,10 +152,10 @@ const threadTimeline = computed(() => {
 })
 
 const displayedTimeline = computed(() => {
+  let raw
   if (searchActive.value && Array.isArray(searchResults.value) && searchResults.value.length) {
-    // build simple timeline from search results (sorted asc)
     let prevDay = ''
-    return [...searchResults.value].toSorted((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+    raw = [...searchResults.value].toSorted((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
       .flatMap((message) => {
         const day = formatDayLabel(message.createdAt)
         const dayRow = day && day !== prevDay
@@ -160,9 +164,21 @@ const displayedTimeline = computed(() => {
         if (day) prevDay = day
         return [...dayRow, { type: 'message', key: message._id, item: message }]
       })
+  } else {
+    raw = threadTimeline.value
   }
 
-  return threadTimeline.value
+  return raw.map((row) => {
+    if (row.type === 'day') return row
+    const parsed = parseMessageContent(row.item.content)
+    const body = parseMessageBody(row.item.content)
+    return {
+      ...row,
+      _parsed: parsed,
+      _body: body,
+      _formattedTime: formatMessageTime(row.item.createdAt),
+    }
+  })
 })
 
 const selectedThread = computed(() => threads.value.find((item) => item.peerId === selectedThreadId.value) || null)
@@ -742,9 +758,9 @@ onUnmounted(() => {
             <div class="thread-meta">
               <div class="thread-top">
                 <strong>{{ thread.peer?.displayName || thread.peer?.username || 'Unknown user' }}</strong>
-                <small>{{ formatMessageTime(thread.latestMessage.createdAt) }}</small>
+                <small>{{ thread._formattedTime }}</small>
               </div>
-              <p>{{ parseMessageBody(thread.latestMessage.content).text || parseMessageContent(thread.latestMessage.content).body }}</p>
+              <p>{{ thread._previewText }}</p>
             </div>
             <span v-if="thread.unreadCount" class="thread-badge">{{ thread.unreadCount }}</span>
           </button>
@@ -805,25 +821,25 @@ onUnmounted(() => {
                 class="bubble"
                 :class="[
                   String(row.item?.sender?._id || '') === currentUserId ? 'outgoing' : 'incoming',
-                  parseMessageContent(row.item.content).quote ? 'has-quote' : ''
+                  row._parsed.quote ? 'has-quote' : ''
                 ]"
               >
                 <img v-if="String(row.item?.sender?._id || '') !== currentUserId" class="msg-avatar" :src="row.item.sender?.avatar || 'https://s.pximg.net/common/images/no_profile.png'" alt="avatar" @error="(e) => e.target.src = 'https://s.pximg.net/common/images/no_profile.png'" />
                 <!-- Render Quote if present -->
-                <div v-if="parseMessageContent(row.item.content).quote" class="bubble-quote">
+                <div v-if="row._parsed.quote" class="bubble-quote">
                   <span class="quote-user">
-                    <i class="fa-solid fa-reply"></i> @{{ parseMessageContent(row.item.content).quote.user }}
+                    <i class="fa-solid fa-reply"></i> @{{ row._parsed.quote.user }}
                   </span>
-                  <p class="quote-text">{{ parseMessageContent(row.item.content).quote.content }}</p>
+                  <p class="quote-text">{{ row._parsed.quote.content }}</p>
                 </div>
 
                 <div class="bubble-body-wrap">
-                  <p v-if="parseMessageBody(row.item.content).text" class="bubble-body">{{ parseMessageBody(row.item.content).text }}</p>
+                  <p v-if="row._body.text" class="bubble-body">{{ row._body.text }}</p>
                   <div v-if="row.item.images && row.item.images.length" class="bubble-images">
                     <img v-for="(imgUrl, idx) in row.item.images" :key="imgUrl || idx" :src="imgUrl" alt="Message image" class="bubble-image" @error="(e) => e.target.style.display = 'none'" @load="scrollChatToBottom" />
                   </div>
-                  <div v-else-if="parseMessageBody(row.item.content).images.length" class="bubble-images">
-                    <img v-for="(imgUrl, idx) in parseMessageBody(row.item.content).images" :key="imgUrl || idx" :src="imgUrl" alt="Message image" class="bubble-image" @error="(e) => e.target.style.display = 'none'" @load="scrollChatToBottom" />
+                  <div v-else-if="row._body.images.length" class="bubble-images">
+                    <img v-for="(imgUrl, idx) in row._body.images" :key="imgUrl || idx" :src="imgUrl" alt="Message image" class="bubble-image" @error="(e) => e.target.style.display = 'none'" @load="scrollChatToBottom" />
                   </div>
                 </div>
                 
@@ -832,7 +848,7 @@ onUnmounted(() => {
                     <i v-if="row.item.isRead" class="fa-solid fa-check-double" title="Read"></i>
                     <i v-else class="fa-solid fa-check" title="Sent"></i>
                   </span>
-                  <small class="msg-time">{{ formatMessageTime(row.item.createdAt) }}</small>
+                  <small class="msg-time">{{ row._formattedTime }}</small>
                 </div>
 
                 <!-- Bubble action buttons (reply + delete) -->
