@@ -20,6 +20,8 @@ const selectedRequestDetail = ref(null)
 const detailLoading = ref(false)
 const detailPanelRef = ref(null)
 const saveAttempted = ref(false)
+const showCreateForm = ref(false)
+const searchQuery = ref('')
 
 const termForm = reactive({
   title: 'Basic Request',
@@ -44,6 +46,14 @@ const terms = computed(() => requestStore.terms)
 const loading = computed(() => requestStore.loading)
 const error = computed(() => requestStore.error)
 
+const filteredRequests = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase()
+  if (!query) return requests.value
+  return requests.value.filter(item =>
+    (item.title || '').toLowerCase().includes(query)
+  )
+})
+
 function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
 }
@@ -59,6 +69,11 @@ function toggleListValue(list, value) {
 
 function statusLabel(value) {
   return String(value || '').replace(/_/g, ' ')
+}
+
+function switchRole(role) {
+  activeRole.value = role
+  loadAll()
 }
 
 async function loadAll() {
@@ -156,10 +171,96 @@ watch(
       </header>
 
       <div class="management-grid">
-        <form class="term-card" @submit.prevent="saveTerm">
+        <!-- 1. REQUEST QUEUE — always visible -->
+        <div class="request-list-card">
+          <div class="list-toolbar" role="tablist" aria-label="Role tabs">
+            <button
+              role="tab"
+              :aria-selected="activeRole === 'creator'"
+              :class="{ active: activeRole === 'creator' }"
+              @click="switchRole('creator')"
+            >Creator</button>
+            <button
+              role="tab"
+              :aria-selected="activeRole === 'requester'"
+              :class="{ active: activeRole === 'requester' }"
+              @click="switchRole('requester')"
+            >Requester</button>
+            <div class="filter-bar">
+              <input
+                v-model="searchQuery"
+                type="search"
+                placeholder="Search requests..."
+                class="search-input"
+              />
+              <select v-model="statusFilter" @change="loadAll">
+                <option value="">All status</option>
+                <option value="pending">Pending</option>
+                <option value="accepted">Accepted</option>
+                <option value="in_progress">In progress</option>
+                <option value="draft_submitted">Draft submitted</option>
+                <option value="revision">Revision</option>
+                <option value="completed">Completed</option>
+                <option value="rejected">Rejected</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+
+          <p v-if="actionError" class="state error">{{ actionError }}</p>
+          <p v-if="loading" class="state">Loading requests...</p>
+
+          <TransitionGroup name="request-list" tag="div" class="request-list-items">
+            <article v-for="item in filteredRequests" :key="item._id" class="request-row" @click="selectRequest(item._id)">
+              <div>
+                <p :class="['status-pill', 'status-' + item.status]">{{ statusLabel(item.status) }}</p>
+                <h3>{{ item.title }}</h3>
+                <p class="meta">
+                  {{ item.workType }} · {{ item.currency }} {{ item.proposedAmount }} ·
+                  {{ activeRole === 'creator' ? item.requester?.displayName || item.requester?.username : item.creator?.displayName || item.creator?.username }}
+                </p>
+              </div>
+              <div v-if="activeRole === 'creator'" class="row-actions">
+                <button v-if="item.status === 'pending'" type="button" @click.stop="runAction(item._id, 'accept')">Accept</button>
+                <button v-if="item.status === 'pending'" type="button" class="ghost-danger" @click.stop="runAction(item._id, 'reject')">Reject</button>
+                <button v-if="item.status === 'accepted'" type="button" @click.stop="runAction(item._id, 'start')">Start</button>
+                <button v-if="['accepted', 'in_progress'].includes(item.status)" type="button" class="ghost-danger" @click.stop="runAction(item._id, 'cancel')">Cancel</button>
+              </div>
+            </article>
+          </TransitionGroup>
+
+          <p v-if="!loading && !requests.length" class="empty">No requests in this view.</p>
+          <p v-else-if="!loading && !filteredRequests.length" class="empty">No requests match "{{ searchQuery }}".</p>
+        </div>
+
+        <!-- 2. MY PLANS — only visible for Creator -->
+        <div v-if="activeRole === 'creator'" class="plans-section">
+          <div class="section-title">
+            <h2>My Plans</h2>
+            <button v-if="!showCreateForm" type="button" class="primary-btn" @click="showCreateForm = true">+ Create New Plan</button>
+          </div>
+
+          <div v-if="!terms.length && !showCreateForm" class="empty">No plans yet. Create one to start receiving requests.</div>
+
+          <div v-if="terms.length" class="plan-list">
+            <div v-for="term in terms" :key="term._id" class="plan-card">
+              <div class="plan-card-header">
+                <strong class="plan-title">{{ term.title }}</strong>
+                <span :class="term.isOpen ? 'open' : 'closed'">{{ term.isOpen ? 'Open' : 'Closed' }}</span>
+              </div>
+              <p class="plan-meta">
+                {{ term.currency }} {{ term.targetPrice }} · {{ term.estimatedDays }} days · {{ (term.acceptedWorkTypes || []).join(', ') }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. CREATE PLAN FORM — toggled by + Create New Plan button, only for Creator -->
+        <form v-if="activeRole === 'creator' && showCreateForm" class="term-card" @submit.prevent="saveTerm">
           <div class="section-title">
             <h2>Create Request Plan</h2>
             <span :class="termForm.isOpen ? 'open' : 'closed'">{{ termForm.isOpen ? 'Open' : 'Closed' }}</span>
+            <button type="button" class="ghost-btn" @click="showCreateForm = false">✕</button>
           </div>
 
           <div class="form-section">
@@ -238,57 +339,6 @@ watch(
           <p v-if="error" class="state error">{{ error }}</p>
           <button type="submit" class="primary-btn" :disabled="loading">Save plan</button>
         </form>
-
-        <div class="request-list-card">
-          <div class="section-title">
-            <h2>Request Queue</h2>
-            <div class="filters">
-              <select v-model="activeRole" @change="loadAll">
-                <option value="creator">Creator</option>
-                <option value="requester">Requester</option>
-              </select>
-              <select v-model="statusFilter" @change="loadAll">
-                <option value="">All status</option>
-                <option value="pending">Pending</option>
-                <option value="accepted">Accepted</option>
-                <option value="in_progress">In progress</option>
-                <option value="draft_submitted">Draft submitted</option>
-                <option value="revision">Revision</option>
-                <option value="completed">Completed</option>
-                <option value="rejected">Rejected</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </div>
-          </div>
-
-          <p v-if="actionError" class="state error">{{ actionError }}</p>
-          <p v-if="loading" class="state">Loading requests...</p>
-
-          <div v-if="terms.length" class="term-summary">
-            <span v-for="term in terms" :key="term._id">{{ term.title }} · {{ term.currency }} {{ term.targetPrice }}</span>
-          </div>
-
-          <TransitionGroup name="request-list" tag="div" class="request-list-items">
-            <article v-for="item in requests" :key="item._id" class="request-row" @click="selectRequest(item._id)">
-              <div>
-                <p class="status-pill">{{ statusLabel(item.status) }}</p>
-                <h3>{{ item.title }}</h3>
-                <p class="meta">
-                  {{ item.workType }} · {{ item.currency }} {{ item.proposedAmount }} ·
-                  {{ activeRole === 'creator' ? item.requester?.displayName || item.requester?.username : item.creator?.displayName || item.creator?.username }}
-                </p>
-              </div>
-              <div v-if="activeRole === 'creator'" class="row-actions">
-                <button v-if="item.status === 'pending'" type="button" @click.stop="runAction(item._id, 'accept')">Accept</button>
-                <button v-if="item.status === 'pending'" type="button" class="ghost-danger" @click.stop="runAction(item._id, 'reject')">Reject</button>
-                <button v-if="item.status === 'accepted'" type="button" @click.stop="runAction(item._id, 'start')">Start</button>
-                <button v-if="['accepted', 'in_progress'].includes(item.status)" type="button" class="ghost-danger" @click.stop="runAction(item._id, 'cancel')">Cancel</button>
-              </div>
-            </article>
-          </TransitionGroup>
-
-          <p v-if="!loading && !requests.length" class="empty">No requests in this view.</p>
-        </div>
 
         <RequestDetailPanel
           v-if="selectedRequestId"
@@ -386,7 +436,7 @@ h1 {
   max-width: 1180px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
+  grid-template-columns: 1fr;
   gap: 1rem;
   align-items: start;
 }
@@ -402,6 +452,8 @@ h1 {
 }
 
 .section-title {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -409,20 +461,97 @@ h1 {
   font-size: 1.1rem;
 }
 
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-input {
+  width: 180px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.82rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #1e293b;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+  background: #fff;
+}
+
+.search-input::placeholder {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Make the status select compact when inside filter-bar */
+.filter-bar select {
+  width: auto;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.82rem;
+  border-radius: 6px;
+}
+
 .open,
-.closed,
-.status-pill,
-.term-summary span {
+.closed {
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 900;
   padding: 0.28rem 0.55rem;
 }
 
-.open,
+/* Status pill base */
 .status-pill {
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 0.28rem 0.55rem;
+}
+
+/* Keep .open separate */
+.open {
   background: #ecfeff;
   color: #0f766e;
+}
+
+/* Status-specific colors */
+.status-pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+.status-accepted {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+.status-in_progress {
+  background: #ecfeff;
+  color: #0f766e;
+}
+.status-draft_submitted {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+.status-revision {
+  background: #fff7ed;
+  color: #c2410c;
+}
+.status-completed {
+  background: #f0fdf4;
+  color: #15803d;
+}
+.status-rejected {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+.status-cancelled {
+  background: #fef2f2;
+  color: #991b1b;
 }
 
 .closed {
@@ -463,8 +592,7 @@ textarea {
 
 .chip-row,
 .filters,
-.row-actions,
-.term-summary {
+.row-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
@@ -535,28 +663,82 @@ textarea {
   font-size: 0.82rem;
 }
 
-.term-summary span {
-  background: #f8fafc;
+/* Plan cards */
+.plans-section {
+  background: #fff;
+  border: 1px solid #d8e1ef;
+  border-radius: 12px;
+  padding: 1rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.plan-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.plan-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  background: #f8fbff;
+}
+
+.plan-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.plan-title {
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+
+.plan-meta {
+  margin-top: 0.3rem;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.ghost-btn {
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.ghost-btn:hover {
+  background: #f1f5f9;
   color: #475569;
 }
 
 @media (max-width: 960px) {
-  .request-header,
-  .management-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .management-grid {
-    display: grid;
+  .request-header {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 
 @media (max-width: 680px) {
   .request-header,
-  .section-title,
-  .request-row {
+  .request-row,
+  .list-toolbar {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .search-input {
+    width: auto;
+  }
+
+  .filter-bar {
+    margin-left: 0;
   }
 
   .form-grid {
@@ -593,5 +775,44 @@ textarea {
 
 .request-list-move {
   transition: transform 0.3s ease;
+}
+
+.list-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1.35rem;
+  border-bottom: 1px solid var(--line);
+  width: 100%;
+}
+
+.list-toolbar button {
+  text-decoration: none;
+  color: var(--muted);
+  font-weight: 700;
+  padding: 0.78rem 0.1rem 0.9rem;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.list-toolbar button:hover {
+  color: var(--brand);
+}
+
+.list-toolbar button.active {
+  color: var(--brand);
+  border-bottom-color: var(--accent);
+}
+
+.filter-bar {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 </style>
