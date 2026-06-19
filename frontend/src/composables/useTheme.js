@@ -1,5 +1,6 @@
 import { ref, watch } from 'vue'
 
+// LocalStorage key constant (not a secret)
 const THEME_KEY = 'illuwrl-theme'
 
 const isDark = ref(localStorage.getItem(THEME_KEY) === 'dark')

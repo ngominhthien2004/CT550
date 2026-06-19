@@ -53,28 +53,28 @@ const targetUsers = computed(() => {
 })
 
 const usersWithPreview = computed(() => {
-  const grouped = new Map()
-
-  allArtworks.value.forEach((item) => {
+  // Group artwork previews by user ID (immutable pattern)
+  const previewPool = allArtworks.value.reduce((acc, item) => {
     const userId = item?.user?._id
-    if (!userId) {
-      return
+    if (!userId) return acc
+    const existing = acc[userId] || []
+    if (existing.length >= 4) return acc
+    return {
+      ...acc,
+      [userId]: [
+        ...existing,
+        {
+          _id: item._id,
+          title: item.title || '',
+          image: item.images?.[0] || '',
+        },
+      ],
     }
-
-    const bucket = grouped.get(userId) || []
-    if (bucket.length < 4) {
-      bucket.push({
-        _id: item._id,
-        title: item.title || '',
-        image: item.images?.[0] || '',
-      })
-    }
-    grouped.set(userId, bucket)
-  })
+  }, {})
 
   return targetUsers.value.map((user) => ({
     ...user,
-    previews: grouped.get(user._id) || [],
+    previews: previewPool[user._id] || [],
   }))
 })
 

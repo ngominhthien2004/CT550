@@ -66,11 +66,10 @@ const illuWrlStyleSections = computed(() => {
     { id: 'requests', label: 'Requests', to: '/requests/manage', icon: 'fa-regular fa-comments' },
     { id: 'history', label: 'Browsing history', to: '/history', icon: 'fa-regular fa-clock' },
     { id: 'my-reports', label: 'My Reports', to: '/my-reports', icon: 'fa-regular fa-flag' },
+    ...(authStore.user?.role === 'admin'
+      ? [{ id: 'admin', label: 'Admin management', to: '/admin', icon: 'fa-solid fa-shield-halved' }]
+      : []),
   ]
-
-  if (authStore.user?.role === 'admin') {
-    manageGroup.push({ id: 'admin', label: 'Admin management', to: '/admin', icon: 'fa-solid fa-shield-halved' })
-  }
 
   return [
     { label: '', items: navItems.slice(0, 1) },

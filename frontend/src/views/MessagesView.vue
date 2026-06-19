@@ -21,6 +21,7 @@ const sending = ref(false)
 const selectedImages = ref([])
 const threadListRef = ref(null)
 const textareaRef = ref(null)
+const fileInputRef = ref(null)
 const presenceState = ref({ online: false, typing: false, lastSeen: null })
 let presenceInterval = null
 let typingInterval = null
@@ -79,43 +80,39 @@ function formatDayLabel(value) {
 }
 
 const allMessages = computed(() => {
-  return [...inboxMessages.value, ...sentMessages.value].sort(
+  return [...inboxMessages.value, ...sentMessages.value].toSorted(
     (a, b) => getThreadTimestamp(b) - getThreadTimestamp(a),
   )
 })
 
 const threads = computed(() => {
-  const bucket = new Map()
-
-  allMessages.value.forEach((message) => {
+  const entries = allMessages.value.reduce((acc, message) => {
     const isOutgoing = String(message?.sender?._id || '') === currentUserId.value
     const peer = isOutgoing ? message.recipient : message.sender
     const peerId = String(peer?._id || '')
+    if (!peerId) return acc
 
-    if (!peerId) {
-      return
-    }
+    const existing = acc[peerId]
+    const existingLatest = existing?.latestMessage
+    const latestMessage = existingLatest && getThreadTimestamp(message) <= getThreadTimestamp(existingLatest)
+      ? existingLatest
+      : message
+    const unreadCount = (existing?.unreadCount || 0) + (
+      !message.isRead && String(message?.recipient?._id || '') === currentUserId.value ? 1 : 0
+    )
 
-    if (!bucket.has(peerId)) {
-      bucket.set(peerId, {
+    return {
+      ...acc,
+      [peerId]: {
         peerId,
         peer,
-        latestMessage: message,
-        unreadCount: 0,
-      })
+        latestMessage,
+        unreadCount,
+      },
     }
+  }, {})
 
-    const current = bucket.get(peerId)
-    if (getThreadTimestamp(message) > getThreadTimestamp(current.latestMessage)) {
-      current.latestMessage = message
-    }
-
-    if (!message.isRead && String(message?.recipient?._id || '') === currentUserId.value) {
-      current.unreadCount += 1
-    }
-  })
-
-  return Array.from(bucket.values()).sort(
+  return Object.values(entries).toSorted(
     (a, b) => getThreadTimestamp(b.latestMessage) - getThreadTimestamp(a.latestMessage),
   )
 })
@@ -134,49 +131,35 @@ const threadMessages = computed(() => {
       if (deletedFor.includes(String(currentUserId.value))) return false
       return senderId === selectedThreadId.value || recipientId === selectedThreadId.value
     })
-    .sort((a, b) => getThreadTimestamp(a) - getThreadTimestamp(b))
+    .toSorted((a, b) => getThreadTimestamp(a) - getThreadTimestamp(b))
 })
 
 const threadTimeline = computed(() => {
-  const rows = []
   let previousDay = ''
 
-  threadMessages.value.forEach((message) => {
+  return threadMessages.value.flatMap((message) => {
     const day = formatDayLabel(message.createdAt)
-    if (day && day !== previousDay) {
-      rows.push({
-        type: 'day',
-        key: `day-${day}`,
-        label: day,
-      })
-      previousDay = day
-    }
-
-    rows.push({
-      type: 'message',
-      key: message._id,
-      item: message,
-    })
+    const dayRow = day && day !== previousDay
+      ? [{ type: 'day', key: `day-${day}`, label: day }]
+      : []
+    if (day) previousDay = day
+    return [...dayRow, { type: 'message', key: message._id, item: message }]
   })
-
-  return rows
 })
 
 const displayedTimeline = computed(() => {
   if (searchActive.value && Array.isArray(searchResults.value) && searchResults.value.length) {
     // build simple timeline from search results (sorted asc)
-    const rows = []
     let prevDay = ''
-    const msgs = [...searchResults.value].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-    msgs.forEach((message) => {
-      const day = formatDayLabel(message.createdAt)
-      if (day && day !== prevDay) {
-        rows.push({ type: 'day', key: `day-${day}`, label: day })
-        prevDay = day
-      }
-      rows.push({ type: 'message', key: message._id, item: message })
-    })
-    return rows
+    return [...searchResults.value].toSorted((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+      .flatMap((message) => {
+        const day = formatDayLabel(message.createdAt)
+        const dayRow = day && day !== prevDay
+          ? [{ type: 'day', key: `day-${day}`, label: day }]
+          : []
+        if (day) prevDay = day
+        return [...dayRow, { type: 'message', key: message._id, item: message }]
+      })
   }
 
   return threadTimeline.value
@@ -578,10 +561,9 @@ async function sendMessage() {
       formData.append('recipientId', recipientId)
 
       // Get actual File objects from the file input element
-      const fileInput = document.querySelector('.image-picker-advanced input[type="file"]')
-      if (fileInput && fileInput.files) {
-        for (let i = 0; i < fileInput.files.length; i++) {
-          formData.append('images', fileInput.files[i])
+      if (fileInputRef.value?.files) {
+        for (let i = 0; i < fileInputRef.value.files.length; i++) {
+          formData.append('images', fileInputRef.value.files[i])
         }
       }
 
@@ -604,8 +586,7 @@ async function sendMessage() {
     showEmojiPicker.value = false
 
     // Reset file input
-    const fileInput = document.querySelector('.image-picker-advanced input[type="file"]')
-    if (fileInput) fileInput.value = ''
+    if (fileInputRef.value) fileInputRef.value.value = ''
 
     nextTick(() => {
       adjustTextareaHeight()
@@ -958,7 +939,7 @@ onUnmounted(() => {
 
           <label class="image-picker-advanced" :class="{ disabled: !selectedThreadId }" aria-label="Add images">
             <i class="fa-regular fa-image" aria-hidden="true"></i>
-            <input type="file" multiple accept="image/*" :disabled="!selectedThreadId" @change="handleImageSelect" />
+            <input ref="fileInputRef" type="file" multiple accept="image/*" :disabled="!selectedThreadId" @change="handleImageSelect" />
           </label>
 
           <button 

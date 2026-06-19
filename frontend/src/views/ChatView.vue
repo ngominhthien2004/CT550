@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
 import { useChatStore } from '../stores/chat.store'
@@ -8,7 +8,7 @@ const chatStore = useChatStore()
 const userInput = ref('')
 const chatContainer = ref(null)
 const isNavCollapsed = ref(false)
-const isSending = ref(false)
+const isSending = computed(() => chatStore.isLoading)
 
 function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
@@ -33,13 +33,6 @@ watch(
   }
 )
 
-watch(
-  () => chatStore.isLoading,
-  (loading) => {
-    isSending.value = loading
-  }
-)
-
 function scrollToBottom() {
   if (chatContainer.value) {
     chatContainer.value.scrollTop = chatContainer.value.scrollHeight
@@ -51,13 +44,8 @@ async function sendMessage() {
   if (!text || isSending.value) return
 
   userInput.value = ''
-  isSending.value = true
 
-  try {
-    await chatStore.sendMessage(text)
-  } finally {
-    isSending.value = false
-  }
+  await chatStore.sendMessage(text)
 }
 
 function handleKeydown(e) {
@@ -123,7 +111,7 @@ function formatTimestamp(ts) {
           </div>
           <div :class="['message-content', { 'message-error': msg.isError, 'message-welcome': msg.isWelcome }]">
             <div class="message-bubble">
-              <div class="message-text" v-html="msg.content.replace(/\n/g, '<br>')"></div>
+              <div class="message-text" v-text="msg.content"></div>
               <div class="message-meta">
                 <span class="message-time">{{ formatTimestamp(msg.timestamp) }}</span>
                 <span v-if="msg.toolUsed" class="badge bg-info ms-1">Sử dụng công cụ</span>
@@ -313,6 +301,10 @@ function formatTimestamp(ts) {
 
 .message-time {
   font-size: 0.65rem;
+}
+
+.message-text {
+  white-space: pre-wrap;
 }
 
 /* Typing indicator */

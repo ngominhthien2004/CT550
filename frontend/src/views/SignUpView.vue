@@ -14,21 +14,19 @@ const form = reactive({
   confirmPassword: '',
 })
 
-const localState = reactive({
-  error: '',
-})
+const formError = ref('')
 const showEmailForm = ref(false)
 
 async function submitSignUp() {
-  localState.error = ''
+  formError.value = ''
 
   if (!form.username.trim() || !form.email.trim() || !form.password) {
-    localState.error = 'Please fill all required fields.'
+    formError.value = 'Please fill all required fields.'
     return
   }
 
   if (form.password !== form.confirmPassword) {
-    localState.error = 'Password confirmation does not match.'
+    formError.value = 'Password confirmation does not match.'
     return
   }
 
@@ -40,7 +38,7 @@ async function submitSignUp() {
     })
     await router.push('/')
   } catch (_error) {
-    localState.error = authStore.error || 'Sign up failed.'
+    formError.value = authStore.error || 'Sign up failed.'
   }
 }
 
@@ -105,7 +103,7 @@ function googleLogin() {
           <input v-model="form.confirmPassword" type="password" class="form-control auth-control" placeholder="Re-enter your password" />
         </label>
 
-        <p v-if="localState.error" class="text-danger mb-0">{{ localState.error }}</p>
+        <p v-if="formError" class="text-danger mb-0">{{ formError }}</p>
 
         <button type="submit" class="btn btn-primary auth-submit" :disabled="authStore.loading">
           {{ authStore.loading ? 'Creating account...' : 'Create account' }}

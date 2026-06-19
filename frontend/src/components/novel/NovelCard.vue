@@ -31,6 +31,18 @@ const firstTag = computed(() => {
 
   return tags[0].label || ''
 })
+const visibleTags = computed(() => {
+  const tags = props.item?.tags
+  if (!tags?.length) {
+    return []
+  }
+
+  return tags.slice(0, 4).filter((tag) => {
+    const label = String(tag?.label || tag?.name || '').replace(/^#/, '').trim().toLowerCase()
+    return label !== ''
+  })
+})
+
 const chapterLabel = computed(() => {
   const count = Number(props.item?.chapterCount || 0)
   if (!count) {
@@ -87,12 +99,11 @@ function buildTagLink(tag) {
 
       <p class="novel-compact-excerpt">{{ snippet }}</p>
 
-      <div v-if="item.tags?.length" class="novel-compact-tags">
+      <div v-if="visibleTags.length" class="novel-compact-tags">
         <router-link
-          v-for="tag in item.tags.slice(0, 4)"
+          v-for="tag in visibleTags"
           :key="tag.label || tag.name"
           :to="buildTagLink(tag)"
-          v-if="buildTagLink(tag)"
         >
           {{ tag.label }}
         </router-link>

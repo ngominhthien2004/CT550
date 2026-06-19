@@ -25,7 +25,10 @@ const userError = ref('')
 const activeUserMenuId = ref('')
 const blockedUserIds = ref([])
 const blockSubmittingId = ref('')
-const sortMode = ref(typeof route.query.order === 'string' ? route.query.order : 'newest')
+const sortMode = computed(() => {
+  const order = typeof route.query.order === 'string' ? route.query.order : 'newest'
+  return order === 'popular' ? 'popular' : 'newest'
+})
 const showTags = ref(true)
 const isSearchOptionsOpen = ref(false)
 const userFilterType = ref('creator') // 'creator' | 'all'
@@ -102,7 +105,7 @@ const baseSearchQuery = computed(() => {
 })
 
 const relatedTags = computed(() => {
-  const bucket = new Map()
+  const bucket = {}
 
   for (const item of searchItems.value) {
     for (const tag of item.tags || []) {
@@ -112,16 +115,16 @@ const relatedTags = computed(() => {
       }
 
       const normalized = name.toLowerCase()
-      const count = bucket.get(normalized)?.count || 0
-      bucket.set(normalized, {
+      const existing = bucket[normalized]
+      bucket[normalized] = {
         label: name,
-        count: count + 1,
-      })
+        count: (existing?.count || 0) + 1,
+      }
     }
   }
 
-  return Array.from(bucket.values())
-    .sort((a, b) => b.count - a.count)
+  return Object.values(bucket)
+    .toSorted((a, b) => b.count - a.count)
     .slice(0, 12)
 })
 
@@ -197,24 +200,20 @@ const normalizedArtworkItems = computed(() =>
 )
 
 const userPreviewMap = computed(() => {
-  const bucket = new Map()
+  const previews = {}
 
   for (const item of normalizedArtworkItems.value) {
     const userId = item.user?._id
-    if (!userId) {
-      continue
-    }
+    if (!userId) continue
 
-    if (!bucket.has(userId)) {
-      bucket.set(userId, [])
-    }
+    const existing = previews[userId] || []
+    if (existing.length >= 4) continue
 
-    if (bucket.get(userId).length < 4) {
-      bucket.get(userId).push(item)
-    }
+    previews[userId] = [...existing, item]
   }
 
-  return bucket
+  // Return plain object — enrichedUserResults uses .get() so wrap for compatibility
+  return new Map(Object.entries(previews))
 })
 
 const enrichedUserResults = computed(() =>
@@ -311,10 +310,11 @@ async function setAgeFilter(value) {
   })
 }
 
-async function handleSortChange() {
+async function handleSortChange(event) {
+  const newOrder = event.target.value
   const query = {
     ...route.query,
-    order: sortMode.value === 'newest' ? undefined : sortMode.value,
+    order: newOrder === 'newest' ? undefined : newOrder,
   }
 
   await router.replace({
@@ -568,13 +568,6 @@ onMounted(() => {
 })
 
 watch(
-  () => route.query.order,
-  (value) => {
-    sortMode.value = value === 'popular' ? 'popular' : 'newest'
-  },
-)
-
-watch(
   () => route.query,
   () => {
     loadSearchItems()
@@ -652,7 +645,7 @@ watch(
 
       <div v-if="!isUserSearch" class="filter-row">
         <label class="order-select">
-          <select v-model="sortMode" @change="handleSortChange">
+          <select :value="sortMode" @change="handleSortChange">
             <option value="newest">Newest</option>
             <option value="popular">Sort by popularity</option>
           </select>

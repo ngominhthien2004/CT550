@@ -94,10 +94,12 @@ const profileBirthday = computed(() => {
   const month = props.user?.birthdayMonth
   const day = props.user?.birthdayDay
   if (!year && !month && !day) return ''
-  const parts = []
-  if (month) parts.push(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][month - 1] || '')
-  if (day) parts.push(String(day))
-  if (year) parts.push(String(year))
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  const parts = [
+    ...(month ? [monthNames[month - 1] || ''] : []),
+    ...(day ? [String(day)] : []),
+    ...(year ? [String(year)] : []),
+  ]
   return parts.length ? `Born ${parts.join(' ')}` : ''
 })
 </script>

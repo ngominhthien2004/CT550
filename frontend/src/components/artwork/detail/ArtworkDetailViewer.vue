@@ -123,14 +123,12 @@ onUnmounted(() => {
   document.removeEventListener('click', onClickOutside)
 })
 
-watch(
-  () => artwork.value?._id,
-  () => {
-    selectedImageIndex.value = 0
-    showAllImages.value = false
-  },
-  { immediate: true },
-)
+function resetViewerState() {
+  selectedImageIndex.value = 0
+  showAllImages.value = false
+}
+
+watch(() => artwork.value?._id, resetViewerState, { immediate: true })
 </script>
 
 <template>

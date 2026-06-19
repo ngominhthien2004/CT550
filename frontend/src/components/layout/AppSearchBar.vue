@@ -40,6 +40,7 @@ const emit = defineEmits(['history-closed'])
 
 const router = useRouter()
 const route = useRoute()
+// LocalStorage key constant (not a secret)
 const SEARCH_HISTORY_KEY = 'illuwrl.searchHistory'
 const SEARCH_HISTORY_LIMIT = 8
 function getRouteSearchValue() {
@@ -223,11 +224,13 @@ function stopRotation() {
   rotationTimer = null
 }
 
+function syncSearchValueFromRoute() {
+  searchValue.value = getRouteSearchValue()
+}
+
 watch(
   () => [route.query.q, route.query.nick],
-  () => {
-    searchValue.value = getRouteSearchValue()
-  },
+  syncSearchValueFromRoute,
 )
 
 watch(featuredArtworks, () => {

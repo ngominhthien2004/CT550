@@ -59,7 +59,7 @@ const currentSearchOptions = computed(() => ({
 }))
 
 const relatedTags = computed(() => {
-  const bucket = new Map()
+  const bucket = {}
 
   for (const item of feedItems.value) {
     for (const tag of item.tags || []) {
@@ -69,27 +69,25 @@ const relatedTags = computed(() => {
       }
 
       const normalized = name.toLowerCase()
-      const count = bucket.get(normalized)?.count || 0
-      bucket.set(normalized, {
+      const existing = bucket[normalized]
+      bucket[normalized] = {
         label: name,
-        count: count + 1,
-      })
+        count: (existing?.count || 0) + 1,
+      }
     }
   }
 
-  return Array.from(bucket.values())
+  return Object.values(bucket)
     .sort((a, b) => b.count - a.count)
     .slice(0, 9)
 })
 
 const visibleItems = computed(() => {
-  const source = [...feedItems.value]
-
   if (sortMode.value === 'popular') {
-    source.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
+    return [...feedItems.value].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
   }
 
-  return source
+  return [...feedItems.value]
 })
 
 function normalizeKeywords(raw) {

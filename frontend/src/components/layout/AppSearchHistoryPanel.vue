@@ -15,6 +15,7 @@ const props = defineProps({
 
 const emit = defineEmits(['choose-item', 'delete-item', 'clear-history'])
 
+// LocalStorage key constant (not a secret)
 const FAVORITE_TAG_KEY = 'illuwrl.favoriteTags'
 const favoriteTagList = ref([])
 const isFavoriteEditOpen = ref(false)

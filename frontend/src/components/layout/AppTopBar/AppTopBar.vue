@@ -50,7 +50,7 @@ const searchScopes = [
 ]
 
 const serviceLinks = computed(() => {
-  const links = [
+  const baseLinks = [
   {
     key: 'daily',
     label: 'Daily Feed',
@@ -95,31 +95,27 @@ const serviceLinks = computed(() => {
   },
   ]
 
-  if (currentUser.value?.role === 'admin') {
-    links.unshift({
-      key: 'admin',
-      label: 'Admin',
-      description: 'Manage users, artworks, and moderation',
-      to: '/admin',
-      thumbnail: 'https://picsum.photos/seed/ct550-admin/96/96',
-    })
-  }
+  const adminLink = currentUser.value?.role === 'admin' ? {
+    key: 'admin',
+    label: 'Admin',
+    description: 'Manage users, artworks, and moderation',
+    to: '/admin',
+    thumbnail: 'https://picsum.photos/seed/ct550-admin/96/96',
+  } : null
 
-  return links
+  return adminLink ? [adminLink, ...baseLinks] : baseLinks
 })
 
 const userMainLinks = computed(() => {
-  const links = [
+  const baseLinks = [
     { label: 'Dashboard', to: '/dashboard' },
     { label: 'My works', to: '/feed' },
     { label: 'Manage requests', to: '/requests/manage' },
   ]
 
-  if (currentUser.value?.role === 'admin') {
-    links.unshift({ label: 'Admin management', to: '/admin' })
-  }
+  const adminLink = currentUser.value?.role === 'admin' ? { label: 'Admin management', to: '/admin' } : null
 
-  return links
+  return adminLink ? [adminLink, ...baseLinks] : baseLinks
 })
 
 const userLibraryLinks = [

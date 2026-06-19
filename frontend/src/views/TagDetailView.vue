@@ -12,6 +12,7 @@ const router = useRouter()
 const tagStore = useTagStore()
 const authStore = useAuthStore()
 const isNavCollapsed = ref(true)
+// LocalStorage key constant (not a secret)
 const FAVORITE_TAG_KEY = 'illuwrl.favoriteTags'
 const favoriteTagKey = computed(() => {
   const userId = authStore.user?._id || 'guest'

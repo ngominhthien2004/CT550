@@ -18,20 +18,12 @@ const chatLoading = ref(false)
 
 const fileArrays = computed(() => {
   if (!props.request) return []
-  const groups = []
-  if (props.request.referenceImages?.length) {
-    groups.push({ label: 'Reference Images', files: props.request.referenceImages })
-  }
-  if (props.request.draftFiles?.length) {
-    groups.push({ label: 'Draft Files', files: props.request.draftFiles })
-  }
-  if (props.request.finalFiles?.length) {
-    groups.push({ label: 'Final Files', files: props.request.finalFiles })
-  }
-  if (props.request.giftFiles?.length) {
-    groups.push({ label: 'Gift Files', files: props.request.giftFiles })
-  }
-  return groups
+  return [
+    ...(props.request.referenceImages?.length ? [{ label: 'Reference Images', files: props.request.referenceImages }] : []),
+    ...(props.request.draftFiles?.length ? [{ label: 'Draft Files', files: props.request.draftFiles }] : []),
+    ...(props.request.finalFiles?.length ? [{ label: 'Final Files', files: props.request.finalFiles }] : []),
+    ...(props.request.giftFiles?.length ? [{ label: 'Gift Files', files: props.request.giftFiles }] : []),
+  ]
 })
 
 const hasFiles = computed(() => fileArrays.value.length > 0)
@@ -90,12 +82,14 @@ async function sendMessage() {
   }
 }
 
-watch(() => props.request?._id, () => {
+function resetRequestPanel() {
   activeTab.value = 'details'
   chatMessages.value = []
   newMessage.value = ''
   chatFiles.value = []
-})
+}
+
+watch(() => props.request?._id, resetRequestPanel)
 
 function updateChatMessages(messages) {
   chatMessages.value = messages

@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth.store'
 import AppSearchBar from '../components/layout/AppSearchBar.vue'
@@ -13,15 +13,13 @@ const form = reactive({
   password: '',
 })
 
-const localState = reactive({
-  error: '',
-})
+const formError = ref('')
 
 async function submitLogin() {
-  localState.error = ''
+  formError.value = ''
 
   if (!form.email.trim() || !form.password) {
-    localState.error = 'Please enter your email and password.'
+    formError.value = 'Please enter your email and password.'
     return
   }
 
@@ -33,7 +31,7 @@ async function submitLogin() {
     const redirectPath = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
     await router.push(redirectPath)
   } catch (_error) {
-    localState.error = authStore.error || 'Login failed.'
+    formError.value = authStore.error || 'Login failed.'
   }
 }
 
@@ -72,7 +70,7 @@ function googleLogin() {
           <input v-model="form.password" type="password" class="form-control auth-control" placeholder="Enter your password" />
         </label>
 
-        <p v-if="localState.error" class="text-danger mb-0">{{ localState.error }}</p>
+        <p v-if="formError" class="text-danger mb-0">{{ formError }}</p>
 
         <button type="submit" class="btn btn-primary auth-submit" :disabled="authStore.loading">
           {{ authStore.loading ? 'Logging in...' : 'Log in' }}

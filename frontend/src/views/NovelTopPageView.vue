@@ -95,28 +95,27 @@ const featuredNovel = computed(() => {
   const withCover = normalizedNovels.value.filter((item) => item.image)
   const source = withCover.length ? withCover : normalizedNovels.value
 
-  return [...source].sort((a, b) => b.engagementScore - a.engagementScore)[0] || null
+  return [...source].toSorted((a, b) => b.engagementScore - a.engagementScore)[0] || null
 })
 
 const tagChips = computed(() => {
-  const bucket = new Map()
-
-  normalizedNovels.value.forEach((item) => {
+  const bucket = normalizedNovels.value.reduce((acc, item) => {
     ;(item.tags || []).forEach((tag) => {
       const label = String(tag?.name || '').trim()
-      if (!label) {
-        return
-      }
+      if (!label) return
 
       const key = label.toLowerCase()
-      const entry = bucket.get(key) || { label, count: 0 }
-      entry.count += 1
-      bucket.set(key, entry)
+      const existing = acc[key]
+      acc[key] = {
+        label: existing?.label || label,
+        count: (existing?.count || 0) + 1,
+      }
     })
-  })
+    return acc
+  }, {})
 
-  return Array.from(bucket.values())
-    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+  return Object.values(bucket)
+    .toSorted((a, b) => b.count - a.count || a.label.localeCompare(b.label))
     .slice(0, 16)
 })
 
@@ -143,34 +142,25 @@ const seriesHighlights = computed(() =>
 const freshPicks = computed(() => sortByNewest(normalizedNovels.value).slice(0, 6))
 
 const creatorRows = computed(() => {
-  const creatorMap = new Map()
-
-  normalizedNovels.value.forEach((item) => {
+  const creatorMap = normalizedNovels.value.reduce((acc, item) => {
     const author = item.user || {}
-    if (!author?._id) {
-      return
-    }
+    if (!author?._id) return acc
+    if (authStore.user?._id && author._id === authStore.user._id) return acc
 
-    if (authStore.user?._id && author._id === authStore.user._id) {
-      return
-    }
-
-    const current = creatorMap.get(author._id) || {
+    const existing = acc[author._id]
+    acc[author._id] = {
       _id: author._id,
-      username: author.username || '',
-      displayName: author.displayName || author.username || 'Unknown writer',
-      avatar: author.avatar || DEFAULT_AVATAR,
-      workCount: 0,
-      totalViews: 0,
+      username: existing?.username || author.username || '',
+      displayName: existing?.displayName || author.displayName || author.username || 'Unknown writer',
+      avatar: existing?.avatar || author.avatar || DEFAULT_AVATAR,
+      workCount: (existing?.workCount || 0) + 1,
+      totalViews: (existing?.totalViews || 0) + toNumber(item.viewCount),
     }
+    return acc
+  }, {})
 
-    current.workCount += 1
-    current.totalViews += toNumber(item.viewCount)
-    creatorMap.set(author._id, current)
-  })
-
-  return Array.from(creatorMap.values())
-    .sort((a, b) => b.workCount - a.workCount || b.totalViews - a.totalViews)
+  return Object.values(creatorMap)
+    .toSorted((a, b) => b.workCount - a.workCount || b.totalViews - a.totalViews)
     .slice(0, 6)
 })
 

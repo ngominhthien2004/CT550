@@ -15,6 +15,7 @@ export const useDrawingStore = defineStore('drawing', () => {
     '#808080', '#00ffff',
   ]
   const EXTENSIONS = { 'image/png': 'png', 'image/jpeg': 'jpg' }
+  // LocalStorage key constants (not secrets)
   const SAVE_SLOTS_KEY = 'drawing_slots'
   const AUTO_SAVE_KEY = 'drawing_autosave'
   const MAX_SLOTS = 10
@@ -101,7 +102,7 @@ export const useDrawingStore = defineStore('drawing', () => {
   )
 
   const orderedVisibleLayers = computed(() =>
-    layers.filter((l) => l.visible).slice().reverse()
+    [...layers.filter((l) => l.visible)].reverse()
   )
 
   const stageConfig = computed(() => ({
