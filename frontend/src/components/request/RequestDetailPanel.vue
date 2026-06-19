@@ -112,12 +112,12 @@ defineExpose({ updateChatMessages, setChatLoading })
           {{ request.workType }} · {{ request.currency }} {{ request.proposedAmount }}
         </p>
       </div>
-      <button class="close-btn" title="Close" @click="emit('close')">&times;</button>
+      <button type="button" class="close-btn" title="Close" @click="emit('close')">&times;</button>
     </header>
 
     <div class="tabs">
-      <button :class="{ active: activeTab === 'details' }" @click="activeTab = 'details'">Details</button>
-      <button :class="{ active: activeTab === 'chat' }" @click="activeTab = 'chat'">Chat</button>
+      <button type="button" :class="{ active: activeTab === 'details' }" @click="activeTab = 'details'">Details</button>
+      <button type="button" :class="{ active: activeTab === 'chat' }" @click="activeTab = 'chat'">Chat</button>
     </div>
 
     <!-- Details Tab -->

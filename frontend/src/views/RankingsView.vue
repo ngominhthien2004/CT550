@@ -257,7 +257,7 @@ const processedRankings = computed(() =>
 
       <div class="period-bar">
         <div class="period-tabs">
-          <button 
+          <button type="button" 
             v-for="opt in PERIOD_OPTIONS" 
             :key="opt.value"
             class="period-tab-btn"
@@ -284,7 +284,7 @@ const processedRankings = computed(() =>
           </div>
           <h3 class="empty-title">Something went wrong</h3>
           <p class="empty-desc">{{ feedStore.error }}</p>
-          <button class="empty-retry-btn" @click="loadRankings(false)">
+          <button type="button" class="empty-retry-btn" @click="loadRankings(false)">
             <i class="fa-solid fa-rotate-right"></i> Try Again
           </button>
         </div>
@@ -298,7 +298,7 @@ const processedRankings = computed(() =>
           <div class="empty-hints">
             <p class="empty-hint-label">Try:</p>
             <div class="empty-hint-chips">
-              <button 
+              <button type="button" 
                 v-for="opt in PERIOD_OPTIONS.filter(o => o.value !== period)" 
                 :key="opt.value"
                 class="hint-chip"
@@ -350,7 +350,7 @@ const processedRankings = computed(() =>
             </div>
 
             <div class="rank-actions">
-              <button 
+              <button type="button" 
                 class="action-btn like-btn" 
                 :class="{ 'is-active': item._likeStatus }"
                 :disabled="item._togglingLike"
@@ -360,7 +360,7 @@ const processedRankings = computed(() =>
                 <i :class="item._likeStatus ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
                 <span>{{ item._likeCount }}</span>
               </button>
-              <button 
+              <button type="button" 
                 class="action-btn bookmark-btn" 
                 :class="{ 'is-active': item._bookmarkStatus }"
                 :disabled="item._togglingBookmark"
@@ -375,7 +375,7 @@ const processedRankings = computed(() =>
 
         <!-- Load More -->
         <div v-if="feedStore.rankingsPage < feedStore.rankingsPages" class="load-more-wrap">
-          <button 
+          <button type="button" 
             class="load-more-btn" 
             :disabled="loadingMore"
             @click="loadMore"

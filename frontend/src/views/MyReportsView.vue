@@ -128,7 +128,7 @@ onMounted(() => {
           </h1>
           <p class="text-secondary mb-0">Track the status of reports you've submitted</p>
         </div>
-        <button class="btn btn-outline-secondary btn-sm" @click="loadReports(page)" :disabled="loading">
+        <button type="button" class="btn btn-outline-secondary btn-sm" @click="loadReports(page)" :disabled="loading">
           <i class="fa-solid fa-rotate me-1"></i>Refresh
         </button>
       </header>
@@ -204,7 +204,7 @@ onMounted(() => {
         <nav v-if="totalPages > 1" class="mt-2">
           <ul class="pagination justify-content-center pagination-sm">
             <li class="page-item" :class="{ disabled: page <= 1 }">
-              <button class="page-link" @click="goToPage(page - 1)">Previous</button>
+              <button type="button" class="page-link" @click="goToPage(page - 1)">Previous</button>
             </li>
             <li
               v-for="p in totalPages"
@@ -212,10 +212,10 @@ onMounted(() => {
               class="page-item"
               :class="{ active: p === page }"
             >
-              <button class="page-link" @click="goToPage(p)">{{ p }}</button>
+              <button type="button" class="page-link" @click="goToPage(p)">{{ p }}</button>
             </li>
             <li class="page-item" :class="{ disabled: page >= totalPages }">
-              <button class="page-link" @click="goToPage(page + 1)">Next</button>
+              <button type="button" class="page-link" @click="goToPage(page + 1)">Next</button>
             </li>
           </ul>
         </nav>
@@ -225,7 +225,7 @@ onMounted(() => {
     <section v-else class="page-block p-3 p-md-4 d-grid gap-2">
       <h1 class="h4 mb-0">My Reports</h1>
       <p class="text-secondary mb-0">You are not logged in.</p>
-      <button class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
+      <button type="button" class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
     </section>
   </MainLayoutTemplate>
 </template>

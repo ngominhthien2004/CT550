@@ -4,7 +4,7 @@
       <div class="shortcuts-modal">
         <div class="shortcuts-header">
           <h2>Keyboard Shortcuts</h2>
-          <button class="shortcuts-close-btn" @click="$emit('close')">&times;</button>
+          <button type="button" class="shortcuts-close-btn" @click="$emit('close')">&times;</button>
         </div>
         <div class="shortcuts-body">
           <div class="shortcut-group">

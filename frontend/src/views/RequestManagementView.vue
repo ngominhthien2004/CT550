@@ -173,13 +173,13 @@ watch(
         <!-- 1. REQUEST QUEUE — always visible -->
         <div class="request-list-card">
           <div class="list-toolbar" role="tablist" aria-label="Role tabs">
-            <button
+            <button type="button"
               role="tab"
               :aria-selected="activeRole === 'creator'"
               :class="{ active: activeRole === 'creator' }"
               @click="switchRole('creator')"
             >Creator</button>
-            <button
+            <button type="button"
               role="tab"
               :aria-selected="activeRole === 'requester'"
               :class="{ active: activeRole === 'requester' }"

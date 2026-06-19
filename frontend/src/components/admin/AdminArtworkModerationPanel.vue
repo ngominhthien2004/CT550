@@ -77,7 +77,7 @@ const formattedArtworks = computed(() =>
         @input="onQueryInput"
         @keyup.enter="emit('apply-filters')"
       />
-      <button class="btn btn-sm btn-outline-primary" :disabled="loadingArtworks" @click="emit('apply-filters')">Apply</button>
+      <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingArtworks" @click="emit('apply-filters')">Apply</button>
     </div>
 
     <p v-if="loadingArtworks" class="state-note">Loading artworks...</p>
@@ -101,7 +101,7 @@ const formattedArtworks = computed(() =>
             <td>{{ row.ageRating }}</td>
             <td>{{ row._createdAt }}</td>
             <td>
-              <button class="btn btn-sm btn-outline-danger" :disabled="mutating" @click="emit('remove-artwork', row._id)">
+              <button type="button" class="btn btn-sm btn-outline-danger" :disabled="mutating" @click="emit('remove-artwork', row._id)">
                 Delete
               </button>
             </td>
@@ -116,10 +116,10 @@ const formattedArtworks = computed(() =>
     <footer class="panel-footer" aria-label="Artwork pagination">
       <span>Page {{ artworkPagination.page }} / {{ artworkPagination.pages }} • {{ artworkPagination.total }} artworks</span>
       <div class="pager-actions">
-        <button class="btn btn-sm btn-outline-secondary" :disabled="artworkPagination.page <= 1 || loadingArtworks" @click="emit('go-page', artworkPagination.page - 1)">
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="artworkPagination.page <= 1 || loadingArtworks" @click="emit('go-page', artworkPagination.page - 1)">
           Previous
         </button>
-        <button class="btn btn-sm btn-outline-secondary" :disabled="artworkPagination.page >= artworkPagination.pages || loadingArtworks" @click="emit('go-page', artworkPagination.page + 1)">
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="artworkPagination.page >= artworkPagination.pages || loadingArtworks" @click="emit('go-page', artworkPagination.page + 1)">
           Next
         </button>
       </div>

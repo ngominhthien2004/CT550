@@ -178,9 +178,9 @@ watch(() => artwork.value?._id, resetViewerState, { immediate: true })
             <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
           </button>
           <div v-if="showMoreMenu" class="more-dropdown">
-            <button @click="handleCopyLink">Copy link</button>
-            <button @click="handleDownload">Download</button>
-            <button @click="toggleMoreMenu(); showReportModal = true">Report</button>
+            <button type="button" @click="handleCopyLink">Copy link</button>
+            <button type="button" @click="handleDownload">Download</button>
+            <button type="button" @click="toggleMoreMenu(); showReportModal = true">Report</button>
           </div>
         </div>
       </div>

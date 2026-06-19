@@ -110,7 +110,7 @@ onMounted(() => {
 
       <div class="filter-bar">
         <div class="left-pills">
-          <button
+          <button type="button"
             v-for="tab in subTabsLeft"
             :key="tab.id"
             class="pill-btn"
@@ -121,7 +121,7 @@ onMounted(() => {
           </button>
         </div>
         <div class="right-pills">
-          <button
+          <button type="button"
             v-for="tab in r18Tabs"
             :key="tab.id"
             class="pill-btn"

@@ -82,7 +82,7 @@ const formattedTags = computed(() =>
         @input="onQueryInput"
         @keyup.enter="emit('apply-filters')"
       />
-      <button class="btn btn-sm btn-outline-primary" :disabled="loadingTags" @click="emit('apply-filters')">Apply</button>
+      <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingTags" @click="emit('apply-filters')">Apply</button>
     </div>
 
     <!-- Merge form -->
@@ -97,8 +97,8 @@ const formattedTags = computed(() =>
           <option value="" disabled>Select target tag</option>
           <option v-for="tag in tags" :key="tag._id" :value="tag._id">{{ tag.name }} ({{ tag.usageCount }})</option>
         </select>
-        <button class="btn btn-sm btn-success" :disabled="!mergeSourceId || !mergeTargetId || mutating" @click="doMerge">Merge</button>
-        <button class="btn btn-sm btn-outline-secondary" @click="cancelMerge">Cancel</button>
+        <button type="button" class="btn btn-sm btn-success" :disabled="!mergeSourceId || !mergeTargetId || mutating" @click="doMerge">Merge</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" @click="cancelMerge">Cancel</button>
       </div>
       <small class="text-muted mt-1 d-block">All artworks using the source tag will be reassigned to the target tag. The source tag will be deleted.</small>
     </div>
@@ -127,7 +127,7 @@ const formattedTags = computed(() =>
             </td>
             <td>{{ row._createdAt }}</td>
             <td class="actions-cell">
-              <button class="btn btn-sm btn-outline-danger" :disabled="mutating" @click="emit('delete-tag', row._id)">
+              <button type="button" class="btn btn-sm btn-outline-danger" :disabled="mutating" @click="emit('delete-tag', row._id)">
                 Delete
               </button>
             </td>
@@ -142,8 +142,8 @@ const formattedTags = computed(() =>
     <footer class="panel-footer" aria-label="Tag pagination">
       <span>Page {{ tagPagination.page }} / {{ tagPagination.pages }} &bull; {{ tagPagination.total }} tags</span>
       <div class="pager-actions">
-        <button class="btn btn-sm btn-outline-secondary" :disabled="tagPagination.page <= 1 || loadingTags" @click="emit('go-page', tagPagination.page - 1)">Previous</button>
-        <button class="btn btn-sm btn-outline-secondary" :disabled="tagPagination.page >= tagPagination.pages || loadingTags" @click="emit('go-page', tagPagination.page + 1)">Next</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="tagPagination.page <= 1 || loadingTags" @click="emit('go-page', tagPagination.page - 1)">Previous</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="tagPagination.page >= tagPagination.pages || loadingTags" @click="emit('go-page', tagPagination.page + 1)">Next</button>
       </div>
     </footer>
   </section>

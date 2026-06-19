@@ -179,7 +179,7 @@ const illuWrlStyleSections = computed(() => {
           <span class="sidebar-user-id">@{{ authStore.user.username }}</span>
         </div>
       </router-link>
-      <button class="sidebar-logout-btn" @click="logout" title="Log out">
+      <button type="button" class="sidebar-logout-btn" @click="logout" title="Log out">
         <i class="fa-solid fa-right-from-bracket"></i>
       </button>
     </div>

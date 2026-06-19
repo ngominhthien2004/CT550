@@ -18,7 +18,7 @@ defineEmits(['delete'])
     <li v-for="comment in comments" :key="comment._id" class="list-group-item py-3">
       <div class="d-flex align-items-center justify-content-between gap-3">
         <p class="author mb-0">{{ comment.user?.displayName || comment.user?.username }}</p>
-        <button
+        <button type="button"
           v-if="canDelete"
           class="btn btn-sm btn-outline-danger"
           @click="$emit('delete', comment._id)"

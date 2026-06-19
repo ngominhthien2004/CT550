@@ -156,7 +156,7 @@ onMounted(() => {
     <section v-if="!authStore.isAuthenticated" class="page-block p-3 p-md-4 d-grid gap-2">
       <h1 class="h4 mb-0">Moderation Case Detail</h1>
       <p class="text-secondary mb-0">You are not logged in.</p>
-      <button class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
+      <button type="button" class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
     </section>
 
     <section v-else-if="authStore.user?.role !== 'admin'" class="page-block p-3 p-md-4 d-grid gap-2">
@@ -168,7 +168,7 @@ onMounted(() => {
       <!-- Header -->
       <header class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div class="d-flex align-items-center gap-3">
-          <button class="btn btn-outline-secondary btn-sm" @click="goBack">
+          <button type="button" class="btn btn-outline-secondary btn-sm" @click="goBack">
             <i class="fa-solid fa-arrow-left me-1"></i>Back
           </button>
           <div>
@@ -179,7 +179,7 @@ onMounted(() => {
             </p>
           </div>
         </div>
-        <button class="btn btn-outline-secondary btn-sm" @click="loadCaseDetail" :disabled="loading">
+        <button type="button" class="btn btn-outline-secondary btn-sm" @click="loadCaseDetail" :disabled="loading">
           <i class="fa-solid fa-rotate me-1"></i>Refresh
         </button>
       </header>
@@ -344,7 +344,7 @@ onMounted(() => {
 
                 <!-- Resolve -->
                 <div v-if="!showResolveConfirm">
-                  <button
+                  <button type="button"
                     class="btn btn-success w-100"
                     :disabled="actionLoading"
                     @click="showResolveConfirm = true"
@@ -355,10 +355,10 @@ onMounted(() => {
                 <div v-else class="d-grid gap-2">
                   <p class="small text-muted mb-0">Resolve this report?</p>
                   <div class="d-flex gap-2">
-                    <button class="btn btn-success btn-sm flex-grow-1" :disabled="actionLoading" @click="resolveCase('resolved')">
+                    <button type="button" class="btn btn-success btn-sm flex-grow-1" :disabled="actionLoading" @click="resolveCase('resolved')">
                       {{ actionLoading ? 'Processing...' : 'Confirm Resolve' }}
                     </button>
-                    <button class="btn btn-outline-secondary btn-sm" :disabled="actionLoading" @click="showResolveConfirm = false">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" :disabled="actionLoading" @click="showResolveConfirm = false">
                       Cancel
                     </button>
                   </div>
@@ -366,7 +366,7 @@ onMounted(() => {
 
                 <!-- Dismiss -->
                 <div v-if="!showDismissConfirm">
-                  <button
+                  <button type="button"
                     class="btn btn-outline-secondary w-100"
                     :disabled="actionLoading"
                     @click="showDismissConfirm = true"
@@ -377,10 +377,10 @@ onMounted(() => {
                 <div v-else class="d-grid gap-2">
                   <p class="small text-muted mb-0">Dismiss this report without action?</p>
                   <div class="d-flex gap-2">
-                    <button class="btn btn-secondary btn-sm flex-grow-1" :disabled="actionLoading" @click="resolveCase('dismissed')">
+                    <button type="button" class="btn btn-secondary btn-sm flex-grow-1" :disabled="actionLoading" @click="resolveCase('dismissed')">
                       {{ actionLoading ? 'Processing...' : 'Confirm Dismiss' }}
                     </button>
-                    <button class="btn btn-outline-secondary btn-sm" :disabled="actionLoading" @click="showDismissConfirm = false">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" :disabled="actionLoading" @click="showDismissConfirm = false">
                       Cancel
                     </button>
                   </div>
@@ -391,7 +391,7 @@ onMounted(() => {
                 <!-- Comment-specific: Delete Comment + Resolve -->
                 <template v-if="reportType === 'comment'">
                   <div v-if="!showDeleteCommentConfirm">
-                    <button
+                    <button type="button"
                       class="btn btn-danger w-100"
                       :disabled="actionLoading"
                       @click="showDeleteCommentConfirm = true"
@@ -402,10 +402,10 @@ onMounted(() => {
                   <div v-else class="d-grid gap-2">
                     <p class="small text-danger mb-0 fw-semibold">Delete this comment and resolve the report? This cannot be undone.</p>
                     <div class="d-flex gap-2">
-                      <button class="btn btn-danger btn-sm flex-grow-1" :disabled="actionLoading" @click="deleteCommentAndResolve">
+                      <button type="button" class="btn btn-danger btn-sm flex-grow-1" :disabled="actionLoading" @click="deleteCommentAndResolve">
                         {{ actionLoading ? 'Processing...' : 'Confirm Delete & Resolve' }}
                       </button>
-                      <button class="btn btn-outline-secondary btn-sm" :disabled="actionLoading" @click="showDeleteCommentConfirm = false">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" :disabled="actionLoading" @click="showDeleteCommentConfirm = false">
                         Cancel
                       </button>
                     </div>
@@ -414,10 +414,10 @@ onMounted(() => {
 
                 <!-- User-specific actions -->
                 <template v-if="reportType === 'user'">
-                  <button class="btn btn-warning w-100" disabled title="Coming soon">
+                  <button type="button" class="btn btn-warning w-100" disabled title="Coming soon">
                     <i class="fa-solid fa-triangle-exclamation me-1"></i>Warn User (Coming soon)
                   </button>
-                  <button class="btn btn-danger w-100" disabled title="Coming soon">
+                  <button type="button" class="btn btn-danger w-100" disabled title="Coming soon">
                     <i class="fa-solid fa-ban me-1"></i>Suspend User (Coming soon)
                   </button>
                 </template>

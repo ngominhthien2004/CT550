@@ -75,7 +75,7 @@ onBeforeUnmount(() => {
       </div>
     </section>
 
-    <button
+    <button type="button"
       v-show="showBackToTop"
       class="back-to-top"
       @click="scrollToTop"

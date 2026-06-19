@@ -56,7 +56,7 @@ onMounted(() => {
             <input v-model="unreadOnly" class="form-check-input" type="checkbox" @change="loadNotifications" />
             <span class="form-check-label">Unread only</span>
           </label>
-          <button class="btn btn-outline-secondary btn-sm" @click="loadNotifications">Refresh</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" @click="loadNotifications">Refresh</button>
         </div>
       </header>
 
@@ -84,7 +84,7 @@ onMounted(() => {
                 Open related artwork
               </router-link>
             </div>
-            <button
+            <button type="button"
               v-if="!item.isRead"
               class="btn btn-sm btn-outline-primary"
               @click="markAsRead(item._id)"
@@ -101,7 +101,7 @@ onMounted(() => {
     <section v-else class="page-block p-3 p-md-4 d-grid gap-2">
       <h1 class="h4 mb-0">Notifications</h1>
       <p class="text-secondary mb-0">You are not logged in.</p>
-      <button class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
+      <button type="button" class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
     </section>
   </MainLayoutTemplate>
 </template>

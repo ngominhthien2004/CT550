@@ -296,11 +296,11 @@ const getAvatar = (user) => {
           @keydown.enter.ctrl="handleSubmit"
           @input="autoResize"
         ></textarea>
-        <button class="emoji-btn"     aria-label="Toggle emoji picker" title="Toggle emoji picker" @click="toggleStickerInput">
+        <button type="button" class="emoji-btn"     aria-label="Toggle emoji picker" title="Toggle emoji picker" @click="toggleStickerInput">
           <i class="far fa-laugh" aria-hidden="true"></i>
         </button>
       </div>
-      <button 
+      <button type="button" 
         class="send-btn" 
         :disabled="(!commentContent.trim() && !emoji.trim()) || isSubmitting"
         @click="handleSubmit"
@@ -311,7 +311,7 @@ const getAvatar = (user) => {
 
     <div v-if="showStickerInput" class="sticker-picker-row mb-4">
       <div class="sticker-grid">
-        <button
+        <button type="button"
           v-for="sticker in stickerPresets"
           :key="sticker"
           class="sticker-option"
@@ -338,10 +338,10 @@ const getAvatar = (user) => {
               <span v-if="comment.emoji" class="comment-sticker comment-content sticker-display mt-1 mb-2">{{ comment.emoji }}</span>
               <div class="comment-meta d-flex align-items-center gap-3">
                 <span class="comment-date text-muted">{{ comment._createdAt }}</span>
-                <button class="btn-reply p-0 border-0 bg-transparent" @click="toggleReplyInput(comment._id)">
+                <button type="button" class="btn-reply p-0 border-0 bg-transparent" @click="toggleReplyInput(comment._id)">
                   Reply
                 </button>
-                <button
+                <button type="button"
                   v-if="comment._canDelete"
                   class="btn-delete p-0 border-0 bg-transparent"
                   :class="{ 'confirming': confirmDeleteId === comment._id }"
@@ -349,7 +349,7 @@ const getAvatar = (user) => {
                 >
                   {{ confirmDeleteId === comment._id ? 'Confirm?' : 'Delete' }}
                 </button>
-                <button
+                <button type="button"
                   v-if="comment._canReport"
                   class="btn-report p-0 border-0 bg-transparent"
                   @click="openReportModal(comment)"
@@ -368,7 +368,7 @@ const getAvatar = (user) => {
               rows="1"
             ></textarea>
             <div class="d-flex align-items-center gap-2 mt-2">
-              <button
+              <button type="button"
                 class="btn-reply-action"
                 aria-label="Toggle reply emoji"
                 title="Toggle reply emoji"
@@ -376,7 +376,7 @@ const getAvatar = (user) => {
               >
           <i class="far fa-image" aria-hidden="true"></i>
               </button>
-              <button
+              <button type="button"
                 class="btn-reply-action btn-reply-send"
                 :disabled="(!(replyContentByCommentId[comment._id] || '').trim() && !(replyEmojiByCommentId[comment._id] || '').trim()) || submittingReplyByCommentId[comment._id]"
                 @click="handleReplySubmit(comment._id)"
@@ -395,7 +395,7 @@ const getAvatar = (user) => {
           </div>
 
           <div v-if="comment._hasReplies" class="mt-2 text-start">
-            <button class="btn-display-replies py-1 px-3" @click="toggleReplies(comment)">
+            <button type="button" class="btn-display-replies py-1 px-3" @click="toggleReplies(comment)">
               {{ comment._isExpanded ? 'Hide Replies' : `Display Replies (${comment._replyCountDisplay})` }}
             </button>
           </div>
@@ -416,7 +416,7 @@ const getAvatar = (user) => {
                     <span v-if="reply.emoji" class="comment-sticker comment-content sticker-display mt-1 mb-2">{{ reply.emoji }}</span>
                     <div class="comment-meta d-flex align-items-center gap-3">
                       <span class="comment-date text-muted">{{ reply._createdAt }}</span>
-                      <button
+                      <button type="button"
                         v-if="reply._canDelete"
                         class="btn-delete p-0 border-0 bg-transparent"
                         :class="{ 'confirming': confirmDeleteId === reply._id }"

@@ -80,13 +80,13 @@ function onStatusFilterChange(event) {
           <td class="text-muted small" :title="report.resolutionNote">{{ report.resolutionNote || '-' }}</td>
           <td class="actions-cell">
             <template v-if="report.status === 'pending'">
-              <button
+              <button type="button"
                 class="btn btn-sm btn-outline-danger"
                 :disabled="mutating"
                 @click="emit('hide-artwork', report.artwork?._id, report._id)"
                 title="Hide artwork"
               >Hide</button>
-              <button
+              <button type="button"
                 class="btn btn-sm btn-outline-secondary"
                 :disabled="mutating"
                 @click="emit('resolve-report', report._id)"
@@ -104,8 +104,8 @@ function onStatusFilterChange(event) {
     <footer v-if="reportPagination.pages > 1" class="panel-footer" aria-label="Report pagination">
       <span>Page {{ reportPagination.page }} / {{ reportPagination.pages }} &bull; {{ reportPagination.total }} reports</span>
       <div class="btn-group">
-        <button class="btn btn-sm btn-outline-secondary" :disabled="reportPagination.page <= 1 || loadingReports" @click="emit('go-page', reportPagination.page - 1)">Previous</button>
-        <button class="btn btn-sm btn-outline-secondary" :disabled="reportPagination.page >= reportPagination.pages || loadingReports" @click="emit('go-page', reportPagination.page + 1)">Next</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="reportPagination.page <= 1 || loadingReports" @click="emit('go-page', reportPagination.page - 1)">Previous</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="reportPagination.page >= reportPagination.pages || loadingReports" @click="emit('go-page', reportPagination.page + 1)">Next</button>
       </div>
     </footer>
   </section>

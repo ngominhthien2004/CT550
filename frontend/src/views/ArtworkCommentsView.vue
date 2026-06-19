@@ -40,7 +40,7 @@ onMounted(() => {
         <input v-model="content" class="form-control" placeholder="Write a comment..." />
       </div>
       <div class="col-12 col-lg-2 d-grid">
-        <button class="btn btn-primary" @click="submitComment">Add comment</button>
+        <button type="button" class="btn btn-primary" @click="submitComment">Add comment</button>
       </div>
     </div>
     <p v-if="commentStore.loading" class="text-secondary mb-0">Loading comments...</p>

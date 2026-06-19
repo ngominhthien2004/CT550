@@ -86,11 +86,11 @@ function getImageCount(item) {
       </router-link>
 
       <!-- Like button -->
-      <button class="btn-like" :class="{ 'is-liked': isLiked }" aria-label="Like" @click.prevent="handleLike" :disabled="isToggling">
+      <button type="button" class="btn-like" :class="{ 'is-liked': isLiked }" aria-label="Like" @click.prevent="handleLike" :disabled="isToggling">
         <i :class="isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
       </button>
       <!-- Report button -->
-      <button v-if="isLoggedIn" class="btn-report" @click.stop="showReportModal = true" title="Report artwork">
+      <button type="button" v-if="isLoggedIn" class="btn-report" @click.stop="showReportModal = true" title="Report artwork">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       </button>
     </div>

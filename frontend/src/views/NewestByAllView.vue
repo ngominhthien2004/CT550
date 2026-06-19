@@ -105,7 +105,7 @@ onMounted(() => loadFeedData(1, false))
       <!-- Navigation bar -->
       <div class="navigation-bar">
         <nav class="sub-tabs">
-          <button
+          <button type="button"
             v-for="tab in subTabs"
             :key="tab.id"
             class="tab-btn"
@@ -117,7 +117,7 @@ onMounted(() => loadFeedData(1, false))
         </nav>
 
         <div class="r18-pills">
-          <button
+          <button type="button"
             v-for="tab in r18Tabs"
             :key="tab.id"
             class="pill-btn"
@@ -143,7 +143,7 @@ onMounted(() => loadFeedData(1, false))
         </p>
 
         <div v-if="currentPage < totalPages" class="pagination-footer">
-          <button class="load-more-btn" :disabled="loading" @click="loadMore">
+          <button type="button" class="load-more-btn" :disabled="loading" @click="loadMore">
             {{ loading ? 'Loading...' : 'Show more' }}
           </button>
         </div>

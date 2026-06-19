@@ -4,13 +4,13 @@
       <h1>Test AI Features</h1>
       
       <div class="tabs">
-        <button 
+        <button type="button" 
           :class="['tab', { active: activeTab === 'chat' }]" 
           @click="activeTab = 'chat'"
         >
           AI Chat
         </button>
-        <button 
+        <button type="button" 
           :class="['tab', { active: activeTab === 'detect' }]" 
           @click="activeTab = 'detect'"
         >
@@ -63,7 +63,7 @@
             <img v-else :src="previewImage" alt="Preview" class="preview-image" />
           </div>
 
-          <button 
+          <button type="button" 
             v-if="previewImage" 
             @click="clearImage" 
             class="clear-btn"
@@ -71,7 +71,7 @@
             Xóa ảnh
           </button>
 
-          <button 
+          <button type="button" 
             v-if="previewImage && !isAnalyzing" 
             @click="analyzeImage" 
             class="analyze-btn"

@@ -92,7 +92,7 @@ const formattedUsers = computed(() =>
         <option value="user">User</option>
         <option value="admin">Admin</option>
       </select>
-      <button class="btn btn-sm btn-outline-primary" :disabled="loadingUsers" @click="emit('apply-filters')">Apply</button>
+      <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingUsers" @click="emit('apply-filters')">Apply</button>
     </div>
 
     <p v-if="loadingUsers" class="state-note">Loading users...</p>
@@ -118,14 +118,14 @@ const formattedUsers = computed(() =>
             </td>
             <td>{{ row._createdAt }}</td>
             <td class="actions-cell">
-              <button
+              <button type="button"
                 class="btn btn-sm btn-outline-danger"
                 :disabled="mutating || row.role === 'admin'"
                 @click="emit('set-user-role', row, 'admin')"
               >
                 Make admin
               </button>
-              <button
+              <button type="button"
                 class="btn btn-sm btn-outline-secondary"
                 :disabled="mutating || row.role === 'user'"
                 @click="emit('set-user-role', row, 'user')"
@@ -144,10 +144,10 @@ const formattedUsers = computed(() =>
     <footer class="panel-footer" aria-label="User pagination">
       <span>Page {{ userPagination.page }} / {{ userPagination.pages }} • {{ userPagination.total }} users</span>
       <div class="pager-actions">
-        <button class="btn btn-sm btn-outline-secondary" :disabled="userPagination.page <= 1 || loadingUsers" @click="emit('go-page', userPagination.page - 1)">
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="userPagination.page <= 1 || loadingUsers" @click="emit('go-page', userPagination.page - 1)">
           Previous
         </button>
-        <button class="btn btn-sm btn-outline-secondary" :disabled="userPagination.page >= userPagination.pages || loadingUsers" @click="emit('go-page', userPagination.page + 1)">
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="userPagination.page >= userPagination.pages || loadingUsers" @click="emit('go-page', userPagination.page + 1)">
           Next
         </button>
       </div>

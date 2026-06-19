@@ -214,7 +214,7 @@ watch(
     <section v-else class="page-block p-3 p-md-4 d-grid gap-2">
       <h1 class="h4 mb-0">Dashboard</h1>
       <p class="text-secondary mb-0">You are not logged in.</p>
-      <button class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
+      <button type="button" class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
     </section>
   </MainLayoutTemplate>
 </template>

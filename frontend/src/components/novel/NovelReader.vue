@@ -156,7 +156,7 @@ function handleShare() {
     <!-- Controls Bar -->
     <div class="novel-controls-bar">
       <div class="controls-group">
-        <button
+        <button type="button"
           class="ctrl-btn font-btn"
           :class="{ disabled: !canDecrease }"
           :disabled="!canDecrease"
@@ -166,7 +166,7 @@ function handleShare() {
           <span class="ctrl-label">A</span><span class="ctrl-modifier">–</span>
         </button>
         <span class="font-size-indicator">{{ fontSize }}</span>
-        <button
+        <button type="button"
           class="ctrl-btn font-btn"
           :class="{ disabled: !canIncrease }"
           :disabled="!canIncrease"
@@ -178,7 +178,7 @@ function handleShare() {
       </div>
 
       <div class="controls-group">
-        <button class="ctrl-btn theme-btn" title="Toggle dark mode" @click="toggleDarkMode">
+        <button type="button" class="ctrl-btn theme-btn" title="Toggle dark mode" @click="toggleDarkMode">
           <span v-if="isDarkMode" class="ctrl-icon" aria-hidden="true">☀️</span>
           <span v-else class="ctrl-icon" aria-hidden="true">🌙</span>
         </button>
@@ -299,7 +299,7 @@ function handleShare() {
 
     <!-- Interactive Action Toolbar -->
     <div v-if="novelContent" class="novel-action-toolbar">
-      <button 
+      <button type="button" 
         class="action-btn like-btn" 
         :class="{ 'is-active': isLiked, 'is-loading': likeLoading }"
         :disabled="likeLoading"
@@ -309,7 +309,7 @@ function handleShare() {
         <span class="btn-count">{{ formatNumber(artwork.likeCount) }}</span>
       </button>
 
-      <button 
+      <button type="button" 
         class="action-btn bookmark-btn" 
         :class="{ 'is-active': isBookmarked, 'is-loading': bookmarkLoading }"
         :disabled="bookmarkLoading"
@@ -319,7 +319,7 @@ function handleShare() {
         <span class="btn-count">{{ formatNumber(artwork.bookmarkCount) }}</span>
       </button>
 
-      <button class="action-btn share-btn" @click="handleShare" title="Copy link to share">
+      <button type="button" class="action-btn share-btn" @click="handleShare" title="Copy link to share">
         <span class="btn-icon">🔗</span>
         <span class="btn-text">Share</span>
       </button>

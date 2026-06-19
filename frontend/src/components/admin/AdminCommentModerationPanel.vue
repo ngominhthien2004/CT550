@@ -53,7 +53,7 @@ function onQueryInput(event) {
         @input="onQueryInput"
         @keyup.enter="emit('apply-filters')"
       />
-      <button class="btn btn-sm btn-outline-primary" :disabled="loadingComments" @click="emit('apply-filters')">Apply</button>
+      <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingComments" @click="emit('apply-filters')">Apply</button>
     </div>
 
     <p v-if="loadingComments" class="state-note">Loading comments...</p>
@@ -75,7 +75,7 @@ function onQueryInput(event) {
             <td>{{ row.artwork?.title || '-' }}</td>
             <td>{{ row._createdAt }}</td>
             <td>
-              <button
+              <button type="button"
                 class="btn btn-sm btn-outline-danger"
                 :disabled="mutating"
                 @click="emit('delete-comment', row._id)"
@@ -94,8 +94,8 @@ function onQueryInput(event) {
     <footer class="panel-footer" aria-label="Comment pagination">
       <span>Page {{ commentPagination.page }} / {{ commentPagination.pages }} &bull; {{ commentPagination.total }} comments</span>
       <div class="pager-actions">
-        <button class="btn btn-sm btn-outline-secondary" :disabled="commentPagination.page <= 1 || loadingComments" @click="emit('go-page', commentPagination.page - 1)">Previous</button>
-        <button class="btn btn-sm btn-outline-secondary" :disabled="commentPagination.page >= commentPagination.pages || loadingComments" @click="emit('go-page', commentPagination.page + 1)">Next</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="commentPagination.page <= 1 || loadingComments" @click="emit('go-page', commentPagination.page - 1)">Previous</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="commentPagination.page >= commentPagination.pages || loadingComments" @click="emit('go-page', commentPagination.page + 1)">Next</button>
       </div>
     </footer>
   </section>

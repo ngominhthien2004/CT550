@@ -630,7 +630,7 @@ onMounted(async () => {
     <section v-if="!authStore.isAuthenticated" class="page-block p-3 p-md-4 d-grid gap-2">
       <h1 class="h4 mb-0">Admin Management</h1>
       <p class="text-secondary mb-0">You are not logged in.</p>
-      <button class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
+      <button type="button" class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
     </section>
 
     <section v-else-if="!isAdmin" class="page-block p-3 p-md-4 d-grid gap-2">
@@ -642,7 +642,7 @@ onMounted(async () => {
       <header class="admin-head">
         <h1>Admin Management Hub</h1>
         <p>Manage users, monitor key metrics, and moderate content.</p>
-        <button
+        <button type="button"
           class="btn btn-sm btn-admin-refresh"
           :disabled="loadingOverview || loadingUsers || loadingArtworks || mutating"
           @click="refreshAll"

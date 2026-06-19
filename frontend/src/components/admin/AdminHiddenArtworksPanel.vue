@@ -51,7 +51,7 @@ const formattedHidden = computed(() =>
           <td class="text-muted small">{{ art.hiddenReason || '-' }}</td>
           <td>{{ art._hiddenAt }}</td>
           <td class="actions-cell">
-            <button
+            <button type="button"
               class="btn btn-sm btn-outline-success"
               :disabled="mutating"
               @click="emit('unhide-artwork', art._id)"
@@ -64,8 +64,8 @@ const formattedHidden = computed(() =>
     <footer v-if="hiddenPagination.pages > 1" class="panel-footer" aria-label="Hidden artworks pagination">
       <span>Page {{ hiddenPagination.page }} / {{ hiddenPagination.pages }} &bull; {{ hiddenPagination.total }} hidden</span>
       <div class="btn-group">
-        <button class="btn btn-sm btn-outline-secondary" :disabled="hiddenPagination.page <= 1 || loadingHidden" @click="emit('go-page', hiddenPagination.page - 1)">Previous</button>
-        <button class="btn btn-sm btn-outline-secondary" :disabled="hiddenPagination.page >= hiddenPagination.pages || loadingHidden" @click="emit('go-page', hiddenPagination.page + 1)">Next</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="hiddenPagination.page <= 1 || loadingHidden" @click="emit('go-page', hiddenPagination.page - 1)">Previous</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="hiddenPagination.page >= hiddenPagination.pages || loadingHidden" @click="emit('go-page', hiddenPagination.page + 1)">Next</button>
       </div>
     </footer>
   </section>

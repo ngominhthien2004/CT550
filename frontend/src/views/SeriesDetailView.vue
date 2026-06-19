@@ -196,13 +196,13 @@ onMounted(async () => {
       <div v-else-if="!series" class="state-error">
         <h2>Series not found</h2>
         <p>The series you're looking for doesn't exist or has been removed.</p>
-        <button class="back-btn" @click="goBack">Go back</button>
+        <button type="button" class="back-btn" @click="goBack">Go back</button>
       </div>
 
       <!-- Series content -->
       <div v-else class="series-content">
         <!-- Back button -->
-        <button class="back-link" @click="goBack">
+        <button type="button" class="back-link" @click="goBack">
           <i class="fa-solid fa-arrow-left"></i> Back
         </button>
 
@@ -311,7 +311,7 @@ onMounted(async () => {
         <div v-else class="series-chapters-section">
           <div class="chapters-section-header">
             <h2 class="section-title">Chapters</h2>
-            <button v-if="isOwner" class="add-chapter-btn" @click="showAddForm = !showAddForm">
+            <button type="button" v-if="isOwner" class="add-chapter-btn" @click="showAddForm = !showAddForm">
               <i class="fa-solid fa-plus"></i> {{ showAddForm ? 'Cancel' : 'Add Chapter' }}
             </button>
           </div>
@@ -336,8 +336,8 @@ onMounted(async () => {
               maxlength="500000"
             ></textarea>
             <div class="chapter-form-actions">
-              <button class="chapter-form-btn chapter-form-btn--cancel" @click="showAddForm = false">Cancel</button>
-              <button
+              <button type="button" class="chapter-form-btn chapter-form-btn--cancel" @click="showAddForm = false">Cancel</button>
+              <button type="button"
                 class="chapter-form-btn chapter-form-btn--submit"
                 @click="submitNewChapter"
                 :disabled="submitting || !newChapterForm.title.trim() || !newChapterForm.content.trim()"
@@ -372,8 +372,8 @@ onMounted(async () => {
                     maxlength="500000"
                   ></textarea>
                   <div class="chapter-form-actions">
-                    <button class="chapter-form-btn chapter-form-btn--cancel" @click="cancelEditChapter">Cancel</button>
-                    <button
+                    <button type="button" class="chapter-form-btn chapter-form-btn--cancel" @click="cancelEditChapter">Cancel</button>
+                    <button type="button"
                       class="chapter-form-btn chapter-form-btn--submit"
                       @click="submitEditChapter(chapter._id)"
                       :disabled="submitting || !editChapterForm.title.trim() || !editChapterForm.content.trim()"
@@ -396,10 +396,10 @@ onMounted(async () => {
                   </div>
                 </div>
                 <div v-if="isOwner" class="chapter-actions">
-                  <button class="chapter-action-btn" @click="startEditChapter(chapter)" title="Edit">
+                  <button type="button" class="chapter-action-btn" @click="startEditChapter(chapter)" title="Edit">
                     <i class="fa-solid fa-pen"></i>
                   </button>
-                  <button class="chapter-action-btn chapter-action-btn--danger" @click="confirmDeleteChapter(chapter)" title="Delete">
+                  <button type="button" class="chapter-action-btn chapter-action-btn--danger" @click="confirmDeleteChapter(chapter)" title="Delete">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </div>
@@ -420,8 +420,8 @@ onMounted(async () => {
             <h3>Delete Chapter</h3>
             <p>Are you sure you want to delete "{{ deleteChapterTarget?.title }}"? This cannot be undone.</p>
             <div class="delete-dialog-actions">
-              <button class="chapter-form-btn chapter-form-btn--cancel" @click="showDeleteConfirm = false">Cancel</button>
-              <button class="chapter-form-btn chapter-form-btn--danger" @click="executeDeleteChapter" :disabled="submitting">
+              <button type="button" class="chapter-form-btn chapter-form-btn--cancel" @click="showDeleteConfirm = false">Cancel</button>
+              <button type="button" class="chapter-form-btn chapter-form-btn--danger" @click="executeDeleteChapter" :disabled="submitting">
                 {{ submitting ? 'Deleting...' : 'Delete' }}
               </button>
             </div>

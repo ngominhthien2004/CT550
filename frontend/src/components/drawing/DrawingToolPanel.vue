@@ -4,7 +4,7 @@
     <div class="tool-section">
       <label class="tool-label">Color</label>
       <div class="color-palette">
-        <button
+        <button type="button"
           v-for="c in store.PRESET_COLORS"
           :key="c"
           class="color-swatch"

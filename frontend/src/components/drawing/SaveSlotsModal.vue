@@ -4,7 +4,7 @@
       <div class="modal-content modal-content--wide">
         <div class="modal-header">
           <h2>Saved Drawings</h2>
-          <button class="modal-close-btn" @click="store.showSlotsDialog = false">&times;</button>
+          <button type="button" class="modal-close-btn" @click="store.showSlotsDialog = false">&times;</button>
         </div>
         <div class="modal-body">
           <div v-if="store.savedSlots.length === 0" class="empty-state">
@@ -18,8 +18,8 @@
                 <span class="slot-date">{{ store.formatDate(slot.timestamp) }}</span>
               </div>
               <div class="slot-actions">
-                <button class="slot-btn load" @click="store.requestLoadSlot(slot)">Load</button>
-                <button class="slot-btn delete" @click="store.requestDeleteSlot(slot.id)">Delete</button>
+                <button type="button" class="slot-btn load" @click="store.requestLoadSlot(slot)">Load</button>
+                <button type="button" class="slot-btn delete" @click="store.requestDeleteSlot(slot.id)">Delete</button>
               </div>
             </div>
           </div>
@@ -34,14 +34,14 @@
       <div class="confirm-modal">
         <div class="confirm-header">
           <h3>Load Drawing</h3>
-          <button class="confirm-close-btn" @click="store.showLoadSlotConfirm = false">&times;</button>
+          <button type="button" class="confirm-close-btn" @click="store.showLoadSlotConfirm = false">&times;</button>
         </div>
         <div class="confirm-body">
           <p>Load this drawing? Current drawing will be replaced.</p>
         </div>
         <div class="confirm-footer">
-          <button class="confirm-btn cancel" @click="store.showLoadSlotConfirm = false">Cancel</button>
-          <button class="confirm-btn danger" @click="store.executeLoadSlot">Load</button>
+          <button type="button" class="confirm-btn cancel" @click="store.showLoadSlotConfirm = false">Cancel</button>
+          <button type="button" class="confirm-btn danger" @click="store.executeLoadSlot">Load</button>
         </div>
       </div>
     </div>
@@ -53,14 +53,14 @@
       <div class="confirm-modal">
         <div class="confirm-header">
           <h3>Delete Drawing</h3>
-          <button class="confirm-close-btn" @click="store.showDeleteSlotConfirm = false">&times;</button>
+          <button type="button" class="confirm-close-btn" @click="store.showDeleteSlotConfirm = false">&times;</button>
         </div>
         <div class="confirm-body">
           <p>Delete this saved drawing?</p>
         </div>
         <div class="confirm-footer">
-          <button class="confirm-btn cancel" @click="store.showDeleteSlotConfirm = false">Cancel</button>
-          <button class="confirm-btn danger" @click="store.executeDeleteSlot">Delete</button>
+          <button type="button" class="confirm-btn cancel" @click="store.showDeleteSlotConfirm = false">Cancel</button>
+          <button type="button" class="confirm-btn danger" @click="store.executeDeleteSlot">Delete</button>
         </div>
       </div>
     </div>

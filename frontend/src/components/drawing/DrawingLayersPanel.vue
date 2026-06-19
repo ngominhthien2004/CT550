@@ -2,7 +2,7 @@
   <div class="layers-panel">
     <div class="panel-header">
       <span class="panel-title">Layers</span>
-      <button class="panel-add-btn" @click="store.addLayer" title="Add layer">
+      <button type="button" class="panel-add-btn" @click="store.addLayer" title="Add layer">
         <i class="fa-solid fa-plus" />
       </button>
     </div>
@@ -15,7 +15,7 @@
         :class="{ active: store.activeLayerIndex === i }"
         @click="store.activeLayerIndex = i"
       >
-        <button
+        <button type="button"
           class="layer-vis-btn"
           :title="layer.visible ? 'Hide layer' : 'Show layer'"
           @click.stop="store.toggleLayerVisibility(i)"
@@ -24,7 +24,7 @@
           <i v-else class="fa-solid fa-eye-slash" />
         </button>
         <span class="layer-name">{{ layer.name }}</span>
-        <button
+        <button type="button"
           class="layer-del-btn"
           :disabled="store.layers.length <= 1"
           title="Delete layer"
@@ -36,7 +36,7 @@
     </div>
 
     <div class="layer-actions">
-      <button
+      <button type="button"
         class="layer-move-btn"
         :disabled="store.activeLayerIndex <= 0"
         title="Move up"
@@ -44,7 +44,7 @@
       >
         <i class="fa-solid fa-chevron-up" />
       </button>
-      <button
+      <button type="button"
         class="layer-move-btn"
         :disabled="store.activeLayerIndex >= store.layers.length - 1"
         title="Move down"

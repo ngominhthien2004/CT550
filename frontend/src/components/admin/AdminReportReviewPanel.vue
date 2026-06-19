@@ -49,7 +49,7 @@ const formattedReports = computed(() =>
             <td><span class="badge bg-danger-subtle text-danger-emphasis">{{ row.reportCount }}</span></td>
             <td>{{ row._lastReportedAt }}</td>
             <td>
-              <button
+              <button type="button"
                 class="btn btn-sm btn-outline-success"
                 :disabled="mutating"
                 @click="emit('resolve-report', row.request?._id)"
@@ -68,8 +68,8 @@ const formattedReports = computed(() =>
     <footer class="panel-footer" aria-label="Report pagination">
       <span>Page {{ reportPagination.page }} / {{ reportPagination.pages }} &bull; {{ reportPagination.total }} reports</span>
       <div class="pager-actions">
-        <button class="btn btn-sm btn-outline-secondary" :disabled="reportPagination.page <= 1 || loadingReports" @click="emit('go-page', reportPagination.page - 1)">Previous</button>
-        <button class="btn btn-sm btn-outline-secondary" :disabled="reportPagination.page >= reportPagination.pages || loadingReports" @click="emit('go-page', reportPagination.page + 1)">Next</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="reportPagination.page <= 1 || loadingReports" @click="emit('go-page', reportPagination.page - 1)">Previous</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="reportPagination.page >= reportPagination.pages || loadingReports" @click="emit('go-page', reportPagination.page + 1)">Next</button>
       </div>
     </footer>
   </section>

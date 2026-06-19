@@ -3,7 +3,7 @@
     <div class="modal-container" role="dialog" aria-modal="true" aria-labelledby="user-report-modal-title">
       <div class="modal-header">
         <h3 id="user-report-modal-title">Report User</h3>
-        <button class="btn-close" @click="$emit('close')" aria-label="Close">&times;</button>
+        <button type="button" class="btn-close" @click="$emit('close')" aria-label="Close">&times;</button>
       </div>
       <form @submit.prevent="submitReport">
         <div class="modal-body">

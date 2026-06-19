@@ -72,7 +72,7 @@ async function executeDelete() {
   <div v-if="isOwnArtwork" class="chapter-manager">
     <div class="chapter-manager-header">
       <h3 class="manager-heading">Manage Chapters ({{ chapters.length }})</h3>
-      <button class="btn-add-chapter" @click="showAddForm = true">
+      <button type="button" class="btn-add-chapter" @click="showAddForm = true">
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Add Chapter
       </button>
@@ -94,7 +94,7 @@ async function executeDelete() {
           </span>
         </div>
         <div class="chapter-actions">
-          <button class="btn-delete" title="Delete chapter" @click="confirmDelete(ch)">
+          <button type="button" class="btn-delete" title="Delete chapter" @click="confirmDelete(ch)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
           </button>
         </div>
@@ -112,7 +112,7 @@ async function executeDelete() {
         <div class="modal-content">
           <div class="modal-header">
             <h3 class="modal-title">Add New Chapter</h3>
-            <button class="modal-close" @click="showAddForm = false" aria-label="Close">
+            <button type="button" class="modal-close" @click="showAddForm = false" aria-label="Close">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
@@ -144,8 +144,8 @@ async function executeDelete() {
           <p v-if="error" class="error-message">{{ error }}</p>
 
           <div class="modal-actions">
-            <button class="btn-cancel" @click="showAddForm = false">Cancel</button>
-            <button
+            <button type="button" class="btn-cancel" @click="showAddForm = false">Cancel</button>
+            <button type="button"
               class="btn-submit"
               :disabled="!newChapter.title.trim() || !newChapter.content.trim() || submitting"
               @click="submitChapter"
@@ -173,8 +173,8 @@ async function executeDelete() {
           <p v-if="deleteError" class="error-message">{{ deleteError }}</p>
 
           <div class="modal-actions">
-            <button class="btn-cancel" @click="deleteTarget = null">Cancel</button>
-            <button
+            <button type="button" class="btn-cancel" @click="deleteTarget = null">Cancel</button>
+            <button type="button"
               class="btn-delete-confirm"
               :disabled="deleting"
               @click="executeDelete"

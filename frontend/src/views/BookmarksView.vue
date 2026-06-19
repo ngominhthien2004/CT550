@@ -40,10 +40,10 @@ onMounted(() => {
         <input v-model="folder" class="form-control" placeholder="Folder (default)" />
       </div>
       <div class="col-12 col-sm-6 col-lg-1 d-grid">
-        <button class="btn btn-primary" @click="submitBookmark">Add</button>
+        <button type="button" class="btn btn-primary" @click="submitBookmark">Add</button>
       </div>
       <div class="col-12 col-sm-6 col-lg-2 d-grid">
-        <button class="btn btn-outline-secondary" @click="removeBookmark">Delete latest</button>
+        <button type="button" class="btn btn-outline-secondary" @click="removeBookmark">Delete latest</button>
       </div>
     </div>
     <p v-if="bookmarkStore.loading" class="text-secondary mb-0">Loading bookmarks...</p>

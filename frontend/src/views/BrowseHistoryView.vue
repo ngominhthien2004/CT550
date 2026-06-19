@@ -88,7 +88,7 @@ function timeAgo(dateStr) {
       <div v-else>
         <div class="d-flex justify-content-between align-items-center mb-3">
           <span class="text-muted small">{{ total }} artwork{{ total !== 1 ? 's' : '' }} viewed</span>
-          <button class="btn btn-outline-danger btn-sm" @click="handleClearHistory">
+          <button type="button" class="btn btn-outline-danger btn-sm" @click="handleClearHistory">
             <i class="fa-regular fa-trash-can me-1"></i> Clear history
           </button>
         </div>
@@ -135,7 +135,7 @@ function timeAgo(dateStr) {
         <nav v-if="totalPages > 1" class="mt-4">
           <ul class="pagination justify-content-center">
             <li class="page-item" :class="{ disabled: currentPage <= 1 }">
-              <button class="page-link" @click="goToPage(currentPage - 1)">Previous</button>
+              <button type="button" class="page-link" @click="goToPage(currentPage - 1)">Previous</button>
             </li>
             <li
               v-for="p in totalPages"
@@ -143,10 +143,10 @@ function timeAgo(dateStr) {
               class="page-item"
               :class="{ active: p === currentPage }"
             >
-              <button class="page-link" @click="goToPage(p)">{{ p }}</button>
+              <button type="button" class="page-link" @click="goToPage(p)">{{ p }}</button>
             </li>
             <li class="page-item" :class="{ disabled: currentPage >= totalPages }">
-              <button class="page-link" @click="goToPage(currentPage + 1)">Next</button>
+              <button type="button" class="page-link" @click="goToPage(currentPage + 1)">Next</button>
             </li>
           </ul>
         </nav>

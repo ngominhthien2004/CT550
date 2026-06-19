@@ -93,7 +93,7 @@ const processedMessages = computed(() =>
           </p>
         </div>
         <div class="chat-header-actions">
-          <button
+          <button type="button"
             v-if="chatStore.hasMessages"
             class="btn btn-outline-secondary btn-sm"
             @click="chatStore.clearConversation(); chatStore.addWelcomeMessage()"
@@ -146,7 +146,7 @@ const processedMessages = computed(() =>
       <div v-if="chatStore.messages.length <= 1 && !chatStore.isLoading" class="suggested-prompts">
         <p class="text-muted small mb-2">Gợi ý nhanh:</p>
         <div class="prompt-chips">
-          <button
+          <button type="button"
             v-for="prompt in suggestedPrompts"
             :key="prompt.prompt"
             class="btn btn-outline-primary btn-sm prompt-chip"
@@ -169,7 +169,7 @@ const processedMessages = computed(() =>
             @keydown="handleKeydown"
             :disabled="chatStore.isLoading"
           ></textarea>
-          <button
+          <button type="button"
             class="btn btn-primary send-btn"
             @click="sendMessage"
             :disabled="!userInput.trim() || chatStore.isLoading"

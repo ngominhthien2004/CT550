@@ -54,7 +54,7 @@ onMounted(loadBlocked)
             <span v-if="item.blocked?.username" class="username">@{{ item.blocked.username }}</span>
           </div>
         </div>
-        <button
+        <button type="button"
           class="unblock-btn"
           :disabled="unblockingId === item.blocked?._id"
           @click="handleUnblock(item.blocked?._id)"

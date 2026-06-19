@@ -4,7 +4,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h2>Post Drawing</h2>
-          <button class="modal-close-btn" @click="store.showPostDialog = false">&times;</button>
+          <button type="button" class="modal-close-btn" @click="store.showPostDialog = false">&times;</button>
         </div>
         <div class="modal-body">
           <div v-if="store.postPreviewUrl" class="post-preview">
@@ -38,8 +38,8 @@
           <p v-if="store.postError" class="form-error">{{ store.postError }}</p>
         </div>
         <div class="modal-footer">
-          <button class="modal-btn cancel" @click="store.showPostDialog = false">Cancel</button>
-          <button class="modal-btn submit" :disabled="store.postSubmitting" @click="submit">
+          <button type="button" class="modal-btn cancel" @click="store.showPostDialog = false">Cancel</button>
+          <button type="button" class="modal-btn submit" :disabled="store.postSubmitting" @click="submit">
             {{ store.postSubmitting ? 'Posting...' : 'Post' }}
           </button>
         </div>
