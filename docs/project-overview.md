@@ -1,6 +1,6 @@
 # Tổng quan dự án: Hệ thống Chia sẻ Tranh minh họa & Truyện tranh (Pixiv Clone)
 
-> **Cập nhật:** 01/06/2026 — Trạng thái triển khai các chức năng.
+> **Cập nhật:** 20/06/2026 — Trạng thái triển khai các chức năng.
 > - ✅ **Hoàn thành:** Chức năng đã code đầy đủ và hoạt động.
 > - ⚠️ **Một phần:** Code đã có nhưng chưa hoàn thiện (còn stub, thiếu mảnh ghép).
 > - ❌ **Chưa triển khai:** Chưa có code hoặc mới chỉ có kế hoạch.
@@ -18,7 +18,7 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
 
 - **Khách vãng lai (Guest):** ✅ Xem nội dung công khai, tìm kiếm cơ bản, không thể tương tác sâu (like, comment, upload).
 - **Người dùng thành viên (Member):** ✅ Đăng tải tác phẩm, tương tác đầy đủ (like, bookmark, follow, comment), quản lý gallery cá nhân.
-- **Thành viên Premium:** ❌ Đã loại bỏ hoàn toàn khỏi hệ thống (removed).
+- **Thành viên Premium:** 🗑️ Đã loại bỏ hoàn toàn khỏi hệ thống (removed).
 - **Quản trị viên (Admin):** ✅ Kiểm duyệt nội dung, quản lý người dùng, dashboard thống kê, xử lý báo cáo vi phạm.
 
 ## 3. Danh sách chức năng chi tiết
@@ -28,8 +28,9 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
 - **Đăng ký/Đăng nhập:**
   - ✅ Đăng ký/đăng nhập bằng Email (bcrypt + JWT)
   - ✅ Đăng nhập Google OAuth (Passport.js)
-  - ❌ Facebook OAuth — Schema đã có trường `facebookId` nhưng chưa có route/controller
-  - ❌ Twitter OAuth — Schema đã có trường `twitterId` nhưng chưa có route/controller
+  - ✅ Facebook OAuth (Passport.js) — Đã triển khai đầy đủ route/controller + frontend button
+  - 🗑️ Twitter/X OAuth — Đã loại bỏ khỏi giao diện
+  - 🗑️ Apple OAuth — Đã loại bỏ khỏi giao diện
 - **Hồ sơ Cá nhân (Artist Profile):**
   - ✅ Tùy chỉnh Avatar, Cover image (local + Cloudinary), Bio, Display Name
   - ✅ Liên kết mạng xã hội (socialLinks) và Portfolio cá nhân
@@ -47,7 +48,7 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
   - ✅ **Novels:** Trình soạn thảo nội dung, đọc truyện chữ (`NovelReader.vue`), quản lý chương (`ChapterManager.vue`), lưu tiến độ đọc (ReadingProgress)
 - **Hệ thống Tags nâng cao:**
   - ✅ Gắn thẻ đa ngôn ngữ (hỗ trợ en/vi/ja), đếm lượt dùng (usageCount)
-  - ❌ Gợi ý thẻ thông minh (auto-tagging)
+  - ✅ Gợi ý thẻ thông minh (auto-tagging) — Google Cloud Vision, tự động gợi ý 10 tags khi upload
   - ✅ Khóa thẻ (Tag lock) để bảo vệ tính chính xác của dữ liệu
   - ✅ Gộp thẻ (Tag merge) — quản trị viên
 - **Cài đặt hiển thị & Bảo mật:**
@@ -57,8 +58,8 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
 
 ### C. Tính năng AI tích hợp
 
-- ❌ **Auto-tagging & Captioning:** Tự động phân tích hình ảnh để gợi ý tag và tạo mô tả ngắn — chưa triển khai
-- ⚠️ **AI Recommendation:** Endpoint `/api/ai/recommend` có nhưng dùng Ollama prompt-based, chưa dùng embedding/collaborative filtering
+- ⚠️ **Auto-captioning:** Tự động tạo mô tả ngắn cho ảnh — còn ở trạng thái Planned
+- ✅ **AI Recommendation:** Gợi ý tác phẩm dựa trên BrowseHistory + For You Feed
 - ❌ **AI Enhancement:** Công cụ nâng cấp độ phân giải (Upscaling) và làm nét ảnh — chưa triển khai
 - ✅ **AI Detection:** Tự động phát hiện và gắn nhãn AI-generated — dùng HuggingFace (`umm-maybe/AI-image-detector`) + phân tích metadata dự phòng; chạy tự động khi upload artwork
 - ✅ **AI Art Assistant (Chatbot):** Chat với AI (Ollama) hỗ trợ gợi ý ý tưởng — `POST /api/ai/chat`, giao diện `AIView.vue`
@@ -100,7 +101,7 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
 - ✅ **Kiểm duyệt bình luận (Admin):** Xem danh sách, tìm kiếm, xóa bình luận
 - ✅ **Quản lý thẻ (Admin):** Sửa tên/bản dịch/isLocked, gộp thẻ, xóa thẻ
 - ⚠️ **Tối ưu hóa CDN:** Cloudinary cho upload artwork và avatar/cover (có fallback local)
-- ❌ **Sự kiện/Cuộc thi (Contests):** Đã loại bỏ (Removed) hoàn toàn khỏi hệ thống (bao gồm CreatorContestCard và các menu liên quan)
+- 🗑️ **Sự kiện/Cuộc thi (Contests):** Đã loại bỏ (Removed) hoàn toàn khỏi hệ thống (bao gồm CreatorContestCard và các menu liên quan)
 - ✅ **Báo cáo (Report):** Xử lý báo cáo vi phạm request — backend + `AdminReportReviewPanel.vue`
 - ✅ **Triển khai (Deployment):** Cấu hình Render.com (`render.yaml`), Cloudflare (`wrangler.*`)
 - ✅ **Kiểm thử đơn vị:** 2 file test (paymentValidation, requestValidation) — 10 test cases
@@ -119,6 +120,7 @@ Những chức năng dưới đây đã được code nhưng chưa có trong tà
 - ✅ **AI Search:** Tìm kiếm ngữ nghĩa bằng AI
 - ✅ **AI Summarize:** Tóm tắt tác phẩm
 - ✅ **Search History:** Component lưu lịch sử tìm kiếm
+- ✅ **Facebook OAuth:** Đăng nhập bằng tài khoản Facebook + nút trên Login/SignUp
 
 ## 4. Cấu trúc Cơ sở Dữ liệu (thực tế — 25 models)
 
