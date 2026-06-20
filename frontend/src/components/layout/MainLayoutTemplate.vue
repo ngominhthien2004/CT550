@@ -67,6 +67,9 @@ onBeforeUnmount(() => {
       </div>
     </section>
 
+  </div>
+
+  <Teleport to="body">
     <button type="button"
       class="back-to-top"
       @click="scrollToTop"
@@ -81,7 +84,7 @@ onBeforeUnmount(() => {
     >
       <i class="fa-solid fa-robot"></i>
     </router-link>
-  </div>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -150,6 +153,10 @@ onBeforeUnmount(() => {
   }
 }
 
+</style>
+
+<style>
+/* Non-scoped styles for teleported FABs — rendered at <body> level */
 .back-to-top {
   position: fixed;
   bottom: 2rem;
