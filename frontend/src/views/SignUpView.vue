@@ -46,6 +46,11 @@ function googleLogin() {
   const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api'
   window.location.href = `${baseUrl.replace(/\/+$/, '')}/auth/google`
 }
+
+function facebookLogin() {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+  window.location.href = `${baseUrl.replace(/\/+$/, '')}/auth/facebook`
+}
 </script>
 
 <template>
@@ -72,7 +77,7 @@ function googleLogin() {
           <i class="fa-brands fa-x-twitter" aria-hidden="true"></i>
           Continue with X
         </button>
-        <button type="button" class="social-btn">
+        <button type="button" class="social-btn" @click="facebookLogin">
           <i class="fa-brands fa-facebook" aria-hidden="true"></i>
           Continue with Facebook
         </button>

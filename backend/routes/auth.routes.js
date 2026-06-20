@@ -17,6 +17,20 @@ router.get('/google/callback',
     googleCallback
 );
 
+// Facebook OAuth routes
+router.get('/facebook', passport.authenticate('facebook', {
+    scope: ['email'],
+    session: false,
+}));
+
+router.get('/facebook/callback',
+    passport.authenticate('facebook', {
+        session: false,
+        failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=facebook_auth_failed`,
+    }),
+    googleCallback
+);
+
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.post('/oauth', oauthLogin);

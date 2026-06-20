@@ -64,9 +64,19 @@ function getFrontendUrl() {
     return process.env.FRONTEND_URL || 'http://localhost:5173';
 }
 
+function getFacebookClientId() {
+    return process.env.FACEBOOK_CLIENT_ID || '';
+}
+
+function getFacebookClientSecret() {
+    return process.env.FACEBOOK_CLIENT_SECRET || '';
+}
+
 module.exports = {
     getAllowedOrigins,
     getAiDetectionThreshold,
+    getFacebookClientId,
+    getFacebookClientSecret,
     getGoogleClientId,
     getGoogleClientSecret,
     getFrontendUrl,

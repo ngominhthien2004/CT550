@@ -185,8 +185,8 @@ onBeforeUnmount(() => {
 
 .ai-chat-fab {
   position: fixed;
-  bottom: 5rem;
-  right: 2rem;
+  bottom: 2rem;
+  right: 6rem;
   width: 44px;
   height: 44px;
   border-radius: 50%;

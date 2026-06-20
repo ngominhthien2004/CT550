@@ -11,7 +11,8 @@ onMounted(() => {
   const { token, _id, username, email, role } = route.query
 
   if (!token || !_id) {
-    router.replace({ name: 'login', query: { error: 'google_auth_failed' } })
+    const errorMsg = route.query.error || 'social_auth_failed'
+    router.replace({ name: 'login', query: { error: errorMsg } })
     return
   }
 
@@ -32,9 +33,9 @@ onMounted(() => {
   <section class="auth-callback-shell d-flex align-items-center justify-content-center" style="min-height: 100vh;">
     <div class="text-center">
       <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Signing in with Google...</span>
+        <span class="visually-hidden">Signing in...</span>
       </div>
-      <p class="mt-3 text-muted">Signing in with Google...</p>
+      <p class="mt-3 text-muted">Signing in...</p>
     </div>
   </section>
 </template>
