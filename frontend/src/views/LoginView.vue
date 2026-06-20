@@ -58,9 +58,7 @@ function facebookLogin() {
       </div>
 
       <div class="social-icons">
-        <button type="button" class="social-icon" aria-label="Apple"><i class="fa-brands fa-apple"></i></button>
         <button type="button" class="social-icon" aria-label="Google" @click="googleLogin"><i class="fa-brands fa-google"></i></button>
-        <button type="button" class="social-icon" aria-label="X"><i class="fa-brands fa-x-twitter"></i></button>
         <button type="button" class="social-icon" aria-label="Facebook" @click="facebookLogin"><i class="fa-brands fa-facebook"></i></button>
       </div>
 

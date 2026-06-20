@@ -65,17 +65,9 @@ function facebookLogin() {
       </div>
 
       <div class="social-stack">
-        <button type="button" class="social-btn apple">
-          <i class="fa-brands fa-apple" aria-hidden="true"></i>
-          Continue with Apple
-        </button>
         <button type="button" class="social-btn" @click="googleLogin">
           <i class="fa-brands fa-google" aria-hidden="true"></i>
           Continue with Google
-        </button>
-        <button type="button" class="social-btn">
-          <i class="fa-brands fa-x-twitter" aria-hidden="true"></i>
-          Continue with X
         </button>
         <button type="button" class="social-btn" @click="facebookLogin">
           <i class="fa-brands fa-facebook" aria-hidden="true"></i>
