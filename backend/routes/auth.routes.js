@@ -19,7 +19,7 @@ router.get('/google/callback',
 
 // Facebook OAuth routes
 router.get('/facebook', passport.authenticate('facebook', {
-    scope: ['email'],
+    scope: ['public_profile', 'email'],
     session: false,
 }));
 
