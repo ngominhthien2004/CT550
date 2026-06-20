@@ -113,13 +113,14 @@ function getImageCount(item) {
         <span>{{ item.user?.displayName || item.user?.username }}</span>
       </router-link>
     </div>
+
+    <ArtworkReportModal
+      :visible="showReportModal"
+      :artwork="item"
+      @close="showReportModal = false"
+      @reported="showReportModal = false"
+    />
   </article>
-  <ArtworkReportModal
-    :visible="showReportModal"
-    :artwork="item"
-    @close="showReportModal = false"
-    @reported="showReportModal = false"
-  />
 </template>
 
 <style scoped>
