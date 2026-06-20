@@ -14,8 +14,7 @@ const props = defineProps({
 
 const isNavCollapsed = ref(true)
 const isSidebarCompact = ref(false)
-const showBackToTop = ref(false)
-let scrollHandler = null
+
 
 function toggleSidebar() {
   isNavCollapsed.value = !isNavCollapsed.value
@@ -38,17 +37,10 @@ watch(
 )
 
 onMounted(() => {
-  scrollHandler = () => {
-    showBackToTop.value = window.scrollY > 300
-  }
-  window.addEventListener('scroll', scrollHandler, { passive: true })
 })
 
 onBeforeUnmount(() => {
   document.body.style.overflow = ''
-  if (scrollHandler) {
-    window.removeEventListener('scroll', scrollHandler)
-  }
 })
 </script>
 
@@ -76,13 +68,19 @@ onBeforeUnmount(() => {
     </section>
 
     <button type="button"
-      v-show="showBackToTop"
       class="back-to-top"
       @click="scrollToTop"
       aria-label="Back to top"
     >
       <i class="fa-solid fa-arrow-up"></i>
     </button>
+
+    <router-link to="/chat"
+      class="ai-chat-fab"
+      aria-label="AI Chat"
+    >
+      <i class="fa-solid fa-robot"></i>
+    </router-link>
   </div>
 </template>
 
@@ -176,5 +174,32 @@ onBeforeUnmount(() => {
   background: var(--accent);
   color: #fff;
   transform: translateY(-2px);
+}
+
+.ai-chat-fab {
+  position: fixed;
+  bottom: 5rem;
+  right: 2rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  z-index: 1050;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  text-decoration: none;
+}
+
+.ai-chat-fab:hover {
+  transform: translateY(-2px);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.5);
 }
 </style>

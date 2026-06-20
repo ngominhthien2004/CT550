@@ -156,17 +156,7 @@ async function toggleFollowFromHome(userId) {
               @toggle-follow="toggleFollowFromHome"
             />
 
-            <!-- AI Chat -->
-            <div class="ai-chat-card">
-              <div class="ai-chat-card-icon">🤖</div>
-              <h4 class="ai-chat-card-title">AI Assistant</h4>
-              <p class="ai-chat-card-desc">
-                Tìm kiếm artwork, gợi ý tác phẩm và tóm tắt nội dung với trợ lý thông minh
-              </p>
-              <router-link to="/chat" class="btn btn-primary btn-sm w-100">
-                <i class="fas fa-comment-dots me-1"></i> Chat với AI
-              </router-link>
-            </div>
+
           </aside>
         </div>
       </div>
@@ -197,46 +187,6 @@ async function toggleFollowFromHome(userId) {
   align-self: start;
 }
 
-.ai-chat-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
-  padding: 1rem;
-  color: #fff;
-  margin-top: 0.8rem;
-}
-
-.ai-chat-card-icon {
-  font-size: 1.75rem;
-  margin-bottom: 0.4rem;
-}
-
-.ai-chat-card-title {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 0.3rem;
-  color: #fff;
-}
-
-.ai-chat-card-desc {
-  font-size: 0.78rem;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 0.75rem;
-}
-
-.ai-chat-card .btn-primary {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
-  border-radius: 999px;
-  font-weight: 600;
-  transition: background 0.2s;
-}
-
-.ai-chat-card .btn-primary:hover {
-  background: rgba(255, 255, 255, 0.35);
-  color: #fff;
-}
 
 @media (max-width: 920px) {
   .home-feed-layout {
