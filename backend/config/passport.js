@@ -115,6 +115,7 @@ if (hasFacebookCredentials) {
         callbackURL: callbackUrl,
         profileFields: ['id', 'displayName', 'emails', 'photos'],
         proxy: true,
+        enableProof: false,
     },
     async (accessToken, refreshToken, profile, done) => {
         try {
