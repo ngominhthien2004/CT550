@@ -9,6 +9,7 @@ const BrowseHistory = require('../models/BrowseHistory');
 const { createNotification } = require('../utils/notification');
 const { detectAIWithHuggingFace } = require('../services/huggingface.service');
 const { getAiDetectionThreshold } = require('../config/env');
+const { getSimilarArtworks: getSimilarArtworksService } = require('../services/similarity.service');
 const fs = require('fs');
 const path = require('path');
 const cloudinary = require('cloudinary').v2;
@@ -22,6 +23,22 @@ const normalizeTagName = (rawTagName = '') =>
 
 const AI_TAG_NAME = normalizeTagName('ai');
 const MAX_ARTWORK_IMAGES = 50;
+
+/**
+ * Aggregate word counts from all chapters of a series novel and update the artwork.
+ * For oneshot novels, wordCount comes from novelContent directly.
+ */
+async function aggregateWordCount(artworkId) {
+  const artwork = await Artwork.findById(artworkId);
+  if (!artwork || artwork.type !== 'novel') return;
+
+  if (artwork.novelFormat === 'series') {
+    const chapters = await Chapter.find({ artwork: artworkId }).select('wordCount').lean();
+    const totalWords = chapters.reduce((sum, ch) => sum + (ch.wordCount || 0), 0);
+    artwork.wordCount = totalWords;
+    await artwork.save();
+  }
+}
 
 async function runAiDetection(primaryImagePath) {
     try {
@@ -531,6 +548,9 @@ const createChapter = async (req, res, next) => {
         artwork.chapterCount = chapterNumber;
         await artwork.save();
 
+        // Aggregate word count from all chapters
+        await aggregateWordCount(req.params.id);
+
         res.status(201).json(chapter);
     } catch (error) {
         next(error);
@@ -560,6 +580,9 @@ const deleteChapter = async (req, res, next) => {
         const count = await Chapter.countDocuments({ artwork: req.params.id });
         artwork.chapterCount = count;
         await artwork.save();
+
+        // Recalculate word count
+        await aggregateWordCount(req.params.id);
 
         res.json({ message: 'Chapter deleted' });
     } catch (error) {
@@ -838,7 +861,27 @@ const updateChapter = async (req, res, next) => {
         if (content !== undefined) chapter.content = content;
 
         await chapter.save();
+
+        // Recalculate word count (content may have changed)
+        await aggregateWordCount(req.params.id);
+
         res.json(chapter);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * GET /api/artworks/:id/similar
+ * Returns similar artworks using collaborative filtering (item-to-item Jaccard similarity).
+ * Uses optionalAuth so logged-in users get personalized results.
+ */
+const getSimilarArtworks = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const limit = parseInt(req.query.limit, 10) || 24;
+        const results = await getSimilarArtworksService(id, limit);
+        res.json(results);
     } catch (error) {
         next(error);
     }
@@ -864,4 +907,5 @@ module.exports = {
     hideArtwork,
     unhideArtwork,
     getHiddenArtworks,
+    getSimilarArtworks,
 };

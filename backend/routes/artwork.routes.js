@@ -15,6 +15,7 @@ const {
     hideArtwork,
     unhideArtwork,
     getHiddenArtworks,
+    getSimilarArtworks,
 } = require('../controllers/artwork.controller');
 const { protect, admin, optionalAuth } = require('../middlewares/auth.middleware');
 const { getMaxUploadFileSizeBytes } = require('../config/env');
@@ -100,6 +101,9 @@ router.route('/admin/list')
 router.route('/:id')
     .get(optionalAuth, getArtworkById)
     .delete(protect, deleteArtwork);
+
+// Similar artworks (collaborative filtering)
+router.get('/:id/similar', optionalAuth, getSimilarArtworks);
 
 // Novel content update
 router.route('/:id/novel-content')

@@ -21,5 +21,6 @@ const browseHistorySchema = new mongoose.Schema(
 browseHistorySchema.index({ user: 1, createdAt: -1 })
 // Unique compound to avoid duplicate entries per user per artwork
 browseHistorySchema.index({ user: 1, artwork: 1 }, { unique: true })
+browseHistorySchema.index({ artwork: 1 })
 
 module.exports = mongoose.model('BrowseHistory', browseHistorySchema)

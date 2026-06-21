@@ -5,7 +5,7 @@ import { ArtworkDetailCard, ArtworkDetailSidebar, ArtworkDetailCommentsCard, Art
 import { NovelReader, ChapterManager } from '@/components/novel'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
-import { getArtworks, getChapters, getChapter, getReadingProgress, saveReadingProgress } from '../services/api'
+import { getArtworks, getChapters, getChapter, getReadingProgress, saveReadingProgress, getSimilarArtworks } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useArtworkStore } from '../stores/artwork.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
@@ -184,7 +184,7 @@ async function loadArtwork() {
 
 async function loadRelatedWorks() {
   try {
-    const { data } = await getArtworks()
+    const { data } = await getSimilarArtworks(artworkId.value)
     if (!Array.isArray(data)) {
       relatedWorks.value = []
       return
@@ -194,7 +194,17 @@ async function loadRelatedWorks() {
       .filter((item) => item?._id && item._id !== artworkId.value)
       .slice(0, 24)
   } catch (_error) {
-    relatedWorks.value = []
+    // Fallback: if CF endpoint fails, fetch recent artworks as before
+    try {
+      const { data: fallbackData } = await getArtworks()
+      if (Array.isArray(fallbackData)) {
+        relatedWorks.value = fallbackData
+          .filter((item) => item?._id && item._id !== artworkId.value)
+          .slice(0, 24)
+      }
+    } catch {
+      relatedWorks.value = []
+    }
   }
 }
 

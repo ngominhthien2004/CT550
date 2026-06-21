@@ -66,6 +66,7 @@ export const getDiscovery = (params = {}) => api.get('/feed/discovery', { params
 export const getRankings = (params = {}) => api.get('/feed/rankings', { params })
 export const getArtworks = (params = {}) => api.get('/artworks', { params })
 export const getArtworkById = (artworkId) => api.get(`/artworks/${artworkId}`)
+export const getSimilarArtworks = (artworkId, params = {}) => api.get(`/artworks/${artworkId}/similar`, { params })
 export const createArtwork = (formData) => api.post('/artworks', formData)
 export const reportArtwork = (artworkId, payload) => api.post(`/artworks/${artworkId}/report`, payload)
 export const getTags = (params = {}) => api.get('/tags', { params })

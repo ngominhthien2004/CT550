@@ -23,6 +23,7 @@ const bookmarkSchema = mongoose.Schema({
 
 bookmarkSchema.index({ user: 1, artwork: 1 }, { unique: true });
 bookmarkSchema.index({ user: 1, createdAt: -1 });
+bookmarkSchema.index({ artwork: 1 });
 
 const Bookmark = mongoose.model('Bookmark', bookmarkSchema);
 
