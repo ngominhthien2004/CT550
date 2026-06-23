@@ -46,6 +46,7 @@ Xây dựng hệ thống website chuyên biệt để chia sẻ, lưu trữ và 
   - ✅ **Manga/Comic:** Hỗ trợ xem dạng cuộn, nhiều ảnh theo thứ tự trang
   - ✅ **GIF:** Định dạng ảnh động — có policy riêng (`backend/docs/GIF_UPLOAD_POLICY.md`)
   - ✅ **Novels:** Trình soạn thảo nội dung, đọc truyện chữ (`NovelReader.vue`), quản lý chương (`ChapterManager.vue`), lưu tiến độ đọc (ReadingProgress)
+  - ✅ **Chỉnh sửa thông tin artwork (Edit artwork):** PUT /api/artworks/:id — sửa title, description, ageRating, tags. Owner và admin được phép. Modal EditArtworkModal.vue trên DashboardWorksPanel (dấu ba chấm → Edit). Tag usageCount được cập nhật đúng (tăng cho tag mới, giảm cho tag bị xóa). Kèm xóa artwork ngay trên Dashboard.
 - **Hệ thống Tags nâng cao:**
   - ✅ Gắn thẻ đa ngôn ngữ (hỗ trợ en/vi/ja), đếm lượt dùng (usageCount)
   - ✅ Gợi ý thẻ thông minh (auto-tagging) — Google Cloud Vision, tự động gợi ý 10 tags khi upload

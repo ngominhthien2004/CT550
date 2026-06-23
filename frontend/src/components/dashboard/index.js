@@ -3,5 +3,6 @@ export { default as CreatorRecentlyUploadedPanel } from './CreatorRecentlyUpload
 export { default as CreatorReactionsCard } from './CreatorReactionsCard.vue'
 export { default as DashboardWorksPanel } from './DashboardWorksPanel.vue'
 export { default as DashboardSeriesPanel } from './DashboardSeriesPanel.vue'
+export { default as EditArtworkModal } from './EditArtworkModal.vue'
 export { default as CreateSeriesModal } from './CreateSeriesModal.vue'
 export { default as DashboardReactionsPanel } from './DashboardReactionsPanel.vue'

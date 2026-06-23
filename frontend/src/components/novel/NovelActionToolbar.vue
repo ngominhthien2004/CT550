@@ -1,52 +1,117 @@
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+
 defineProps({
-  likeCount: { type: Number, default: 0 },
-  bookmarkCount: { type: Number, default: 0 },
   isLiked: { type: Boolean, default: false },
   isBookmarked: { type: Boolean, default: false },
   likeLoading: { type: Boolean, default: false },
   bookmarkLoading: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['toggle-like', 'toggle-bookmark'])
+const emit = defineEmits(['toggle-like', 'toggle-bookmark', 'report'])
 
-function formatNumber(value) {
-  return new Intl.NumberFormat().format(Number(value) || 0)
-}
+const showMoreMenu = ref(false)
+const toastMessage = ref('')
+const showToast = ref(false)
 
 function handleShare() {
-  navigator.clipboard.writeText(window.location.href)
-  alert('Đã sao chép liên kết trang Novel này vào clipboard!')
+  if (navigator.share) {
+    navigator.share({ title: document.title, url: window.location.href }).catch(() => {})
+  } else {
+    handleCopyLink()
+  }
 }
+
+function toggleMoreMenu() {
+  showMoreMenu.value = !showMoreMenu.value
+}
+
+async function handleCopyLink() {
+  try {
+    await navigator.clipboard.writeText(window.location.href)
+  } catch {
+    const textarea = document.createElement('textarea')
+    textarea.value = window.location.href
+    document.body.appendChild(textarea)
+    textarea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textarea)
+  }
+  showToastMessage('Link copied!')
+  showMoreMenu.value = false
+}
+
+function handleReport() {
+  emit('report')
+  showMoreMenu.value = false
+}
+
+function showToastMessage(msg) {
+  toastMessage.value = msg
+  showToast.value = true
+  setTimeout(() => {
+    showToast.value = false
+  }, 2000)
+}
+
+function onClickOutside(event) {
+  if (showMoreMenu.value) {
+    const target = event.target
+    if (!target.closest('.more-dropdown') && !target.closest('.icon-btn[aria-label="More options"]')) {
+      showMoreMenu.value = false
+    }
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', onClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', onClickOutside)
+})
 </script>
 
 <template>
   <div class="novel-action-toolbar">
-    <button type="button"
-      class="action-btn like-btn"
-      :class="{ 'is-active': isLiked, 'is-loading': likeLoading }"
+    <button
+      type="button"
+      class="icon-btn"
+      :class="{ active: isLiked }"
       :disabled="likeLoading"
+      aria-label="Like"
       @click="emit('toggle-like')"
     >
-      <span class="btn-icon">❤️</span>
-      <span class="btn-count">{{ formatNumber(likeCount) }}</span>
+      <i :class="[isLiked ? 'fa-solid' : 'fa-regular', 'fa-heart']" aria-hidden="true"></i>
     </button>
 
-    <button type="button"
-      class="action-btn bookmark-btn"
-      :class="{ 'is-active': isBookmarked, 'is-loading': bookmarkLoading }"
+    <button
+      type="button"
+      class="icon-btn"
+      :class="{ active: isBookmarked }"
       :disabled="bookmarkLoading"
+      aria-label="Bookmark"
       @click="emit('toggle-bookmark')"
     >
-      <span class="btn-icon">🔖</span>
-      <span class="btn-count">{{ formatNumber(bookmarkCount) }}</span>
+      <i :class="[isBookmarked ? 'fa-solid' : 'fa-regular', 'fa-bookmark']" aria-hidden="true"></i>
     </button>
 
-    <button type="button" class="action-btn share-btn" @click="handleShare" title="Copy link to share">
-      <span class="btn-icon">🔗</span>
-      <span class="btn-text">Share</span>
+    <button type="button" class="icon-btn" aria-label="Share" @click="handleShare">
+      <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>
     </button>
+
+    <div class="more-btn-wrapper">
+      <button type="button" class="icon-btn" aria-label="More options" @click="toggleMoreMenu">
+        <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+      </button>
+      <div v-if="showMoreMenu" class="more-dropdown">
+        <button type="button" @click="handleCopyLink">Copy link</button>
+        <button type="button" @click="handleReport">Report</button>
+      </div>
+    </div>
   </div>
+
+  <div v-if="showToast" class="toast-notification">{{ toastMessage }}</div>
 </template>
 
 <style scoped>
@@ -60,68 +125,100 @@ function handleShare() {
   margin-top: 2.5rem;
 }
 
-.action-btn {
+.icon-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: var(--novel-surface);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  height: 2.6rem;
-  padding: 0 1.25rem;
-  border: 1px solid var(--novel-border);
-  border-radius: 20px;
-  background: var(--novel-surface);
   color: var(--novel-text-color);
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  user-select: none;
+  transition: all 0.2s;
 }
 
-.action-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+.icon-btn:hover:not(:disabled) {
+  background: var(--novel-border);
 }
 
-.like-btn:hover {
-  border-color: #f43f5e;
-  background-color: color-mix(in srgb, #f43f5e 8%, var(--novel-surface));
-  color: #f43f5e;
+.icon-btn.active {
+  color: var(--novel-surface);
+  background: #f91880;
+  border-color: #f91880;
 }
 
-.like-btn.is-active {
-  background-color: #f43f5e;
-  border-color: #f43f5e;
-  color: #ffffff;
-}
-
-.bookmark-btn:hover {
-  border-color: #eab308;
-  background-color: color-mix(in srgb, #eab308 8%, var(--novel-surface));
-  color: #ca8a04;
-}
-
-.bookmark-btn.is-active {
-  background-color: #eab308;
-  border-color: #eab308;
-  color: #ffffff;
-}
-
-.share-btn:hover {
-  border-color: var(--novel-accent);
-  background-color: color-mix(in srgb, var(--novel-accent) 8%, var(--novel-surface));
-  color: var(--novel-accent);
-}
-
-.action-btn.is-loading {
-  opacity: 0.6;
+.icon-btn:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
-.btn-count {
-  font-size: 0.8rem;
-  font-weight: 700;
-  font-family: ui-monospace, 'SF Mono', monospace;
-  opacity: 0.9;
+.more-btn-wrapper {
+  position: relative;
+}
+
+.more-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  background: var(--novel-bg);
+  border: 1px solid var(--novel-border);
+  border-radius: 8px;
+  padding: 4px;
+  min-width: 160px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 10;
+}
+
+.more-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  color: var(--novel-text-color);
+  font-size: 0.85rem;
+  text-align: left;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.more-dropdown button:hover:not(:disabled) {
+  background: var(--novel-surface);
+  color: var(--novel-accent);
+}
+
+.more-dropdown button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.toast-notification {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: #f1f5f9;
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  animation: toastFadeIn 0.3s ease-out;
+}
+
+@keyframes toastFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 </style>

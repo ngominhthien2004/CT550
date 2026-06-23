@@ -1,5 +1,5 @@
 <script setup>
-import { computed, toRefs } from 'vue'
+import { ref, computed, toRefs } from 'vue'
 
 const emit = defineEmits(['toggle-like', 'toggle-bookmark'])
 
@@ -15,6 +15,12 @@ const props = defineProps({
 })
 
 const { artwork } = toRefs(props)
+
+const showFullDescription = ref(false)
+
+function toggleDescription() {
+  showFullDescription.value = !showFullDescription.value
+}
 
 function formatNumber(value) {
   return new Intl.NumberFormat().format(Number(value) || 0)
@@ -36,7 +42,7 @@ const displayNumbers = computed(() => {
 // Novel synopsis truncation
 const truncatedDescription = computed(() => {
   const desc = artwork.value?.description || ''
-  if (desc.length > 200) {
+  if (!showFullDescription.value && desc.length > 200) {
     return desc.substring(0, 200)
   }
   return desc
@@ -51,7 +57,7 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
 
     <!-- Unified description for all artwork types -->
     <p v-if="artwork.description" class="description mb-0">
-      {{ truncatedDescription }}<span v-if="isDescriptionLong" class="read-more-link">... Read more</span>
+      {{ truncatedDescription }}<span v-if="isDescriptionLong" class="read-more-link" role="button" tabindex="0" @click="toggleDescription">{{ showFullDescription ? 'Show less' : '... Read more' }}</span>
     </p>
 
     <div v-if="tagList.length" class="tag-row">
@@ -174,7 +180,11 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
 .read-more-link {
   color: var(--accent);
   font-weight: 500;
-  cursor: default;
+  cursor: pointer;
   white-space: nowrap;
+}
+
+.read-more-link:hover {
+  text-decoration: underline;
 }
 </style>

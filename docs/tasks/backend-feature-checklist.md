@@ -13,7 +13,7 @@ Mục tiêu: đối chiếu backend API với frontend để theo dõi độ ph�
 | --------------------------------------------- | -------------- | --------------- | ------------------------------------------ |
 | Auth register/login                           | Done           | Done            | `auth.routes` + SignUp/Login views         |
 | OAuth login (Google)                          | Done           | Done            | Implemented with Passport Google OAuth 2.0 |
-| Artwork CRUD/list/detail                      | Done           | Done            | Upload + Feed + Detail                     |
+| Artwork CRUD/list/detail                      | Done           | Done            | PUT /api/artworks/:id (updateArtwork) — owner/admin edit title, description, ageRating, tags. Tag usageCount cập nhật đúng. Frontend: EditArtworkModal.vue + Dashboard menu. |
 | Comment create/list/replies/delete (+sticker) | Done           | Done            | Detail comments flow with threaded replies |
 | Bookmark create/list/delete/status/toggle     | Done           | Done            | Detail + Bookmarks page                    |
 | Like create/list/delete/status/toggle         | Done           | Done            | Detail + Favorites page                    |

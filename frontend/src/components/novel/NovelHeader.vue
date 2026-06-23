@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   artwork: { type: Object, required: true },
   wordCount: { type: Number, default: 0 },
   readingTime: { type: Number, default: 0 },
@@ -8,6 +10,21 @@ defineProps({
 function formatNumber(value) {
   return new Intl.NumberFormat().format(Number(value) || 0)
 }
+
+const uploadedAtLabel = computed(() => {
+  if (!props.artwork?.createdAt) return ''
+  const d = new Date(props.artwork.createdAt)
+  const now = new Date()
+  const diff = now - d
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return 'Just now'
+  if (mins < 60) return `${mins} minute${mins > 1 ? 's' : ''} ago`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`
+  const days = Math.floor(hours / 24)
+  if (days < 30) return `${days} day${days > 1 ? 's' : ''} ago`
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+})
 </script>
 
 <template>
@@ -58,17 +75,27 @@ function formatNumber(value) {
 
       <div class="novel-stats">
         <span class="stat-item" title="Views">
-          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <i class="fa-regular fa-eye" aria-hidden="true"></i>
           {{ formatNumber(artwork.viewCount) }}
         </span>
         <span class="stat-item" title="Likes">
-          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <i class="fa-regular fa-heart" aria-hidden="true"></i>
           {{ formatNumber(artwork.likeCount) }}
         </span>
         <span class="stat-item" title="Bookmarks">
-          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          <i class="fa-regular fa-bookmark" aria-hidden="true"></i>
           {{ formatNumber(artwork.bookmarkCount) }}
         </span>
+        <span class="stat-item" title="Comments">
+          <i class="fa-regular fa-comment" aria-hidden="true"></i>
+          {{ formatNumber(artwork.commentCount) }}
+        </span>
+      </div>
+
+      <div class="novel-meta-secondary">
+        <span v-if="uploadedAtLabel" class="meta-item">{{ uploadedAtLabel }}</span>
+        <span v-if="uploadedAtLabel" class="meta-separator">·</span>
+        <span class="meta-item">{{ artwork.type }} · {{ artwork.ageRating }}</span>
       </div>
     </div>
   </div>
@@ -181,7 +208,16 @@ function formatNumber(value) {
   white-space: nowrap;
 }
 
-.stat-icon { width: 1rem; height: 1rem; flex-shrink: 0; }
+.stat-item i { font-size: 0.9rem; width: 1rem; text-align: center; }
+
+.novel-meta-secondary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--novel-muted);
+  font-weight: 400;
+}
 
 .novel-tags {
   display: flex;

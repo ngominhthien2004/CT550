@@ -453,6 +453,78 @@ const deleteArtwork = async (req, res, next) => {
     }
 };
 
+// Update Artwork (title, description, tags, ageRating)
+const updateArtwork = async (req, res, next) => {
+    try {
+        const artwork = await Artwork.findById(req.params.id);
+
+        if (!artwork) {
+            res.status(404);
+            return next(new Error('Artwork not found'));
+        }
+
+        if (artwork.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+            res.status(401);
+            return next(new Error('User not authorized to update this artwork'));
+        }
+
+        const { title, description, ageRating, tags } = req.body;
+
+        if (title !== undefined) artwork.title = title;
+        if (description !== undefined) artwork.description = description;
+        if (ageRating !== undefined) artwork.ageRating = ageRating;
+
+        // Handle tag updates if provided
+        if (tags !== undefined) {
+            const rawTagList = Array.isArray(tags)
+                ? tags
+                : typeof tags === 'string'
+                    ? tags.split(',').map(t => t.trim()).filter(Boolean)
+                    : [tags];
+            const normalizedTagList = rawTagList
+                .map((tagName) => normalizeTagName(tagName))
+                .filter(Boolean);
+            const uniqueTagList = [...new Set(normalizedTagList)];
+
+            const newTagIds = [];
+            for (const tagName of uniqueTagList) {
+                let tag = await Tag.findOne({ name: tagName });
+                if (!tag) {
+                    tag = await Tag.create({ name: tagName });
+                }
+                newTagIds.push(tag._id);
+            }
+
+            // Decrement usage count for removed tags
+            const oldTagIds = (artwork.tags || []).map(id => id.toString());
+            const newTagIdStrings = newTagIds.map(id => id.toString());
+            for (const oldId of oldTagIds) {
+                if (!newTagIdStrings.includes(oldId)) {
+                    await Tag.findByIdAndUpdate(oldId, { $inc: { usageCount: -1 } });
+                }
+            }
+            // Increment usage count for newly added tags
+            for (const newId of newTagIdStrings) {
+                if (!oldTagIds.includes(newId)) {
+                    await Tag.findByIdAndUpdate(newId, { $inc: { usageCount: 1 } });
+                }
+            }
+
+            artwork.tags = newTagIds;
+        }
+
+        await artwork.save();
+
+        const updated = await Artwork.findById(artwork._id)
+            .populate('user', 'username displayName avatar')
+            .populate('tags', 'name');
+
+        res.json(updated);
+    } catch (error) {
+        next(error);
+    }
+};
+
 // Novel content update
 const updateNovelContent = async (req, res, next) => {
     try {
@@ -893,6 +965,7 @@ module.exports = {
     getArtworkById,
     getAdminArtworks,
     deleteArtwork,
+    updateArtwork,
     updateNovelContent,
     getChapters,
     getChapter,

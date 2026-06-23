@@ -175,7 +175,21 @@ Ghi chú frontend-only:
 3. Xóa file upload trong disk.
 4. Xóa document artwork.
 
-## 5.5 Favorite tag (frontend-only)
+### 5.5 Chỉnh sửa thông tin artwork (Edit artwork metadata) — ✅ ĐÃ TRIỂN KHAI
+
+- **Frontend:** Dashboard tab "My works" → dấu ba chấm trên mỗi artwork card → "Edit" mở `EditArtworkModal.vue`
+- **API:** `PUT /api/artworks/:id`
+- **Middleware:** `protect`
+- **Controller:** `updateArtwork`
+- **Workflow:**
+  1. Kiểm tra artwork tồn tại.
+  2. Kiểm tra quyền: owner hoặc admin.
+  3. Cập nhật title, description, ageRating, tags nếu có trong body.
+  4. Với tags: normalize, tạo tag mới nếu chưa tồn tại, cập nhật usageCount (giảm cho tag bị gỡ, tăng cho tag mới thêm).
+  5. Trả về artwork đã populate user + tags.
+- **Xóa artwork:** Dashboard menu → "Delete" → confirmation dialog → gọi `DELETE /api/artworks/:id`.
+
+## 5.6 Favorite tag (frontend-only)
 
 - Trang tag (`/tags/:tagName`) có nút Add/Remove favorite tag.
 - Nếu chưa đăng nhập, bấm Add/Remove sẽ chuyển về `/login?redirect=<current-page>`.

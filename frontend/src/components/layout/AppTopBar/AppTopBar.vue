@@ -50,60 +50,15 @@ const searchScopes = [
 ]
 
 const serviceLinks = computed(() => {
-  const baseLinks = [
-  {
-    key: 'daily',
-    label: 'Daily Feed',
-    description: 'Artwork stream from artists you follow',
-    to: '/feed',
-    thumbnail: 'https://picsum.photos/seed/ct550-daily/96/96',
-  },
-  {
-    key: 'ranking',
-    label: 'Rankings',
-    description: 'Trending illustrations and manga',
-    to: '/rankings',
-    thumbnail: 'https://picsum.photos/seed/ct550-ranking/96/96',
-  },
-  {
-    key: 'favorite',
-    label: 'My Favorite',
-    description: 'Works you liked and want to revisit',
-    to: '/favorites',
-    thumbnail: 'https://picsum.photos/seed/ct550-favorites/96/96',
-  },
-  {
-    key: 'bookmarks',
-    label: 'Bookmarks',
-    description: 'Saved works and reading list',
-    to: '/bookmarks',
-    thumbnail: 'https://picsum.photos/seed/ct550-bookmarks/96/96',
-  },
-  {
-    key: 'upload',
-    label: 'Create Artwork',
-    description: 'Post illustration, manga, GIF, or novel',
-    to: '/upload/illust',
-    thumbnail: 'https://picsum.photos/seed/ct550-upload/96/96',
-  },
-  {
-    key: 'draw',
-    label: 'Vẽ tranh',
-    description: 'Create digital drawings and sketches',
-    to: '/draw',
-    thumbnail: 'https://picsum.photos/seed/ct550-draw/96/96',
-  },
+  return [
+    {
+      key: 'draw',
+      label: 'Vẽ tranh',
+      description: 'Create digital drawings and sketches',
+      to: '/draw',
+      thumbnail: '/service-draw.png',
+    },
   ]
-
-  const adminLink = currentUser.value?.role === 'admin' ? {
-    key: 'admin',
-    label: 'Admin',
-    description: 'Manage users, artworks, and moderation',
-    to: '/admin',
-    thumbnail: 'https://picsum.photos/seed/ct550-admin/96/96',
-  } : null
-
-  return adminLink ? [adminLink, ...baseLinks] : baseLinks
 })
 
 const userMainLinks = computed(() => {

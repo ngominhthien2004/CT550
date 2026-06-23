@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const {
     createArtwork, getArtworks, getArtworkById,
-    getAdminArtworks, deleteArtwork,
+    getAdminArtworks, deleteArtwork, updateArtwork,
     updateNovelContent,
     getChapters, getChapter, createChapter, updateChapter, deleteChapter,
     saveReadingProgress, getReadingProgress,
@@ -100,6 +100,7 @@ router.route('/admin/list')
 
 router.route('/:id')
     .get(optionalAuth, getArtworkById)
+    .put(protect, updateArtwork)
     .delete(protect, deleteArtwork);
 
 // Similar artworks (collaborative filtering)

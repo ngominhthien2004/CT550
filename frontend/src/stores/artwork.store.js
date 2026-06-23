@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { createArtwork, getArtworkById } from '../services/api.js'
+import { createArtwork, getArtworkById, updateArtwork, deleteArtwork } from '../services/api.js'
 
 export const useArtworkStore = defineStore('artwork', {
   state: () => ({
@@ -84,6 +84,23 @@ export const useArtworkStore = defineStore('artwork', {
         throw error
       } finally {
         this.createLoading = false
+      }
+    },
+
+    async updateArtwork(artworkId, payload) {
+      try {
+        const { data } = await updateArtwork(artworkId, payload)
+        return data
+      } catch (error) {
+        throw error
+      }
+    },
+
+    async deleteArtwork(artworkId) {
+      try {
+        await deleteArtwork(artworkId)
+      } catch (error) {
+        throw error
       }
     },
   },

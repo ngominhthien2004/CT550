@@ -32,6 +32,8 @@ Mục tiêu: theo dõi trạng thái các chức năng đã/đang triển khai t
 | Google OAuth (Passport)                                               | FE, BE, DB       | gem-implementer                                                              | Done        | -            | -            | Backend passport.js, googleCallback, AuthCallbackView tested                                                | 2026-05-25   |
 | Facebook OAuth (Passport)                                               | FE, BE, DB       | opencode                                                                     | Done        | -                                                 | e9481f3      | Backend passport-facebook strategy, facebookCallback, AuthCallbackView, LoginView/SignUpView buttons. Render deploy live. | 2026-06-20   |
 | Pixiv-style multi-image artwork detail viewer                         | FE               | gem-implementer                                                              | Done        | -                                                 | -            | Frontend build pass; Playwright mocked multi-page detail smoke pass; Pixiv AJAX crawl verified 28/30/33/30/31-page examples | 2026-06-05   |
+| Artwork Edit (update metadata)                                          | FE, BE, DB       | opencode                                                                     | Done           | -                                                 | pending (uncommitted) | PUT /api/artworks/:id với validation owner/admin, cập nhật title/description/ageRating/tags + tag usageCount. Frontend: EditArtworkModal.vue, DashboardWorksPanel (menu Edit/Delete), store actions, API service. | 2026-06-23   |
+
 
 ## Trạng thái chuẩn
 
