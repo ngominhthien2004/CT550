@@ -18,7 +18,7 @@ const normalizeTagName = (rawTagName = '') =>
     String(rawTagName)
         .trim()
         .replace(/^#+/, '')
-        .replace(/\s+/g, '_')
+        .replace(/[\s-]+/g, '_')
         .toLowerCase();
 
 const AI_TAG_NAME = normalizeTagName('ai');

@@ -35,7 +35,7 @@ function normalizeTagName(rawValue) {
   return String(rawValue || '')
     .trim()
     .replace(/^#+/, '')
-    .replace(/\s+/g, '_')
+    .replace(/[\s-]+/g, '_')
     .toLowerCase()
 }
 
