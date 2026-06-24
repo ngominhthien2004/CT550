@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUpdate, onMounted, onUnmounted, ref, toRefs, watch } from 'vue'
 import ArtworkReportModal from '../ArtworkReportModal.vue'
 import { useAuthStore } from '../../../stores/auth.store'
+import R18BlurOverlay from '../../common/R18BlurOverlay.vue'
 
 const props = defineProps({
   artwork: {
@@ -134,21 +135,25 @@ watch(() => artwork.value?._id, resetViewerState, { immediate: true })
 <template>
   <div class="viewer-card">
     <div v-if="imageList.length > 0" class="image-stack" :class="{ collapsed: !showAllImages && imageList.length > 1 }" :aria-label="`${artwork.title} pages`">
-      <figure
+      <R18BlurOverlay
         v-for="(image, index) in visibleImages"
         :key="`${artwork._id}-page-${index}`"
-        :ref="(element) => setImageRef(element, index)"
-        class="artwork-page"
+        :artwork="artwork"
       >
-        <span v-if="imageList.length > 1" class="page-counter">{{ index + 1 }} / {{ imageList.length }}</span>
-        <img
-          class="img-fluid w-100 page-image"
-          :src="image"
-          :alt="imageList.length > 1 ? `${artwork.title} page ${index + 1}` : artwork.title"
-          :loading="index === 0 ? 'eager' : 'lazy'"
-          decoding="async"
-        />
-      </figure>
+        <figure
+          :ref="(element) => setImageRef(element, index)"
+          class="artwork-page"
+        >
+          <span v-if="imageList.length > 1" class="page-counter">{{ index + 1 }} / {{ imageList.length }}</span>
+          <img
+            class="img-fluid w-100 page-image"
+            :src="image"
+            :alt="imageList.length > 1 ? `${artwork.title} page ${index + 1}` : artwork.title"
+            :loading="index === 0 ? 'eager' : 'lazy'"
+            decoding="async"
+          />
+        </figure>
+      </R18BlurOverlay>
       <div class="viewer-actions">
         <button
           type="button"

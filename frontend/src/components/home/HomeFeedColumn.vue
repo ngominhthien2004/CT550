@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import R18BlurOverlay from '../common/R18BlurOverlay.vue'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
@@ -109,21 +110,23 @@ const processedWorks = computed(() =>
           </button>
         </header>
 
-        <router-link :to="`/artworks/${work._id}`" class="feed-cover" :class="work._imageGridClass">
-          <template v-for="image in work._visibleImages" :key="image">
-            <img :src="image" :alt="work.title" loading="lazy" />
-          </template>
+        <R18BlurOverlay :artwork="work" :showBadgeOnly="true">
+          <router-link :to="`/artworks/${work._id}`" class="feed-cover" :class="work._imageGridClass">
+            <template v-for="image in work._visibleImages" :key="image">
+              <img :src="image" :alt="work.title" loading="lazy" />
+            </template>
 
-          <template v-if="work._hasMultipleImages">
-            <span class="feed-arrow left" aria-hidden="true">
-              <i class="fa-solid fa-chevron-left"></i>
-            </span>
-            <span class="feed-arrow right" aria-hidden="true">
-              <i class="fa-solid fa-chevron-right"></i>
-            </span>
-            <span class="feed-page-count" aria-hidden="true">{{ work._visibleImagesLength }}</span>
-          </template>
-        </router-link>
+            <template v-if="work._hasMultipleImages">
+              <span class="feed-arrow left" aria-hidden="true">
+                <i class="fa-solid fa-chevron-left"></i>
+              </span>
+              <span class="feed-arrow right" aria-hidden="true">
+                <i class="fa-solid fa-chevron-right"></i>
+              </span>
+              <span class="feed-page-count" aria-hidden="true">{{ work._visibleImagesLength }}</span>
+            </template>
+          </router-link>
+        </R18BlurOverlay>
 
         <div class="feed-card-body">
           <router-link :to="`/artworks/${work._id}`" class="feed-title">{{ work.title }}</router-link>
