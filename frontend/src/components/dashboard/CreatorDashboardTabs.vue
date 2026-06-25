@@ -9,8 +9,6 @@ const tabs = [
   { key: 'home', label: 'Home' },
   { key: 'works', label: 'Works' },
   { key: 'reactions', label: 'Reactions' },
-  { key: 'analytics', label: 'Access analytics' },
-  { key: 'ranking', label: 'Ranking report' },
 ]
 
 function selectTab(key) {

@@ -205,11 +205,6 @@ watch(
 
         <!-- Reactions tab content -->
         <DashboardReactionsPanel v-if="activeTab === 'reactions'" />
-
-        <!-- Placeholder tabs -->
-        <div v-if="activeTab !== 'home' && activeTab !== 'works' && activeTab !== 'reactions'" class="tab-placeholder">
-          <p>{{ activeTab }} tab — coming soon</p>
-        </div>
       </div>
     </section>
 
@@ -333,71 +328,6 @@ watch(
   grid-template-columns: 1fr 1fr 1fr;
   gap: 0.85rem;
   align-items: start;
-}
-
-.tab-placeholder {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: var(--muted);
-  font-weight: 600;
-  font-size: 0.95rem;
-  border-radius: 16px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-}
-
-.state-note {
-  color: var(--muted);
-  font-weight: 600;
-  padding: 0.95rem 1rem;
-  border-radius: 14px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-}
-
-.state-note--error {
-  color: #b42318;
-  background: rgba(180, 35, 24, 0.06);
-  border-color: rgba(180, 35, 24, 0.16);
-}
-
-.coachmark-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.58);
-  z-index: 60;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-}
-
-.coachmark-card {
-  width: min(430px, 100%);
-  border-radius: 16px;
-  padding: 1.6rem 1.4rem 1.4rem;
-  background: linear-gradient(135deg, #0096fa 0%, #7c3aed 100%);
-  color: #fff;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.coachmark-text {
-  font-size: 1.1rem;
-  line-height: 1.55;
-  font-weight: 600;
-}
-
-.coachmark-btn {
-  margin-top: 1rem;
-  height: 40px;
-  border-radius: 999px;
-  border: none;
-  min-width: 100px;
-  padding: 0 1.2rem;
-  background: #fff;
-  color: #0096fa;
-  font-size: 0.88rem;
-  font-weight: 800;
 }
 
 @media (max-width: 960px) {
