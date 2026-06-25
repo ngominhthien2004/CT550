@@ -142,6 +142,7 @@ function formatDate(value) {
   grid-template-rows: auto auto;
   column-gap: 0.65rem;
   row-gap: 0.58rem;
+  max-width: 320px;
 }
 
 .work-thumb {
