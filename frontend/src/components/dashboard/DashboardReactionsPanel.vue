@@ -132,7 +132,7 @@ function getArtworkThumb(artwork) {
       <div v-else-if="reactions.length === 0" class="empty-state">
         <div class="empty-icon-wrap">
           <i v-if="currentTab === 'comments'" class="fa-regular fa-comment" aria-hidden="true"></i>
-          <i v-else-if="currentTab === 'likes'" class="fa-regular fa-thumbs-up" aria-hidden="true"></i>
+          <i v-else-if="currentTab === 'likes'" class="fa-regular fa-heart" aria-hidden="true"></i>
           <i v-else class="fa-regular fa-bookmark" aria-hidden="true"></i>
         </div>
         <p class="empty-text">
@@ -176,7 +176,7 @@ function getArtworkThumb(artwork) {
               </template>
               <template v-else-if="currentTab === 'likes'">
                 <span class="action-text">
-                  <i class="fa-solid fa-thumbs-up" aria-hidden="true"></i>
+                  <i class="fa-solid fa-heart" aria-hidden="true"></i>
                   liked your work
                 </span>
               </template>
@@ -450,8 +450,8 @@ function getArtworkThumb(artwork) {
   margin-right: 0.25rem;
 }
 
-.action-text i.fa-thumbs-up {
-  color: var(--accent);
+.action-text i.fa-heart {
+  color: var(--danger);
 }
 
 .action-text i.fa-bookmark {

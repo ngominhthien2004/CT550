@@ -27,7 +27,7 @@ defineEmits(['view-details'])
         <strong>{{ stats.views.toLocaleString() }}</strong>
       </li>
       <li>
-        <span class="metric-label"><i class="fa-regular fa-thumbs-up" aria-hidden="true"></i> Likes</span>
+        <span class="metric-label"><i class="fa-regular fa-heart" aria-hidden="true"></i> Likes</span>
         <strong>{{ stats.likes.toLocaleString() }}</strong>
       </li>
       <li>
