@@ -3,7 +3,7 @@ import { computed, onMounted, onBeforeUnmount, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import UploadTagSelector from '../components/upload/UploadTagSelector.vue'
-import api, { getArtworks, getTags } from '../services/api'
+import api, { getArtworkById, getTags } from '../services/api'
 import { useArtworkStore } from '../stores/artwork.store'
 import { toggleNavCollapsed } from '../utils/viewNavigation'
 
@@ -138,20 +138,12 @@ async function loadArtwork() {
   error.value = ''
 
   try {
-    const { data } = await getArtworks({ limit: 1, id: artworkId })
-    const items = Array.isArray(data) ? data : []
-    const found = items.find((item) => item._id === artworkId)
-    if (!found) {
-      error.value = 'Artwork not found.'
-      loading.value = false
-      return
-    }
-
-    artwork.value = found
-    form.title = found.title || ''
-    form.description = found.description || ''
-    form.ageRating = found.ageRating || 'all'
-    form.tags = (found.tags || [])
+    const { data } = await getArtworkById(artworkId)
+    artwork.value = data
+    form.title = data.title || ''
+    form.description = data.description || ''
+    form.ageRating = data.ageRating || 'all'
+    form.tags = (data.tags || [])
       .map((t) => (typeof t === 'string' ? t : t.name || ''))
       .filter(Boolean)
   } catch (err) {
