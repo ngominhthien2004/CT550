@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '../views/HomePage.vue'
 import TypedHomeFeedView from '../views/TypedHomeFeedView.vue'
 import NovelTopPageView from '../views/NovelTopPageView.vue'
+import PlansTopPageView from '../views/PlansTopPageView.vue'
 import FeedView from '../views/FeedView.vue'
 import SearchResultsView from '../views/SearchResultsView.vue'
 import BookmarksView from '../views/BookmarksView.vue'
@@ -64,6 +65,11 @@ const routes = [
     path: '/novels',
     name: 'novels',
     component: NovelTopPageView,
+  },
+  {
+    path: '/plans',
+    name: 'plans',
+    component: PlansTopPageView,
   },
   { path: '/feed', name: 'feed', component: FeedView },
   { path: '/search', name: 'search-results', component: SearchResultsView },
