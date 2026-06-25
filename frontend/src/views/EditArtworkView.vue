@@ -236,6 +236,18 @@ onBeforeUnmount(() => {
           </div>
 
           <form class="edit-form" @submit.prevent="handleSubmit">
+            <div class="settings-card">
+              <div class="settings-row">
+                <div class="settings-label">
+                  <span class="placeholder-badge"></span>
+                  <span class="label-text">Type of Work</span>
+                </div>
+                <div class="settings-options">
+                  <span class="type-badge">{{ artwork.type }}</span>
+                </div>
+              </div>
+            </div>
+
             <div class="form-card">
               <div class="title-row-wrap">
                 <input
@@ -568,6 +580,23 @@ onBeforeUnmount(() => {
 
 .label-text--required {
   color: #ef4444;
+}
+
+.placeholder-badge {
+  display: inline-block;
+  min-width: 62px;
+  height: 1px;
+}
+
+.type-badge {
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: capitalize;
 }
 
 .settings-options {
