@@ -125,6 +125,7 @@ function handleArtworkUpdated() {
     <div v-if="activeSubTab === 'works'" class="works-content">
       <p v-if="loadingArtworks" class="state-note">Loading works...</p>
       <div v-else-if="artworks.length === 0" class="empty-state">
+        <i class="fa-regular fa-images" aria-hidden="true"></i>
         <p>You haven't posted any works yet.</p>
       </div>
       <div v-else class="works-grid">
@@ -192,7 +193,7 @@ function handleArtworkUpdated() {
 
 <style scoped>
 .works-panel {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .works-subtabs {
@@ -200,13 +201,15 @@ function handleArtworkUpdated() {
   gap: 0.5rem;
   align-items: center;
   margin-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.5rem;
 }
 
 .subtab-btn {
   border: none;
   background: transparent;
-  color: #6b7280;
-  font-size: 0.85rem;
+  color: var(--muted);
+  font-size: 0.88rem;
   font-weight: 700;
   border-radius: 999px;
   height: 32px;
@@ -219,17 +222,17 @@ function handleArtworkUpdated() {
 }
 
 .subtab-btn:hover {
-  color: #374151;
-  background: #f1f5f9;
+  color: var(--text);
+  background: var(--surface-alt);
 }
 
 .subtab-btn--active {
-  color: #111827;
-  background: #e5e7eb;
+  color: var(--accent);
+  background: var(--surface-alt);
 }
 
 .subtab-badge {
-  background: #9ca3af;
+  background: var(--accent);
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;
@@ -250,16 +253,16 @@ function handleArtworkUpdated() {
 
 .work-card {
   position: relative;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--line);
   border-radius: 12px;
   overflow: hidden;
-  background: #fff;
+  background: var(--surface);
   cursor: pointer;
   transition: box-shadow 0.15s ease;
 }
 
 .work-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-md);
 }
 
 /* Card menu */
@@ -275,9 +278,9 @@ function handleArtworkUpdated() {
   height: 28px;
   border-radius: 50%;
   border: none;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(4px);
-  color: #374151;
+  color: var(--text);
   font-size: 0.75rem;
   cursor: pointer;
   display: grid;
@@ -286,7 +289,7 @@ function handleArtworkUpdated() {
 }
 
 .work-card-menu-btn:hover {
-  background: rgba(255,255,255,1);
+  background: rgba(255, 255, 255, 1);
 }
 
 .work-card-menu-dropdown {
@@ -294,10 +297,10 @@ function handleArtworkUpdated() {
   top: 100%;
   right: 0;
   margin-top: 4px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
   min-width: 120px;
   overflow: hidden;
   z-index: 10;
@@ -311,26 +314,26 @@ function handleArtworkUpdated() {
   background: transparent;
   padding: 0.5rem 0.75rem;
   font-size: 0.8rem;
-  color: #374151;
+  color: var(--text);
   cursor: pointer;
   transition: background 0.1s;
 }
 
 .menu-dropdown-item:hover {
-  background: #f3f4f6;
+  background: var(--surface-alt);
 }
 
 .menu-dropdown-item--danger {
-  color: #dc2626;
+  color: var(--danger);
 }
 
 .menu-dropdown-item--danger:hover {
-  background: #fef2f2;
+  background: rgba(220, 38, 38, 0.06);
 }
 
 .work-card-thumb {
   aspect-ratio: 1;
-  background: #f3f4f6;
+  background: var(--surface-alt);
   overflow: hidden;
 }
 
@@ -345,7 +348,7 @@ function handleArtworkUpdated() {
   height: 100%;
   display: grid;
   place-items: center;
-  color: #9ca3af;
+  color: var(--muted);
   font-size: 1.5rem;
 }
 
@@ -354,9 +357,9 @@ function handleArtworkUpdated() {
 }
 
 .work-card-title {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -365,19 +368,29 @@ function handleArtworkUpdated() {
 
 .work-card-type {
   font-size: 0.7rem;
-  color: #6b7280;
+  color: var(--muted);
   text-transform: capitalize;
 }
 
 .empty-state {
   text-align: center;
-  padding: 2rem 1rem;
-  color: #6b7280;
+  padding: 2.5rem 1rem;
+  color: var(--muted);
+}
+
+.empty-state i {
+  font-size: 2rem;
+  color: var(--line);
+  margin-bottom: 0.5rem;
 }
 
 .state-note {
-  color: #4b5563;
+  color: var(--muted);
   font-weight: 600;
+  padding: 0.95rem 1rem;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
 }
 
 /* Delete confirmation */
@@ -398,12 +411,12 @@ function handleArtworkUpdated() {
 }
 
 .delete-confirm-dialog {
-  background: #fff;
-  border-radius: 12px;
+  background: var(--surface);
+  border-radius: 14px;
   padding: 1.5rem;
   max-width: 400px;
   width: 100%;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-lg);
   animation: eaSlideUp 0.2s ease;
 }
 
@@ -415,12 +428,12 @@ function handleArtworkUpdated() {
 .delete-confirm-title {
   font-weight: 700;
   font-size: 1rem;
-  color: #1f2937;
+  color: var(--text);
   margin: 0 0 0.5rem;
 }
 
 .delete-confirm-text {
-  color: #6b7280;
+  color: var(--muted);
   font-size: 0.85rem;
   margin: 0;
   line-height: 1.5;
@@ -445,22 +458,22 @@ function handleArtworkUpdated() {
 }
 
 .dc-btn--cancel {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
 }
 
 .dc-btn--cancel:hover {
-  background: #f9fafb;
+  background: var(--surface-alt);
 }
 
 .dc-btn--delete {
-  background: #dc2626;
+  background: var(--danger);
   color: #fff;
 }
 
 .dc-btn--delete:hover:not(:disabled) {
-  background: #b91c1c;
+  opacity: 0.9;
 }
 
 .dc-btn--delete:disabled {

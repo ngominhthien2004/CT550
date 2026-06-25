@@ -16,49 +16,71 @@ defineEmits(['view-details'])
 
 <template>
   <article class="dash-card">
-    <header class="dash-card-head">Total reactions <i class="fa-regular fa-circle-question" aria-hidden="true"></i></header>
+    <header class="dash-card-head">
+      <span>Total reactions</span>
+      <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
+    </header>
 
     <ul class="metric-list">
-      <li><span><i class="fa-regular fa-eye" aria-hidden="true"></i> Views</span><strong>{{ stats.views }}</strong></li>
-      <li><span><i class="fa-regular fa-thumbs-up" aria-hidden="true"></i> Likes</span><strong>{{ stats.likes }}</strong></li>
-      <li><span><i class="fa-solid fa-heart" aria-hidden="true"></i> Bookmarks</span><strong>{{ stats.bookmarks }}</strong></li>
-      <li><span><i class="fa-regular fa-comment" aria-hidden="true"></i> Comments</span><strong>{{ stats.comments }}</strong></li>
+      <li>
+        <span class="metric-label"><i class="fa-regular fa-eye" aria-hidden="true"></i> Views</span>
+        <strong>{{ stats.views.toLocaleString() }}</strong>
+      </li>
+      <li>
+        <span class="metric-label"><i class="fa-regular fa-thumbs-up" aria-hidden="true"></i> Likes</span>
+        <strong>{{ stats.likes.toLocaleString() }}</strong>
+      </li>
+      <li>
+        <span class="metric-label"><i class="fa-solid fa-heart" aria-hidden="true"></i> Bookmarks</span>
+        <strong>{{ stats.bookmarks.toLocaleString() }}</strong>
+      </li>
+      <li>
+        <span class="metric-label"><i class="fa-regular fa-comment" aria-hidden="true"></i> Comments</span>
+        <strong>{{ stats.comments.toLocaleString() }}</strong>
+      </li>
     </ul>
 
     <button type="button" class="detail-btn" @click="$emit('view-details')">View details</button>
-    <p class="update-note">Latest update: April 6, 2026 2:00</p>
   </article>
 </template>
 
 <style scoped>
 .dash-card {
-  border: 1px solid #e5e7eb;
-  border-radius: 18px;
-  background: #fff;
-  padding: 0.58rem 0.9rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
 .dash-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
 }
 
 .metric-list {
   list-style: none;
-  margin: 0.6rem 0 0;
+  margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
 .metric-list li {
-  display: grid;
-  gap: 0.14rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
-.metric-list span {
-  color: #6b7280;
+.metric-label {
+  color: var(--muted);
   font-size: 0.83rem;
   display: inline-flex;
   gap: 0.34rem;
@@ -66,28 +88,26 @@ defineEmits(['view-details'])
 }
 
 .metric-list strong {
-  color: #111827;
-  font-size: 1.8rem;
+  color: var(--text);
+  font-size: 1.4rem;
   line-height: 1;
 }
 
 .detail-btn {
-  margin-top: 0.72rem;
+  margin-top: 0.3rem;
   width: 100%;
-  height: 30px;
-  border: none;
+  height: 34px;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: #f3f4f6;
-  color: #1f2937;
+  background: var(--surface);
+  color: var(--text);
   font-size: 0.82rem;
   font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
 }
 
-
-.update-note {
-  margin-top: 0.52rem;
-  text-align: right;
-  color: #9ca3af;
-  font-size: 0.66rem;
+.detail-btn:hover {
+  background: var(--surface-alt);
 }
 </style>

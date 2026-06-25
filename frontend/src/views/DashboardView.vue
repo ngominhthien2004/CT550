@@ -150,24 +150,26 @@ watch(
 
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
-    <section v-if="user" class="dashboard-page page-block">
+    <section v-if="user" class="dashboard-page">
       <div class="dashboard-wrap">
-        <header class="dashboard-head">
-          <div class="dashboard-title-row">
-            <h1>Dashboard</h1>
-            <button
-              type="button"
-              class="guide-btn"
-              :class="{ 'is-active': onboardingStep > 0 }"
-              :aria-pressed="onboardingStep > 0"
-              title="Quick walkthrough of dashboard stats"
-              @click="startOnboarding"
-            >
-              {{ guideLabel }}
-            </button>
+        <div class="dashboard-hero">
+          <div class="dashboard-hero-inner">
+            <p class="dashboard-hero-kicker">Creator Dashboard</p>
+            <h1 class="dashboard-hero-title">Welcome back, {{ user.displayName || user.username }}</h1>
+            <p class="dashboard-hero-desc">Track your works, reactions, and performance at a glance.</p>
+            <div class="dashboard-hero-stats">
+              <span class="stat-pill">{{ artworks.length }} work{{ artworks.length !== 1 ? 's' : '' }}</span>
+              <span class="stat-pill">{{ reactionStats.views.toLocaleString() }} views</span>
+              <span class="stat-pill">{{ reactionStats.likes.toLocaleString() }} likes</span>
+            </div>
           </div>
-          <CreatorDashboardTabs v-model="activeTab" />
-        </header>
+          <button type="button" class="guide-btn" :class="{ 'is-active': onboardingStep > 0 }" @click="startOnboarding">
+            <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
+            {{ guideLabel }}
+          </button>
+        </div>
+
+        <CreatorDashboardTabs v-model="activeTab" />
 
         <!-- Home tab content -->
         <template v-if="activeTab === 'home'">
@@ -178,7 +180,7 @@ watch(
           </div>
 
           <p v-if="loading" class="state-note">Loading dashboard...</p>
-          <p v-else-if="error" class="state-note error">{{ error }}</p>
+          <p v-else-if="error" class="state-note state-note--error">{{ error }}</p>
 
           <div v-if="onboardingStep > 0" class="coachmark-backdrop" @click.self="finishOnboarding" @keydown.enter.prevent="finishOnboarding" @keydown.space.prevent="finishOnboarding" tabindex="0" role="button">
             <div class="coachmark-card">
@@ -211,91 +213,152 @@ watch(
       </div>
     </section>
 
-    <section v-else class="page-block p-3 p-md-4 d-grid gap-2">
-      <h1 class="h4 mb-0">Dashboard</h1>
-      <p class="text-secondary mb-0">You are not logged in.</p>
-      <button type="button" class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
+    <section v-else class="dashboard-page">
+      <div class="dashboard-wrap">
+        <div class="dashboard-hero">
+          <div class="dashboard-hero-inner">
+            <p class="dashboard-hero-kicker">Creator Dashboard</p>
+            <h1 class="dashboard-hero-title">Dashboard</h1>
+            <p class="dashboard-hero-desc">You are not logged in.</p>
+            <button type="button" class="hero-cta" @click="goLogin">Go to login</button>
+          </div>
+        </div>
+      </div>
     </section>
   </MainLayoutTemplate>
 </template>
 
 <style scoped>
 .dashboard-page {
-  background: #f3f4f6;
-  min-height: calc(100vh - 112px);
+  display: block;
+  padding: 0.4rem 0;
 }
 
 .dashboard-wrap {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 1.35rem 0.95rem 1.6rem;
-  position: relative;
-}
-
-.dashboard-head {
   display: grid;
-  gap: 0.82rem;
+  gap: 0.85rem;
 }
 
-.dashboard-title-row {
+.dashboard-hero {
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0096fa 0%, #7c3aed 100%);
+  padding: 2.2rem 2rem;
+  color: #fff;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
 }
 
-.guide-btn {
-  border: 1px solid #cbd5f5;
-  background: #f8fafc;
-  color: #1e293b;
-  padding: 0.35rem 0.85rem;
+.dashboard-hero-inner {
+  max-width: 600px;
+}
+
+.dashboard-hero-kicker {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.8;
+  margin: 0 0 0.4rem;
+}
+
+.dashboard-hero-title {
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin: 0 0 0.5rem;
+  color: inherit;
+}
+
+.dashboard-hero-desc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  opacity: 0.9;
+  margin: 0 0 0.9rem;
+}
+
+.dashboard-hero-stats {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.stat-pill {
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.9rem;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.guide-btn {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.82rem;
   cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
 }
 
 .guide-btn:hover {
-  background: #eef2ff;
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .guide-btn.is-active {
-  border-color: #1d4ed8;
-  color: #1d4ed8;
-  background: #e0e7ff;
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
-.dashboard-head h1 {
-  font-size: 2.25rem;
-  color: #1f2937;
+.hero-cta {
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: #0096fa;
+  font-weight: 800;
+  padding: 0.65rem 1.2rem;
+  font-size: 0.88rem;
+  cursor: pointer;
 }
 
 .dashboard-grid {
-  margin-top: 0.95rem;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 0.85rem;
   align-items: start;
 }
 
-
 .tab-placeholder {
-  margin-top: 1rem;
   text-align: center;
   padding: 3rem 1rem;
-  color: #6b7280;
+  color: var(--muted);
   font-weight: 600;
   font-size: 0.95rem;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
 }
 
 .state-note {
-  margin-top: 0.95rem;
-  color: #4b5563;
+  color: var(--muted);
   font-weight: 600;
+  padding: 0.95rem 1rem;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
 }
 
-.state-note.error {
-  color: #dc2626;
+.state-note--error {
+  color: #b42318;
+  background: rgba(180, 35, 24, 0.06);
+  border-color: rgba(180, 35, 24, 0.16);
 }
 
 .coachmark-backdrop {
@@ -311,28 +374,30 @@ watch(
 .coachmark-card {
   width: min(430px, 100%);
   border-radius: 16px;
-  padding: 1.2rem 1rem 1rem;
+  padding: 1.6rem 1.4rem 1.4rem;
+  background: linear-gradient(135deg, #0096fa 0%, #7c3aed 100%);
   color: #fff;
   text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 .coachmark-text {
-  font-size: 2rem;
-  line-height: 1.35;
-  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1.55;
+  font-weight: 600;
 }
 
 .coachmark-btn {
-  margin-top: 0.7rem;
-  height: 38px;
+  margin-top: 1rem;
+  height: 40px;
   border-radius: 999px;
   border: none;
-  min-width: 96px;
-  padding: 0 1rem;
-  background: #0ea5e9;
-  color: #fff;
-  font-size: 0.86rem;
-  font-weight: 700;
+  min-width: 100px;
+  padding: 0 1.2rem;
+  background: #fff;
+  color: #0096fa;
+  font-size: 0.88rem;
+  font-weight: 800;
 }
 
 @media (max-width: 960px) {
@@ -341,31 +406,18 @@ watch(
   }
 }
 
-@media (max-width: 820px) {
-  .dashboard-wrap {
-    padding-inline: 0.7rem;
+@media (max-width: 640px) {
+  .dashboard-hero {
+    flex-direction: column;
+    padding: 1.4rem 1.2rem;
   }
 
-  .dashboard-head h1 {
-    font-size: 1.42rem;
+  .dashboard-hero-title {
+    font-size: 1.35rem;
   }
 
-  .coachmark-text {
-    font-size: 1rem;
-  }
-}
-
-@media (min-width: 1100px) {
-  .dashboard-page {
-    padding-inline: 0.2rem;
-  }
-
-  .dashboard-wrap {
-    max-width: 1000px;
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 300px 1fr 300px;
+  .guide-btn {
+    align-self: flex-start;
   }
 }
 </style>

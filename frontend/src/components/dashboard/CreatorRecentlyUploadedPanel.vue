@@ -65,52 +65,61 @@ function formatDate(value) {
       <p class="updated-at">Views last updated: {{ formatDate(latestArtwork.updatedAt || latestArtwork.createdAt) }}</p>
     </div>
 
-      <div v-else class="recent-empty">
+    <div v-else class="recent-empty">
       <i class="fa-regular fa-images" aria-hidden="true"></i>
       <p>Try posting your work</p>
-      <button type="button" class="action-pill action-pill--post" @click="emit('post')">Post your work</button>
+      <button type="button" class="action-pill" @click="emit('post')">Post your work</button>
     </div>
   </article>
 </template>
 
 <style scoped>
 .recent-panel {
-  border: 1px solid #e5e7eb;
-  border-radius: 18px;
-  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
   overflow: hidden;
 }
 
 .recent-head {
-  border-bottom: 1px solid #eef2f7;
-  min-height: 34px;
+  border-bottom: 1px solid var(--line);
+  min-height: 42px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  padding: 0 0.9rem;
+  padding: 0 1rem;
 }
 
 .recent-title {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .ghost-link {
   border: none;
   background: transparent;
-  font-size: 0.75rem;
-  color: #6b7280;
+  font-size: 0.78rem;
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ghost-link:hover {
+  text-decoration: underline;
 }
 
 .recent-body {
-  padding: 0.85rem 0.9rem 0.7rem;
+  padding: 0.85rem 1rem 0.7rem;
 }
 
 .live-note {
   font-size: 0.68rem;
-  color: #9ca3af;
+  color: var(--muted);
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
@@ -121,14 +130,13 @@ function formatDate(value) {
   width: 8px;
   height: 8px;
   border-radius: 999px;
-  background: #84cc16;
+  background: #22c55e;
 }
 
 .work-card {
-  width: 275px;
-  background: #f8fafc;
+  background: var(--surface-alt);
   border-radius: 10px;
-  padding: 0.72rem;
+  padding: 0.75rem;
   display: grid;
   grid-template-columns: 58px 1fr auto;
   grid-template-rows: auto auto;
@@ -148,8 +156,8 @@ function formatDate(value) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #e5e7eb;
-  color: #9ca3af;
+  background: var(--line);
+  color: var(--muted);
 }
 
 .work-copy {
@@ -157,24 +165,29 @@ function formatDate(value) {
 }
 
 .work-title {
-  font-size: 0.86rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
 }
 
 .work-time {
   margin-top: 0.2rem;
   font-size: 0.68rem;
-  color: #9ca3af;
+  color: var(--muted);
 }
 
 .edit-btn {
   border: none;
   background: transparent;
-  color: #9ca3af;
+  color: var(--muted);
   padding: 0;
   width: 18px;
   height: 18px;
+  cursor: pointer;
+}
+
+.edit-btn:hover {
+  color: var(--accent);
 }
 
 .work-metrics {
@@ -183,7 +196,7 @@ function formatDate(value) {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.32rem 0.72rem;
   font-size: 0.8rem;
-  color: #374151;
+  color: var(--text);
 }
 
 .work-metrics span {
@@ -196,35 +209,36 @@ function formatDate(value) {
   margin-top: 0.45rem;
   text-align: right;
   font-size: 0.66rem;
-  color: #9ca3af;
+  color: var(--muted);
 }
 
 .recent-empty {
   min-height: 160px;
-  padding: 1rem 0.9rem;
+  padding: 1.2rem 1rem;
   display: grid;
   place-items: center;
   gap: 0.5rem;
-  color: #6b7280;
+  color: var(--muted);
   text-align: center;
 }
 
 .recent-empty i {
   font-size: 1.8rem;
-  color: #a3a3a3;
+  color: var(--line);
 }
 
-.action-pill--post {
-  background: #f3f4f6;
-  color: #374151;
+.action-pill {
+  border: none;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
   font-size: 0.86rem;
   font-weight: 700;
-  padding: 0.46rem 1rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
 }
 
-@media (max-width: 980px) {
-  .work-card {
-    width: 100%;
-  }
+.action-pill:hover {
+  background: var(--accent-hover);
 }
 </style>

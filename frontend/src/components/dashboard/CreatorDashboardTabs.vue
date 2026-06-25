@@ -36,33 +36,38 @@ function selectTab(key) {
 <style scoped>
 .dashboard-tabs {
   display: flex;
-  gap: 0.42rem;
-  flex-wrap: wrap;
+  gap: 1.35rem;
+  border-bottom: 1px solid var(--line);
+  width: 100%;
+  overflow-x: auto;
 }
 
 .dashboard-tab {
   border: none;
   background: transparent;
-  color: #6b7280;
-  font-size: 0.78rem;
+  color: var(--muted);
+  font-size: 0.9rem;
   font-weight: 700;
-  border-radius: 999px;
-  height: 28px;
-  padding: 0 0.95rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.22rem;
+  padding: 0.78rem 0.1rem 0.9rem;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
 .dashboard-tab:hover {
-  color: #374151;
-  background: #f1f5f9;
+  color: var(--text);
 }
 
 .dashboard-tab--active {
-  color: #111827;
-  background: #f1f5f9;
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+@media (max-width: 920px) {
+  .dashboard-tab {
+    font-size: 0.86rem;
+    padding-bottom: 0.8rem;
+  }
 }
 </style>

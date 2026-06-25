@@ -116,18 +116,16 @@ function getArtworkThumb(artwork) {
     </div>
 
     <!-- Content area -->
-    <div class="reactions-content mt-3">
-      <div v-if="loading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        <p class="text-secondary mt-2">Loading reactions...</p>
+    <div class="reactions-content">
+      <div v-if="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading reactions...</p>
       </div>
 
-      <div v-else-if="error" class="alert alert-danger d-flex align-items-center justify-content-between" role="alert">
+      <div v-else-if="error" class="error-state">
         <span>{{ error }}</span>
-        <button type="button" class="btn btn-sm btn-outline-danger" @click="fetchReactions">
-          <i class="fa-solid fa-rotate me-1" aria-hidden="true"></i>Retry
+        <button type="button" class="retry-btn" @click="fetchReactions">
+          <i class="fa-solid fa-rotate" aria-hidden="true"></i> Retry
         </button>
       </div>
 
@@ -172,19 +170,19 @@ function getArtworkThumb(artwork) {
             <div class="reaction-detail-text">
               <template v-if="currentTab === 'comments'">
                 <div class="comment-bubble">
-                  <span v-if="item.emoji" class="comment-emoji me-1">{{ item.emoji }}</span>
+                  <span v-if="item.emoji" class="comment-emoji">{{ item.emoji }}</span>
                   <span class="comment-content">{{ item.content }}</span>
                 </div>
               </template>
               <template v-else-if="currentTab === 'likes'">
-                <span class="action-text text-secondary">
-                  <i class="fa-solid fa-thumbs-up text-primary me-1" aria-hidden="true"></i>
+                <span class="action-text">
+                  <i class="fa-solid fa-thumbs-up" aria-hidden="true"></i>
                   liked your work
                 </span>
               </template>
               <template v-else>
-                <span class="action-text text-secondary">
-                  <i class="fa-solid fa-heart text-danger me-1" aria-hidden="true"></i>
+                <span class="action-text">
+                  <i class="fa-solid fa-heart" aria-hidden="true"></i>
                   bookmarked your work
                 </span>
               </template>
@@ -215,13 +213,13 @@ function getArtworkThumb(artwork) {
                 <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
               </div>
             </div>
-            <span class="artwork-title text-muted">Deleted work</span>
+            <span class="artwork-title">Deleted work</span>
           </span>
         </div>
       </div>
 
       <!-- Pagination -->
-      <nav v-if="totalPages > 1 && !loading" class="pagination-container mt-4" aria-label="Reactions pagination">
+      <nav v-if="totalPages > 1 && !loading" class="pagination-container" aria-label="Reactions pagination">
         <button
           type="button"
           class="pag-btn"
@@ -248,23 +246,23 @@ function getArtworkThumb(artwork) {
 
 <style scoped>
 .reactions-panel {
-  background: #fff;
-  border-radius: 18px;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
   padding: 1.25rem;
 }
 
 .sub-tabs {
   display: flex;
   gap: 0.5rem;
-  border-bottom: 2px solid #f3f4f6;
+  border-bottom: 2px solid var(--line);
   padding-bottom: 0.2rem;
 }
 
 .sub-tab {
   border: none;
   background: transparent;
-  color: #6b7280;
+  color: var(--muted);
   font-size: 0.9rem;
   font-weight: 700;
   padding: 0.5rem 1rem;
@@ -274,11 +272,11 @@ function getArtworkThumb(artwork) {
 }
 
 .sub-tab:hover {
-  color: #111827;
+  color: var(--text);
 }
 
 .sub-tab--active {
-  color: #007cff;
+  color: var(--accent);
 }
 
 .sub-tab--active::after {
@@ -288,8 +286,65 @@ function getArtworkThumb(artwork) {
   left: 0;
   right: 0;
   height: 3px;
-  background-color: #007cff;
+  background-color: var(--accent);
   border-radius: 99px;
+}
+
+.reactions-content {
+  margin-top: 1rem;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 0.75rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-state {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: rgba(180, 35, 24, 0.06);
+  border: 1px solid rgba(180, 35, 24, 0.16);
+  color: #b42318;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.retry-btn {
+  border: 1px solid #b42318;
+  background: transparent;
+  color: #b42318;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.retry-btn:hover {
+  background: rgba(180, 35, 24, 0.08);
 }
 
 .empty-state {
@@ -297,15 +352,15 @@ function getArtworkThumb(artwork) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4.5rem 1rem;
+  padding: 4rem 1rem;
   text-align: center;
-  color: #9ca3af;
+  color: var(--muted);
 }
 
 .empty-icon-wrap {
   font-size: 3rem;
   margin-bottom: 0.8rem;
-  color: #cbd5e1;
+  color: var(--line);
 }
 
 .empty-text {
@@ -324,12 +379,12 @@ function getArtworkThumb(artwork) {
   align-items: center;
   gap: 1rem;
   padding: 0.95rem 0.5rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--line);
   transition: background-color 0.15s ease;
 }
 
 .reaction-item:hover {
-  background-color: #fafafa;
+  background-color: var(--surface-alt);
 }
 
 .user-avatar-link {
@@ -341,7 +396,16 @@ function getArtworkThumb(artwork) {
   height: 44px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--line);
+}
+
+.user-avatar--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-alt);
+  color: var(--muted);
+  font-size: 1.2rem;
 }
 
 .reaction-body {
@@ -359,27 +423,43 @@ function getArtworkThumb(artwork) {
 .user-name {
   font-weight: 700;
   font-size: 0.88rem;
-  color: #1f2937;
+  color: var(--text);
   text-decoration: none;
 }
 
 .user-name:hover {
   text-decoration: underline;
-  color: #007cff;
+  color: var(--accent);
 }
 
 .reaction-time {
   font-size: 0.72rem;
-  color: #9ca3af;
+  color: var(--muted);
 }
 
 .reaction-detail-text {
   font-size: 0.85rem;
-  color: #374151;
+  color: var(--text);
+}
+
+.action-text {
+  color: var(--muted);
+}
+
+.action-text i {
+  margin-right: 0.25rem;
+}
+
+.action-text i.fa-thumbs-up {
+  color: var(--accent);
+}
+
+.action-text i.fa-heart {
+  color: var(--danger);
 }
 
 .comment-bubble {
-  background-color: #f3f4f6;
+  background-color: var(--surface-alt);
   padding: 0.4rem 0.75rem;
   border-radius: 12px;
   display: inline-block;
@@ -390,6 +470,7 @@ function getArtworkThumb(artwork) {
 .comment-emoji {
   font-size: 1.1rem;
   vertical-align: middle;
+  margin-right: 0.2rem;
 }
 
 .comment-content {
@@ -403,33 +484,12 @@ function getArtworkThumb(artwork) {
   width: 76px;
   flex-shrink: 0;
   text-decoration: none;
-  color: #4b5563;
+  color: var(--muted);
 }
 
 .artwork-preview:hover .artwork-title {
   text-decoration: underline;
-  color: #007cff;
-}
-
-.artwork-thumb {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-}
-
-.user-avatar--placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f3f4f6;
-  color: #9ca3af;
-  font-size: 1.2rem;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid #e5e7eb;
+  color: var(--accent);
 }
 
 .artwork-thumb-wrap {
@@ -438,17 +498,21 @@ function getArtworkThumb(artwork) {
   flex-shrink: 0;
 }
 
+.artwork-thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
 .artwork-thumb--placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f3f4f6;
-  color: #9ca3af;
+  background: var(--surface-alt);
+  color: var(--muted);
   font-size: 1.1rem;
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
 }
 
 .artwork-preview--deleted {
@@ -457,7 +521,7 @@ function getArtworkThumb(artwork) {
   align-items: center;
   width: 76px;
   flex-shrink: 0;
-  color: #9ca3af;
+  color: var(--muted);
 }
 
 .artwork-title {
@@ -475,12 +539,13 @@ function getArtworkThumb(artwork) {
   justify-content: center;
   align-items: center;
   gap: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 .pag-btn {
-  border: 1px solid #cbd5e1;
-  background: #fff;
-  color: #334155;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
   font-size: 0.82rem;
@@ -493,8 +558,8 @@ function getArtworkThumb(artwork) {
 }
 
 .pag-btn:hover:not(:disabled) {
-  background: #f8fafc;
-  border-color: #94a3b8;
+  background: var(--surface-alt);
+  border-color: var(--muted);
 }
 
 .pag-btn:disabled {
@@ -505,6 +570,6 @@ function getArtworkThumb(artwork) {
 .page-indicator {
   font-size: 0.82rem;
   font-weight: 600;
-  color: #64748b;
+  color: var(--muted);
 }
 </style>
