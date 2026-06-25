@@ -20,7 +20,7 @@ const hasSeenGuide = ref(false)
 const onboardingKeyPrefix = 'dashboardOnboardingSeen:'
 const activeTab = ref('home')
 
-const latestArtwork = computed(() => artworks.value[0] || null)
+const recentArtworks = computed(() => artworks.value.slice(0, 3))
 
 const reactionStats = computed(() => {
   return artworks.value.reduce(
@@ -173,7 +173,7 @@ watch(
 
         <!-- Home tab content -->
         <template v-if="activeTab === 'home'">
-          <CreatorRecentlyUploadedPanel :latest-artwork="latestArtwork" @post="goUpload" />
+          <CreatorRecentlyUploadedPanel :recent-artworks="recentArtworks" @post="goUpload" />
 
           <div class="dashboard-grid" v-if="!loading && !error">
             <CreatorReactionsCard :stats="reactionStats" @view-details="activeTab = 'reactions'" />

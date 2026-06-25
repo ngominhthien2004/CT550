@@ -2,9 +2,9 @@
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  latestArtwork: {
-    type: Object,
-    default: null,
+  recentArtworks: {
+    type: Array,
+    default: () => [],
   },
 })
 
@@ -12,9 +12,9 @@ const emit = defineEmits(['post'])
 
 const router = useRouter()
 
-function goToArtwork() {
-  if (props.latestArtwork?._id) {
-    router.push(`/artworks/${props.latestArtwork._id}`)
+function goToArtwork(artwork) {
+  if (artwork?._id) {
+    router.push(`/artworks/${artwork._id}`)
   }
 }
 
@@ -39,30 +39,32 @@ function formatDate(value) {
       <button type="button" class="ghost-link">View all</button>
     </header>
 
-    <div v-if="latestArtwork" class="recent-body">
+    <div v-if="recentArtworks.length" class="recent-body">
       <p class="live-note"><span class="dot"></span> Updated in real time</p>
-      <div class="work-card">
-        <img v-if="latestArtwork.image" :src="latestArtwork.image" :alt="latestArtwork.title" class="work-thumb" loading="lazy" />
-        <div v-else class="work-thumb fallback"><i class="fa-regular fa-image" aria-hidden="true"></i></div>
+      <div class="work-cards">
+        <div v-for="artwork in recentArtworks" :key="artwork._id" class="work-card">
+          <img v-if="artwork.image" :src="artwork.image" :alt="artwork.title" class="work-thumb" loading="lazy" />
+          <div v-else class="work-thumb fallback"><i class="fa-regular fa-image" aria-hidden="true"></i></div>
 
-        <div class="work-copy">
-          <p class="work-title">{{ latestArtwork.title }}</p>
-          <p class="work-time">{{ formatDate(latestArtwork.createdAt) }}</p>
-        </div>
+          <div class="work-copy">
+            <p class="work-title">{{ artwork.title }}</p>
+            <p class="work-time">{{ formatDate(artwork.createdAt) }}</p>
+          </div>
 
-        <button type="button" class="edit-btn" aria-label="Edit artwork" @click="goToArtwork">
-          <i class="fa-solid fa-pen" aria-hidden="true"></i>
-        </button>
+          <button type="button" class="edit-btn" aria-label="Edit artwork" @click="goToArtwork(artwork)">
+            <i class="fa-solid fa-pen" aria-hidden="true"></i>
+          </button>
 
-        <div class="work-metrics">
-          <span><i class="fa-regular fa-eye" aria-hidden="true"></i> {{ latestArtwork.viewCount || 0 }}</span>
-          <span><i class="fa-regular fa-heart" aria-hidden="true"></i> {{ latestArtwork.likeCount || 0 }}</span>
-          <span><i class="fa-regular fa-bookmark" aria-hidden="true"></i> {{ latestArtwork.bookmarkCount || 0 }}</span>
-          <span><i class="fa-regular fa-comment" aria-hidden="true"></i> {{ latestArtwork.commentCount || 0 }}</span>
+          <div class="work-metrics">
+            <span><i class="fa-regular fa-eye" aria-hidden="true"></i> {{ artwork.viewCount || 0 }}</span>
+            <span><i class="fa-regular fa-heart" aria-hidden="true"></i> {{ artwork.likeCount || 0 }}</span>
+            <span><i class="fa-regular fa-bookmark" aria-hidden="true"></i> {{ artwork.bookmarkCount || 0 }}</span>
+            <span><i class="fa-regular fa-comment" aria-hidden="true"></i> {{ artwork.commentCount || 0 }}</span>
+          </div>
         </div>
       </div>
 
-      <p class="updated-at">Views last updated: {{ formatDate(latestArtwork.updatedAt || latestArtwork.createdAt) }}</p>
+      <p class="updated-at">Views last updated: {{ formatDate(recentArtworks[0]?.updatedAt || recentArtworks[0]?.createdAt) }}</p>
     </div>
 
     <div v-else class="recent-empty">
@@ -133,6 +135,13 @@ function formatDate(value) {
   background: #22c55e;
 }
 
+.work-cards {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
 .work-card {
   background: var(--surface-alt);
   border-radius: 10px;
@@ -142,7 +151,9 @@ function formatDate(value) {
   grid-template-rows: auto auto;
   column-gap: 0.65rem;
   row-gap: 0.58rem;
+  min-width: 280px;
   max-width: 320px;
+  flex-shrink: 0;
 }
 
 .work-thumb {
