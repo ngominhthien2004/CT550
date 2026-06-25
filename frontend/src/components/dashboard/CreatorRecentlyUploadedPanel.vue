@@ -35,7 +35,7 @@ function formatDate(value) {
 <template>
   <article class="recent-panel">
     <header class="recent-head">
-      <p class="recent-title">Recently uploaded works <i class="fa-regular fa-circle-question" aria-hidden="true"></i></p>
+      <p class="recent-title">Recently uploaded works</p>
       <button type="button" class="ghost-link">View all</button>
     </header>
 
@@ -56,8 +56,8 @@ function formatDate(value) {
 
         <div class="work-metrics">
           <span><i class="fa-regular fa-eye" aria-hidden="true"></i> {{ latestArtwork.viewCount || 0 }}</span>
-          <span><i class="fa-regular fa-heart" aria-hidden="true"></i> {{ latestArtwork.likeCount || 0 }}</span>
-          <span><i class="fa-regular fa-bookmark" aria-hidden="true"></i> {{ latestArtwork.bookmarkCount || 0 }}</span>
+          <span><i class="fa-regular fa-face-smile" aria-hidden="true"></i> {{ latestArtwork.likeCount || 0 }}</span>
+          <span><i class="fa-regular fa-heart" aria-hidden="true"></i> {{ latestArtwork.bookmarkCount || 0 }}</span>
           <span><i class="fa-regular fa-comment" aria-hidden="true"></i> {{ latestArtwork.commentCount || 0 }}</span>
         </div>
       </div>
