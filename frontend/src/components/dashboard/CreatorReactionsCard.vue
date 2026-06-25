@@ -31,7 +31,7 @@ defineEmits(['view-details'])
         <strong>{{ stats.likes.toLocaleString() }}</strong>
       </li>
       <li>
-        <span class="metric-label"><i class="fa-solid fa-heart" aria-hidden="true"></i> Bookmarks</span>
+        <span class="metric-label"><i class="fa-regular fa-bookmark" aria-hidden="true"></i> Bookmarks</span>
         <strong>{{ stats.bookmarks.toLocaleString() }}</strong>
       </li>
       <li>
