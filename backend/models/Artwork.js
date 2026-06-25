@@ -90,6 +90,8 @@ const artworkSchema = mongoose.Schema({
     hiddenBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     hiddenAt: { type: Date, default: null },
     hiddenReason: { type: String, trim: true, default: '' },
+    // Interaction settings
+    commentsEnabled: { type: Boolean, default: true },
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

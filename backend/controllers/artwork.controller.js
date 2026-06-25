@@ -468,11 +468,12 @@ const updateArtwork = async (req, res, next) => {
             return next(new Error('User not authorized to update this artwork'));
         }
 
-        const { title, description, ageRating, tags } = req.body;
+        const { title, description, ageRating, tags, commentsEnabled } = req.body;
 
         if (title !== undefined) artwork.title = title;
         if (description !== undefined) artwork.description = description;
         if (ageRating !== undefined) artwork.ageRating = ageRating;
+        if (commentsEnabled !== undefined) artwork.commentsEnabled = Boolean(commentsEnabled);
 
         // Handle tag updates if provided
         if (tags !== undefined) {

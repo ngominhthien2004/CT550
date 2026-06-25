@@ -29,6 +29,7 @@ const form = reactive({
   title: '',
   description: '',
   ageRating: 'all',
+  commentsEnabled: true,
   tags: [],
   tagInput: '',
 })
@@ -143,6 +144,7 @@ async function loadArtwork() {
     form.title = data.title || ''
     form.description = data.description || ''
     form.ageRating = data.ageRating || 'all'
+    form.commentsEnabled = data.commentsEnabled !== false
     form.tags = (data.tags || [])
       .map((t) => (typeof t === 'string' ? t : t.name || ''))
       .filter(Boolean)
@@ -164,6 +166,7 @@ async function handleSubmit() {
       title: form.title.trim(),
       description: form.description.trim(),
       ageRating: form.ageRating,
+      commentsEnabled: form.commentsEnabled,
       tags: form.tags,
     })
     submitSuccess.value = true
@@ -244,6 +247,44 @@ onBeforeUnmount(() => {
                 </div>
                 <div class="settings-options">
                   <span class="type-badge">{{ artwork.type }}</span>
+                </div>
+              </div>
+              <div class="settings-divider"></div>
+              <div class="settings-row">
+                <div class="settings-label">
+                  <span class="required-badge">Required</span>
+                  <span class="label-text label-text--required">Visible to</span>
+                </div>
+                <div class="settings-options">
+                  <label class="custom-radio">
+                    <input v-model="form.ageRating" type="radio" name="ageRating" value="all" />
+                    <span class="radio-dot"></span>
+                    <span>All ages</span>
+                  </label>
+                  <label class="custom-radio">
+                    <input v-model="form.ageRating" type="radio" name="ageRating" value="r-18" />
+                    <span class="radio-dot"></span>
+                    <span>R-18</span>
+                  </label>
+                </div>
+              </div>
+              <div class="settings-divider"></div>
+              <div class="settings-row">
+                <div class="settings-label">
+                  <span class="placeholder-badge"></span>
+                  <span class="label-text">Comments</span>
+                </div>
+                <div class="settings-options">
+                  <label class="custom-radio">
+                    <input v-model="form.commentsEnabled" type="radio" :value="true" />
+                    <span class="radio-dot"></span>
+                    <span>ON</span>
+                  </label>
+                  <label class="custom-radio">
+                    <input v-model="form.commentsEnabled" type="radio" :value="false" />
+                    <span class="radio-dot"></span>
+                    <span>OFF</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -545,6 +586,12 @@ onBeforeUnmount(() => {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 6px;
+}
+
+.settings-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 0 1.25rem;
 }
 
 .settings-row {
