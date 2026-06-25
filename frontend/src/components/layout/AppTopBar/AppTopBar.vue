@@ -64,7 +64,6 @@ const serviceLinks = computed(() => {
 const userMainLinks = computed(() => {
   const baseLinks = [
     { label: 'Dashboard', to: '/dashboard' },
-    { label: 'My works', to: '/feed' },
     { label: 'Manage requests', to: '/requests/manage' },
   ]
 
