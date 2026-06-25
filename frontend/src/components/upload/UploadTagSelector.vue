@@ -160,7 +160,7 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
   border: 1px solid #e2e8f0;
   border-radius: 6px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* === Shared row grid === */

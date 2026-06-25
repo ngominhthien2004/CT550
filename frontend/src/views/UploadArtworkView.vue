@@ -32,7 +32,6 @@ const kindMeta = {
   },
 }
 
-const languageOptions = ['English', 'Japanese', 'Vietnamese', 'Korean', 'Chinese', 'Other']
 
 const route = useRoute()
 const router = useRouter()
@@ -63,11 +62,7 @@ const createDefaultForm = () => ({
   allowTagEdit: true,
   ageRating: 'all',
   aiGenerated: 'no',
-  openTo: 'public',
   comments: 'on',
-  allowCollections: true,
-  isOriginalWork: false,
-  language: 'English',
   scheduleEnabled: false,
   scheduleDate: '',
   scheduleTime: '',
@@ -553,7 +548,6 @@ onBeforeUnmount(() => {
         <UploadPublicationSettings
           :form="form"
           :is-novel="isNovel"
-          :language-options="languageOptions"
           :show-ai-warning="showAiWarning"
         />
 

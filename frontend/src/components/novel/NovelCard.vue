@@ -82,7 +82,6 @@ const authorLink = computed(() => {
       </div>
       <div class="novel-compact-cover-badges">
         <span class="novel-compact-format">{{ formatLabel }}</span>
-        <span class="novel-compact-badge">Original</span>
         <span v-if="firstTag" class="novel-compact-badge novel-compact-genre">{{ firstTag }}</span>
       </div>
       <span v-if="rank" class="novel-compact-rank">{{ rank }}</span>

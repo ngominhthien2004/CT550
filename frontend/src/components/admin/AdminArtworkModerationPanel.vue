@@ -48,9 +48,22 @@ function onQueryInput(event) {
   emit('update:artworkQuery', event.target.value)
 }
 
-const formattedArtworks = computed(() =>
-  props.artworks.map(a => ({ ...a, _createdAt: props.formatDate(a.createdAt) }))
-)
+const formattedArtworks = computed(() => {
+  try {
+    if (!Array.isArray(props.artworks)) return []
+    return props.artworks.map(a => {
+      if (!a) return null
+      try {
+        const formatted = props.formatDate(a.createdAt)
+        return { ...a, _createdAt: formatted }
+      } catch {
+        return { ...a, _createdAt: '-' }
+      }
+    }).filter(Boolean)
+  } catch {
+    return []
+  }
+})
 </script>
 
 <template>

@@ -8,10 +8,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  languageOptions: {
-    type: Array,
-    default: () => [],
-  },
   showAiWarning: {
     type: Boolean,
     default: false,
@@ -77,40 +73,8 @@ const props = defineProps({
       </div>
     </div>
 
-    <!-- Open to Row -->
-    <div class="settings-row-card">
-      <div class="row-left">
-        <span class="placeholder-badge"></span>
-        <span class="row-label">Open to</span>
-      </div>
-      <div class="row-center">
-        <div class="options-group" role="radiogroup" aria-label="Post visibility setting">
-          <label class="custom-radio">
-            <input v-model="props.form.openTo" type="radio" name="openTo" value="public" aria-label="Visibility: public" />
-            <span class="radio-indicator"></span>
-            <span class="radio-label">Make public</span>
-          </label>
-          <label class="custom-radio">
-            <input v-model="props.form.openTo" type="radio" name="openTo" value="logged-in" aria-label="Visibility: logged-in users only" />
-            <span class="radio-indicator"></span>
-            <span class="radio-label">Logged-in users only</span>
-          </label>
-          <label class="custom-radio">
-            <input v-model="props.form.openTo" type="radio" name="openTo" value="mypixiv" aria-label="Visibility: my pixiv only" />
-            <span class="radio-indicator"></span>
-            <span class="radio-label">My IlluWrl only</span>
-          </label>
-          <label class="custom-radio">
-            <input v-model="props.form.openTo" type="radio" name="openTo" value="private" aria-label="Visibility: private" />
-            <span class="radio-indicator"></span>
-            <span class="radio-label">Private</span>
-          </label>
-        </div>
-      </div>
-      <div class="row-right"></div>
-    </div>
 
-    <!-- Additional Options Card (Comments, Original Work, Allow Collections) -->
+    <!-- Comments Section -->
     <div class="settings-row-card">
       <div class="row-left">
         <span class="placeholder-badge"></span>
@@ -129,39 +93,6 @@ const props = defineProps({
             <span class="radio-label">OFF</span>
           </label>
         </div>
-      </div>
-      <div class="row-right"></div>
-    </div>
-
-    <div class="settings-row-card">
-      <div class="row-left"></div>
-      <div class="row-center">
-        <div class="d-grid gap-2">
-          <label class="custom-checkbox">
-            <input v-model="props.form.allowCollections" type="checkbox" aria-label="Allow collections" />
-            <span class="checkbox-indicator"></span>
-            <span class="checkbox-label">Allow your works to be featured in other people collections</span>
-          </label>
-          <label class="custom-checkbox">
-            <input v-model="props.form.isOriginalWork" type="checkbox" aria-label="Original work" />
-            <span class="checkbox-indicator"></span>
-            <span class="checkbox-label">Original work</span>
-          </label>
-        </div>
-      </div>
-      <div class="row-right"></div>
-    </div>
-
-    <!-- Language Row -->
-    <div class="settings-row-card">
-      <div class="row-left">
-        <span class="placeholder-badge"></span>
-        <label for="work-language" class="row-label">Work language</label>
-      </div>
-      <div class="row-center">
-        <select id="work-language" v-model="props.form.language" class="form-select custom-select" aria-label="Work language">
-          <option v-for="language in props.languageOptions" :key="language" :value="language">{{ language }}</option>
-        </select>
       </div>
       <div class="row-right"></div>
     </div>
