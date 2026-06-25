@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, onBeforeUnmount, watch } from 'vue'
 import AppSidebarMenu from './AppSidebarMenu.vue'
 import AppTopBar from './AppTopBar.vue'
 
@@ -10,15 +10,15 @@ const props = defineProps({
     type: String,
     default: 'IlluWrl',
   },
+  isNavCollapsed: {
+    type: Boolean,
+    default: true,
+  },
 })
 
-const isNavCollapsed = ref(true)
+const emit = defineEmits(['toggle-sidebar'])
+
 const isSidebarCompact = ref(false)
-
-
-function toggleSidebar() {
-  isNavCollapsed.value = !isNavCollapsed.value
-}
 
 function toggleCompact() {
   isSidebarCompact.value = !isSidebarCompact.value
@@ -29,15 +29,12 @@ function scrollToTop() {
 }
 
 watch(
-  isNavCollapsed,
+  () => props.isNavCollapsed,
   (isCollapsed) => {
     document.body.style.overflow = isCollapsed ? '' : 'hidden'
   },
   { immediate: true },
 )
-
-onMounted(() => {
-})
 
 onBeforeUnmount(() => {
   document.body.style.overflow = ''
@@ -45,49 +42,55 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="app-layout">
-    <div v-if="!isNavCollapsed" class="sidebar-backdrop" :style="{ zIndex: SIDEBAR_Z_INDEX - 1 }" @click="toggleSidebar" @keydown.enter.prevent="toggleSidebar" @keydown.space.prevent="toggleSidebar" tabindex="0" role="button"></div>
+  <div class="layout-root">
+    <div class="app-layout">
+      <div v-if="!props.isNavCollapsed" class="sidebar-backdrop" :style="{ zIndex: SIDEBAR_Z_INDEX - 1 }" @click="emit('toggle-sidebar')" @keydown.enter.prevent="emit('toggle-sidebar')" @keydown.space.prevent="emit('toggle-sidebar')" tabindex="0" role="button"></div>
 
-    <AppSidebarMenu
-      :site-name="siteName"
-      :is-nav-collapsed="isNavCollapsed"
-      :sidebar-compact="isSidebarCompact"
-      :style="{ zIndex: SIDEBAR_Z_INDEX }"
-      @close-sidebar="toggleSidebar"
-      @toggle-compact="toggleCompact"
-    />
+      <AppSidebarMenu
+        :site-name="siteName"
+        :is-nav-collapsed="props.isNavCollapsed"
+        :sidebar-compact="isSidebarCompact"
+        :style="{ zIndex: SIDEBAR_Z_INDEX }"
+        @close-sidebar="emit('toggle-sidebar')"
+        @toggle-compact="toggleCompact"
+      />
 
-    <section class="main-pane" :class="{ 
-      'sidebar-compact-active': !isNavCollapsed && isSidebarCompact,
-      'sidebar-hidden': isNavCollapsed 
-    }">
-      <AppTopBar :site-name="siteName" @toggle-sidebar="toggleSidebar" />
-      <div class="main-content">
-        <slot />
-      </div>
-    </section>
+      <section class="main-pane" :class="{
+        'sidebar-compact-active': !props.isNavCollapsed && isSidebarCompact,
+        'sidebar-hidden': props.isNavCollapsed
+      }">
+        <AppTopBar :site-name="siteName" @toggle-sidebar="emit('toggle-sidebar')" />
+        <div class="main-content">
+          <slot />
+        </div>
+      </section>
 
+    </div>
+
+    <Teleport to="body">
+      <button type="button"
+        class="back-to-top"
+        @click="scrollToTop"
+        aria-label="Back to top"
+      >
+        <i class="fa-solid fa-arrow-up"></i>
+      </button>
+
+      <router-link to="/chat"
+        class="ai-chat-fab"
+        aria-label="AI Chat"
+      >
+        <i class="fa-solid fa-robot"></i>
+      </router-link>
+    </Teleport>
   </div>
-
-  <Teleport to="body">
-    <button type="button"
-      class="back-to-top"
-      @click="scrollToTop"
-      aria-label="Back to top"
-    >
-      <i class="fa-solid fa-arrow-up"></i>
-    </button>
-
-    <router-link to="/chat"
-      class="ai-chat-fab"
-      aria-label="AI Chat"
-    >
-      <i class="fa-solid fa-robot"></i>
-    </router-link>
-  </Teleport>
 </template>
 
 <style scoped>
+.layout-root {
+  display: contents;
+}
+
 .app-layout {
   display: block;
   position: relative;

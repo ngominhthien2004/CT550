@@ -1,5 +1,8 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import TagStrip from '../shared/TagStrip.vue'
+
+const props = defineProps({
   keyword: { type: String, required: true },
   resultTotal: { type: Number, required: true },
   isUserSearch: { type: Boolean, default: false },
@@ -9,6 +12,8 @@ defineProps({
 })
 
 const emit = defineEmits(['toggle-tags', 'search-tag'])
+
+const hashedDisplayTags = computed(() => props.displayTags.map(tag => `#${tag}`))
 </script>
 
 <template>
@@ -26,17 +31,12 @@ const emit = defineEmits(['toggle-tags', 'search-tag'])
     </button>
   </header>
 
-  <div class="tag-strip" v-if="!isUserSearch && showTags && displayTags.length">
-    <button
-      v-for="tag in displayTags"
-      :key="tag"
-      type="button"
-      class="tag-chip"
-      @click="emit('search-tag', tag)"
-    >
-      #{{ tag }}
-    </button>
-  </div>
+  <TagStrip
+    v-if="!isUserSearch && showTags && hashedDisplayTags.length"
+    :tags="hashedDisplayTags"
+    variant="button"
+    @tag-click="(tag) => emit('search-tag', tag)"
+  />
 </template>
 
 <style scoped>
@@ -101,26 +101,4 @@ const emit = defineEmits(['toggle-tags', 'search-tag'])
   font-size: 0.88rem;
 }
 
-.tag-strip {
-  display: flex;
-  gap: 0.52rem;
-  overflow: auto;
-  padding-bottom: 0.3rem;
-}
-
-.tag-chip {
-  border: none;
-  color: #fff;
-  border-radius: 4px;
-  padding: 0.38rem 0.75rem;
-  white-space: nowrap;
-  font-size: 0.84rem;
-  font-weight: 700;
-}
-
-.tag-chip:nth-child(5n + 1) { background: #94b96d; }
-.tag-chip:nth-child(5n + 2) { background: #66b4b1; }
-.tag-chip:nth-child(5n + 3) { background: #9a73c9; }
-.tag-chip:nth-child(5n + 4) { background: #6f84c8; }
-.tag-chip:nth-child(5n + 5) { background: #c48f75; }
 </style>

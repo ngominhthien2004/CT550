@@ -73,6 +73,8 @@ export const deleteArtwork = (artworkId) => api.delete(`/artworks/${artworkId}`)
 export const reportArtwork = (artworkId, payload) => api.post(`/artworks/${artworkId}/report`, payload)
 export const getTags = (params = {}) => api.get('/tags', { params })
 export const getTagDetail = (tagName) => api.get(`/tags/${encodeURIComponent(tagName)}`)
+export const getPopularTagSuggestions = (params = {}) => api.get('/tags/popular-suggestions', { params })
+export const getPopularIllustSuggestions = (params = {}) => api.get('/tags/popular-illust-suggestions', { params })
 
 // Auto-tag image via AI
 export const autoTagImage = (formData) => api.post('/ai/auto-tag', formData, {

@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getArtworks } from '../../services/api'
+import { getArtworks, getPopularTagSuggestions } from '../../services/api'
 import AppSearchHistoryPanel from './AppSearchHistoryPanel.vue'
 
 const props = defineProps({
@@ -58,7 +58,9 @@ const searchHistory = ref([])
 const isHistoryOpen = ref(false)
 const searchShellRef = ref(null)
 const searchInputRef = ref(null)
-const defaultSuggestions = ['landscape', 'character design', 'fanart', 'manga panel', 'novel cover']
+const defaultSuggestions = ref([])
+const defaultSuggestionsLoading = ref(false)
+const showAllSuggestions = ref(false)
 let rotationTimer = null
 
 const activeArtwork = computed(() => featuredArtworks.value[activeIndex.value] || null)
@@ -145,10 +147,13 @@ function rememberSearchQuery(query) {
 const filteredSuggestions = computed(() => {
   const keyword = searchValue.value.trim().toLowerCase()
   if (!keyword) {
-    return defaultSuggestions
+    return showAllSuggestions.value ? defaultSuggestions.value : defaultSuggestions.value.slice(0, 5)
   }
 
-  return defaultSuggestions.filter((item) => item.toLowerCase().includes(keyword)).slice(0, 5)
+  const results = defaultSuggestions.value.filter((item) =>
+    item.toLowerCase().includes(keyword)
+  )
+  return showAllSuggestions.value ? results : results.slice(0, 5)
 })
 
 function deleteHistoryItem(item) {
@@ -159,6 +164,10 @@ function deleteHistoryItem(item) {
 function clearSearchHistory() {
   searchHistory.value = []
   saveSearchHistory()
+}
+
+function expandSuggestions() {
+  showAllSuggestions.value = true
 }
 
 async function chooseHistoryItem(item) {
@@ -250,6 +259,13 @@ onMounted(async () => {
     await loadLatestArtworkCovers()
     startRotation()
   }
+
+  try {
+    const { data } = await getPopularTagSuggestions({ limit: 20 })
+    defaultSuggestions.value = Array.isArray(data) ? data : []
+  } catch {
+    defaultSuggestions.value = ['landscape', 'character design', 'fanart', 'manga panel', 'novel cover']
+  }
 })
 
 onBeforeUnmount(() => {
@@ -314,9 +330,11 @@ defineExpose({
         v-if="isHistoryOpen"
         :search-history="searchHistory"
         :filtered-suggestions="filteredSuggestions"
+        :show-more="showAllSuggestions"
         @choose-item="chooseHistoryItem"
         @delete-item="deleteHistoryItem"
         @clear-history="clearSearchHistory"
+        @view-more="expandSuggestions"
       />
     </form>
 

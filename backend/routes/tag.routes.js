@@ -1,11 +1,14 @@
 const express = require('express');
-const { listTags, getTagDetail, adminListTags, adminUpdateTag, adminMergeTags, adminDeleteTag } = require('../controllers/tag.controller');
+const { listTags, getTagDetail, getPopularSuggestions, getPopularIllustSuggestions, adminListTags, adminUpdateTag, adminMergeTags, adminDeleteTag } = require('../controllers/tag.controller');
 const { protect, admin } = require('../middlewares/auth.middleware');
 
 const router = express.Router();
 
 // Public routes
 router.get('/', listTags);
+// Popular suggestions (must be before /:tagName)
+router.get('/popular-suggestions', getPopularSuggestions);
+router.get('/popular-illust-suggestions', getPopularIllustSuggestions);
 router.get('/:tagName', getTagDetail);
 
 // Admin routes

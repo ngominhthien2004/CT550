@@ -393,17 +393,6 @@ async function loadSearchItems() {
 }
 
 async function loadUserResults(loadMore) {
-  if (!isUserSearch.value) {
-    if (!loadMore) {
-      userResults.value = []
-      userTotal.value = 0
-      userPage.value = 1
-      userHasMore.value = false
-    }
-    userError.value = ''
-    userLoading.value = false
-    return
-  }
   if (!loadMore) userPage.value = 1
   userLoading.value = !loadMore
   userError.value = ''

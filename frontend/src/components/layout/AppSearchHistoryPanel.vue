@@ -1,6 +1,8 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '../../stores/auth.store'
+import { getPopularIllustSuggestions, getPopularTagSuggestions, getTags } from '../../services/api'
+import TagStrip from '../shared/TagStrip.vue'
 
 const props = defineProps({
   searchHistory: {
@@ -11,9 +13,13 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  showMore: {
+    type: Boolean,
+    default: false,
+  },
 })
 
-const emit = defineEmits(['choose-item', 'delete-item', 'clear-history'])
+const emit = defineEmits(['choose-item', 'delete-item', 'clear-history', 'view-more'])
 
 // LocalStorage key constant (not a secret)
 const FAVORITE_TAG_KEY = 'illuwrl.favoriteTags'
@@ -26,14 +32,15 @@ const favoriteTagKey = computed(() => {
 })
 
 
-const popularIllustTags = [
-  { label: '#anime boy', image: 'https://picsum.photos/seed/ct550-illu1/150/88' },
-  { label: '#love story', image: 'https://picsum.photos/seed/ct550-illu2/150/88' },
-  { label: '#nakamu', image: 'https://picsum.photos/seed/ct550-illu3/150/88' },
-  { label: '#pastel mood', image: 'https://picsum.photos/seed/ct550-illu4/150/88' },
-]
+const popularIllustTags = ref([])
 
-const popularNovelTags = ['#isekai romance', '#dark fantasy', '#coming of age', '#slow burn', '#slice of life']
+const popularNovelTags = ref([])
+
+const newTagLabel = ref('')
+const tagSuggestions = ref([])
+const isAddingTag = ref(false)
+const addError = ref('')
+let searchTagsTimeout = null
 
 function openFavoriteEdit() {
   isFavoriteEditOpen.value = true
@@ -43,8 +50,12 @@ function closeFavoriteEdit() {
   isFavoriteEditOpen.value = false
 }
 
-function removeFavoriteTag(label) {
-  favoriteTagList.value = favoriteTagList.value.filter((tag) => tag.label !== label)
+function saveFavoriteTags() {
+  try {
+    localStorage.setItem(favoriteTagKey.value, JSON.stringify(favoriteTagList.value))
+  } catch (_error) {
+    // Silently fail for storage errors.
+  }
 }
 
 function loadFavoriteTags() {
@@ -62,15 +73,91 @@ function loadFavoriteTags() {
   favoriteTagList.value = []
 }
 
-onMounted(loadFavoriteTags)
+function removeFavoriteTag(label) {
+  favoriteTagList.value = favoriteTagList.value.filter((tag) => tag.label !== label)
+  saveFavoriteTags()
+}
+
+function addFavoriteTag(label) {
+  addError.value = ''
+
+  const trimmed = (label || '').replace(/^#+/, '').trim()
+  if (!trimmed) {
+    addError.value = 'Tag name cannot be empty.'
+    return false
+  }
+
+  if (favoriteTagList.value.length >= 10) {
+    addError.value = 'Maximum 10 favorite tags allowed.'
+    return false
+  }
+
+  if (favoriteTagList.value.some((tag) => tag.label === trimmed)) {
+    addError.value = `"${trimmed}" is already in your favorites.`
+    return false
+  }
+
+  favoriteTagList.value.unshift({
+    label: trimmed,
+    sub: `#${trimmed}`,
+  })
+  saveFavoriteTags()
+  newTagLabel.value = ''
+  tagSuggestions.value = []
+  return true
+}
+
+function searchTags(keyword) {
+  clearTimeout(searchTagsTimeout)
+  const trimmed = (keyword || '').replace(/^#+/, '').trim()
+  if (!trimmed) {
+    tagSuggestions.value = []
+    return
+  }
+
+  searchTagsTimeout = setTimeout(async () => {
+    try {
+      const { data } = await getTags({ q: trimmed, limit: 5 })
+      tagSuggestions.value = Array.isArray(data)
+        ? data
+            .map((t) => (typeof t === 'object' && t.name ? t.name : t))
+            .filter((name) => !favoriteTagList.value.some((fav) => fav.label === name))
+        : []
+    } catch {
+      tagSuggestions.value = []
+    }
+  }, 200)
+}
+
+function selectSuggestion(name) {
+  addFavoriteTag(name)
+}
+
+onMounted(async () => {
+  loadFavoriteTags()
+
+  try {
+    const { data } = await getPopularIllustSuggestions({ limit: 4 })
+    popularIllustTags.value = Array.isArray(data) ? data : []
+  } catch {
+    popularIllustTags.value = [
+      { label: '#anime boy', image: 'https://picsum.photos/seed/ct550-illu1/150/88' },
+      { label: '#love story', image: 'https://picsum.photos/seed/ct550-illu2/150/88' },
+      { label: '#nakamu', image: 'https://picsum.photos/seed/ct550-illu3/150/88' },
+      { label: '#pastel mood', image: 'https://picsum.photos/seed/ct550-illu4/150/88' },
+    ]
+  }
+
+  try {
+    const { data } = await getPopularTagSuggestions({ limit: 5, type: 'novel' })
+    popularNovelTags.value = Array.isArray(data) ? data.map(t => `#${t}`) : []
+  } catch {
+    popularNovelTags.value = ['#isekai romance', '#dark fantasy', '#coming of age', '#slow burn', '#slice of life']
+  }
+})
 watch(favoriteTagKey, loadFavoriteTags)
 
-watch(
-  () => JSON.stringify(favoriteTagList.value),
-  (serialized) => {
-    localStorage.setItem(favoriteTagKey.value, serialized)
-  },
-)
+
 </script>
 
 <template>
@@ -118,26 +205,21 @@ watch(
       <span>{{ item }}</span>
     </button>
 
-    <button type="button" class="history-view-more">View more</button>
+    <button v-if="!props.showMore" type="button" class="history-view-more" @click="emit('view-more')">View more</button>
 
     <section class="panel-block">
       <div class="panel-block-head">
         <strong>Your favorite tags</strong>
         <button type="button" @click="openFavoriteEdit">Edit</button>
       </div>
-      <div class="favorite-tags">
-        <button
-          v-for="tag in favoriteTagList"
-          :key="tag.label"
-          type="button"
-          class="favorite-tag"
-          @click="emit('choose-item', tag.label)"
-        >
-          <span>{{ tag.label }}</span>
-          <small>{{ tag.sub }}</small>
-        </button>
-        <p v-if="!favoriteTagList.length" class="favorite-empty">No favorite tags yet.</p>
-      </div>
+      <TagStrip
+        v-if="favoriteTagList.length"
+        :tags="favoriteTagList.map(t => `#${t.label}`)"
+        variant="button"
+        compact
+        @tag-click="(tag) => emit('choose-item', tag)"
+      />
+      <p v-else class="favorite-empty">No favorite tags yet.</p>
     </section>
 
     <section class="panel-block">
@@ -162,21 +244,16 @@ watch(
       <div class="panel-block-head">
         <strong>Popular novel tags</strong>
       </div>
-      <div class="novel-tags">
-        <button
-          v-for="tag in popularNovelTags"
-          :key="tag"
-          type="button"
-          class="novel-tag"
-          @click="emit('choose-item', tag)"
-        >
-          {{ tag }}
-        </button>
-      </div>
+      <TagStrip
+        :tags="popularNovelTags"
+        variant="button"
+        compact
+        @tag-click="(tag) => emit('choose-item', tag)"
+      />
     </section>
 
     <Teleport to="body">
-      <div v-if="isFavoriteEditOpen" class="favorite-modal-overlay" role="dialog" aria-modal="true" aria-label="Edit favorite tags">
+      <div v-if="isFavoriteEditOpen" class="favorite-modal-overlay" role="dialog" aria-modal="true" aria-label="Edit favorite tags" @mousedown.stop>
         <div class="favorite-modal-card">
           <button type="button" class="favorite-modal-close" aria-label="Close" @click="closeFavoriteEdit">
             <i class="fa-solid fa-xmark" aria-hidden="true"></i>
@@ -184,16 +261,47 @@ watch(
           <h3>Your favorite tags</h3>
           <p class="favorite-count">{{ favoriteTagList.length }}/10</p>
 
+          <div class="favorite-modal-add">
+            <div class="favorite-add-row">
+              <input
+                v-model="newTagLabel"
+                type="text"
+                class="favorite-add-input"
+                placeholder="Enter tag name..."
+                maxlength="50"
+                @input="searchTags(newTagLabel)"
+                @keydown.enter.prevent="addFavoriteTag(newTagLabel)"
+              />
+              <button
+                type="button"
+                class="favorite-add-btn"
+                :disabled="!newTagLabel.trim() || favoriteTagList.length >= 10"
+                @click="addFavoriteTag(newTagLabel)"
+              >
+                Add
+              </button>
+            </div>
+            <p v-if="addError" class="favorite-add-error">{{ addError }}</p>
+            <div v-if="tagSuggestions.length" class="favorite-suggestions-wrapper">
+              <TagStrip
+                :tags="tagSuggestions.map(name => `#${name}`)"
+                variant="button"
+                compact
+                @tag-click="selectSuggestion"
+              />
+            </div>
+          </div>
+
           <div class="favorite-modal-list">
             <article v-for="tag in favoriteTagList" :key="`modal-${tag.label}`" class="favorite-modal-item">
               <div>
-                <strong>{{ tag.label }}</strong>
-                <p>{{ tag.sub }}</p>
+                <strong>#{{ tag.label }}</strong>
               </div>
               <button type="button" aria-label="Remove tag" @click="removeFavoriteTag(tag.label)">
                 <i class="fa-solid fa-trash" aria-hidden="true"></i>
               </button>
             </article>
+            <p v-if="!favoriteTagList.length" class="favorite-modal-empty">No favorite tags yet. Add one above!</p>
           </div>
         </div>
       </div>
@@ -218,7 +326,13 @@ watch(
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   max-height: min(72vh, 620px);
   overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   padding: 0.35rem;
+}
+
+.history-panel::-webkit-scrollbar {
+  display: none;
 }
 
 /* --- History Header --- */
@@ -388,34 +502,7 @@ watch(
   font-size: 0.78rem;
 }
 
-.favorite-tag {
-  border: 1px solid rgba(0, 150, 250, 0.2);
-  background: rgba(0, 150, 250, 0.06);
-  color: #0096fa;
-  border-radius: 6px;
-  min-width: 80px;
-  text-align: left;
-  padding: 0.4rem 0.55rem;
-  display: grid;
-  line-height: 1.05;
-  transition: background 0.15s, border-color 0.15s;
-}
 
-.favorite-tag:hover {
-  background: rgba(0, 150, 250, 0.12);
-  border-color: rgba(0, 150, 250, 0.4);
-}
-
-.favorite-tag span {
-  font-weight: 600;
-  font-size: 0.84rem;
-}
-
-.favorite-tag small {
-  opacity: 0.7;
-  font-size: 0.72rem;
-  color: #474747;
-}
 
 /* --- Popular Illust Tags Grid --- */
 .popular-grid {
@@ -453,27 +540,6 @@ watch(
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-/* --- Novel Tags --- */
-.novel-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.novel-tag {
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: transparent;
-  color: #474747;
-  border-radius: 6px;
-  padding: 0.26rem 0.55rem;
-  font-size: 0.78rem;
-  transition: background 0.15s;
-}
-
-.novel-tag:hover {
-  background: #f5f5f5;
 }
 
 /* --- Favorite Tags Modal --- */
@@ -562,6 +628,83 @@ watch(
 
 .favorite-modal-item button:hover {
   color: #0096fa;
+}
+
+/* --- Favorite Tags Add Input --- */
+.favorite-modal-add {
+  margin: 0.6rem 0 0.8rem;
+}
+
+.favorite-add-row {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.favorite-add-input {
+  flex: 1;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.88rem;
+  color: #1f1f1f;
+  background: #fafafa;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.favorite-add-input:focus {
+  border-color: #0096fa;
+  background: #fff;
+}
+
+.favorite-add-btn {
+  border: none;
+  background: #0096fa;
+  color: #fff;
+  border-radius: 999px;
+  height: 38px;
+  padding: 0 1.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.favorite-add-btn:hover:not(:disabled) {
+  background: #007acc;
+}
+
+.favorite-add-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.favorite-add-error {
+  margin: 0.3rem 0 0;
+  color: #e74c3c;
+  font-size: 0.78rem;
+}
+
+.favorite-suggestions-wrapper {
+  margin-top: 0.5rem;
+}
+
+.favorite-suggestions {
+  margin-top: 0.35rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+
+
+.favorite-modal-empty {
+  text-align: center;
+  color: #858585;
+  font-size: 0.82rem;
+  padding: 1rem 0;
+  margin: 0;
 }
 
 @media (max-width: 920px) {
