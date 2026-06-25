@@ -14,7 +14,7 @@ const router = useRouter()
 
 function goToArtwork(artwork) {
   if (artwork?._id) {
-    router.push(`/artworks/${artwork._id}`)
+    router.push(`/artworks/${artwork._id}/edit`)
   }
 }
 

@@ -3,6 +3,7 @@ import HomePage from '../views/HomePage.vue'
 import TypedHomeFeedView from '../views/TypedHomeFeedView.vue'
 import NovelTopPageView from '../views/NovelTopPageView.vue'
 import PlansTopPageView from '../views/PlansTopPageView.vue'
+import EditArtworkView from '../views/EditArtworkView.vue'
 import FeedView from '../views/FeedView.vue'
 import SearchResultsView from '../views/SearchResultsView.vue'
 import BookmarksView from '../views/BookmarksView.vue'
@@ -104,6 +105,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   { path: '/account', name: 'account', component: AccountView },
+  { path: '/artworks/:id/edit', name: 'edit-artwork', component: EditArtworkView, meta: { requiresAuth: true } },
   { path: '/users/:id/following', name: 'users-following', component: FollowUsersView },
   { path: '/users/:id/followers', name: 'followers', component: FollowUsersView },
   { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },

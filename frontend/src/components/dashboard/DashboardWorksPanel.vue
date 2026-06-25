@@ -59,7 +59,7 @@ function toggleMenu(id) {
 
 function goToArtworkDetail(artworkId) {
   if (!artworkId) return
-  router.push(`/artworks/${artworkId}`)
+  router.push(`/artworks/${artworkId}/edit`)
 }
 
 function openEditModal(artwork) {
