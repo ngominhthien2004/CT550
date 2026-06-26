@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import AdminPagination from './AdminPagination.vue'
 
 const props = defineProps({
   activeTab: { type: String, required: true },
@@ -28,45 +29,61 @@ const formattedHidden = computed(() =>
       No hidden artworks.
     </div>
 
-    <table v-else class="admin-table">
-      <thead>
-        <tr>
-          <th>Artwork</th>
-          <th>Author</th>
-          <th>Hidden By</th>
-          <th>Reason</th>
-          <th>Hidden At</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="art in formattedHidden" :key="art._id">
-          <td>
-            <router-link :to="`/artworks/${art._id}`" class="artwork-link">
-              {{ art.title }}
-            </router-link>
-          </td>
-          <td>{{ art.user?.displayName || art.user?.username || '-' }}</td>
-          <td>{{ art.hiddenBy?.displayName || art.hiddenBy?.username || '-' }}</td>
-          <td class="text-muted small">{{ art.hiddenReason || '-' }}</td>
-          <td>{{ art._hiddenAt }}</td>
-          <td class="actions-cell">
-            <button type="button"
-              class="btn btn-sm btn-outline-success"
-              :disabled="mutating"
-              @click="emit('unhide-artwork', art._id)"
-            >Unhide</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div v-else class="table-wrap">
+      <table class="table table-sm align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Artwork</th>
+            <th>Author</th>
+            <th>Hidden By</th>
+            <th>Reason</th>
+            <th>Hidden At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="art in formattedHidden" :key="art._id">
+            <td>
+              <router-link :to="`/artworks/${art._id}`" class="artwork-link">
+                {{ art.title }}
+              </router-link>
+            </td>
+            <td>{{ art.user?.displayName || art.user?.username || '-' }}</td>
+            <td>{{ art.hiddenBy?.displayName || art.hiddenBy?.username || '-' }}</td>
+            <td class="text-muted small">{{ art.hiddenReason || '-' }}</td>
+            <td>{{ art._hiddenAt }}</td>
+            <td class="actions-cell">
+              <button type="button"
+                class="btn btn-sm btn-outline-success"
+                :disabled="mutating"
+                @click="emit('unhide-artwork', art._id)"
+              >Unhide</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <footer v-if="hiddenPagination.pages > 1" class="panel-footer" aria-label="Hidden artworks pagination">
-      <span>Page {{ hiddenPagination.page }} / {{ hiddenPagination.pages }} &bull; {{ hiddenPagination.total }} hidden</span>
-      <div class="btn-group">
-        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="hiddenPagination.page <= 1 || loadingHidden" @click="emit('go-page', hiddenPagination.page - 1)">Previous</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="hiddenPagination.page >= hiddenPagination.pages || loadingHidden" @click="emit('go-page', hiddenPagination.page + 1)">Next</button>
-      </div>
-    </footer>
+    <AdminPagination
+      v-if="hiddenPagination.pages > 1"
+      :page="hiddenPagination.page"
+      :pages="hiddenPagination.pages"
+      :total="hiddenPagination.total"
+      total-label="hidden"
+      :loading="loadingHidden"
+      @go-page="(p) => emit('go-page', p)"
+    />
   </section>
 </template>
+
+<style scoped>
+.artwork-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.artwork-link:hover {
+  text-decoration: underline;
+}
+</style>
