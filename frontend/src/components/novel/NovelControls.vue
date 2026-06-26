@@ -1,12 +1,11 @@
 <script setup>
 defineProps({
   fontSize: { type: String, required: true },
-  isDarkMode: { type: Boolean, default: false },
   canDecrease: { type: Boolean, default: true },
   canIncrease: { type: Boolean, default: true },
 })
 
-const emit = defineEmits(['decrease-font', 'increase-font', 'toggle-dark'])
+const emit = defineEmits(['decrease-font', 'increase-font'])
 </script>
 
 <template>
@@ -33,12 +32,7 @@ const emit = defineEmits(['decrease-font', 'increase-font', 'toggle-dark'])
       </button>
     </div>
 
-    <div class="controls-group">
-      <button type="button" class="ctrl-btn theme-btn" title="Toggle dark mode" @click="emit('toggle-dark')">
-        <span v-if="isDarkMode" class="ctrl-icon" aria-hidden="true">☀️</span>
-        <span v-else class="ctrl-icon" aria-hidden="true">🌙</span>
-      </button>
-    </div>
+
   </div>
 </template>
 

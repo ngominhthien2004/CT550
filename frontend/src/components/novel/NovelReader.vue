@@ -51,7 +51,7 @@ const formattedParagraphs = computed(() => {
   return props.novelContent.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean)
 })
 
-const { isDark: isDarkMode, toggle: toggleDarkMode } = useTheme()
+const { isDark: isDarkMode } = useTheme()
 
 const progressPercent = ref(0)
 const scrollPosition = ref(0)
@@ -122,12 +122,10 @@ onUnmounted(() => {
 
     <NovelControls
       :font-size="fontSize"
-      :is-dark-mode="isDarkMode"
       :can-decrease="canDecrease"
       :can-increase="canIncrease"
       @decrease-font="decreaseFontSize"
       @increase-font="increaseFontSize"
-      @toggle-dark="toggleDarkMode"
     />
 
     <NovelHeader
