@@ -140,8 +140,8 @@ async function getSimilarArtworks(artworkId, limit = 24) {
       ? new mongoose.Types.ObjectId(artworkId)
       : artworkId;
 
-  // Fast fail: artwork must exist
-  const artwork = await Artwork.findById(targetId).select('_id').lean();
+  // Fast fail: artwork must exist, get type for type-filtered suggestions
+  const artwork = await Artwork.findById(targetId).select('_id type').lean();
   if (!artwork) {
     return [];
   }
@@ -266,11 +266,15 @@ async function getSimilarArtworks(artworkId, limit = 24) {
   const topResults = scored.slice(0, limit);
   const topIds = topResults.map((r) => new mongoose.Types.ObjectId(r.artworkId));
 
-  // Step 7: Fetch and populate artwork documents
-  const similarArtworks = await Artwork.find({
+  // Step 7: Fetch and populate artwork documents (same type as source)
+  const filter = {
     _id: { $in: topIds },
     isHidden: { $ne: true },
-  })
+  };
+  if (artwork.type) {
+    filter.type = artwork.type;
+  }
+  const similarArtworks = await Artwork.find(filter)
     .populate('user', 'username displayName avatar')
     .populate('tags', 'name')
     .lean();

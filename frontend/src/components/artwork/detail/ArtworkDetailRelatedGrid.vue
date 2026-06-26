@@ -1,29 +1,55 @@
 <script setup>
+import { computed } from 'vue'
 import ArtworkCard from '../ArtworkCard.vue'
+import NovelRelatedCard from './NovelRelatedCard.vue'
 
-defineProps({
+const props = defineProps({
   relatedWorks: {
     type: Array,
     default: () => [],
   },
 })
+
+const gridGroups = computed(() => {
+  const result = []
+  const items = props.relatedWorks || []
+  for (let i = 0; i < items.length; i += 6) {
+    result.push(items.slice(i, i + 6))
+  }
+  return result
+})
 </script>
 
 <template>
-  <section class="related-shell d-grid gap-3">
-    <header class="d-flex align-items-center justify-content-between">
-      <h2 class="h5 fw-bold mb-0">Related works</h2>
+  <section class="related-shell">
+    <header class="related-head">
+      <h2 class="related-heading">Recommended works</h2>
     </header>
 
-    <div class="related-grid">
-      <ArtworkCard
-        v-for="item in relatedWorks"
-        :key="item._id"
-        :item="item"
-      />
-    </div>
+    <template v-if="!relatedWorks.length">
+      <p class="text-secondary small mb-0">No related works yet.</p>
+    </template>
 
-    <p v-if="!relatedWorks.length" class="text-secondary small mb-0">No related works yet.</p>
+    <template v-else>
+      <div
+        v-for="(group, gi) in gridGroups"
+        :key="gi"
+        class="related-group"
+        :class="{ 'has-divider': gi < gridGroups.length - 1 }"
+      >
+        <div class="related-grid">
+          <template v-for="item in group" :key="item._id">
+            <NovelRelatedCard
+              v-if="item.type === 'novel'"
+              :item="item"
+            />
+            <div v-else class="artwork-cell">
+              <ArtworkCard :item="item" />
+            </div>
+          </template>
+        </div>
+      </div>
+    </template>
   </section>
 </template>
 
@@ -32,101 +58,44 @@ defineProps({
   width: 100%;
 }
 
+.related-head {
+  margin-bottom: 0.6rem;
+}
+
+.related-heading {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.related-group {
+  padding: 1rem 0;
+}
+
+.related-group.has-divider {
+  border-bottom: 1px solid var(--line);
+}
+
 .related-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 1.5rem 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.2rem 1.5rem;
 }
 
-.related-card {
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s;
-}
-
-.related-card:hover {
-  transform: translateY(-2px);
-}
-
-.image-wrapper {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--surface-alt);
-  border: 1px solid var(--line);
-}
-
-.related-cover {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.overlay-icons {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.9rem;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.related-card:hover .overlay-icons {
-  opacity: 1;
-}
-
-.related-title {
-  font-size: 0.85rem;
-  color: var(--text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.author-line {
-  font-size: 0.75rem;
-}
-
-.author-avatar-mini {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--surface-alt);
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.author-avatar-mini img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-}
-
-.author-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-@media (max-width: 1200px) {
-  .related-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
+.artwork-cell {
+  min-width: 0;
 }
 
 @media (max-width: 900px) {
   .related-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 550px) {
   .related-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 </style>
