@@ -227,20 +227,21 @@
 }
 
 :root.dark-theme .admin-page .table {
-  color: var(--text);
+  --bs-table-color: var(--text);
   --bs-table-bg: transparent;
   --bs-table-striped-bg: rgba(255, 255, 255, 0.02);
   --bs-table-hover-bg: var(--surface-alt);
 }
 
+:root.dark-theme .admin-page .table td,
+:root.dark-theme .admin-page .table th {
+  color: var(--text);
+  border-color: var(--line);
+}
+
 :root.dark-theme .admin-page .table thead th {
   color: var(--muted);
   border-bottom-color: var(--line);
-}
-
-:root.dark-theme .admin-page .table td,
-:root.dark-theme .admin-page .table th {
-  border-color: var(--line);
 }
 
 :root.dark-theme .admin-page .btn-outline-secondary {
