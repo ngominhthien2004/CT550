@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import AdminPagination from './AdminPagination.vue'
+import AdminPillSelect from './AdminPillSelect.vue'
 
 const props = defineProps({
   activeTab: { type: String, required: true },
@@ -30,17 +31,17 @@ function onStatusFilterChange(event) {
   <section v-show="activeTab === 'comment'" :id="'admin-panel-comment-reports'" class="panel" role="tabpanel">
     <div class="panel-head">
       <h2>Comment Reports</h2>
-      <select
-        :value="reportStatusFilter"
-        class="form-select form-select-sm report-status-select"
-        @change="onStatusFilterChange"
-        aria-label="Filter comment reports by status"
-      >
-        <option value="pending">Pending</option>
-        <option value="resolved">Resolved</option>
-        <option value="dismissed">Dismissed</option>
-        <option value="">All</option>
-      </select>
+      <AdminPillSelect
+        :model-value="reportStatusFilter"
+        :options="[
+          { value: 'pending', label: 'Pending' },
+          { value: 'resolved', label: 'Resolved' },
+          { value: 'dismissed', label: 'Dismissed' },
+          { value: '', label: 'All' },
+        ]"
+        label="Filter comment reports by status"
+        @update:model-value="onStatusFilterChange"
+      />
     </div>
 
     <p v-if="loadingReports" class="state-note">Loading reports...</p>

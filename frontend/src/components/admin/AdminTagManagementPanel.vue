@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
+import AdminPillSelect from './AdminPillSelect.vue'
 
 const props = defineProps({
   activeTab: { type: String, required: true },
@@ -25,6 +26,10 @@ const emit = defineEmits([
 const mergeSourceId = ref('')
 const mergeTargetId = ref('')
 const showMergeForm = ref(false)
+
+const mergeTagOptions = computed(() =>
+  props.tags.map(t => ({ value: t._id, label: `${t.name} (${t.usageCount})` }))
+)
 
 function onQueryInput(event) {
   emit('update:tagQuery', event.target.value)
@@ -89,15 +94,17 @@ const formattedTags = computed(() =>
     <!-- Merge form -->
     <div v-if="showMergeForm" class="border rounded p-2 mb-2 bg-light">
       <div class="d-flex gap-2 align-items-center flex-wrap">
-        <select v-model="mergeSourceId" class="form-select form-select-sm" style="max-width:200px" aria-label="Select source tag for merging">
-          <option value="" disabled>Select source tag</option>
-          <option v-for="tag in tags" :key="tag._id" :value="tag._id">{{ tag.name }} ({{ tag.usageCount }})</option>
-        </select>
+        <AdminPillSelect
+          v-model="mergeSourceId"
+          :options="mergeTagOptions"
+          label="Select source tag"
+        />
         <span class="text-muted">&rarr;</span>
-        <select v-model="mergeTargetId" class="form-select form-select-sm" style="max-width:200px" aria-label="Select target tag for merging">
-          <option value="" disabled>Select target tag</option>
-          <option v-for="tag in tags" :key="tag._id" :value="tag._id">{{ tag.name }} ({{ tag.usageCount }})</option>
-        </select>
+        <AdminPillSelect
+          v-model="mergeTargetId"
+          :options="mergeTagOptions"
+          label="Select target tag"
+        />
         <button type="button" class="btn btn-sm btn-success" :disabled="!mergeSourceId || !mergeTargetId || mutating" @click="doMerge">Merge</button>
         <button type="button" class="btn btn-sm btn-outline-secondary" @click="cancelMerge">Cancel</button>
       </div>

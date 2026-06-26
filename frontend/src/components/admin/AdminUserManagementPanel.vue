@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import AdminPagination from './AdminPagination.vue'
+import AdminPillSelect from './AdminPillSelect.vue'
 
 const props = defineProps({
   activeTab: {
@@ -111,11 +112,16 @@ const formattedUsers = computed(() =>
         @input="onQueryInput"
         @keyup.enter="emit('apply-filters')"
       />
-      <select :value="userRoleFilter" class="form-select form-select-sm" @change="onRoleFilterChange" aria-label="Filter users by role">
-        <option value="all">All roles</option>
-        <option value="user">User</option>
-        <option value="admin">Admin</option>
-      </select>
+      <AdminPillSelect
+        :model-value="userRoleFilter"
+        :options="[
+          { value: 'all', label: 'All roles' },
+          { value: 'user', label: 'User' },
+          { value: 'admin', label: 'Admin' },
+        ]"
+        label="Filter users by role"
+        @update:model-value="onRoleFilterChange"
+      />
       <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingUsers" @click="emit('apply-filters')">Apply</button>
     </div>
 
