@@ -150,9 +150,9 @@ watch(() => props.activeTab, (tab) => {
   align-items: center;
   gap: 2rem;
   padding: 1.25rem;
-  border: 1px solid var(--line, #e0e0e0);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--surface, #fff);
+  background: var(--surface);
   margin: 1rem 0;
 }
 .ai-toggle-info {
@@ -177,7 +177,7 @@ watch(() => props.activeTab, (tab) => {
 .toggle-slider {
   width: 44px;
   height: 24px;
-  background: #ccc;
+  background: var(--line);
   border-radius: 12px;
   position: relative;
   transition: background 0.2s;
@@ -189,7 +189,7 @@ watch(() => props.activeTab, (tab) => {
   height: 20px;
   left: 2px;
   top: 2px;
-  background: white;
+  background: var(--surface);
   border-radius: 50%;
   transition: transform 0.2s;
 }
@@ -208,8 +208,8 @@ watch(() => props.activeTab, (tab) => {
   margin-top: 1rem;
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  background: var(--surface, #f9f9f9);
-  border: 1px solid var(--line, #e0e0e0);
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
 }
 .success-note {
   color: #155724;

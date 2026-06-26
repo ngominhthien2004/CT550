@@ -1,13 +1,5 @@
 .admin-page {
-  --admin-primary: #7c3aed;
-  --admin-secondary: #a78bfa;
-  --admin-accent: #f97316;
-  --admin-bg: #faf5ff;
-  --admin-text: #4c1d95;
-  --admin-border: #e9d5ff;
-  --admin-muted: #6b7280;
-  font-family: 'Fira Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(180deg, #fdf4ff 0%, var(--admin-bg) 100%);
+  background: var(--bg);
   min-height: calc(100vh - 112px);
   padding: 1rem;
   display: grid;
@@ -18,29 +10,29 @@
   margin: 0;
   font-size: 1.8rem;
   font-weight: 800;
-  color: var(--admin-text);
+  color: var(--brand);
 }
 
 .admin-head p {
   margin: 0.25rem 0 0;
-  color: var(--admin-muted);
+  color: var(--muted);
 }
 
 .btn-admin-refresh {
   margin-top: 0.75rem;
-  background: var(--admin-primary);
+  background: var(--accent);
   color: #fff;
-  border-color: var(--admin-primary);
+  border-color: var(--accent);
 }
 
 .btn-admin-refresh:hover {
-  background: #6d28d9;
-  border-color: #6d28d9;
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 
 .error-note {
   margin: 0;
-  color: #b42318;
+  color: var(--danger);
   font-weight: 600;
 }
 
@@ -51,8 +43,8 @@
 }
 
 .overview-card {
-  background: #fff;
-  border: 1px solid var(--admin-border);
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 0.75rem;
   display: grid;
@@ -62,44 +54,49 @@
 
 .overview-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(124, 58, 237, 0.12);
+  box-shadow: var(--shadow-md);
 }
 
 .overview-card span {
-  color: var(--admin-muted);
+  color: var(--muted);
   font-size: 0.85rem;
 }
 
 .overview-card strong {
-  color: var(--admin-text);
+  color: var(--brand);
   font-size: 1.4rem;
-  font-family: 'Fira Code', Consolas, 'Courier New', monospace;
 }
 
 .admin-tabs {
   display: flex;
-  gap: 0.5rem;
+  gap: 0;
+  border-bottom: 1px solid var(--line);
 }
 
 .admin-tab {
-  border: 1px solid var(--admin-border);
-  background: #fff;
-  color: var(--admin-text);
-  padding: 0.45rem 0.8rem;
-  border-radius: 10px;
-  font-weight: 600;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  padding: 0.55rem 0.85rem;
+  font-weight: 700;
+  font-size: 0.88rem;
   cursor: pointer;
-  transition: background-color 180ms ease, border-color 180ms ease;
+  transition: color 180ms ease, border-color 180ms ease;
+}
+
+.admin-tab:hover {
+  color: var(--brand);
 }
 
 .admin-tab.is-active {
-  background: #ede9fe;
-  border-color: var(--admin-secondary);
+  color: var(--brand);
+  border-bottom-color: var(--accent);
 }
 
 .panel {
-  background: #fff;
-  border: 1px solid var(--admin-border);
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 14px;
   padding: 0.9rem;
 }
@@ -135,7 +132,7 @@
 }
 
 .state-note {
-  color: var(--admin-muted);
+  color: var(--muted);
   margin: 0.4rem 0;
 }
 
@@ -150,7 +147,7 @@
 }
 
 .table tbody tr:hover {
-  background: #faf5ff;
+  background: var(--surface-alt);
 }
 
 .panel-footer {
@@ -159,7 +156,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 0.75rem;
-  color: var(--admin-muted);
+  color: var(--muted);
   font-size: 0.9rem;
 }
 
