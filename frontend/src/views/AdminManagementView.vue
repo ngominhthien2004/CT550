@@ -98,6 +98,8 @@ const userReportPagination = ref({ page: 1, pages: 1, total: 0 })
 const userReportStatusFilter = ref('pending')
 
 const activeTab = ref('users')
+const activeContentTab = ref('artworks')
+const activeReportTab = ref('artwork')
 
 const confirmModal = ref({ show: false, title: '', message: '', confirmLabel: 'Confirm', confirmClass: 'modal-btn--accent', onConfirm: null })
 const promptModal = ref({ show: false, title: '', message: '', placeholder: '', defaultValue: '', confirmLabel: 'OK', onConfirm: null })
@@ -123,15 +125,10 @@ function handlePromptCancel() {
 }
 
 const adminTabs = [
-  { id: 'users', label: 'User management' },
-  { id: 'artworks', label: 'Artwork moderation' },
-  { id: 'artwork-reports', label: 'Artwork reports' },
-  { id: 'comments', label: 'Comment moderation' },
-  { id: 'hidden-artworks', label: 'Hidden artworks' },
-  { id: 'comment-reports', label: 'Comment reports' },
-  { id: 'user-reports', label: 'User reports' },
-  { id: 'reports', label: 'Report review' },
-  { id: 'tags', label: 'Tag management' },
+  { id: 'users', label: 'Users' },
+  { id: 'content', label: 'Content' },
+  { id: 'reports', label: 'Reports' },
+  { id: 'tags', label: 'Tags' },
   { id: 'ai', label: 'AI Settings' },
 ]
 
@@ -744,6 +741,21 @@ onMounted(async () => {
 
       <AdminSectionTabs :active-tab="activeTab" :tabs="adminTabs" @change-tab="activeTab = $event" />
 
+      <!-- Content sub-filters -->
+      <div v-if="activeTab === 'content'" class="sub-filter-bar">
+        <button type="button" class="sub-filter-btn" :class="{ active: activeContentTab === 'artworks' }" @click="activeContentTab = 'artworks'">Artworks</button>
+        <button type="button" class="sub-filter-btn" :class="{ active: activeContentTab === 'comments' }" @click="activeContentTab = 'comments'">Comments</button>
+        <button type="button" class="sub-filter-btn" :class="{ active: activeContentTab === 'hidden' }" @click="activeContentTab = 'hidden'">Hidden</button>
+      </div>
+
+      <!-- Report sub-filters -->
+      <div v-if="activeTab === 'reports'" class="sub-filter-bar">
+        <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'artwork' }" @click="activeReportTab = 'artwork'">Artwork</button>
+        <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'comment' }" @click="activeReportTab = 'comment'">Comment</button>
+        <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'user' }" @click="activeReportTab = 'user'">User</button>
+        <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'request' }" @click="activeReportTab = 'request'">Request</button>
+      </div>
+
       <AdminUserManagementPanel
         :active-tab="activeTab"
         :user-panel-filters-open="userPanelFiltersOpen"
@@ -763,7 +775,8 @@ onMounted(async () => {
       />
 
       <AdminArtworkModerationPanel
-        :active-tab="activeTab"
+        v-if="activeTab === 'content'"
+        :active-tab="activeContentTab"
         :artwork-panel-filters-open="artworkPanelFiltersOpen"
         :artwork-query="artworkQuery"
         :loading-artworks="loadingArtworks"
@@ -779,7 +792,8 @@ onMounted(async () => {
       />
 
       <AdminArtworkReportPanel
-        :active-tab="activeTab"
+        v-if="activeTab === 'reports'"
+        :active-tab="activeReportTab"
         :artwork-reports="artworkReports"
         :loading-reports="loadingArtworkReports"
         :mutating="mutating"
@@ -793,7 +807,8 @@ onMounted(async () => {
       />
 
       <AdminCommentModerationPanel
-        :active-tab="activeTab"
+        v-if="activeTab === 'content'"
+        :active-tab="activeContentTab"
         :comment-panel-filters-open="commentPanelFiltersOpen"
         :comment-query="commentQuery"
         :loading-comments="loadingComments"
@@ -809,7 +824,8 @@ onMounted(async () => {
       />
 
       <AdminHiddenArtworksPanel
-        :active-tab="activeTab"
+        v-if="activeTab === 'content'"
+        :active-tab="activeContentTab"
         :hidden-artworks="hiddenArtworks"
         :loading-hidden="loadingHiddenArtworks"
         :mutating="mutating"
@@ -820,7 +836,8 @@ onMounted(async () => {
       />
 
       <AdminCommentReportPanel
-        :active-tab="activeTab"
+        v-if="activeTab === 'reports'"
+        :active-tab="activeReportTab"
         :comment-reports="commentReports"
         :loading-reports="loadingCommentReports"
         :mutating="mutating"
@@ -833,7 +850,8 @@ onMounted(async () => {
       />
 
       <AdminUserReportPanel
-        :active-tab="activeTab"
+        v-if="activeTab === 'reports'"
+        :active-tab="activeReportTab"
         :user-reports="userReports"
         :loading-reports="loadingUserReports"
         :mutating="mutating"
@@ -846,7 +864,8 @@ onMounted(async () => {
       />
 
       <AdminReportReviewPanel
-        :active-tab="activeTab"
+        v-if="activeTab === 'reports'"
+        :active-tab="activeReportTab"
         :loading-reports="loadingReports"
         :mutating="mutating"
         :reports="reports"
@@ -902,3 +921,35 @@ onMounted(async () => {
 </template>
 
 <style src="../styles/admin-management.css"></style>
+
+<style scoped>
+.sub-filter-bar {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.sub-filter-btn {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.sub-filter-btn:hover {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
+.sub-filter-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+</style>

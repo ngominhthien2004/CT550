@@ -7,11 +7,11 @@ defineProps({
   tabs: {
     type: Array,
     default: () => [
-      { id: 'users', label: 'User management' },
-      { id: 'artworks', label: 'Artwork moderation' },
-      { id: 'comments', label: 'Comment moderation' },
-      { id: 'reports', label: 'Report review' },
-      { id: 'tags', label: 'Tag management' },
+      { id: 'users', label: 'Users' },
+      { id: 'content', label: 'Content' },
+      { id: 'reports', label: 'Reports' },
+      { id: 'tags', label: 'Tags' },
+      { id: 'ai', label: 'AI Settings' },
     ],
   },
 })

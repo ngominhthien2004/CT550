@@ -21,7 +21,7 @@ const formattedReports = computed(() =>
 </script>
 
 <template>
-  <section v-show="activeTab === 'reports'" :id="'admin-panel-reports'" class="panel" role="tabpanel">
+  <section v-show="activeTab === 'request'" :id="'admin-panel-reports'" class="panel" role="tabpanel">
     <div class="panel-head">
       <h2>Report Review</h2>
     </div>

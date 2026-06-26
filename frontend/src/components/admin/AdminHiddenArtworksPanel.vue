@@ -17,7 +17,7 @@ const formattedHidden = computed(() =>
 </script>
 
 <template>
-  <section v-show="activeTab === 'hidden-artworks'" :id="'admin-panel-hidden-artworks'" class="panel" role="tabpanel">
+  <section v-show="activeTab === 'hidden'" :id="'admin-panel-hidden-artworks'" class="panel" role="tabpanel">
     <div class="panel-head">
       <h2>Hidden Artworks</h2>
     </div>

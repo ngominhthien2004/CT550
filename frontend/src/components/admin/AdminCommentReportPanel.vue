@@ -27,7 +27,7 @@ function onStatusFilterChange(event) {
 </script>
 
 <template>
-  <section v-show="activeTab === 'comment-reports'" :id="'admin-panel-comment-reports'" class="panel" role="tabpanel">
+  <section v-show="activeTab === 'comment'" :id="'admin-panel-comment-reports'" class="panel" role="tabpanel">
     <div class="panel-head">
       <h2>Comment Reports</h2>
       <select

@@ -27,7 +27,7 @@ function onStatusFilterChange(event) {
 </script>
 
 <template>
-  <section v-show="activeTab === 'artwork-reports'" :id="'admin-panel-artwork-reports'" class="panel" role="tabpanel">
+  <section v-show="activeTab === 'artwork'" :id="'admin-panel-artwork-reports'" class="panel" role="tabpanel">
     <div class="panel-head">
       <h2>Artwork Reports</h2>
       <select
