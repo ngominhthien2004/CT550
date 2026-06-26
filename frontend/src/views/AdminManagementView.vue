@@ -10,6 +10,7 @@ import {
   AdminAISettingsPanel,
   AdminArtworkReportPanel, AdminHiddenArtworksPanel,
   AdminCommentReportPanel, AdminUserReportPanel,
+  AdminConfirmModal, AdminPromptModal,
 } from '@/components/admin'
 
 import { useAuthStore } from '../stores/auth.store'
@@ -97,6 +98,29 @@ const userReportPagination = ref({ page: 1, pages: 1, total: 0 })
 const userReportStatusFilter = ref('pending')
 
 const activeTab = ref('users')
+
+const confirmModal = ref({ show: false, title: '', message: '', confirmLabel: 'Confirm', confirmClass: 'modal-btn--accent', onConfirm: null })
+const promptModal = ref({ show: false, title: '', message: '', placeholder: '', defaultValue: '', confirmLabel: 'OK', onConfirm: null })
+
+function handleConfirm() {
+  const fn = confirmModal.value.onConfirm
+  confirmModal.value.show = false
+  fn?.()
+}
+
+function handleConfirmCancel() {
+  confirmModal.value.show = false
+}
+
+function handlePromptConfirm(val) {
+  const fn = promptModal.value.onConfirm
+  promptModal.value.show = false
+  fn?.(val)
+}
+
+function handlePromptCancel() {
+  promptModal.value.show = false
+}
 
 const adminTabs = [
   { id: 'users', label: 'User management' },
@@ -209,18 +233,25 @@ async function loadArtworks(nextPage = 1) {
 
 async function removeArtwork(artworkId) {
   if (mutating.value) return
-  const shouldDelete = window.confirm('Delete this artwork? This action cannot be undone.')
-  if (!shouldDelete) return
-  mutating.value = true
-  error.value = ''
-  try {
-    await adminApi.deleteArtwork(artworkId)
-    artworks.value = artworks.value.filter((item) => item._id !== artworkId)
-    await loadOverview()
-  } catch (deleteError) {
-    error.value = deleteError?.response?.data?.message || 'Failed to delete artwork'
-  } finally {
-    mutating.value = false
+  confirmModal.value = {
+    show: true,
+    title: 'Delete Artwork',
+    message: 'Delete this artwork? This action cannot be undone.',
+    confirmLabel: 'Delete',
+    confirmClass: 'modal-btn--danger',
+    onConfirm: async () => {
+      mutating.value = true
+      error.value = ''
+      try {
+        await adminApi.deleteArtwork(artworkId)
+        artworks.value = artworks.value.filter((item) => item._id !== artworkId)
+        await loadOverview()
+      } catch (deleteError) {
+        error.value = deleteError?.response?.data?.message || 'Failed to delete artwork'
+      } finally {
+        mutating.value = false
+      }
+    },
   }
 }
 
@@ -256,18 +287,25 @@ async function loadComments(nextPage = 1) {
 
 async function removeComment(commentId) {
   if (mutating.value) return
-  const shouldDelete = window.confirm('Delete this comment? This action cannot be undone.')
-  if (!shouldDelete) return
-  mutating.value = true
-  error.value = ''
-  try {
-    await adminApi.deleteComment(commentId)
-    comments.value = comments.value.filter((item) => item._id !== commentId)
-    await loadOverview()
-  } catch (deleteError) {
-    error.value = deleteError?.response?.data?.message || 'Failed to delete comment'
-  } finally {
-    mutating.value = false
+  confirmModal.value = {
+    show: true,
+    title: 'Delete Comment',
+    message: 'Delete this comment? This action cannot be undone.',
+    confirmLabel: 'Delete',
+    confirmClass: 'modal-btn--danger',
+    onConfirm: async () => {
+      mutating.value = true
+      error.value = ''
+      try {
+        await adminApi.deleteComment(commentId)
+        comments.value = comments.value.filter((item) => item._id !== commentId)
+        await loadOverview()
+      } catch (deleteError) {
+        error.value = deleteError?.response?.data?.message || 'Failed to delete comment'
+      } finally {
+        mutating.value = false
+      }
+    },
   }
 }
 
@@ -332,17 +370,24 @@ async function loadReports(nextPage = 1) {
 
 async function resolveReport(requestId) {
   if (mutating.value) return
-  const shouldResolve = window.confirm('Dismiss all reports for this request?')
-  if (!shouldResolve) return
-  mutating.value = true
-  error.value = ''
-  try {
-    await adminApi.resolveReport(requestId, { action: 'dismiss' })
-    reports.value = reports.value.filter((r) => r.request?._id !== requestId)
-  } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || 'Failed to resolve report'
-  } finally {
-    mutating.value = false
+  confirmModal.value = {
+    show: true,
+    title: 'Dismiss Reports',
+    message: 'Dismiss all reports for this request?',
+    confirmLabel: 'Dismiss',
+    confirmClass: 'modal-btn--accent',
+    onConfirm: async () => {
+      mutating.value = true
+      error.value = ''
+      try {
+        await adminApi.resolveReport(requestId, { action: 'dismiss' })
+        reports.value = reports.value.filter((r) => r.request?._id !== requestId)
+      } catch (fetchError) {
+        error.value = fetchError?.response?.data?.message || 'Failed to resolve report'
+      } finally {
+        mutating.value = false
+      }
+    },
   }
 }
 
@@ -375,34 +420,48 @@ async function loadArtworkReports(nextPage = 1) {
 
 async function resolveArtworkReport(reportId) {
   if (mutating.value) return
-  const note = window.prompt('Resolution note (optional):')
-  if (note === null) return // cancelled
-  mutating.value = true
-  error.value = ''
-  try {
-    await adminApi.resolveArtworkReport(reportId, { action: 'dismiss', note: note || '' })
-    artworkReports.value = artworkReports.value.filter((r) => r._id !== reportId)
-  } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || 'Failed to resolve report'
-  } finally {
-    mutating.value = false
+  promptModal.value = {
+    show: true,
+    title: 'Resolve Artwork Report',
+    message: 'Resolution note (optional):',
+    placeholder: 'Enter a note...',
+    confirmLabel: 'Resolve',
+    onConfirm: async (note) => {
+      mutating.value = true
+      error.value = ''
+      try {
+        await adminApi.resolveArtworkReport(reportId, { action: 'dismiss', note: note || '' })
+        artworkReports.value = artworkReports.value.filter((r) => r._id !== reportId)
+      } catch (fetchError) {
+        error.value = fetchError?.response?.data?.message || 'Failed to resolve report'
+      } finally {
+        mutating.value = false
+      }
+    },
   }
 }
 
 async function hideArtworkFromReport(artworkId, reportId) {
   if (mutating.value) return
-  const shouldHide = window.confirm('Hide this artwork? The owner will be notified.')
-  if (!shouldHide) return
-  mutating.value = true
-  error.value = ''
-  try {
-    await adminApi.hideArtwork(artworkId, { reason: 'Violated platform guidelines after being reported' })
-    artworkReports.value = artworkReports.value.filter((r) => r._id !== reportId)
-    await loadOverview()
-  } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || 'Failed to hide artwork'
-  } finally {
-    mutating.value = false
+  confirmModal.value = {
+    show: true,
+    title: 'Hide Artwork',
+    message: 'Hide this artwork? The owner will be notified.',
+    confirmLabel: 'Hide',
+    confirmClass: 'modal-btn--danger',
+    onConfirm: async () => {
+      mutating.value = true
+      error.value = ''
+      try {
+        await adminApi.hideArtwork(artworkId, { reason: 'Violated platform guidelines after being reported' })
+        artworkReports.value = artworkReports.value.filter((r) => r._id !== reportId)
+        await loadOverview()
+      } catch (fetchError) {
+        error.value = fetchError?.response?.data?.message || 'Failed to hide artwork'
+      } finally {
+        mutating.value = false
+      }
+    },
   }
 }
 
@@ -435,18 +494,25 @@ async function loadHiddenArtworks(nextPage = 1) {
 
 async function unhideArtwork(artworkId) {
   if (mutating.value) return
-  const shouldUnhide = window.confirm('Unhide this artwork? It will become visible to all users.')
-  if (!shouldUnhide) return
-  mutating.value = true
-  error.value = ''
-  try {
-    await adminApi.unhideArtwork(artworkId)
-    hiddenArtworks.value = hiddenArtworks.value.filter((a) => a._id !== artworkId)
-    await loadOverview()
-  } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || 'Failed to unhide artwork'
-  } finally {
-    mutating.value = false
+  confirmModal.value = {
+    show: true,
+    title: 'Unhide Artwork',
+    message: 'Unhide this artwork? It will become visible to all users.',
+    confirmLabel: 'Unhide',
+    confirmClass: 'modal-btn--accent',
+    onConfirm: async () => {
+      mutating.value = true
+      error.value = ''
+      try {
+        await adminApi.unhideArtwork(artworkId)
+        hiddenArtworks.value = hiddenArtworks.value.filter((a) => a._id !== artworkId)
+        await loadOverview()
+      } catch (fetchError) {
+        error.value = fetchError?.response?.data?.message || 'Failed to unhide artwork'
+      } finally {
+        mutating.value = false
+      }
+    },
   }
 }
 
@@ -479,17 +545,24 @@ async function loadCommentReports(nextPage = 1) {
 
 async function resolveCommentReport(reportId, action = 'dismissed') {
   if (mutating.value) return
-  const note = window.prompt('Resolution note (optional):')
-  if (note === null) return
-  mutating.value = true
-  error.value = ''
-  try {
-    await reportApi.resolveCommentReport(reportId, { action, note: note || '' })
-    commentReports.value = commentReports.value.filter((r) => r._id !== reportId)
-  } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || 'Failed to resolve comment report'
-  } finally {
-    mutating.value = false
+  promptModal.value = {
+    show: true,
+    title: 'Resolve Comment Report',
+    message: 'Resolution note (optional):',
+    placeholder: 'Enter a note...',
+    confirmLabel: 'Resolve',
+    onConfirm: async (note) => {
+      mutating.value = true
+      error.value = ''
+      try {
+        await reportApi.resolveCommentReport(reportId, { action, note: note || '' })
+        commentReports.value = commentReports.value.filter((r) => r._id !== reportId)
+      } catch (fetchError) {
+        error.value = fetchError?.response?.data?.message || 'Failed to resolve comment report'
+      } finally {
+        mutating.value = false
+      }
+    },
   }
 }
 
@@ -522,17 +595,24 @@ async function loadUserReports(nextPage = 1) {
 
 async function resolveUserReport(reportId, action = 'dismiss') {
   if (mutating.value) return
-  const note = window.prompt('Resolution note (optional):')
-  if (note === null) return
-  mutating.value = true
-  error.value = ''
-  try {
-    await reportApi.resolveUserReport(reportId, { action, note: note || '' })
-    userReports.value = userReports.value.filter((r) => r._id !== reportId)
-  } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || 'Failed to resolve user report'
-  } finally {
-    mutating.value = false
+  promptModal.value = {
+    show: true,
+    title: 'Resolve User Report',
+    message: 'Resolution note (optional):',
+    placeholder: 'Enter a note...',
+    confirmLabel: 'Resolve',
+    onConfirm: async (note) => {
+      mutating.value = true
+      error.value = ''
+      try {
+        await reportApi.resolveUserReport(reportId, { action, note: note || '' })
+        userReports.value = userReports.value.filter((r) => r._id !== reportId)
+      } catch (fetchError) {
+        error.value = fetchError?.response?.data?.message || 'Failed to resolve user report'
+      } finally {
+        mutating.value = false
+      }
+    },
   }
 }
 
@@ -566,17 +646,24 @@ async function loadTags(nextPage = 1) {
 
 async function deleteTag(tagId) {
   if (mutating.value) return
-  const shouldDelete = window.confirm('Delete this tag? It will be removed from all artworks.')
-  if (!shouldDelete) return
-  mutating.value = true
-  error.value = ''
-  try {
-    await adminApi.deleteTag(tagId)
-    tags.value = tags.value.filter((t) => t._id !== tagId)
-  } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || 'Failed to delete tag'
-  } finally {
-    mutating.value = false
+  confirmModal.value = {
+    show: true,
+    title: 'Delete Tag',
+    message: 'Delete this tag? It will be removed from all artworks.',
+    confirmLabel: 'Delete',
+    confirmClass: 'modal-btn--danger',
+    onConfirm: async () => {
+      mutating.value = true
+      error.value = ''
+      try {
+        await adminApi.deleteTag(tagId)
+        tags.value = tags.value.filter((t) => t._id !== tagId)
+      } catch (fetchError) {
+        error.value = fetchError?.response?.data?.message || 'Failed to delete tag'
+      } finally {
+        mutating.value = false
+      }
+    },
   }
 }
 
@@ -790,6 +877,27 @@ onMounted(async () => {
         :active-tab="activeTab"
       />
     </section>
+
+    <AdminConfirmModal
+      :show="confirmModal.show"
+      :title="confirmModal.title"
+      :message="confirmModal.message"
+      :confirm-label="confirmModal.confirmLabel"
+      :confirm-class="confirmModal.confirmClass"
+      @confirm="handleConfirm"
+      @cancel="handleConfirmCancel"
+    />
+
+    <AdminPromptModal
+      :show="promptModal.show"
+      :title="promptModal.title"
+      :message="promptModal.message"
+      :placeholder="promptModal.placeholder"
+      :default-value="promptModal.defaultValue"
+      :confirm-label="promptModal.confirmLabel"
+      @confirm="handlePromptConfirm"
+      @cancel="handlePromptCancel"
+    />
   </MainLayoutTemplate>
 </template>
 

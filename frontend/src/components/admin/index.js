@@ -10,3 +10,5 @@ export { default as AdminArtworkReportPanel } from './AdminArtworkReportPanel.vu
 export { default as AdminHiddenArtworksPanel } from './AdminHiddenArtworksPanel.vue'
 export { default as AdminCommentReportPanel } from './AdminCommentReportPanel.vue'
 export { default as AdminUserReportPanel } from './AdminUserReportPanel.vue'
+export { default as AdminConfirmModal } from './AdminConfirmModal.vue'
+export { default as AdminPromptModal } from './AdminPromptModal.vue'
