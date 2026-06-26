@@ -218,6 +218,10 @@
   border-color: var(--line);
 }
 
+:root.dark-theme .admin-page .form-control::placeholder {
+  color: var(--muted);
+}
+
 :root.dark-theme .admin-page .form-control:focus,
 :root.dark-theme .admin-page .form-select:focus {
   background-color: var(--surface-alt);
