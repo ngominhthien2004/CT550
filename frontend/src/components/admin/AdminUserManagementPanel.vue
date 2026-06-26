@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from 'vue'
+import AdminPagination from './AdminPagination.vue'
 
 const props = defineProps({
   activeTab: {
@@ -174,17 +175,14 @@ const formattedUsers = computed(() =>
       </table>
     </div>
 
-    <footer class="panel-footer" aria-label="User pagination">
-      <span>Page {{ userPagination.page }} / {{ userPagination.pages }} • {{ userPagination.total }} users</span>
-      <div class="pager-actions">
-        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="userPagination.page <= 1 || loadingUsers" @click="emit('go-page', userPagination.page - 1)">
-          Previous
-        </button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="userPagination.page >= userPagination.pages || loadingUsers" @click="emit('go-page', userPagination.page + 1)">
-          Next
-        </button>
-      </div>
-    </footer>
+    <AdminPagination
+      :page="userPagination.page"
+      :pages="userPagination.pages"
+      :total="userPagination.total"
+      total-label="users"
+      :loading="loadingUsers"
+      @go-page="(p) => emit('go-page', p)"
+    />
   </section>
 </template>
 

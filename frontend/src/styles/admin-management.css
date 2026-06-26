@@ -2,6 +2,7 @@
   background: var(--bg);
   min-height: calc(100vh - 112px);
   padding: 1rem;
+  padding-bottom: 5rem;
   display: grid;
   gap: 1rem;
 }
@@ -28,6 +29,86 @@
 .btn-admin-refresh:hover {
   background: var(--accent-hover);
   border-color: var(--accent-hover);
+}
+
+/* ── Pill buttons (match system design) ── */
+.admin-page .btn {
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.85rem;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.admin-page .btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.admin-page .btn-outline-secondary {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.admin-page .btn-outline-secondary:hover:not(:disabled) {
+  background: var(--surface-alt);
+  border-color: var(--muted);
+}
+
+.admin-page .btn-outline-primary {
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+}
+
+.admin-page .btn-outline-primary:hover:not(:disabled) {
+  background: var(--accent);
+  color: #fff;
+}
+
+.admin-page .btn-outline-danger {
+  border: 1px solid var(--danger);
+  background: transparent;
+  color: var(--danger);
+}
+
+.admin-page .btn-outline-danger:hover:not(:disabled) {
+  background: var(--danger);
+  color: #fff;
+}
+
+.admin-page .btn-outline-success {
+  border: 1px solid #22c55e;
+  background: transparent;
+  color: #22c55e;
+}
+
+.admin-page .btn-outline-success:hover:not(:disabled) {
+  background: #22c55e;
+  color: #fff;
+}
+
+.admin-page .btn-outline-warning {
+  border: 1px solid #f59e0b;
+  background: transparent;
+  color: #f59e0b;
+}
+
+.admin-page .btn-outline-warning:hover:not(:disabled) {
+  background: #f59e0b;
+  color: #000;
+}
+
+.admin-page .btn-outline-info {
+  border: 1px solid #38bdf8;
+  background: transparent;
+  color: #38bdf8;
+}
+
+.admin-page .btn-outline-info:hover:not(:disabled) {
+  background: #38bdf8;
+  color: #000;
 }
 
 .error-note {

@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import AdminActionsDropdown from './AdminActionsDropdown.vue'
 
 defineProps({
   activeTab: {
@@ -115,9 +116,13 @@ const formattedArtworks = computed(() => {
             <td>{{ row.ageRating }}</td>
             <td>{{ row._createdAt }}</td>
             <td>
-              <button type="button" class="btn btn-sm btn-outline-danger" :disabled="mutating" @click="emit('remove-artwork', row._id)">
-                Delete
-              </button>
+              <AdminActionsDropdown>
+                <template #default="{ close: closeMenu }">
+                  <button type="button" class="dropdown-danger" :disabled="mutating" @click="emit('remove-artwork', row._id); closeMenu()">
+                    Delete
+                  </button>
+                </template>
+              </AdminActionsDropdown>
             </td>
           </tr>
           <tr v-if="formattedArtworks.length === 0">
