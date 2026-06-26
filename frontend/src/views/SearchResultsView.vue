@@ -44,7 +44,6 @@ const userHasMore = ref(false)
 const userLoadingMore = ref(false)
 
 const novelSortBy = ref('newest')
-const novelFormatFilter = ref('all')
 const novelMinWords = ref('')
 const novelMaxWords = ref('')
 const searchOptionsDraft = ref({
@@ -510,13 +509,11 @@ watch(
         :current-search-options="currentSearchOptions"
         :is-novel-search="isNovelSearch"
         :novel-sort-by="novelSortBy"
-        :novel-format-filter="novelFormatFilter"
         :novel-min-words="novelMinWords"
         :novel-max-words="novelMaxWords"
         @update:sort-mode="handleFilterSortChange"
         @update:age-filter="handleAgeFilterChange"
         @update:novel-sort-by="novelSortBy = $event"
-        @update:novel-format-filter="novelFormatFilter = $event"
         @update:novel-min-words="novelMinWords = $event"
         @update:novel-max-words="novelMaxWords = $event"
       />

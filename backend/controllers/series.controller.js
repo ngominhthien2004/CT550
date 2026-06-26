@@ -45,8 +45,6 @@ const createSeries = async (req, res, next) => {
         title,
         description: description || '',
         type: 'novel',
-        novelFormat: 'series',
-        novelSeriesName: title,
         images: [],
         tags: tags || [],
         chapterCount: 0,
@@ -56,6 +54,13 @@ const createSeries = async (req, res, next) => {
     }
 
     const series = await Series.create(seriesData);
+
+    // Set the series reference on the linked artwork
+    if (type === 'novel') {
+      await Artwork.findByIdAndUpdate(seriesData.novelArtwork, {
+        series: series._id,
+      });
+    }
 
     const populated = await Series.findById(series._id)
       .populate('user', 'username avatar')
@@ -193,7 +198,6 @@ const updateSeries = async (req, res, next) => {
     if (title !== undefined && series.type === 'novel' && series.novelArtwork) {
       await Artwork.findByIdAndUpdate(series.novelArtwork, {
         title,
-        novelSeriesName: title,
       });
     }
 

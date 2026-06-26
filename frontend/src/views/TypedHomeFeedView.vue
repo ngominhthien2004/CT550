@@ -26,7 +26,6 @@ const liveTags = ref([])
 const recommendedUsers = ref([])
 
 // Novel-specific filter state
-const novelFormatFilter = ref('all')
 const novelSortBy = ref('newest')
 
 const authStore = useAuthStore()
@@ -56,9 +55,6 @@ function buildFilterParams() {
   const params = { limit: 48, type: props.workType }
   if (props.workType !== 'novel') return params
 
-  if (novelFormatFilter.value !== 'all') {
-    params.novelFormat = novelFormatFilter.value
-  }
   if (novelSortBy.value !== 'newest') {
     params.sortBy = novelSortBy.value
   }
@@ -160,7 +156,7 @@ watch(
 )
 
 watch(
-  [novelFormatFilter, novelSortBy],
+  [novelSortBy],
   async () => {
     if (props.workType === 'novel') {
       await loadTypedArtworks()
@@ -177,26 +173,6 @@ watch(
 
         <!-- Novel-specific filter bar -->
         <div v-if="isNovelPage" class="novel-filter-bar">
-          <div class="novel-filter-tabs">
-            <button
-              type="button"
-              class="nf-tab"
-              :class="{ 'is-active': novelFormatFilter === 'all' }"
-              @click="novelFormatFilter = 'all'"
-            >All</button>
-            <button
-              type="button"
-              class="nf-tab"
-              :class="{ 'is-active': novelFormatFilter === 'oneshot' }"
-              @click="novelFormatFilter = 'oneshot'"
-            >One-shot</button>
-            <button
-              type="button"
-              class="nf-tab"
-              :class="{ 'is-active': novelFormatFilter === 'series' }"
-              @click="novelFormatFilter = 'series'"
-            >Series</button>
-          </div>
           <label class="nf-sort">
             <select v-model="novelSortBy" aria-label="Novel sort by">
               <option value="newest">Newest</option>
@@ -251,28 +227,6 @@ watch(
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
-}
-
-.novel-filter-tabs {
-  display: inline-flex;
-  gap: 0.2rem;
-}
-
-.nf-tab {
-  border: none;
-  border-radius: 999px;
-  background: var(--surface-alt);
-  color: var(--muted);
-  font-size: 0.82rem;
-  padding: 0.35rem 0.7rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-
-.nf-tab.is-active {
-  color: var(--accent);
-  background: #eff6ff;
 }
 
 .nf-sort select {

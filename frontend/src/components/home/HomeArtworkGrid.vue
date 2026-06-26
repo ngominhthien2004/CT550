@@ -43,7 +43,7 @@ const processedWorks = computed(() =>
             <div v-else class="novel-grid-fallback">
               <i class="fa-solid fa-book-open" aria-hidden="true"></i>
             </div>
-            <span v-if="work.novelFormat === 'series'" class="novel-grid-badge">Series</span>
+            <span v-if="work.series" class="novel-grid-badge">Series</span>
             <span v-else class="novel-grid-badge">One-shot</span>
             <span v-if="work.wordCount > 0" class="novel-grid-wordcount">
               {{ (work.wordCount || 0).toLocaleString() }}w

@@ -5,12 +5,11 @@ defineProps({
   currentSearchOptions: { type: Object, required: true },
   isNovelSearch: { type: Boolean, default: false },
   novelSortBy: { type: String, default: 'newest' },
-  novelFormatFilter: { type: String, default: 'all' },
   novelMinWords: { type: [String, Number], default: '' },
   novelMaxWords: { type: [String, Number], default: '' },
 })
 
-const emit = defineEmits(['update:sortMode', 'update:ageFilter', 'update:novelSortBy', 'update:novelFormatFilter', 'update:novelMinWords', 'update:novelMaxWords'])
+const emit = defineEmits(['update:sortMode', 'update:ageFilter', 'update:novelSortBy', 'update:novelMinWords', 'update:novelMaxWords'])
 </script>
 
 <template>
@@ -37,26 +36,6 @@ const emit = defineEmits(['update:sortMode', 'update:ageFilter', 'update:novelSo
           <option value="shortest">Shortest</option>
         </select>
       </label>
-      <div class="novel-format-tabs">
-        <button
-          type="button"
-          class="format-chip"
-          :class="{ 'is-active': novelFormatFilter === 'all' }"
-          @click="emit('update:novelFormatFilter', 'all')"
-        >All</button>
-        <button
-          type="button"
-          class="format-chip"
-          :class="{ 'is-active': novelFormatFilter === 'oneshot' }"
-          @click="emit('update:novelFormatFilter', 'oneshot')"
-        >One-shot</button>
-        <button
-          type="button"
-          class="format-chip"
-          :class="{ 'is-active': novelFormatFilter === 'series' }"
-          @click="emit('update:novelFormatFilter', 'series')"
-        >Series</button>
-      </div>
       <label class="word-range-label">
         <input
           :value="novelMinWords"
@@ -146,28 +125,6 @@ const emit = defineEmits(['update:sortMode', 'update:ageFilter', 'update:novelSo
   background: #fff;
   font-size: 0.85rem;
   color: #374151;
-}
-
-.novel-format-tabs {
-  display: flex;
-  gap: 0.35rem;
-}
-
-.format-chip {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  border-radius: 999px;
-  padding: 0.3rem 0.7rem;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #6b7280;
-  cursor: pointer;
-}
-
-.format-chip.is-active {
-  background: #111827;
-  color: #fff;
-  border-color: #111827;
 }
 
 .word-range-label {

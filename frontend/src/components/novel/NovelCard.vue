@@ -21,7 +21,7 @@ const snippet = computed(() => {
   return text.length > 150 ? `${text.slice(0, 150).trimEnd()}...` : text
 })
 
-const formatLabel = computed(() => (props.item?.novelFormat === 'series' ? 'Series' : 'One-shot'))
+const formatLabel = computed(() => (props.item?.series ? 'Series' : 'One-shot'))
 
 const firstTag = computed(() => {
   const tags = props.item?.tags

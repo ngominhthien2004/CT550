@@ -67,8 +67,6 @@ const createDefaultForm = () => ({
   scheduleDate: '',
   scheduleTime: '',
   mangaSeriesName: '',
-  novelFormat: 'oneshot',
-  novelSeriesName: '',
   images: [],
   coverImages: [],
 })
@@ -428,8 +426,6 @@ async function submitArtwork() {
       tags: form.tags,
       images: isNovel.value ? form.coverImages : form.images,
       novelContent: isNovel.value ? form.novelText.trim() : undefined,
-      novelFormat: isNovel.value ? form.novelFormat : undefined,
-      novelSeriesName: isNovel.value ? form.novelSeriesName : undefined,
     })
 
     const responseAiDetection = createdArtwork?.aiDetection

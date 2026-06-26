@@ -78,7 +78,7 @@ function normalizeNovel(item) {
     excerpt: clipText(item?.description || item?.novelContent || '', 168),
     userId: author._id || '',
     wordCount: toNumber(item?.wordCount),
-    chapterCount: toNumber(item?.chapterCount) || (item?.novelFormat === 'series' ? 1 : 0),
+    chapterCount: toNumber(item?.chapterCount) || (item?.series ? 1 : 0),
     createdLabel: formatDate(item?.createdAt),
     engagementScore:
       toNumber(item?.viewCount) + toNumber(item?.likeCount) * 4 + toNumber(item?.bookmarkCount) * 5 + toNumber(item?.chapterCount) * 12,
@@ -128,7 +128,7 @@ function sortByNewest(items) {
 }
 
 const popularOriginalNovels = computed(() =>
-  sortByEngagement(normalizedNovels.value.filter((item) => item.novelFormat !== 'series')).slice(0, 6),
+  sortByEngagement(normalizedNovels.value.filter((item) => !item.series)).slice(0, 6),
 )
 
 const recommendedWorks = computed(() =>
@@ -136,7 +136,7 @@ const recommendedWorks = computed(() =>
 )
 
 const seriesHighlights = computed(() =>
-  sortByEngagement(normalizedNovels.value.filter((item) => item.novelFormat === 'series')).slice(0, 6),
+  sortByEngagement(normalizedNovels.value.filter((item) => item.series)).slice(0, 6),
 )
 
 const freshPicks = computed(() => sortByNewest(normalizedNovels.value).slice(0, 6))

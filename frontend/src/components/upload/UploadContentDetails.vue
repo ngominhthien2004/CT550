@@ -82,32 +82,6 @@ const props = defineProps({
       </div>
     </div>
 
-    <!-- Novel Format Card -->
-    <div v-if="props.isNovel" class="additional-settings-card">
-      <div class="row-left">
-        <span class="placeholder-badge"></span>
-        <span class="row-label">Novel format</span>
-      </div>
-      <div class="row-center d-flex flex-column gap-2">
-        <div class="options-group" role="radiogroup" aria-label="Novel posting format">
-          <label class="custom-radio">
-            <input v-model="props.form.novelFormat" type="radio" name="novelFormat" value="series" aria-label="Novel format: series" />
-            <span class="radio-indicator"></span>
-            <span class="radio-label">Series</span>
-          </label>
-          <label class="custom-radio">
-            <input v-model="props.form.novelFormat" type="radio" name="novelFormat" value="oneshot" aria-label="Novel format: one-shot" />
-            <span class="radio-indicator"></span>
-            <span class="radio-label">One-shot</span>
-          </label>
-        </div>
-        <div class="row-inline mt-2">
-          <input v-model="props.form.novelSeriesName" type="text" class="form-control custom-input" placeholder="Series name" aria-label="Novel series name" />
-          <button type="button" class="btn btn-outline-primary btn-sm custom-btn">Create series</button>
-        </div>
-      </div>
-    </div>
-
     <!-- Novel Main Text Card -->
     <div v-if="props.isNovel" class="additional-settings-card vertical-layout">
       <div class="row-top">

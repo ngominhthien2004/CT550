@@ -32,7 +32,7 @@ async function aggregateWordCount(artworkId) {
   const artwork = await Artwork.findById(artworkId);
   if (!artwork || artwork.type !== 'novel') return;
 
-  if (artwork.novelFormat === 'series') {
+  if (artwork.series) {
     const chapters = await Chapter.find({ artwork: artworkId }).select('wordCount').lean();
     const totalWords = chapters.reduce((sum, ch) => sum + (ch.wordCount || 0), 0);
     artwork.wordCount = totalWords;
@@ -72,7 +72,7 @@ function hasTagId(tagIds, tagId) {
 // Create Artwork
 const createArtwork = async (req, res, next) => {
     try {
-        const { title, description, type, ageRating, tags, novelContent, novelFormat, novelSeriesName } = req.body;
+        const { title, description, type, ageRating, tags, novelContent } = req.body;
 
         if (!req.files || req.files.length === 0) {
             res.status(400);
@@ -196,10 +196,8 @@ const createArtwork = async (req, res, next) => {
         // Set novel-specific fields
         if (artworkType === 'novel') {
             artworkData.novelContent = novelContent || '';
-            artworkData.novelFormat = novelFormat || 'oneshot';
-            artworkData.novelSeriesName = novelSeriesName || '';
-            // For oneshot novels, sync description with novelContent for backward compatibility
-            if (novelFormat !== 'series') {
+            // For oneshot novels (no series), sync description with novelContent for backward compatibility
+            if (!req.body.series) {
                 artworkData.description = artworkData.description || (novelContent || '').slice(0, 500);
             }
         }
@@ -207,7 +205,7 @@ const createArtwork = async (req, res, next) => {
         const artwork = await Artwork.create(artworkData);
 
         // Auto-create a Chapter for oneshot novels with content
-        if (artworkType === 'novel' && novelFormat !== 'series' && novelContent) {
+        if (artworkType === 'novel' && !req.body.series && novelContent) {
             await Chapter.create({
                 artwork: artwork._id,
                 title: title || 'Chapter 1',
@@ -237,7 +235,7 @@ const getArtworks = async (req, res, next) => {
     try {
         const {
             type, ageRating, user, tag, q, limit: rawLimit,
-            sortBy, novelFormat, minWords, maxWords, series,
+            sortBy, minWords, maxWords, series,
         } = req.query;
         const query = { isHidden: { $ne: true } };
         const parsedLimit = Number.parseInt(rawLimit, 10);
@@ -261,10 +259,6 @@ const getArtworks = async (req, res, next) => {
             }
         }
 
-        // Novel-specific filters (only apply when type is 'novel' or no type filter)
-        if (novelFormat && (!type || type === 'novel')) {
-            query.novelFormat = novelFormat === 'series' ? 'series' : 'oneshot';
-        }
         if ((minWords || maxWords) && (!type || type === 'novel')) {
             query.wordCount = {};
             const minW = Number.parseInt(minWords, 10);
@@ -529,7 +523,7 @@ const updateArtwork = async (req, res, next) => {
 // Novel content update
 const updateNovelContent = async (req, res, next) => {
     try {
-        const { novelContent, novelFormat, novelSeriesName } = req.body;
+        const { novelContent } = req.body;
         const artwork = await Artwork.findById(req.params.id);
 
         if (!artwork) {
@@ -548,11 +542,9 @@ const updateNovelContent = async (req, res, next) => {
         }
 
         artwork.novelContent = novelContent || '';
-        artwork.novelFormat = novelFormat || artwork.novelFormat;
-        artwork.novelSeriesName = novelSeriesName || artwork.novelSeriesName;
 
-        // Sync description for backward compatibility with oneshot novels
-        if (artwork.novelFormat !== 'series' && novelContent) {
+        // Sync description for backward compatibility with oneshot novels (no series)
+        if (!artwork.series && novelContent) {
             artwork.description = novelContent.slice(0, 500);
         }
 

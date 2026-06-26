@@ -34,7 +34,7 @@ const stats = computed(() => [
   { label: 'Bookmarks', value: Number(props.novel?.bookmarkCount || 0).toLocaleString() },
 ])
 
-const formatLabel = computed(() => (props.novel?.novelFormat === 'series' ? 'Series spotlight' : 'One-shot spotlight'))
+const formatLabel = computed(() => (props.novel?.series ? 'Series spotlight' : 'One-shot spotlight'))
 const excerpt = computed(() => {
   const text = String(props.novel?.description || props.novel?.novelContent || fallbackCopy).replace(/\s+/g, ' ').trim()
   return text.length > 220 ? `${text.slice(0, 220).trimEnd()}...` : text

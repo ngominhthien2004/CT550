@@ -212,7 +212,7 @@ async function loadNovelData() {
   if (artwork.value?.type !== 'novel') return
 
   // Load chapters if series
-  if (artwork.value?.novelFormat === 'series') {
+  if (artwork.value?.series) {
     try {
       const { data } = await getChapters(artworkId.value)
       chapters.value = Array.isArray(data) ? data : []
@@ -422,7 +422,7 @@ watch(
             <div class="left-col">
               <!-- Chapter Manager (only for author of series novels) -->
               <ChapterManager
-                v-if="isOwnArtist && artwork.novelFormat === 'series'"
+                v-if="isOwnArtist && artwork.series"
                 :artwork-id="artwork._id"
                 :chapters="chapters"
                 :is-own-artwork="isOwnArtist"

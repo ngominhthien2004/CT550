@@ -60,16 +60,6 @@ const artworkSchema = mongoose.Schema({
         trim: true,
         default: '',
     },
-    novelFormat: {
-        type: String,
-        enum: ['oneshot', 'series'],
-        default: 'oneshot',
-    },
-    novelSeriesName: {
-        type: String,
-        trim: true,
-        default: '',
-    },
     chapterCount: {
         type: Number,
         default: 1,

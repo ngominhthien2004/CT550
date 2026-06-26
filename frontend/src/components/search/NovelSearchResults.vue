@@ -27,7 +27,7 @@ const emit = defineEmits(['search-tag'])
         <div v-else class="novel-cover-fallback">
           <i class="fa-solid fa-book-open" aria-hidden="true"></i>
         </div>
-        <span v-if="item.novelFormat === 'series'" class="novel-cover-badge">Series</span>
+        <span v-if="item.series" class="novel-cover-badge">Series</span>
         <span v-else class="novel-cover-badge">One-shot</span>
         <span v-if="item.wordCount > 0" class="novel-word-badge">
           <i class="fa-regular fa-file-lines" aria-hidden="true"></i>
@@ -70,7 +70,7 @@ const emit = defineEmits(['search-tag'])
             <i class="fa-regular fa-clock" aria-hidden="true"></i>
             {{ item._readTime }} min read
           </span>
-          <span v-if="item.novelFormat === 'series'" class="novel-meta-stat">
+          <span v-if="item.series" class="novel-meta-stat">
             {{ item.chapterCount || 1 }} {{ (item.chapterCount || 1) > 1 ? 'chapters' : 'chapter' }}
           </span>
           <span>{{ item._formattedDate }}</span>
