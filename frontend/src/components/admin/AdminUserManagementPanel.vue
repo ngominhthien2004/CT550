@@ -156,12 +156,13 @@ const formattedUsers = computed(() =>
 
 <style scoped>
 .role-select {
-  min-width: 90px;
+  width: auto;
+  max-width: 80px;
   font-weight: 600;
   font-size: 0.78rem;
   cursor: pointer;
   border-radius: 999px;
-  padding: 0.2rem 0.5rem;
+  padding: 0.2rem 1.2rem 0.2rem 0.5rem;
   text-align: center;
   appearance: auto;
 }
