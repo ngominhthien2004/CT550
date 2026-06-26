@@ -4,6 +4,7 @@ import NovelControls from './NovelControls.vue'
 import NovelHeader from './NovelHeader.vue'
 import NovelChapterSelector from './NovelChapterSelector.vue'
 import NovelActionToolbar from './NovelActionToolbar.vue'
+import { useTheme } from '../../composables/useTheme'
 
 const props = defineProps({
   artwork: { type: Object, required: true },
@@ -50,12 +51,7 @@ const formattedParagraphs = computed(() => {
   return props.novelContent.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean)
 })
 
-const isDarkMode = ref(localStorage.getItem('novel-dark-mode') === 'true')
-
-function toggleDarkMode() {
-  isDarkMode.value = !isDarkMode.value
-  localStorage.setItem('novel-dark-mode', String(isDarkMode.value))
-}
+const { isDark: isDarkMode, toggle: toggleDarkMode } = useTheme()
 
 const progressPercent = ref(0)
 const scrollPosition = ref(0)
