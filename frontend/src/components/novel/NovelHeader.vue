@@ -57,9 +57,9 @@ const uploadedAtLabel = computed(() => {
       </div>
 
       <div class="novel-meta-reading-time">
-        <span class="meta-item">📝 {{ formatNumber(wordCount) }} words</span>
+        <span class="meta-item"><i class="fa-solid fa-file-lines" aria-hidden="true"></i> {{ formatNumber(wordCount) }} words</span>
         <span class="meta-separator">·</span>
-        <span class="meta-item">⏱️ {{ readingTime }} min read</span>
+        <span class="meta-item"><i class="fa-regular fa-clock" aria-hidden="true"></i> {{ readingTime }} min read</span>
       </div>
 
       <div v-if="artwork.tags?.length" class="novel-tags">
