@@ -58,6 +58,13 @@ function onRoleFilterChange(event) {
   emit('apply-filters')
 }
 
+function onRoleChange(row, event) {
+  const newRole = event.target.value
+  if (newRole !== row.role) {
+    emit('set-user-role', row, newRole)
+  }
+}
+
 const formattedUsers = computed(() =>
   props.users.map(u => ({ ...u, _createdAt: props.formatDate(u.createdAt) }))
 )
@@ -105,7 +112,6 @@ const formattedUsers = computed(() =>
             <th>Email</th>
             <th>Role</th>
             <th>Created</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -113,30 +119,22 @@ const formattedUsers = computed(() =>
             <td>{{ row.displayName || row.username }}</td>
             <td>{{ row.email }}</td>
             <td>
-              <span class="badge" :class="row.role === 'admin' ? 'bg-danger-subtle text-danger-emphasis' : 'bg-secondary-subtle text-secondary-emphasis'">
-                {{ row.role }}
-              </span>
+              <select
+                :value="row.role"
+                class="form-select form-select-sm role-select"
+                :class="row.role === 'admin' ? 'role-admin' : 'role-user'"
+                :disabled="mutating"
+                @change="onRoleChange(row, $event)"
+                :aria-label="`Change role for ${row.username}`"
+              >
+                <option value="user">user</option>
+                <option value="admin">admin</option>
+              </select>
             </td>
             <td>{{ row._createdAt }}</td>
-            <td class="actions-cell">
-              <button type="button"
-                class="btn btn-sm btn-outline-danger"
-                :disabled="mutating || row.role === 'admin'"
-                @click="emit('set-user-role', row, 'admin')"
-              >
-                Make admin
-              </button>
-              <button type="button"
-                class="btn btn-sm btn-outline-secondary"
-                :disabled="mutating || row.role === 'user'"
-                @click="emit('set-user-role', row, 'user')"
-              >
-                Make user
-              </button>
-            </td>
           </tr>
           <tr v-if="users.length === 0">
-            <td colspan="5" class="text-center text-muted py-3">No users found.</td>
+            <td colspan="4" class="text-center text-muted py-3">No users found.</td>
           </tr>
         </tbody>
       </table>
@@ -155,3 +153,40 @@ const formattedUsers = computed(() =>
     </footer>
   </section>
 </template>
+
+<style scoped>
+.role-select {
+  min-width: 90px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 0.2rem 0.5rem;
+  text-align: center;
+  appearance: auto;
+}
+
+.role-admin {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--danger);
+  border-color: rgba(220, 38, 38, 0.25);
+}
+
+.role-user {
+  background: var(--surface-alt);
+  color: var(--muted);
+  border-color: var(--line);
+}
+
+:root.dark-theme .role-admin {
+  background: rgba(252, 165, 165, 0.12);
+  color: #fca5a5;
+  border-color: rgba(252, 165, 165, 0.2);
+}
+
+:root.dark-theme .role-user {
+  background: var(--surface-alt);
+  color: var(--muted);
+  border-color: var(--line);
+}
+</style>
