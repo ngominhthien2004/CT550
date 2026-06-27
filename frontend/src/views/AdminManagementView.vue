@@ -398,7 +398,8 @@ async function loadArtworkReports(nextPage = 1) {
   loadingArtworkReports.value = true
   error.value = ''
   try {
-    const params = { limit: 20, page: nextPage, status: reportStatusFilter.value }
+    const params = { limit: 20, page: nextPage }
+    if (reportStatusFilter.value) params.status = reportStatusFilter.value
     const { data } = await adminApi.getReportedArtworks(params)
     artworkReports.value = data?.reports || []
     artworkReportPagination.value = {
@@ -523,7 +524,8 @@ async function loadCommentReports(nextPage = 1) {
   loadingCommentReports.value = true
   error.value = ''
   try {
-    const params = { limit: 20, page: nextPage, status: commentReportStatusFilter.value }
+    const params = { limit: 20, page: nextPage }
+    if (commentReportStatusFilter.value) params.status = commentReportStatusFilter.value
     const { data } = await reportApi.getReportedComments(params)
     commentReports.value = data?.comments || []
     commentReportPagination.value = {
@@ -573,7 +575,8 @@ async function loadUserReports(nextPage = 1) {
   loadingUserReports.value = true
   error.value = ''
   try {
-    const params = { limit: 20, page: nextPage, status: userReportStatusFilter.value }
+    const params = { limit: 20, page: nextPage }
+    if (userReportStatusFilter.value) params.status = userReportStatusFilter.value
     const { data } = await reportApi.getAdminUserReports(params)
     userReports.value = data?.reports || []
     userReportPagination.value = {
