@@ -330,8 +330,8 @@ const getReportedComments = async (req, res, next) => {
         const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
         const skip = (page - 1) * limit;
 
-        const status = req.query.status || 'pending';
-        const filter = { status };
+        const status = req.query.status || '';
+        const filter = status ? { status } : {};
 
         const [reports, total] = await Promise.all([
             CommentReport.find(filter)
