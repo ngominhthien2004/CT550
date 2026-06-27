@@ -138,7 +138,9 @@ const formattedUsers = computed(() =>
         </thead>
         <tbody>
           <tr v-for="row in formattedUsers" :key="row._id">
-            <td>{{ row.displayName || row.username }}</td>
+            <td>
+              <router-link :to="`/account?user=${row._id}`" class="user-link">{{ row.displayName || row.username }}</router-link>
+            </td>
             <td>{{ row.email }}</td>
             <td>
               <div class="role-dropdown" :class="{ 'is-open': openDropdownId === row._id }">
@@ -193,6 +195,16 @@ const formattedUsers = computed(() =>
 </template>
 
 <style scoped>
+.user-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.user-link:hover {
+  text-decoration: underline;
+}
+
 .role-dropdown {
   position: relative;
   display: inline-block;
