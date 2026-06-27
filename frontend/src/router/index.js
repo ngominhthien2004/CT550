@@ -11,7 +11,6 @@ import FavoritesView from '../views/FavoritesView.vue'
 import RankingsView from '../views/RankingsView.vue'
 import ArtworkCommentsView from '../views/ArtworkCommentsView.vue'
 import ArtworkDetailView from '../views/ArtworkDetailView.vue'
-import TagDetailView from '../views/TagDetailView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 import MessagesView from '../views/MessagesView.vue'
 import NotificationsView from '../views/NotificationsView.vue'
@@ -116,7 +115,10 @@ const routes = [
   { path: '/artworks/:id', name: 'artwork-detail', component: ArtworkDetailView },
   { path: '/artworks/:id/comments', name: 'artwork-comments', component: ArtworkCommentsView },
   { path: '/series/:id', name: 'series-detail', component: SeriesDetailView },
-  { path: '/tags/:tagName', name: 'tag-detail', component: TagDetailView },
+  { path: '/tags/:tagName', redirect: to => {
+    const tagName = typeof to.params.tagName === 'string' ? to.params.tagName : ''
+    return { path: '/search', query: { q: tagName, tag: '1' } }
+  }},
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView },
 ]
 

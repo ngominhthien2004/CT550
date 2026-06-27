@@ -472,4 +472,4 @@ onUnmounted(() => { stopPresencePolling(); stopMessagePolling() })
   </MainLayoutTemplate>
 </template>
 
-<style scoped src="./MessagesView.css"></style>
+<style src="../styles/MessagesView.css"></style>

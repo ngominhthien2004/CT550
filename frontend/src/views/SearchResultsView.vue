@@ -13,6 +13,7 @@ import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
 import { useAuthStore } from '../stores/auth.store'
 import { useFollowStore } from '../stores/follow.store'
+import { useTagStore } from '../stores/tag.store'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
@@ -42,6 +43,64 @@ const userSortMode = ref('newest')
 const userPage = ref(1)
 const userHasMore = ref(false)
 const userLoadingMore = ref(false)
+
+const tagStore = useTagStore()
+
+const isTagContext = computed(() => route.query.tag === '1')
+
+// Favorite tag (localStorage-based, same as TagDetailView)
+const FAVORITE_TAG_KEY = 'illuwrl.favoriteTags'
+const favoriteTagKey = computed(() => {
+  const userId = authStore.user?._id || 'guest'
+  return `${FAVORITE_TAG_KEY}.${userId}`
+})
+const isFavoriteTag = ref(false)
+
+const tagNameForFav = computed(() => searchKeyword.value.trim())
+
+function loadFavoriteTagStatus() {
+  if (!tagNameForFav.value) {
+    isFavoriteTag.value = false
+    return
+  }
+  try {
+    const raw = localStorage.getItem(favoriteTagKey.value)
+    const parsed = JSON.parse(raw || '[]')
+    if (!Array.isArray(parsed)) {
+      isFavoriteTag.value = false
+      return
+    }
+    isFavoriteTag.value = parsed.some((tag) => tag?.label === tagNameForFav.value)
+  } catch (_error) {
+    isFavoriteTag.value = false
+  }
+}
+
+async function toggleFavoriteTag() {
+  if (!authStore.isAuthenticated) {
+    await router.push({ name: 'login', query: { redirect: route.fullPath } })
+    return
+  }
+  if (!tagNameForFav.value) return
+  try {
+    const raw = localStorage.getItem(favoriteTagKey.value)
+    const parsed = JSON.parse(raw || '[]')
+    const list = Array.isArray(parsed) ? parsed.filter((t) => t?.label) : []
+    const existingIndex = list.findIndex((t) => t.label === tagNameForFav.value)
+    if (existingIndex >= 0) {
+      list.splice(existingIndex, 1)
+      localStorage.setItem(favoriteTagKey.value, JSON.stringify(list))
+      isFavoriteTag.value = false
+      return
+    }
+    if (list.length >= 10) return
+    list.unshift({ label: tagNameForFav.value, sub: `#${tagNameForFav.value}` })
+    localStorage.setItem(favoriteTagKey.value, JSON.stringify(list))
+    isFavoriteTag.value = true
+  } catch (_error) {
+    // Ignore storage errors.
+  }
+}
 
 const novelSortBy = ref('newest')
 const novelMinWords = ref('')
@@ -455,6 +514,10 @@ function reloadUserSearch() {
 onMounted(() => {
   loadSearchItems()
   loadUserResults()
+  if (isTagContext.value && searchKeyword.value) {
+    tagStore.fetchTagDetail(searchKeyword.value)
+    loadFavoriteTagStatus()
+  }
 })
 
 watch(
@@ -462,6 +525,10 @@ watch(
   () => {
     loadSearchItems()
     loadUserResults()
+    if (isTagContext.value && searchKeyword.value) {
+      tagStore.fetchTagDetail(searchKeyword.value)
+      loadFavoriteTagStatus()
+    }
   },
 )
 </script>
@@ -469,7 +536,21 @@ watch(
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="search-result-page page-block" :class="searchResultPageClass">
+      <!-- Tag context header (shown when browsing via /tags/:tagName) -->
+      <div v-if="isTagContext" class="tag-context-header">
+        <div class="tag-head">
+          <div>
+            <h1 class="h4 mb-0">#{{ keyword }}</h1>
+            <p class="text-secondary mb-0">{{ tagStore.tag?.usageCount || resultTotal }} artworks in this tag</p>
+          </div>
+          <button type="button" class="favorite-tag-btn" :disabled="tagStore.loading" @click="toggleFavoriteTag">
+            {{ isFavoriteTag ? 'Remove from favorite tag' : 'Add to favorite tag' }}
+          </button>
+        </div>
+      </div>
+
       <SearchResultHeader
+        v-else
         :keyword="keyword"
         :result-total="resultTotal"
         :is-user-search="isUserSearch"
@@ -648,5 +729,47 @@ watch(
   background: transparent;
   color: #4b5563;
   font-weight: 700;
+}
+
+.tag-context-header {
+  margin-bottom: -0.3rem;
+}
+
+.tag-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tag-head h1 {
+  margin: 0;
+  text-transform: lowercase;
+  font-size: 2rem;
+  color: #111827;
+}
+
+.tag-head p {
+  margin: 0.15rem 0 0;
+}
+
+.favorite-tag-btn {
+  border: 1px solid #d8e1ef;
+  background: #fff;
+  color: #1f2937;
+  border-radius: 999px;
+  padding: 0.42rem 0.85rem;
+  font-weight: 700;
+  font-size: 0.86rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.favorite-tag-btn:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
 }
 </style>
