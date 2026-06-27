@@ -22,8 +22,8 @@ const formattedReports = computed(() =>
   }))
 )
 
-function onStatusFilterChange(event) {
-  emit('update:report-status-filter', event.target.value)
+function onStatusFilterChange(value) {
+  emit('update:report-status-filter', value)
 }
 </script>
 

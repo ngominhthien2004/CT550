@@ -77,8 +77,8 @@ function onQueryInput(event) {
   emit('update:userQuery', event.target.value)
 }
 
-function onRoleFilterChange(event) {
-  emit('update:userRoleFilter', event.target.value)
+function onRoleFilterChange(value) {
+  emit('update:userRoleFilter', value)
   emit('apply-filters')
 }
 
