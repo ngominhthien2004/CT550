@@ -92,6 +92,7 @@ const illuWrlStyleSections = computed(() => {
       items: [
         { id: 'following', label: 'Following', to: '/newest_by_followed', icon: 'fa-solid fa-users' },
         { id: 'discovery', label: 'Discovery', to: '/discovery', icon: 'fa-regular fa-compass' },
+        { id: 'rankings', label: 'Rankings', to: '/rankings', icon: 'fa-solid fa-chart-line' },
         { id: 'favorites', label: 'My Favorite', to: '/favorites', icon: 'fa-regular fa-heart' },
         { id: 'bookmarks', label: 'Bookmarks', to: '/bookmarks', icon: 'fa-regular fa-bookmark' },
       ],

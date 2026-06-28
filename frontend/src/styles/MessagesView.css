@@ -565,9 +565,9 @@
   border: 0;
   background: #6366f1;
   color: #fff;
-  border-radius: 8px;
-  width: 40px;
-  min-height: 40px;
+  border-radius: 12px;
+  width: 44px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;

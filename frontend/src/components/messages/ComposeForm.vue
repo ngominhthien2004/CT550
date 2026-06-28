@@ -151,7 +151,8 @@ function insertEmoji(emoji) {
 .compose-input-actions {
   position: absolute;
   right: 0.5rem;
-  bottom: 0.35rem;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   gap: 0.15rem;
@@ -249,10 +250,10 @@ function insertEmoji(emoji) {
 }
 
 .compose-send-advanced {
-  width: 40px;
-  min-height: 40px;
+  width: 44px;
+  min-height: 44px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #6366f1;
   color: #fff;
   display: grid;
@@ -260,7 +261,7 @@ function insertEmoji(emoji) {
   cursor: pointer;
   font-size: 1rem;
   flex-shrink: 0;
-  align-self: stretch;
+  align-self: center;
 }
 
 .compose-send-advanced:disabled {
