@@ -136,10 +136,10 @@ function insertEmoji(emoji) {
   width: 100%;
   border: none;
   border-radius: 20px;
-  padding: 0.6rem 5rem 0.6rem 0.85rem;
+  padding: 0.6rem 5.5rem 0.6rem 0.85rem;
   font-size: 0.88rem;
   resize: none;
-  min-height: 40px;
+  min-height: 44px;
   max-height: 120px;
   line-height: 1.4;
 }
@@ -151,11 +151,17 @@ function insertEmoji(emoji) {
 .compose-input-actions {
   position: absolute;
   right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
-  gap: 0.15rem;
+  gap: 0.1rem;
+}
+
+.compose-input-actions .icon-btn {
+  width: 32px;
+  height: 32px;
+  font-size: 0.95rem;
 }
 
 .compose-input-actions .icon-btn.active {
@@ -171,12 +177,13 @@ function insertEmoji(emoji) {
   display: none;
 }
 
-.compose-row-advanced .btn {
-  min-width: 44px;
+.compose-row-advanced .btn-primary {
+  min-width: 48px;
   min-height: 44px;
   border-radius: 12px;
   display: grid;
   place-items: center;
+  padding: 0 0.75rem;
 }
 
 .emoji-drawer-panel {

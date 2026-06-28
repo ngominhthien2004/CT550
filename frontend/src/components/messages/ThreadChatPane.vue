@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import MessageBubble from './MessageBubble.vue'
 import ComposeForm from './ComposeForm.vue'
 
@@ -30,6 +30,7 @@ const emit = defineEmits([
 
 const chatBodyRef = ref(null)
 const showMenu = ref(false)
+const menuWrapperRef = ref(null)
 let searchDebounce = null
 
 function scrollToBottom() {
@@ -49,6 +50,15 @@ function onSearchInput(value) {
 
 function closeMenu() { showMenu.value = false }
 
+function onClickOutside(e) {
+  if (menuWrapperRef.value && !menuWrapperRef.value.contains(e.target)) {
+    showMenu.value = false
+  }
+}
+
+onMounted(() => document.addEventListener('click', onClickOutside))
+onUnmounted(() => document.removeEventListener('click', onClickOutside))
+
 defineExpose({ scrollToBottom })
 </script>
 
@@ -60,9 +70,11 @@ defineExpose({ scrollToBottom })
     @drop="emit('drop', $event)"
   >
     <header class="pane-head thread-head">
-      <div style="display:flex;align-items:center;gap:0.6rem;width:100%;">
-        <button v-if="selectedThreadId" type="button" class="btn btn-sm btn-outline-secondary mobile-back" @click="emit('back')">Back</button>
-        <h2 class="h6 mb-0" style="flex:1;display:flex;align-items:center;gap:0.35rem;">
+      <div class="thread-head-left">
+        <button v-if="selectedThreadId" type="button" class="icon-btn ghost mobile-back" @click="emit('back')">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <h2 class="h6 mb-0 thread-head-title">
           {{ headerTitle }}
           <span v-if="selectedThreadId && presenceState.online" class="presence-indicator">
             <span class="presence-dot" :class="{ online: !presenceState.typing, typing: presenceState.typing }"></span>
@@ -73,10 +85,33 @@ defineExpose({ scrollToBottom })
             <span class="presence-text">Offline</span>
           </span>
         </h2>
-        <div style="display:flex;gap:0.5rem;align-items:center">
-          <input :value="threadSearchQuery" placeholder="Search this conversation" aria-label="Search this conversation" class="thread-search-input form-control form-control-sm" style="width:220px" @input="emit('update:threadSearchQuery', $event.target.value)" />
-          <button type="button" class="btn btn-sm btn-outline-primary" @click="emit('search')">Search</button>
-          <button v-if="searchActive" type="button" class="btn btn-sm btn-outline-secondary" @click="emit('clear-search')">Clear</button>
+      </div>
+      <div class="thread-head-right">
+        <div class="thread-search-box" :class="{ active: searchActive }">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            :value="threadSearchQuery"
+            placeholder="Search..."
+            aria-label="Search this conversation"
+            class="thread-search-input"
+            @input="onSearchInput($event.target.value)"
+          />
+          <button v-if="searchActive" type="button" class="search-clear-btn" @click="emit('clear-search')" aria-label="Clear search">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="thread-menu-wrapper" v-if="selectedThreadId" ref="menuWrapperRef">
+          <button type="button" class="icon-btn ghost" @click="showMenu = !showMenu" aria-label="More options">
+            <i class="fa-solid fa-ellipsis"></i>
+          </button>
+          <div v-if="showMenu" class="thread-menu-dropdown">
+            <button type="button" class="thread-menu-item" @click="emit('report'); closeMenu()">
+              <i class="fa-solid fa-flag"></i> Report
+            </button>
+            <button type="button" class="thread-menu-item danger" @click="emit('block'); closeMenu()">
+              <i class="fa-solid fa-ban"></i> Block
+            </button>
+          </div>
         </div>
       </div>
     </header>
@@ -156,6 +191,130 @@ defineExpose({ scrollToBottom })
 .thread-head {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+
+.thread-head-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.thread-head-title {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.thread-head-right {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.thread-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.3rem 0.5rem;
+  background: #f9fafb;
+  transition: border-color 0.2s, box-shadow 0.2s, width 0.2s;
+  width: 160px;
+}
+
+.thread-search-box:focus-within,
+.thread-search-box.active {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.1);
+  background: #fff;
+}
+
+.search-icon {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.thread-search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.8rem;
+  width: 100%;
+  min-width: 0;
+  color: #1e293b;
+}
+
+.thread-search-input::placeholder {
+  color: #9ca3af;
+}
+
+.search-clear-btn {
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.search-clear-btn:hover {
+  color: #6366f1;
+}
+
+.thread-menu-wrapper {
+  position: relative;
+}
+
+.thread-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 30;
+  min-width: 140px;
+  overflow: hidden;
+}
+
+.thread-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: none;
+  background: transparent;
+  font-size: 0.82rem;
+  color: #374151;
+  cursor: pointer;
+  text-align: left;
+}
+
+.thread-menu-item:hover {
+  background: #f3f4f6;
+}
+
+.thread-menu-item.danger {
+  color: #dc2626;
+}
+
+.thread-menu-item.danger:hover {
+  background: #fef2f2;
 }
 
 .presence-indicator {
@@ -304,6 +463,7 @@ defineExpose({ scrollToBottom })
 }
 
 @media (max-width: 768px) {
-  .mobile-back { display: inline-block; }
+  .mobile-back { display: inline-flex; }
+  .thread-search-box { width: 120px; }
 }
 </style>
