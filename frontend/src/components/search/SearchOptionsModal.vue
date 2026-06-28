@@ -18,7 +18,7 @@ const formState = reactive({
   includeAll: '',
   includeAny: '',
   exclude: '',
-  target: 'all',
+  target: 'tag_partial',
   type: 'illust',
 })
 
@@ -34,7 +34,7 @@ function syncFromProps() {
   formState.includeAll = typeof props.initialValues?.includeAll === 'string' ? props.initialValues.includeAll : ''
   formState.includeAny = typeof props.initialValues?.includeAny === 'string' ? props.initialValues.includeAny : ''
   formState.exclude = typeof props.initialValues?.exclude === 'string' ? props.initialValues.exclude : ''
-  formState.target = typeof props.initialValues?.target === 'string' ? props.initialValues.target : 'all'
+  formState.target = typeof props.initialValues?.target === 'string' ? props.initialValues.target : 'tag_partial'
   formState.type = typeof props.initialValues?.type === 'string' ? props.initialValues.type : 'illust'
 }
 
@@ -46,7 +46,7 @@ function resetDraft() {
   formState.includeAll = ''
   formState.includeAny = ''
   formState.exclude = ''
-  formState.target = 'all'
+  formState.target = 'tag_partial'
 }
 
 function applySearch() {
@@ -98,11 +98,8 @@ watch(
             <label class="field-block">
               <span class="field-label">Targets</span>
               <select v-model="formState.target" aria-label="Search targets">
-                <option value="all">All fields</option>
-                <option value="title">Title only</option>
-                <option value="tags">Tags only</option>
-                <option value="artist">Artist only</option>
-                <option value="description">Description only</option>
+                <option value="tag_partial">Tags (partial match)</option>
+                <option value="tag_exact">Tags (perfect match)</option>
               </select>
             </label>
 

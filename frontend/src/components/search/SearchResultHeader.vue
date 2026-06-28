@@ -9,9 +9,11 @@ const props = defineProps({
   isNovelSearch: { type: Boolean, default: false },
   showTags: { type: Boolean, default: true },
   displayTags: { type: Array, default: () => [] },
+  showFavoriteTag: { type: Boolean, default: false },
+  isFavoriteTag: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['toggle-tags', 'search-tag'])
+const emit = defineEmits(['toggle-tags', 'search-tag', 'toggle-favorite'])
 
 const hashedDisplayTags = computed(() => props.displayTags.map(tag => `#${tag}`))
 </script>
@@ -26,9 +28,14 @@ const hashedDisplayTags = computed(() => props.displayTags.map(tag => `#${tag}`)
         {{ isUserSearch ? 'Accounts' : isNovelSearch ? 'novels' : 'works' }}
       </p>
     </div>
-    <button v-if="!isUserSearch" type="button" class="show-tag-btn" @click="emit('toggle-tags')">
-      {{ showTags ? 'Hide tag' : 'Show tag' }}
-    </button>
+    <div v-if="!isUserSearch" class="result-header-actions">
+      <button v-if="showFavoriteTag" type="button" class="favorite-tag-btn" :class="{ 'is-favorite': isFavoriteTag }" @click="emit('toggle-favorite')">
+        {{ isFavoriteTag ? '★ Remove favorite' : '☆ Add to favorite tag' }}
+      </button>
+      <button type="button" class="show-tag-btn" @click="emit('toggle-tags')">
+        {{ showTags ? 'Hide tag' : 'Show tag' }}
+      </button>
+    </div>
   </header>
 
   <TagStrip
@@ -99,6 +106,36 @@ const hashedDisplayTags = computed(() => props.displayTags.map(tag => `#${tag}`)
   color: #475569;
   font-weight: 600;
   font-size: 0.88rem;
+}
+
+.result-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.favorite-tag-btn {
+  border: 1px solid #d8e1ef;
+  background: #fff;
+  color: #1f2937;
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.favorite-tag-btn:hover {
+  background: #f8fbff;
+  border-color: #bfdbfe;
+}
+
+.favorite-tag-btn.is-favorite {
+  background: #fef9c3;
+  border-color: #facc15;
+  color: #92400e;
 }
 
 </style>

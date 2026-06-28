@@ -109,7 +109,7 @@ const searchOptionsDraft = ref({
   includeAll: '',
   includeAny: '',
   exclude: '',
-  target: 'all',
+  target: 'tag_partial',
   type: 'illust',
 })
 
@@ -141,7 +141,7 @@ const currentSearchOptions = computed(() => ({
   includeAll: typeof route.query.qall === 'string' ? route.query.qall : '',
   includeAny: typeof route.query.qany === 'string' ? route.query.qany : '',
   exclude: typeof route.query.qnot === 'string' ? route.query.qnot : '',
-  target: typeof route.query.target === 'string' ? route.query.target : 'all',
+  target: typeof route.query.target === 'string' ? route.query.target : 'tag_partial',
   type: typeof route.query.type === 'string' ? route.query.type : 'illust',
 }))
 
@@ -435,11 +435,21 @@ async function loadSearchItems() {
     const includeAnyTokens = normalizeKeywords(includeAnyRaw)
     const excludeTokens = normalizeKeywords(excludeRaw)
     const baseItems = Array.isArray(data) ? data.map((item) => ({ ...item, image: item.images?.[0] || '' })) : []
+    const isExactTag = target === 'tag_exact'
     searchItems.value = baseItems.filter((item) => {
       const haystack = buildTargetText(item, target)
-      const matchesAll = includeAllTokens.every((token) => haystack.includes(token))
-      const matchesAny = includeAnyTokens.length ? includeAnyTokens.some((token) => haystack.includes(token)) : true
-      const matchesExclude = excludeTokens.every((token) => !haystack.includes(token))
+      const itemTagNames = (item.tags || []).map(t => t?.name?.toLowerCase()).filter(Boolean)
+
+      function tokenMatches(token) {
+        if (isExactTag) {
+          return itemTagNames.includes(token)
+        }
+        return haystack.includes(token)
+      }
+
+      const matchesAll = includeAllTokens.every(tokenMatches)
+      const matchesAny = includeAnyTokens.length ? includeAnyTokens.some(tokenMatches) : true
+      const matchesExclude = excludeTokens.every((token) => !tokenMatches(token))
       return matchesAll && matchesAny && matchesExclude
     })
   } catch (fetchError) {
@@ -514,7 +524,7 @@ function reloadUserSearch() {
 onMounted(() => {
   loadSearchItems()
   loadUserResults()
-  if (isTagContext.value && searchKeyword.value) {
+  if (searchKeyword.value) {
     tagStore.fetchTagDetail(searchKeyword.value)
     loadFavoriteTagStatus()
   }
@@ -525,7 +535,7 @@ watch(
   () => {
     loadSearchItems()
     loadUserResults()
-    if (isTagContext.value && searchKeyword.value) {
+    if (searchKeyword.value) {
       tagStore.fetchTagDetail(searchKeyword.value)
       loadFavoriteTagStatus()
     }
@@ -536,29 +546,18 @@ watch(
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="search-result-page page-block" :class="searchResultPageClass">
-      <!-- Tag context header (shown when browsing via /tags/:tagName) -->
-      <div v-if="isTagContext" class="tag-context-header">
-        <div class="tag-head">
-          <div>
-            <h1 class="h4 mb-0">#{{ keyword }}</h1>
-            <p class="text-secondary mb-0">{{ tagStore.tag?.usageCount || resultTotal }} artworks in this tag</p>
-          </div>
-          <button type="button" class="favorite-tag-btn" :disabled="tagStore.loading" @click="toggleFavoriteTag">
-            {{ isFavoriteTag ? 'Remove from favorite tag' : 'Add to favorite tag' }}
-          </button>
-        </div>
-      </div>
-
       <SearchResultHeader
-        v-else
         :keyword="keyword"
         :result-total="resultTotal"
         :is-user-search="isUserSearch"
         :is-novel-search="isNovelSearch"
         :show-tags="showTags"
         :display-tags="displayTags"
+        :show-favorite-tag="!!searchKeyword && !isUserSearch"
+        :is-favorite-tag="isFavoriteTag"
         @toggle-tags="showTags = !showTags"
         @search-tag="applySearchTag"
+        @toggle-favorite="toggleFavoriteTag"
       />
 
       <nav class="result-tabs" aria-label="Result tabs">
@@ -731,45 +730,5 @@ watch(
   font-weight: 700;
 }
 
-.tag-context-header {
-  margin-bottom: -0.3rem;
-}
 
-.tag-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.tag-head h1 {
-  margin: 0;
-  text-transform: lowercase;
-  font-size: 2rem;
-  color: #111827;
-}
-
-.tag-head p {
-  margin: 0.15rem 0 0;
-}
-
-.favorite-tag-btn {
-  border: 1px solid #d8e1ef;
-  background: #fff;
-  color: #1f2937;
-  border-radius: 999px;
-  padding: 0.42rem 0.85rem;
-  font-weight: 700;
-  font-size: 0.86rem;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.favorite-tag-btn:disabled {
-  background: #f1f5f9;
-  color: #94a3b8;
-  border-color: #e2e8f0;
-  cursor: not-allowed;
-}
 </style>
