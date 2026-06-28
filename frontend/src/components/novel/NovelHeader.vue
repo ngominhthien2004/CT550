@@ -38,7 +38,7 @@ const uploadedAtLabel = computed(() => {
         loading="lazy"
       />
       <div v-else class="novel-cover-placeholder">
-        <span class="placeholder-icon">📖</span>
+        <i class="fa-solid fa-book-open placeholder-icon" aria-hidden="true"></i>
       </div>
     </div>
 
@@ -136,7 +136,7 @@ const uploadedAtLabel = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--novel-surface);
+  background: linear-gradient(135deg, rgba(22, 149, 240, 0.08), rgba(148, 185, 109, 0.16));
   color: var(--novel-muted);
 }
 

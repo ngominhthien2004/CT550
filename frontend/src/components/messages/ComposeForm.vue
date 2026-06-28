@@ -120,7 +120,7 @@ function insertEmoji(emoji) {
 <style scoped>
 .compose-row-advanced {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-top: 1px solid #e5e7eb;
@@ -153,11 +153,12 @@ function insertEmoji(emoji) {
 .compose-input-actions {
   position: absolute;
   right: 0.5rem;
-  top: 0;
-  bottom: 0;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   gap: 0.1rem;
+  pointer-events: auto;
 }
 
 .compose-input-actions .icon-btn {
