@@ -45,7 +45,7 @@ const upload = multer({
 
 router.route('/')
     .get(protect, getMyMessages)
-    .post(protect, checkBlocked({ bodyField: 'recipientId' }), upload.array('images', 5), createMessage);
+    .post(protect, upload.array('images', 5), checkBlocked({ bodyField: 'recipientId' }), createMessage);
 
 router.route('/:id/read')
     .patch(protect, markMessageRead);

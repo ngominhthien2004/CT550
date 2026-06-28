@@ -6,6 +6,7 @@ import ComposeForm from './ComposeForm.vue'
 const props = defineProps({
   selectedThreadId: { type: String, default: '' },
   headerTitle: { type: String, default: '' },
+  headerAvatar: { type: String, default: '' },
   presenceState: { type: Object, default: () => ({ online: false, typing: false, lastSeen: null }) },
   threadSearchQuery: { type: String, default: '' },
   searchActive: { type: Boolean, default: false },
@@ -74,6 +75,7 @@ defineExpose({ scrollToBottom })
         <button v-if="selectedThreadId" type="button" class="icon-btn ghost mobile-back" @click="emit('back')">
           <i class="fa-solid fa-arrow-left"></i>
         </button>
+        <img v-if="headerAvatar" class="thread-head-avatar" :src="headerAvatar" alt="" @error="(e) => e.target.style.display = 'none'" />
         <h2 class="h6 mb-0 thread-head-title">
           {{ headerTitle }}
           <span v-if="selectedThreadId && presenceState.online" class="presence-indicator">
@@ -210,6 +212,14 @@ defineExpose({ scrollToBottom })
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.thread-head-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
 .thread-head-right {

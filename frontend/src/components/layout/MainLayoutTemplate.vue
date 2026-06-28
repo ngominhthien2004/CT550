@@ -1,7 +1,10 @@
 <script setup>
 import { ref, onBeforeUnmount, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import AppSidebarMenu from './AppSidebarMenu.vue'
 import AppTopBar from './AppTopBar.vue'
+
+const route = useRoute()
 
 const SIDEBAR_Z_INDEX = 1040
 
@@ -76,7 +79,7 @@ onBeforeUnmount(() => {
         <i class="fa-solid fa-arrow-up"></i>
       </button>
 
-      <router-link to="/chat"
+      <router-link v-if="route.path !== '/messages'" to="/chat"
         class="ai-chat-fab"
         aria-label="AI Chat"
       >

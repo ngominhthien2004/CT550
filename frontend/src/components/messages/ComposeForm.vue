@@ -14,12 +14,17 @@ const emit = defineEmits(['update:content', 'send', 'typing', 'image-select', 'c
 const showEmojiPicker = ref(false)
 const activeEmojiTab = ref(0)
 const textareaRef = ref(null)
+const fileInput = ref(null)
 
 function adjustTextareaHeight() {
   const el = textareaRef.value
   if (!el) return
   el.style.height = 'auto'
   el.style.height = `${el.scrollHeight}px`
+}
+
+function openFilePicker() {
+  fileInput.value?.click()
 }
 
 function insertEmoji(emoji) {
@@ -68,10 +73,25 @@ function insertEmoji(emoji) {
           <i class="fa-regular fa-face-smile"></i>
         </button>
 
-        <label class="icon-btn ghost" :class="{ disabled: !selectedThreadId }" aria-label="Add images">
+        <button
+          type="button"
+          class="icon-btn ghost"
+          :disabled="!selectedThreadId"
+          @click="openFilePicker"
+          aria-label="Add images"
+        >
           <i class="fa-regular fa-image" aria-hidden="true"></i>
-          <input type="file" multiple accept="image/*" :disabled="!selectedThreadId" aria-label="Upload images" @change="emit('image-select', $event)" />
-        </label>
+        </button>
+        <input
+          ref="fileInput"
+          type="file"
+          multiple
+          accept="image/*"
+          :disabled="!selectedThreadId"
+          class="hidden-file-input"
+          aria-label="Upload images"
+          @change="emit('image-select', $event)"
+        />
       </div>
 
       <div v-if="showEmojiPicker" class="emoji-drawer-panel">
@@ -125,6 +145,8 @@ function insertEmoji(emoji) {
   padding: 0.75rem 1rem;
   border-top: 1px solid #e5e7eb;
   background: #fff;
+  position: relative;
+  z-index: 1060;
 }
 
 .compose-input-wrapper {
@@ -144,6 +166,7 @@ function insertEmoji(emoji) {
   min-height: 48px;
   max-height: 120px;
   line-height: 1.4;
+  overflow-y: hidden;
 }
 
 .compose-textarea:focus {
@@ -178,6 +201,18 @@ function insertEmoji(emoji) {
 
 .compose-input-actions .icon-btn input {
   display: none;
+}
+
+.hidden-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .compose-row-advanced .btn-primary {

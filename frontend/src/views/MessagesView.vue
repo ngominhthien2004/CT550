@@ -16,13 +16,14 @@ const searchResults = ref([])
 const searchActive = ref(false)
 const content = ref('')
 const profilePreviewName = ref('')
+const profilePreviewAvatar = ref('')
 const loading = ref(false)
 const error = ref('')
 const sending = ref(false)
 const selectedImages = ref([])
+const selectedImageFiles = ref([])
 const threadListRef = ref(null)
 const textareaRef = ref(null)
-const fileInputRef = ref(null)
 const presenceState = ref({ online: false, typing: false, lastSeen: null })
 let presenceInterval = null
 let typingInterval = null
@@ -119,7 +120,11 @@ const threads = computed(() => {
   ).map((thread) => ({
     ...thread,
     _formattedTime: formatMessageTime(thread.latestMessage.createdAt),
-    _previewText: parseMessageBody(thread.latestMessage.content).text || parseMessageContent(thread.latestMessage.content).body,
+    _previewText: (() => {
+      const body = parseMessageBody(thread.latestMessage.content)
+      if (body.images.length > 0 || (thread.latestMessage.images && thread.latestMessage.images.length > 0)) return '[Image]'
+      return body.text || parseMessageContent(thread.latestMessage.content).body
+    })(),
   }))
 })
 
@@ -176,14 +181,20 @@ const headerTitle = computed(() => {
   return 'Select a conversation'
 })
 
+const headerAvatar = computed(() => {
+  if (selectedThread.value) return selectedThread.value.peer?.avatar || ''
+  return profilePreviewAvatar.value
+})
+
 async function goLogin() { await router.push('/login') }
 
 async function loadProfilePreview(userId) {
-  if (!userId) { profilePreviewName.value = ''; return }
+  if (!userId) { profilePreviewName.value = ''; profilePreviewAvatar.value = ''; return }
   try {
     const { data } = await userApi.getProfile(userId)
     profilePreviewName.value = data?.displayName || data?.username || ''
-  } catch { profilePreviewName.value = '' }
+    profilePreviewAvatar.value = data?.avatar || ''
+  } catch { profilePreviewName.value = ''; profilePreviewAvatar.value = '' }
 }
 
 async function loadMessages() {
@@ -197,14 +208,13 @@ async function loadMessages() {
     ])
     inboxMessages.value = Array.isArray(inboxRes.data?.messages) ? inboxRes.data.messages : []
     sentMessages.value = Array.isArray(sentRes.data?.messages) ? sentRes.data.messages : []
-    if (selectedThreadId.value) return
     const queryUser = typeof route.query.user === 'string' ? route.query.user : ''
-    if (queryUser) {
+    if (queryUser && !selectedThreadId.value) {
       selectedThreadId.value = queryUser
       await loadProfilePreview(queryUser)
-      return
+    } else if (!selectedThreadId.value && threads.value.length > 0) {
+      selectedThreadId.value = threads.value[0].peerId
     }
-    if (threads.value.length > 0) selectedThreadId.value = threads.value[0].peerId
     lastPolledAt.value = new Date().toISOString()
   } catch (fetchError) {
     error.value = fetchError?.response?.data?.message || 'Failed to load messages'
@@ -313,9 +323,10 @@ function playNotificationSound() {
 function handleImageSelect(event) {
   const files = Array.from(event.target?.files || [])
   selectedImages.value = files.map((file) => file.name)
+  selectedImageFiles.value = files
 }
 
-function clearSelectedImages() { selectedImages.value = [] }
+function clearSelectedImages() { selectedImages.value = []; selectedImageFiles.value = [] }
 
 function handleDragOver(e) { e.preventDefault(); isDragging.value = true }
 function handleDragLeave() { isDragging.value = false }
@@ -324,7 +335,10 @@ function handleDrop(e) {
   if (!selectedThreadId.value) return
   const files = Array.from(e.dataTransfer?.files || [])
   const imageFiles = files.filter(file => file.type.startsWith('image/'))
-  if (imageFiles.length > 0) selectedImages.value = [...selectedImages.value, ...imageFiles.map(file => file.name)]
+  if (imageFiles.length > 0) {
+    selectedImages.value = [...selectedImages.value, ...imageFiles.map(file => file.name)]
+    selectedImageFiles.value = [...selectedImageFiles.value, ...imageFiles]
+  }
 }
 
 async function sendMessage() {
@@ -346,17 +360,14 @@ async function sendMessage() {
       const formData = new FormData()
       if (payloadContent) formData.append('content', payloadContent)
       formData.append('recipientId', recipientId)
-      if (fileInputRef.value?.files) {
-        for (let i = 0; i < fileInputRef.value.files.length; i++) formData.append('images', fileInputRef.value.files[i])
-      }
+      for (const file of selectedImageFiles.value) formData.append('images', file)
       data = await messageStore.sendMessage(formData)
     } else {
       data = await messageStore.sendMessage({ recipientId, content: payloadContent })
     }
     sentMessages.value = [data, ...sentMessages.value.filter((item) => item._id !== data._id)]
     if (!selectedThreadId.value) selectedThreadId.value = recipientId
-    content.value = ''; selectedImages.value = []; replyingTo.value = null; showEmojiPicker.value = false
-    if (fileInputRef.value) fileInputRef.value.value = ''
+    content.value = ''; selectedImages.value = []; selectedImageFiles.value = []; replyingTo.value = null; showEmojiPicker.value = false
     nextTick(() => { scrollChatToBottom() })
   } catch (sendError) {
     error.value = sendError?.response?.data?.message || 'Failed to send message'
@@ -433,6 +444,7 @@ onUnmounted(() => { stopPresencePolling(); stopMessagePolling() })
         ref="chatPaneRef"
         :selected-thread-id="selectedThreadId"
         :header-title="headerTitle"
+        :header-avatar="headerAvatar"
         :presence-state="presenceState"
         :thread-search-query="threadSearchQuery"
         :search-active="searchActive"
