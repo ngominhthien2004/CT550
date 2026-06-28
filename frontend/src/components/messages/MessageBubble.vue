@@ -172,10 +172,11 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 
 .bubble-actions {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: -4px;
+  right: 8px;
   display: none;
   gap: 0.25rem;
+  z-index: 2;
 }
 
 .bubble:hover .bubble-actions {
