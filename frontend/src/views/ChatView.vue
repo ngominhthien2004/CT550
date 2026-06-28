@@ -328,7 +328,7 @@ const processedMessages = computed(() =>
   height: 0.5rem;
   border-radius: 50%;
   background: #999;
-  animation: typing-bounce 1.4s ease-in-out infinite;
+  animation: typing-pulse 1.4s ease-in-out infinite;
 }
 
 .typing-dot:nth-child(2) {
@@ -339,13 +339,9 @@ const processedMessages = computed(() =>
   animation-delay: 0.4s;
 }
 
-@keyframes typing-bounce {
-  0%, 60%, 100% {
-    transform: translateY(0);
-  }
-  30% {
-    transform: translateY(-0.375rem);
-  }
+@keyframes typing-pulse {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
 }
 
 /* Suggested prompts */

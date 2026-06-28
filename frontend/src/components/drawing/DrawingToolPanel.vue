@@ -91,11 +91,11 @@ const store = useDrawingStore()
   flex-direction: column;
   gap: 16px;
   overflow-y: auto;
-  transition: margin-left 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .left-toolbar.collapsed {
-  margin-left: -220px;
+  transform: translateX(-220px);
   opacity: 0;
   pointer-events: none;
 }

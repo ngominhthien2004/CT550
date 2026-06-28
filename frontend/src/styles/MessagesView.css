@@ -410,12 +410,12 @@
 .drag-icon {
   font-size: 2.5rem;
   color: #3b82f6;
-  animation: bounce-animation 1s infinite;
+  animation: gentle-float 2s ease-in-out infinite;
 }
 
-@keyframes bounce-animation {
+@keyframes gentle-float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-6px); }
 }
 
 @keyframes fadeIn {
@@ -788,59 +788,6 @@
 
 .msg-status.read {
   color: #3b82f6; /* Blue checkmarks when read */
-}
-
-/* ===== Bubble action buttons container ===== */
-.bubble-actions {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 4px;
-  opacity: 0;
-  transition: opacity 0.15s;
-  z-index: 5;
-}
-
-.bubble.incoming .bubble-actions {
-  left: calc(100% + 8px);
-}
-
-.bubble.outgoing .bubble-actions {
-  right: calc(100% + 8px);
-  flex-direction: row;
-}
-
-.bubble:hover .bubble-actions {
-  opacity: 1;
-}
-
-.bubble-reply-btn,
-.bubble-delete-btn {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.68rem;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-}
-
-.bubble-reply-btn:hover {
-  background: #eff6ff;
-  color: #3b82f6;
-  border-color: #bfdbfe;
-}
-
-.bubble-delete-btn:hover {
-  background: #fef2f2;
-  color: #ef4444;
-  border-color: #fecaca;
 }
 
 @media (max-width: 920px) {

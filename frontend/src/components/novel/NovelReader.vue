@@ -111,7 +111,7 @@ onUnmounted(() => {
     :style="{ '--novel-font-size': fontSize }"
   >
     <div class="reading-progress-bar-container">
-      <div class="reading-progress-bar" :style="{ width: `${Math.round(progressPercent)}%` }">
+      <div class="reading-progress-bar" :style="{ transform: `scaleX(${Math.round(progressPercent) / 100})` }">
         <span class="progress-label">{{ Math.round(progressPercent) }}%</span>
       </div>
     </div>
@@ -226,7 +226,8 @@ onUnmounted(() => {
   height: 100%;
   background: linear-gradient(90deg, var(--novel-accent), #93c5fd);
   border-radius: 0 2px 2px 0;
-  transition: width 0.15s ease-out;
+  transform-origin: left;
+  transition: transform 0.15s ease-out;
   position: relative;
   min-width: 0;
 }

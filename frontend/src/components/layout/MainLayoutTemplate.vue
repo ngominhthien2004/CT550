@@ -101,7 +101,7 @@ onBeforeUnmount(() => {
   padding: 0.35rem 40px 1rem;
   display: grid;
   gap: 0;
-  transition: margin-left 0.22s ease;
+  /* transition removed — sidebar is fixed, no layout animation needed */
   margin-left: 240px;
 }
 

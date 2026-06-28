@@ -60,9 +60,8 @@ const emit = defineEmits(['retry', 'filter-period'])
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid var(--line);
-  border-top: 3px solid var(--accent);
   border-radius: 50%;
+  background: conic-gradient(var(--accent) 0deg 270deg, var(--line) 270deg 360deg);
   animation: spin 1s linear infinite;
 }
 

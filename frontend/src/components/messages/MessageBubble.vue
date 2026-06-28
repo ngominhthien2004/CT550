@@ -46,7 +46,7 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
       <small class="msg-time">{{ row._formattedTime }}</small>
     </div>
 
-    <div class="bubble-actions">
+    <div class="bubble-actions-wrapper">
       <button type="button" class="bubble-reply-btn" title="Reply to this message" @click="emit('reply', row.item)">
         <i class="fa-solid fa-reply"></i>
       </button>
@@ -170,36 +170,61 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
   opacity: 0.7;
 }
 
-.bubble-actions {
+.bubble-actions-wrapper {
   position: absolute;
-  top: -4px;
-  right: 8px;
-  display: none;
-  gap: 0.25rem;
-  z-index: 2;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 4px;
+  z-index: 5;
+  padding: 6px;
+  margin: -6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
 }
 
-.bubble:hover .bubble-actions {
-  display: flex;
+.bubble.incoming .bubble-actions-wrapper {
+  left: calc(100% + 8px);
+}
+
+.bubble.outgoing .bubble-actions-wrapper {
+  right: calc(100% + 8px);
+}
+
+.bubble:hover .bubble-actions-wrapper,
+.bubble-actions-wrapper:hover {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .bubble-reply-btn,
 .bubble-delete-btn {
-  width: 24px;
-  height: 24px;
-  border: none;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-  cursor: pointer;
-  display: grid;
-  place-items: center;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 0.72rem;
-  color: #6b7280;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
-.bubble-reply-btn:hover { color: #6366f1; }
-.bubble-delete-btn:hover { color: #dc2626; }
+.bubble-reply-btn:hover {
+  background: #eff6ff;
+  color: #3b82f6;
+  border-color: #bfdbfe;
+}
+
+.bubble-delete-btn:hover {
+  background: #fef2f2;
+  color: #ef4444;
+  border-color: #fecaca;
+}
 
 .mark-read {
   border: none;

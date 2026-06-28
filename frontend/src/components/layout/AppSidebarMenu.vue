@@ -191,7 +191,7 @@ const illuWrlStyleSections = computed(() => {
   top: 0;
   height: 100vh;
   overflow: auto;
-  transition: transform 0.22s ease, width 0.22s ease;
+  transition: transform 0.22s ease;
   background: var(--surface-alt);
   border-right: 1px solid var(--line);
   transform: translateX(0%);
