@@ -17,7 +17,6 @@ const emit = defineEmits(['select'])
         <h1 class="h5 mb-0">Chats</h1>
         <p class="text-secondary mb-0 small">Unread: {{ unreadCount }}</p>
       </div>
-      <router-link to="/account" class="pane-link">Message settings</router-link>
     </header>
 
     <div v-if="loading" class="pane-skeletons" aria-hidden="true">

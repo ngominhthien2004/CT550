@@ -90,8 +90,8 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 }
 
 .bubble.outgoing {
-  background: #6366f1;
-  color: #fff;
+  background: #e0f2fe;
+  color: #0369a1;
   margin-left: auto;
   border-bottom-right-radius: 4px;
 }

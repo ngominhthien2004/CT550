@@ -6,7 +6,7 @@ import ThreadListPane from '../components/messages/ThreadListPane.vue'
 import ThreadChatPane from '../components/messages/ThreadChatPane.vue'
 
 import { useAuthStore } from '../stores/auth.store'
-import { getMyMessages, markMessageRead, userApi, messageApi } from '../services/api'
+import { getMyMessages, markMessageRead, userApi, messageApi, reportApi } from '../services/api'
 import { useMessageStore } from '../stores/message.store'
 
 const isNavCollapsed = ref(true)
@@ -374,6 +374,26 @@ async function sendMessage() {
   } finally { sending.value = false }
 }
 
+async function blockUser() {
+  if (!selectedThreadId.value) return
+  if (!window.confirm('Block this user? You won\'t receive messages from them.')) return
+  try {
+    await userApi.block(selectedThreadId.value)
+    selectedThreadId.value = ''
+    await loadMessages()
+  } catch (e) { alert(e?.response?.data?.message || 'Failed to block user') }
+}
+
+async function reportUser() {
+  if (!selectedThreadId.value) return
+  const reason = window.prompt('Report reason:')
+  if (!reason) return
+  try {
+    await reportApi.reportUser(selectedThreadId.value, { reason })
+    alert('Report submitted. Thank you.')
+  } catch (e) { alert(e?.response?.data?.message || 'Failed to report user') }
+}
+
 async function markAsRead(messageId) {
   try {
     await markMessageRead(messageId)
@@ -465,6 +485,8 @@ onUnmounted(() => { stopPresencePolling(); stopMessagePolling() })
         @delete="deleteMessage"
         @mark-read="markAsRead"
         @scroll-images="scrollChatToBottom"
+        @report="reportUser"
+        @block="blockUser"
         @update:content="content = $event"
         @send="sendMessage"
         @typing="onUserTyping"

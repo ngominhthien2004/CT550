@@ -199,8 +199,8 @@
 
 .bubble.outgoing {
   justify-self: end;
-  background: #dbeafe;
-  border: 1px solid #bfdbfe;
+  background: #e0f2fe;
+  border: 1px solid #bae6fd;
 }
 
 .mark-read {
@@ -644,7 +644,7 @@
 }
 
 .bubble.outgoing .bubble-quote {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(3, 105, 161, 0.08);
 }
 
 .quote-user {
@@ -675,7 +675,7 @@
 }
 
 .bubble.outgoing .quote-text {
-  color: #1e40af;
+  color: #0369a1;
 }
 
 /* Ticks / Double checkmarks & bubble additions */
@@ -728,7 +728,7 @@
 }
 
 .bubble.outgoing .msg-time {
-  color: #60a5fa;
+  color: #0284c7;
 }
 
 .msg-status {
