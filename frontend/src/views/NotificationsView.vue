@@ -108,6 +108,17 @@ onMounted(() => {
 
 <style scoped>
 .notif-unread {
-  border-left: 4px solid #3b82f6;
+  position: relative;
+  background: rgba(59, 130, 246, 0.04);
+}
+.notif-unread::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: #3b82f6;
 }
 </style>
