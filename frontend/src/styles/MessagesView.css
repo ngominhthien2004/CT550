@@ -562,9 +562,9 @@
 
 /* Compose send button - sync with Bootstrap .btn-primary */
 .compose-row-advanced .btn {
-  min-width: 44px;
-  min-height: 44px;
-  border-radius: 12px;
+  min-width: 52px;
+  min-height: 52px;
+  border-radius: 14px;
   display: grid;
   place-items: center;
 }

@@ -17,7 +17,10 @@ const emit = defineEmits(['like', 'bookmark'])
     </div>
 
     <router-link :to="`/artworks/${item._id}`" class="rank-image-link">
-      <img :src="item._cover" :alt="item.title" class="rank-thumb" loading="lazy" />
+      <img v-if="item._cover" :src="item._cover" :alt="item.title" class="rank-thumb" loading="lazy" />
+      <div v-else class="rank-thumb-fallback">
+        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+      </div>
     </router-link>
 
     <div class="rank-info">
@@ -121,6 +124,16 @@ const emit = defineEmits(['like', 'bookmark'])
 }
 
 .rank-thumb:hover { transform: scale(1.05); }
+
+.rank-thumb-fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(22, 149, 240, 0.08), rgba(148, 185, 109, 0.16));
+  color: var(--muted);
+  font-size: 3rem;
+}
 
 .rank-info {
   flex: 1;

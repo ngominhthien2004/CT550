@@ -158,7 +158,8 @@ const processedRankings = computed(() =>
   rankings.value.map((item, index) => ({
     ...item,
     _rankClass: getRankClass(index + 1),
-    _cover: item?.images?.[0] || 'https://via.placeholder.com/200x200?text=No+Image',
+    _cover: item?.images?.[0] || null,
+    _workType: item?.type || 'illust',
     _viewCount: formatCount(item.viewCount || 0),
     _likeCount: formatCount(item.likeCount || 0),
     _bookmarkCount: formatCount(item.bookmarkCount || 0),
