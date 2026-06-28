@@ -255,7 +255,18 @@ const illuWrlStyleSections = computed(() => {
 .left-nav.icon-only .nav-link-item.router-link-active {
   padding-left: 0;
   border-left: none;
-  border-right: 3px solid var(--accent);
+  position: relative;
+}
+.left-nav.icon-only .nav-link-item.router-link-active::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 40%;
+  border-radius: 2px 0 0 2px;
+  background: var(--accent);
 }
 
 .left-nav.icon-only .sidebar-head {
@@ -474,10 +485,20 @@ const illuWrlStyleSections = computed(() => {
 
 .nav-link-item.router-link-active {
   background: color-mix(in srgb, var(--accent) 15%, transparent);
-  border-left: 3px solid var(--accent);
-  padding-left: calc(0.9rem - 3px);
+  position: relative;
   color: var(--accent);
   font-weight: 700;
+}
+.nav-link-item.router-link-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 50%;
+  border-radius: 0 2px 2px 0;
+  background: var(--accent);
 }
 
 .nav-link-item.router-link-active i {
