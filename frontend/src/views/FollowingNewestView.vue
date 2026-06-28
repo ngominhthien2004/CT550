@@ -146,7 +146,7 @@ onMounted(() => {
         </p>
 
         <div class="load-more-container mt-4" v-if="currentPage < totalPages">
-          <button type="button" class="load-more-btn" @click="loadMore" :disabled="loading">
+          <button type="button" class="btn btn-primary" @click="loadMore" :disabled="loading">
             {{ loading ? 'Loading...' : 'Load More' }}
           </button>
         </div>
@@ -167,22 +167,22 @@ onMounted(() => {
 .top-nav-tabs {
   display: flex;
   gap: 1.5rem;
-  padding-top: 1.5rem;
+  padding-top: 1rem;
   margin-bottom: 1.5rem;
 }
 
 .top-tab {
   font-size: 1rem;
   font-weight: 700;
-  color: #71717a;
+  color: var(--muted);
   text-decoration: none;
   padding-bottom: 0.6rem;
   border-bottom: 3px solid transparent;
 }
 
 .top-tab.active {
-  color: #18181b;
-  border-bottom: 3px solid #0096fa;
+  color: var(--brand);
+  border-bottom: 3px solid var(--accent);
 }
 
 .top-tab.disabled {
@@ -205,24 +205,27 @@ onMounted(() => {
 }
 
 .pill-btn {
-  background: transparent;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 99px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 0.42rem 0.72rem;
+  border-radius: 999px;
   font-weight: 700;
-  color: #52525b;
+  color: var(--muted);
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   transition: all 0.2s ease;
 }
 
 .pill-btn.active {
-  background: #f4f4f5;
-  color: #18181b;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
 }
 
 .pill-btn:hover:not(.active) {
-  background: #fafafa;
+  background: var(--surface-alt);
+  border-color: var(--accent);
+  color: var(--brand);
 }
 
 .content-block {
@@ -231,11 +234,11 @@ onMounted(() => {
 
 .state-note {
   margin: 0;
-  color: #71717a;
+  color: var(--muted);
 }
 
 .state-note.error {
-  color: #ef4444;
+  color: var(--danger);
 }
 
 .result-grid {
@@ -244,107 +247,10 @@ onMounted(() => {
   gap: 1.5rem;
 }
 
-.result-card {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.thumb-link {
-  display: block;
-  border-radius: 6px;
-  overflow: hidden;
-  background: #f4f4f5;
-  aspect-ratio: 1; /* Pixiv uses squares for the feed generally */
-  position: relative;
-}
-
-.r18-badge {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  background: #ef4444;
-  color: white;
-  font-size: 0.7rem;
-  font-weight: 800;
-  padding: 2px 6px;
-  border-radius: 4px;
-  z-index: 10;
-}
-
-.thumb-link img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.2s ease;
-}
-
-.thumb-link:hover img {
-  transform: scale(1.05);
-}
-
-.thumb-fallback {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #e4e4e7, #f4f4f5);
-}
-
-.title-link {
-  text-decoration: none;
-  color: #18181b;
-  font-weight: 700;
-  font-size: 0.95rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.author-info {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.author-avatar {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #d4d4d8;
-}
-
-.author-name {
-  margin: 0;
-  color: #71717a;
-  font-size: 0.85rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .load-more-container {
   display: flex;
   justify-content: center;
   padding: 1rem 0;
-}
-
-.load-more-btn {
-  background: #f4f4f5;
-  border: 1px solid #e4e4e7;
-  color: #18181b;
-  padding: 0.6rem 2rem;
-  border-radius: 999px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.load-more-btn:hover:not(:disabled) {
-  background: #e4e4e7;
-}
-
-.load-more-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 @media (max-width: 920px) {
