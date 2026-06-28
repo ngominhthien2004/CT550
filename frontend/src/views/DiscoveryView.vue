@@ -104,7 +104,6 @@ onMounted(() => {
       <div class="top-nav-container">
         <nav class="top-nav-tabs" aria-label="Top level tabs">
           <router-link to="/discovery" class="top-tab active">Recommended works</router-link>
-          <a href="#" class="top-tab disabled">Recommended users</a>
         </nav>
       </div>
 

@@ -100,14 +100,7 @@ onMounted(() => {
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="following-newest-page">
-      
-      <div class="top-nav-container">
-        <nav class="top-nav-tabs" aria-label="Top level tabs">
-          <router-link to="/newest_by_followed" class="top-tab active">Users you are following</router-link>
-          <a href="#" class="top-tab disabled">Works on Watchlist</a>
-          <a href="#" class="top-tab disabled">IlluWrl</a>
-        </nav>
-      </div>
+      <h1 class="page-title">Following</h1>
 
       <div class="filter-bar">
         <div class="left-pills">
@@ -160,35 +153,13 @@ onMounted(() => {
   width: 100%;
 }
 
-.top-nav-container {
-  padding: 0;
-}
-
-.top-nav-tabs {
-  display: flex;
-  gap: 1.5rem;
-  padding-top: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.top-tab {
-  font-size: 1rem;
+.page-title {
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--muted);
-  text-decoration: none;
-  padding-bottom: 0.6rem;
-  border-bottom: 3px solid transparent;
-}
-
-.top-tab.active {
   color: var(--brand);
-  border-bottom: 3px solid var(--accent);
-}
-
-.top-tab.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
+  margin: 0;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 .filter-bar {
