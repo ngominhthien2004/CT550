@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import MessageBubble from './MessageBubble.vue'
 import ComposeForm from './ComposeForm.vue'
 
@@ -25,15 +25,29 @@ const emit = defineEmits([
   'reply', 'delete', 'mark-read', 'scroll-images',
   'update:content', 'send', 'typing', 'image-select', 'clear-images',
   'dragover', 'dragleave', 'drop',
+  'report', 'block',
 ])
 
 const chatBodyRef = ref(null)
+const showMenu = ref(false)
+let searchDebounce = null
 
 function scrollToBottom() {
   if (chatBodyRef.value) {
     chatBodyRef.value.scrollTop = chatBodyRef.value.scrollHeight
   }
 }
+
+function onSearchInput(value) {
+  emit('update:threadSearchQuery', value)
+  clearTimeout(searchDebounce)
+  searchDebounce = setTimeout(() => {
+    if (value.trim()) emit('search')
+    else emit('clear-search')
+  }, 350)
+}
+
+function closeMenu() { showMenu.value = false }
 
 defineExpose({ scrollToBottom })
 </script>

@@ -111,7 +111,7 @@ function timeAgo(dateStr) {
                 <h5 class="history-title">{{ entry.artwork.title }}</h5>
                 <div class="history-author">
                   <img
-                    :src="entry.artwork.user?.avatar || 'https://via.placeholder.com/24'"
+                    :src="entry.artwork.user?.avatar || 'https://s.pximg.net/common/images/no_profile.png'"
                     :alt="entry.artwork.user?.displayName || entry.artwork.user?.username || 'User'"
                     class="author-avatar"
                   />
