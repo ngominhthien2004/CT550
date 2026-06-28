@@ -82,7 +82,9 @@ const illuWrlStyleSections = computed(() => {
       items: [
         { id: 'illust', label: 'Illustrations', to: '/illustrations', icon: 'fa-regular fa-image' },
         { id: 'manga', label: 'Manga', to: '/manga', icon: 'fa-regular fa-square' },
+        { id: 'gif', label: 'GIF', to: '/gifs', icon: 'fa-solid fa-film' },
         { id: 'novels', label: 'Novels', to: '/novels', icon: 'fa-regular fa-rectangle-list' },
+        { id: 'plans', label: 'Plans', to: '/plans', icon: 'fa-regular fa-clipboard' },
       ],
     },
     {

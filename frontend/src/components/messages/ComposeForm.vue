@@ -56,16 +56,23 @@ function insertEmoji(emoji) {
         aria-label="Compose message"
       ></textarea>
 
-      <button
-        type="button"
-        class="compose-emoji-btn"
-        :class="{ active: showEmojiPicker }"
-        :disabled="!selectedThreadId"
-        @click="showEmojiPicker = !showEmojiPicker"
-        aria-label="Toggle emoji picker"
-      >
-        <i class="fa-regular fa-face-smile"></i>
-      </button>
+      <div class="compose-input-actions">
+        <button
+          type="button"
+          class="compose-emoji-btn"
+          :class="{ active: showEmojiPicker }"
+          :disabled="!selectedThreadId"
+          @click="showEmojiPicker = !showEmojiPicker"
+          aria-label="Toggle emoji picker"
+        >
+          <i class="fa-regular fa-face-smile"></i>
+        </button>
+
+        <label class="compose-image-btn" :class="{ disabled: !selectedThreadId }" aria-label="Add images">
+          <i class="fa-regular fa-image" aria-hidden="true"></i>
+          <input type="file" multiple accept="image/*" :disabled="!selectedThreadId" aria-label="Upload images" @change="emit('image-select', $event)" />
+        </label>
+      </div>
 
       <div v-if="showEmojiPicker" class="emoji-drawer-panel">
         <div class="emoji-drawer-tabs">
@@ -94,11 +101,6 @@ function insertEmoji(emoji) {
       </div>
     </div>
 
-    <label class="image-picker-advanced" :class="{ disabled: !selectedThreadId }" aria-label="Add images">
-      <i class="fa-regular fa-image" aria-hidden="true"></i>
-      <input type="file" multiple accept="image/*" :disabled="!selectedThreadId" aria-label="Upload images" @change="emit('image-select', $event)" />
-    </label>
-
     <button
       class="compose-send-advanced"
       type="submit"
@@ -118,7 +120,7 @@ function insertEmoji(emoji) {
 <style scoped>
 .compose-row-advanced {
   display: flex;
-  align-items: flex-end;
+  align-items: stretch;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-top: 1px solid #e5e7eb;
@@ -132,9 +134,9 @@ function insertEmoji(emoji) {
 
 .compose-textarea {
   width: 100%;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 0.6rem 2.5rem 0.6rem 0.85rem;
+  border: none;
+  border-radius: 20px;
+  padding: 0.6rem 5rem 0.6rem 0.85rem;
   font-size: 0.88rem;
   resize: none;
   min-height: 40px;
@@ -144,22 +146,47 @@ function insertEmoji(emoji) {
 
 .compose-textarea:focus {
   outline: none;
-  border-color: #6366f1;
 }
 
-.compose-emoji-btn {
+.compose-input-actions {
   position: absolute;
   right: 0.5rem;
-  bottom: 0.5rem;
+  bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.compose-emoji-btn,
+.compose-image-btn {
   border: none;
   background: transparent;
   color: #9ca3af;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   cursor: pointer;
   padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+
+.compose-emoji-btn:hover,
+.compose-image-btn:hover {
+  color: #6366f1;
 }
 
 .compose-emoji-btn.active { color: #6366f1; }
+
+.compose-image-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.compose-image-btn input {
+  display: none;
+}
 
 .emoji-drawer-panel {
   position: absolute;
@@ -221,31 +248,9 @@ function insertEmoji(emoji) {
   background: #f3f4f6;
 }
 
-.image-picker-advanced {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: #f3f4f6;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  color: #6b7280;
-  font-size: 1rem;
-  flex-shrink: 0;
-}
-
-.image-picker-advanced.disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.image-picker-advanced input {
-  display: none;
-}
-
 .compose-send-advanced {
   width: 40px;
-  height: 40px;
+  min-height: 40px;
   border: none;
   border-radius: 8px;
   background: #6366f1;
@@ -255,6 +260,7 @@ function insertEmoji(emoji) {
   cursor: pointer;
   font-size: 1rem;
   flex-shrink: 0;
+  align-self: stretch;
 }
 
 .compose-send-advanced:disabled {
