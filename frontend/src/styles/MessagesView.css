@@ -682,9 +682,8 @@
 }
 
 .bubble-quote {
-  background: rgba(0, 0, 0, 0.04);
-  border-left: 3px solid #64748b;
-  border-radius: 4px;
+  background: rgba(100, 116, 139, 0.06);
+  border-radius: 6px;
   padding: 0.35rem 0.55rem;
   margin-bottom: 0.4rem;
   min-width: 120px;
@@ -693,8 +692,7 @@
 }
 
 .bubble.outgoing .bubble-quote {
-  background: rgba(255, 255, 255, 0.4);
-  border-left-color: #2563eb;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .quote-user {

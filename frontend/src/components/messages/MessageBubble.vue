@@ -97,7 +97,7 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 }
 
 .bubble.has-quote {
-  border-left: 3px solid #818cf8;
+  background: color-mix(in srgb, #818cf8 6%, transparent);
 }
 
 .msg-avatar {
