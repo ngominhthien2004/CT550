@@ -560,33 +560,16 @@
   transform: scale(0.95);
 }
 
-/* Send button */
-.compose-send-advanced {
-  border: 0;
-  background: #6366f1;
-  color: #fff;
-  border-radius: 12px;
-  width: 44px;
+/* Compose send button - sync with Bootstrap .btn-primary */
+.compose-row-advanced .btn {
+  min-width: 44px;
   min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-  flex-shrink: 0;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
 }
 
-.compose-send-advanced:hover:not(:disabled) {
-  background: #4f46e5;
-}
-
-.compose-send-advanced:disabled {
-  background: #cbd5e1;
-  color: #94a3b8;
-  cursor: not-allowed;
-}
-
-.compose-send-advanced:active:not(:disabled) {
+.compose-row-advanced .btn:active:not(:disabled) {
   transform: scale(0.92);
 }
 

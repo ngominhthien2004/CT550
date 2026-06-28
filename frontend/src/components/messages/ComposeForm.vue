@@ -59,7 +59,7 @@ function insertEmoji(emoji) {
       <div class="compose-input-actions">
         <button
           type="button"
-          class="compose-emoji-btn"
+          class="icon-btn ghost"
           :class="{ active: showEmojiPicker }"
           :disabled="!selectedThreadId"
           @click="showEmojiPicker = !showEmojiPicker"
@@ -68,7 +68,7 @@ function insertEmoji(emoji) {
           <i class="fa-regular fa-face-smile"></i>
         </button>
 
-        <label class="compose-image-btn" :class="{ disabled: !selectedThreadId }" aria-label="Add images">
+        <label class="icon-btn ghost" :class="{ disabled: !selectedThreadId }" aria-label="Add images">
           <i class="fa-regular fa-image" aria-hidden="true"></i>
           <input type="file" multiple accept="image/*" :disabled="!selectedThreadId" aria-label="Upload images" @change="emit('image-select', $event)" />
         </label>
@@ -102,7 +102,7 @@ function insertEmoji(emoji) {
     </div>
 
     <button
-      class="compose-send-advanced"
+      class="btn btn-primary"
       type="submit"
       :disabled="sending || !selectedThreadId || (!content.trim() && !selectedImages.length)"
     >
@@ -158,35 +158,25 @@ function insertEmoji(emoji) {
   gap: 0.15rem;
 }
 
-.compose-emoji-btn,
-.compose-image-btn {
-  border: none;
-  background: transparent;
-  color: #9ca3af;
-  font-size: 1.05rem;
-  cursor: pointer;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: color 0.15s;
-}
-
-.compose-emoji-btn:hover,
-.compose-image-btn:hover {
+.compose-input-actions .icon-btn.active {
   color: #6366f1;
 }
 
-.compose-emoji-btn.active { color: #6366f1; }
-
-.compose-image-btn.disabled {
+.compose-input-actions .icon-btn.disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.compose-image-btn input {
+.compose-input-actions .icon-btn input {
   display: none;
+}
+
+.compose-row-advanced .btn {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
 }
 
 .emoji-drawer-panel {
@@ -247,26 +237,6 @@ function insertEmoji(emoji) {
 
 .emoji-item-btn:hover {
   background: #f3f4f6;
-}
-
-.compose-send-advanced {
-  width: 44px;
-  min-height: 44px;
-  border: none;
-  border-radius: 12px;
-  background: #6366f1;
-  color: #fff;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  font-size: 1rem;
-  flex-shrink: 0;
-  align-self: center;
-}
-
-.compose-send-advanced:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .image-summary {

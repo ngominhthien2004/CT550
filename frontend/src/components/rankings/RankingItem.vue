@@ -26,7 +26,7 @@ const emit = defineEmits(['like', 'bookmark'])
       </h3>
       <div class="rank-author">
         <router-link :to="`/users/${item.user?._id}/profile`" class="author-link">
-          <img :src="item.user?.avatar || 'https://via.placeholder.com/24'" :alt="item.user?.displayName || item.user?.username || 'User'" class="author-avatar" />
+          <img :src="item.user?.avatar || 'https://s.pximg.net/common/images/no_profile.png'" :alt="item.user?.displayName || item.user?.username || 'User'" class="author-avatar" @error="(e) => e.target.src = 'https://s.pximg.net/common/images/no_profile.png'" />
           <span class="author-name">{{ item.user?.displayName || item.user?.username }}</span>
         </router-link>
       </div>
