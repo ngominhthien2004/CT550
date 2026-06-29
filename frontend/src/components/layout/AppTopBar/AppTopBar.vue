@@ -377,7 +377,7 @@ async function applySearchOptions(payload) {
 .top-nav-actions {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.5rem;
 }
 
 .icon-btn {
@@ -421,11 +421,30 @@ async function applySearchOptions(payload) {
   }
 
   .top-nav-actions {
+    gap: 0.35rem;
     width: 100%;
     justify-content: flex-end;
     padding-top: 0.4rem;
     border-top: 1px solid var(--line);
     margin-top: 0.4rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .top-nav {
+    padding: 0.4rem 0;
+  }
+
+  .top-nav-actions {
+    gap: 0.3rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .top-nav-actions::-webkit-scrollbar {
+    display: none;
   }
 }
 </style>
