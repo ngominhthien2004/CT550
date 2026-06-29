@@ -63,7 +63,7 @@ onMounted(() => {
           <button
             v-if="notificationStore.unreadCount > 0"
             type="button"
-            class="btn btn-outline-primary btn-sm"
+            class="action-pill action-pill--small"
             @click="markAllAsRead"
           >
             Mark all read
@@ -98,7 +98,7 @@ onMounted(() => {
             </div>
             <button type="button"
               v-if="!item.isRead"
-              class="btn btn-sm btn-outline-primary"
+              class="action-pill action-pill--small"
               @click="markAsRead(item._id)"
             >
               Mark read

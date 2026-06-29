@@ -93,7 +93,7 @@ const processedItems = computed(() =>
           <button
             v-if="!item.isRead"
             type="button"
-            class="btn btn-sm btn-outline-primary"
+            class="action-pill action-pill--small"
             aria-label="Mark message as read"
             @click.stop="$emit('mark-read', item._id)"
           >
