@@ -371,11 +371,12 @@ async function applySearchOptions(payload) {
 
 .top-site-name {
   text-decoration: none;
-  font-size: 2rem;
+  font-size: clamp(1.2rem, 2vw + 0.5rem, 2rem);
   line-height: 1;
   color: var(--accent);
   letter-spacing: -0.01em;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .top-nav-actions {
