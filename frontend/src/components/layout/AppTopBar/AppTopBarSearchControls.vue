@@ -107,8 +107,8 @@ function chooseSearchScope(scopeKey) {
 
 .top-search {
   flex: 1 1 auto;
-  width: clamp(420px, 50vw, 860px);
-  min-width: 420px;
+  width: clamp(280px, 40vw, 720px);
+  min-width: 0;
 }
 
 .icon-round {
@@ -257,17 +257,22 @@ function chooseSearchScope(scopeKey) {
   .top-nav-left-right {
     width: 100%;
     margin-left: 0;
+    flex-wrap: wrap;
+  }
+
+  .search-unit {
+    width: 100%;
+    order: 2;
   }
 
   .top-search {
     min-width: 0;
+    width: 100%;
     flex-basis: 100%;
-    width: 100%;
   }
-  
-  /* On small screens, the search unit should take full width */
-  .search-unit {
-    width: 100%;
+
+  .inline-menu {
+    order: 1;
   }
 }
 </style>

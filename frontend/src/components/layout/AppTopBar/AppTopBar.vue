@@ -77,14 +77,10 @@ const userLibraryLinks = [
   { label: 'My Favorite', to: '/favorites' },
   { label: 'Bookmarks', to: '/bookmarks' },
   { label: 'Browsing history', to: '/history' },
-  { label: 'Markers', to: '/rankings' },
 ]
-
-const userBusinessLinks = [{ label: 'Money management', to: '/account' }]
 
 const userSettingLinks = [
   { label: 'Settings', to: '/account' },
-  { label: 'Send feedback', to: '/messages' },
 ]
 
 const siteLabel = computed(() => props.siteName || 'IlluWrl')
@@ -328,7 +324,6 @@ async function applySearchOptions(payload) {
         :user-stats="userStats"
         :user-main-links="userMainLinks"
         :user-library-links="userLibraryLinks"
-        :user-business-links="userBusinessLinks"
         :user-setting-links="userSettingLinks"
         @logout="handleLogout"
       />
@@ -414,12 +409,23 @@ async function applySearchOptions(payload) {
 }
 
 @media (max-width: 920px) {
-  .top-nav-left {
+  .top-nav {
     flex-wrap: wrap;
+    height: auto;
+    padding: 0.5rem 0;
+  }
+
+  .top-nav-left {
+    flex-wrap: nowrap;
+    width: 100%;
   }
 
   .top-nav-actions {
-    flex-wrap: wrap;
+    width: 100%;
+    justify-content: flex-end;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--line);
+    margin-top: 0.4rem;
   }
 }
 </style>
