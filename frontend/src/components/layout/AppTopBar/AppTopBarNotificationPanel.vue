@@ -47,8 +47,22 @@ const processedItems = computed(() =>
   props.items.map(item => ({
     ...item,
     _time: formatRelativeTime(item.createdAt),
+    _link: getNotificationLink(item),
   }))
 )
+
+function getNotificationLink(item) {
+  if (item.type === 'follow' && item.actor?.username) {
+    return `/users/${item.actor.username}`
+  }
+  if (['like', 'bookmark', 'comment'].includes(item.type) && item.artwork?._id) {
+    return `/artworks/${item.artwork._id}`
+  }
+  if (item.type === 'request' && item.request?._id) {
+    return `/requests/${item.request._id}`
+  }
+  return '/notifications'
+}
 
 function setupObserver() {
   observer?.disconnect()
@@ -108,7 +122,7 @@ onBeforeUnmount(() => {
           class="quick-panel-item"
           :class="{ unread: !item.isRead }"
         >
-          <router-link to="/notifications" class="quick-panel-link" role="menuitem">
+          <router-link :to="item._link" class="quick-panel-link" role="menuitem">
             <div class="quick-item-row">
               <div class="q-avatar">
                 <img

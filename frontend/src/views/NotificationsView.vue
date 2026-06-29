@@ -21,6 +21,19 @@ const notificationStore = useNotificationStore()
 
 const notifications = computed(() => notificationStore.items)
 
+function getNotificationLink(item) {
+  if (item.type === 'follow' && item.actor?.username) {
+    return `/users/${item.actor.username}`
+  }
+  if (['like', 'bookmark', 'comment'].includes(item.type) && item.artwork?._id) {
+    return `/artworks/${item.artwork._id}`
+  }
+  if (item.type === 'request' && item.request?._id) {
+    return `/requests/${item.request._id}`
+  }
+  return null
+}
+
 async function goLogin() {
   await router.push('/login')
 }
@@ -124,10 +137,12 @@ onBeforeUnmount(() => {
       <p v-else-if="notificationStore.error" class="text-danger mb-0">{{ notificationStore.error }}</p>
 
       <div v-else-if="notifications.length" class="d-grid gap-2">
-        <article
+        <component
           v-for="item in notifications"
           :key="item._id"
-          class="card border-0 shadow-sm"
+          :is="getNotificationLink(item) ? 'router-link' : 'article'"
+          :to="getNotificationLink(item) || undefined"
+          class="card border-0 shadow-sm notif-card"
           :class="{ 'notif-unread': !item.isRead }"
         >
           <div class="card-body d-flex align-items-start justify-content-between gap-3">
@@ -146,18 +161,11 @@ onBeforeUnmount(() => {
               <p class="mb-1 text-secondary small">
                 {{ item.actor?.displayName || item.actor?.username || 'System' }} · {{ formatRelativeTime(item.createdAt) }}
               </p>
-              <router-link
-                v-if="item.artwork?._id"
-                class="small text-decoration-none"
-                :to="`/artworks/${item.artwork._id}`"
-              >
-                Open related artwork
-              </router-link>
               </div>
             </div>
 
           </div>
-        </article>
+        </component>
 
         <div ref="sentinelRef" class="scroll-sentinel">
           <p v-if="notificationStore.loadingMore" class="text-secondary mb-0">Loading more...</p>
@@ -177,6 +185,15 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.notif-card {
+  text-decoration: none;
+  color: inherit;
+  text-align: left;
+  transition: box-shadow 0.15s;
+}
+.notif-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
 .notif-unread {
   position: relative;
   background: rgba(59, 130, 246, 0.04);
