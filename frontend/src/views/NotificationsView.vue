@@ -34,6 +34,10 @@ async function markAsRead(notificationId) {
   await notificationStore.readNotification(notificationId)
 }
 
+async function markAllAsRead() {
+  await notificationStore.readAllNotifications()
+}
+
 function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
 }
@@ -56,6 +60,14 @@ onMounted(() => {
             <input v-model="unreadOnly" class="form-check-input" type="checkbox" @change="loadNotifications" aria-label="Unread only" />
             <span class="form-check-label">Unread only</span>
           </label>
+          <button
+            v-if="notificationStore.unreadCount > 0"
+            type="button"
+            class="btn btn-outline-primary btn-sm"
+            @click="markAllAsRead"
+          >
+            Mark all read
+          </button>
           <button type="button" class="btn btn-outline-secondary btn-sm" @click="loadNotifications">Refresh</button>
         </div>
       </header>
