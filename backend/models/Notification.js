@@ -16,7 +16,6 @@ const notificationSchema = mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['follow', 'like', 'bookmark', 'comment', 'request', 'system'],
         required: true
     },
     message: {
@@ -24,6 +23,10 @@ const notificationSchema = mongoose.Schema({
         required: true,
         trim: true,
         maxlength: 500
+    },
+    metadata: {
+        type: mongoose.Schema.Types.Mixed,
+        default: null
     },
     isRead: {
         type: Boolean,

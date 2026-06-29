@@ -299,7 +299,7 @@ const reportComment = async (req, res, next) => {
             return next(new Error('You have already reported this comment'));
         }
 
-        await CommentReport.create({
+        const report = await CommentReport.create({
             comment: comment._id,
             reportedBy: req.user._id,
             reason: req.body.reason || 'other',
@@ -312,8 +312,10 @@ const reportComment = async (req, res, next) => {
             createNotification({
                 userId: admin._id,
                 actorId: req.user._id,
-                type: 'system',
+                artworkId: comment.artwork,
+                type: 'system:comment_report',
                 message: `Comment reported: "${comment.content ? comment.content.substring(0, 50) : 'emoji'}"`,
+                metadata: { reportId: report._id, reportType: 'comment' },
             })
         ));
 

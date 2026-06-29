@@ -711,7 +711,7 @@ const reportArtwork = async (req, res, next) => {
             return next(new Error('You have already reported this artwork'));
         }
 
-        await ArtworkReport.create({
+        const report = await ArtworkReport.create({
             artwork: artwork._id,
             reportedBy: req.user._id,
             reason: req.body.reason || 'other',
@@ -727,8 +727,10 @@ const reportArtwork = async (req, res, next) => {
             createNotification({
                 userId: admin._id,
                 actorId: req.user._id,
-                type: 'system',
+                artworkId: artwork._id,
+                type: 'system:artwork_report',
                 message: `Artwork reported: ${artwork.title}`,
+                metadata: { reportId: report._id, reportType: 'artwork' },
             })
         ));
 

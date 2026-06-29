@@ -30,7 +30,7 @@ const reportUser = async (req, res, next) => {
             return next(new Error('You have already reported this user'));
         }
 
-        await UserReport.create({
+        const report = await UserReport.create({
             reportedUser: targetUser._id,
             reportedBy: req.user._id,
             reason: req.body.reason || 'other',
@@ -43,8 +43,9 @@ const reportUser = async (req, res, next) => {
             createNotification({
                 userId: admin._id,
                 actorId: req.user._id,
-                type: 'system',
+                type: 'system:user_report',
                 message: `User reported: ${targetUser.username}`,
+                metadata: { reportId: report._id, reportType: 'user' },
             })
         ));
 

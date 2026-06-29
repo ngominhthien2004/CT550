@@ -1,6 +1,6 @@
 const Notification = require('../models/Notification');
 
-const createNotification = async ({ userId, actorId = null, artworkId = null, type, message }) => {
+const createNotification = async ({ userId, actorId = null, artworkId = null, type, message, metadata = null }) => {
     if (!userId || !type || !message) {
         return null;
     }
@@ -15,7 +15,8 @@ const createNotification = async ({ userId, actorId = null, artworkId = null, ty
             actor: actorId,
             artwork: artworkId,
             type,
-            message
+            message,
+            metadata,
         });
     } catch (_error) {
         return null;
