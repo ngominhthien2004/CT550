@@ -1,5 +1,6 @@
 <script setup>
 import { computed, toRefs } from 'vue'
+import { formatShortDate } from '../../utils/date.js'
 import ArtworkDetailViewer from './detail/ArtworkDetailViewer.vue'
 import ArtworkDetailCaption from './detail/ArtworkDetailCaption.vue'
 import ArtworkDetailSidebar from './detail/ArtworkDetailSidebar.vue'
@@ -97,18 +98,7 @@ const {
 } = toRefs(props)
 
 const uploadedAtLabel = computed(() => {
-  const createdAt = artwork.value?.createdAt
-
-  if (!createdAt) {
-    return ''
-  }
-
-  const date = new Date(createdAt)
-  if (Number.isNaN(date.getTime())) {
-    return ''
-  }
-
-  return date.toLocaleString()
+  return formatShortDate(artwork.value?.createdAt)
 })
 
 const sameAuthorWorks = computed(() => {
