@@ -495,18 +495,11 @@ defineExpose({
 .search-field input::placeholder {
   color: #94a3b8;
   opacity: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 @media (max-width: 600px) {
   .search-field input {
     font-size: 0.8125rem;
-  }
-
-  .search-field input::placeholder {
-    content: "Search...";
   }
 }
 
