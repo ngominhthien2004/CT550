@@ -31,8 +31,8 @@ function getNotificationLink(item) {
   if (item.type === 'request' && item.request?._id) {
     return `/requests/${item.request._id}`
   }
-  if (item.type?.includes('_report') && item.metadata?.reportId) {
-    return `/admin/reports/${item.metadata.reportType}/${item.metadata.reportId}`
+  if (item.type?.includes('_report')) {
+    return '/admin'
   }
   if (item.type === 'system' && item.artwork?._id) {
     return `/artworks/${item.artwork._id}`
