@@ -87,11 +87,6 @@ const processedItems = computed(() =>
                   <small>{{ item._time }}</small>
                 </div>
                 <span v-if="item._previewText">{{ item._previewText }}</span>
-                <div v-if="item.images && item.images.length" class="bubble-images">
-                  <img v-for="(imgUrl, idx) in item.images" :key="imgUrl || idx"
-                       :src="imgUrl" alt="Message image" class="bubble-image"
-                       @error="(e) => e.target.style.display = 'none'" />
-                </div>
               </div>
             </div>
           </router-link>
@@ -324,19 +319,5 @@ const processedItems = computed(() =>
   gap: 0.2rem;
 }
 
-.bubble-images {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 4px;
-}
 
-.bubble-image {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 1px solid var(--line);
-  background: var(--surface-alt);
-}
 </style>
