@@ -37,7 +37,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['toggle', 'mark-read', 'mark-all-read', 'load-more'])
+const emit = defineEmits(['toggle', 'mark-all-read', 'load-more'])
 
 const sentinelRef = ref(null)
 const panelRef = ref(null)
@@ -128,15 +128,7 @@ onBeforeUnmount(() => {
               </div>
             </div>
           </router-link>
-          <button
-            v-if="!item.isRead"
-            type="button"
-            class="action-pill action-pill--small"
-            aria-label="Mark notification as read"
-            @click.stop="$emit('mark-read', item._id)"
-          >
-            Mark read
-          </button>
+
         </div>
         <div ref="sentinelRef" class="quick-panel-sentinel">
           <span v-if="loadingMore" class="quick-panel-note">Loading more...</span>

@@ -6,7 +6,6 @@ import { useAuthStore } from '../../../stores/auth.store'
 import { useFollowStore } from '../../../stores/follow.store'
 import {
   getMyNotifications,
-  markNotificationRead,
   markAllNotificationsRead,
 } from '../../../services/api'
 import { useMessageStore } from '../../../stores/message.store'
@@ -267,26 +266,6 @@ async function handleMarkMessageRead(messageId) {
   }
 }
 
-async function handleMarkNotificationRead(notificationId) {
-  try {
-    await markNotificationRead(notificationId)
-    notificationPreviewItems.value = notificationPreviewItems.value.map((item) => {
-      if (item._id !== notificationId) {
-        return item
-      }
-      return {
-        ...item,
-        isRead: true,
-      }
-    })
-    if (notificationUnreadCount.value > 0) {
-      notificationUnreadCount.value -= 1
-    }
-  } catch (error) {
-    notificationPreviewError.value = error?.response?.data?.message || 'Failed to mark notification as read'
-  }
-}
-
 async function handleMarkAllNotificationsRead() {
   try {
     await markAllNotificationsRead()
@@ -383,7 +362,6 @@ async function applySearchOptions(payload) {
         :error="notificationPreviewError"
         :format-time="formatPanelTime"
         @toggle="handleNotificationMenuToggle"
-        @mark-read="handleMarkNotificationRead"
         @mark-all-read="handleMarkAllNotificationsRead"
         @load-more="loadMoreNotificationPreview"
       />

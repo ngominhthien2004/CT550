@@ -44,10 +44,6 @@ async function loadMore() {
   })
 }
 
-async function markAsRead(notificationId) {
-  await notificationStore.readNotification(notificationId)
-}
-
 async function markAllAsRead() {
   await notificationStore.readAllNotifications()
 }
@@ -159,13 +155,7 @@ onBeforeUnmount(() => {
               </router-link>
               </div>
             </div>
-            <button type="button"
-              v-if="!item.isRead"
-              class="action-pill action-pill--small"
-              @click="markAsRead(item._id)"
-            >
-              Mark read
-            </button>
+
           </div>
         </article>
 
