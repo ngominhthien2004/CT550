@@ -31,14 +31,20 @@ const props = defineProps({
 defineEmits(['toggle', 'mark-read'])
 
 const processedItems = computed(() =>
-  props.items.map(item => ({
-    ...item,
-    _time: props.formatTime(item.createdAt),
-    _truncatedContent:
-      item.content && item.content.length > 80
-        ? item.content.slice(0, 80) + '...'
-        : item.content,
-  }))
+  props.items.map(item => {
+    const hasImages = Array.isArray(item.images) && item.images.length > 0
+    const truncated = item.content && item.content.length > 80
+      ? item.content.slice(0, 80) + '...'
+      : (item.content || '')
+    const displayText = truncated || (hasImages ? '[Image]' : '')
+    return {
+      ...item,
+      _time: props.formatTime(item.createdAt),
+      _hasImages: hasImages,
+      _firstImage: hasImages ? item.images[0] : '',
+      _displayText: displayText,
+    }
+  })
 )
 </script>
 
@@ -81,7 +87,20 @@ const processedItems = computed(() =>
                   <strong>{{ item.sender?.displayName || item.sender?.username || 'Unknown' }}</strong>
                   <small>{{ item._time }}</small>
                 </div>
-                <span>{{ item._truncatedContent }}</span>
+                <span v-if="item._displayText">{{ item._displayText }}</span>
+                <div v-if="item._hasImages" class="quick-item-images">
+                  <img
+                    v-if="item._firstImage"
+                    :src="item._firstImage"
+                    alt=""
+                    class="quick-image-thumb"
+                    @error="(e) => e.target.style.display = 'none'"
+                  />
+                  <i v-else class="fa-regular fa-image"></i>
+                  <span class="quick-image-count" v-if="item.images?.length > 1">
+                    +{{ item.images.length - 1 }}
+                  </span>
+                </div>
               </div>
             </div>
           </router-link>
@@ -313,5 +332,32 @@ const processedItems = computed(() =>
   flex: 1;
   display: grid;
   gap: 0.2rem;
+}
+
+.quick-item-images {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.15rem;
+}
+
+.quick-image-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  background: var(--surface-alt);
+}
+
+.quick-item-meta .fa-image {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.quick-image-count {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-weight: 600;
 }
 </style>
