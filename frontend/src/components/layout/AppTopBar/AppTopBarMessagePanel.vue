@@ -34,6 +34,10 @@ const processedItems = computed(() =>
   props.items.map(item => ({
     ...item,
     _time: props.formatTime(item.createdAt),
+    _truncatedContent:
+      item.content && item.content.length > 80
+        ? item.content.slice(0, 80) + '...'
+        : item.content,
   }))
 )
 </script>
@@ -77,7 +81,7 @@ const processedItems = computed(() =>
                   <strong>{{ item.sender?.displayName || item.sender?.username || 'Unknown' }}</strong>
                   <small>{{ item._time }}</small>
                 </div>
-                <span>{{ item.content }}</span>
+                <span>{{ item._truncatedContent }}</span>
               </div>
             </div>
           </router-link>

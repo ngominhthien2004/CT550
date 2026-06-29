@@ -32,7 +32,7 @@ const processedWorks = computed(() =>
     </header>
 
     <p v-if="!works.length" class="empty-state mb-0">
-      Chua co artwork moi nhat de hien thi. Hay dang artwork dau tien de Home co noi dung.
+      No latest works to display yet. Upload your first artwork to fill the homepage with content.
     </p>
 
     <div v-else class="work-grid" :class="{ 'is-novel-grid': isNovelGrid }">
