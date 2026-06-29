@@ -413,6 +413,10 @@ async function applySearchOptions(payload) {
     flex-wrap: nowrap;
   }
 
+  .top-site-name {
+    display: none;
+  }
+
   .top-nav-actions {
     gap: 0.35rem;
   }
