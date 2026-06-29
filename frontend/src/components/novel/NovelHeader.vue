@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from 'vue'
 
+import { formatShortDate } from '../../utils/date.js'
+
 const props = defineProps({
   artwork: { type: Object, required: true },
   wordCount: { type: Number, default: 0 },
@@ -23,7 +25,7 @@ const uploadedAtLabel = computed(() => {
   if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`
   const days = Math.floor(hours / 24)
   if (days < 30) return `${days} day${days > 1 ? 's' : ''} ago`
-  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+  return formatShortDate(props.artwork.createdAt)
 })
 </script>
 

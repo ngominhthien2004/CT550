@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import R18BlurOverlay from '../common/R18BlurOverlay.vue'
+import { formatShortDate } from '../../utils/date.js'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
@@ -17,14 +18,7 @@ function getAuthorInitial(work) {
 }
 
 function formatDate(value) {
-  if (!value) {
-    return 'Recently'
-  }
-
-  return new Date(value).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  })
+  return formatShortDate(value)
 }
 
 function visibleImages(work) {

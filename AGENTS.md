@@ -130,3 +130,19 @@ Screenshots captured during testing / debugging sessions MUST be saved to `test-
 The `.github/copilot-instructions.md` says "Use ESM imports with explicit `.js` paths in backend files."
 **This is incorrect for this repo.** The backend uses CommonJS (`require` / `module.exports`). Do not add ESM
 syntax to backend files unless the project is explicitly migrated.
+
+## Date format standard
+
+All date/time displays across the frontend use the shared utility `frontend/src/utils/date.js`:
+
+```js
+import { formatShortDate } from '@/utils/date.js'
+// or relative path: from '../../utils/date.js'
+```
+
+**Output format:** `MM/DD, HH:mm` (24-hour) — e.g. `06/29, 14:30`
+
+Rules:
+- Always use `formatShortDate(value)` instead of ad-hoc `toLocaleDateString` or `toLocaleString` calls.
+- The function returns empty string `''` for null/undefined/invalid dates.
+- For date ranges (e.g., RankingsView), use custom formatting but keep month/day numeric.

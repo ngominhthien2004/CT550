@@ -13,6 +13,7 @@ import AppTopBarPostMenu from './AppTopBarPostMenu.vue'
 import AppTopBarMessagePanel from './AppTopBarMessagePanel.vue'
 import AppTopBarNotificationPanel from './AppTopBarNotificationPanel.vue'
 import AppTopBarUserMenu from './AppTopBarUserMenu.vue'
+import { formatShortDate } from '../../../utils/date.js'
 import AppTopBarServicesMenu from './AppTopBarServicesMenu.vue'
 import AppTopBarSearchControls from './AppTopBarSearchControls.vue'
 
@@ -151,15 +152,7 @@ watch(
 )
 
 function formatPanelTime(value) {
-  if (!value) {
-    return ''
-  }
-  return new Date(value).toLocaleString([], {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  return formatShortDate(value)
 }
 
 async function loadMessagePreview() {

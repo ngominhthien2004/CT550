@@ -13,6 +13,8 @@ import {
 } from '@/components/admin'
 
 import { useAuthStore } from '../stores/auth.store'
+
+import { formatShortDate } from '../utils/date.js'
 import { useAdminOverview } from '@/composables/useAdminOverview'
 import { useAdminUsers } from '@/composables/useAdminUsers'
 import { useAdminReports } from '@/composables/useAdminReports'
@@ -122,9 +124,7 @@ async function refreshAll() {
 
 function formatDate(dateValue) {
   if (!dateValue) return '-'
-  return new Date(dateValue).toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric',
-  })
+  return formatShortDate(dateValue)
 }
 
 onMounted(async () => {

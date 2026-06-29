@@ -8,6 +8,8 @@ import { HomeTabs, HomeHeroBanner, HomeTagStrip } from '@/components/home'
 import { getArtworks } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useFollowStore } from '../stores/follow.store'
+
+import { formatShortDate } from '../utils/date.js'
 import heroImage from '../assets/hero.png'
 
 const DEFAULT_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
@@ -44,15 +46,8 @@ function clipText(text, limit = 160) {
 }
 
 function formatDate(value) {
-  if (!value) {
-    return ''
-  }
-
-  try {
-    return new Date(value).toLocaleDateString()
-  } catch (_error) {
-    return ''
-  }
+  if (!value) return ''
+  return formatShortDate(value)
 }
 
 function buildNovelImage(item) {

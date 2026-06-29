@@ -3,6 +3,7 @@ import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useCommentStore } from '../../../stores/comment.store.js'
 import { useAuthStore } from '../../../stores/auth.store.js'
 import CommentReportModal from '../../comments/CommentReportModal.vue'
+import { formatShortDate } from '../../../utils/date.js'
 
 const props = defineProps({
   artworkId: {
@@ -263,12 +264,7 @@ onUnmounted(() => {
 })
 
 const formatDate = (dateString) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric',
-    year: 'numeric'
-  })
+  return formatShortDate(dateString)
 }
 
 const getAvatar = (user) => {

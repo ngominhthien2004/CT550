@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { createChapter, deleteChapter } from '../../services/api'
+import { formatShortDate } from '../../utils/date.js'
 
 const props = defineProps({
   artworkId: { type: String, required: true },
@@ -90,7 +91,7 @@ async function executeDelete() {
           <span class="chapter-title">{{ ch.title }}</span>
           <span class="chapter-meta">
             <span class="chapter-words">{{ formatNumber(ch.wordCount) }} words</span>
-            <span class="chapter-date">{{ new Date(ch.createdAt).toLocaleDateString() }}</span>
+            <span class="chapter-date">{{ formatShortDate(ch.createdAt) }}</span>
           </span>
         </div>
         <div class="chapter-actions">

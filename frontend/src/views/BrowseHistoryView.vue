@@ -4,6 +4,8 @@ import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import { useBrowseHistoryStore } from '@/stores/browseHistory.store'
 import { useAuthStore } from '@/stores/auth.store'
 
+import { formatShortDate } from '../utils/date.js'
+
 
 const browseHistoryStore = useBrowseHistoryStore()
 const authStore = useAuthStore()
@@ -39,11 +41,7 @@ function handleClearHistory() {
 }
 
 function formatDate(dateStr) {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('en-US', {
-    year: 'numeric', month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit'
-  })
+  return formatShortDate(dateStr)
 }
 
 function timeAgo(dateStr) {

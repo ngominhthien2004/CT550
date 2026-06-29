@@ -1,5 +1,6 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import { formatShortDate } from '../../utils/date.js'
 
 const props = defineProps({
   recentArtworks: {
@@ -19,16 +20,10 @@ function goToArtwork(artwork) {
 }
 
 function formatDate(value) {
-  if (!value) {
-    return '--'
-  }
-
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) {
-    return '--'
-  }
-
-  return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+  if (!value) return '--'
+  const result = formatShortDate(value)
+  if (!result) return '--'
+  return result
 }
 </script>
 

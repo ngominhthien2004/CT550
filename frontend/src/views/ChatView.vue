@@ -4,6 +4,8 @@ import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
 import { useChatStore } from '../stores/chat.store'
 
+import { formatShortDate } from '../utils/date.js'
+
 const chatStore = useChatStore()
 const userInput = ref('')
 const chatContainer = ref(null)
@@ -67,7 +69,7 @@ function formatTimestamp(ts) {
   const isToday = d.toDateString() === now.toDateString()
   const time = d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
   if (isToday) return time
-  return `${d.toLocaleDateString('vi-VN')} ${time}`
+  return `${formatShortDate(ts)} ${time}`
 }
 
 const processedMessages = computed(() =>

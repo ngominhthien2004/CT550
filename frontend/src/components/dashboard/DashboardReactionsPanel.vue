@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { getCreatorReactions } from '../../services/api'
 import { useToast } from '../../composables/useToast'
+import { formatShortDate } from '../../utils/date.js'
 
 const currentTab = ref('comments') // 'comments' | 'likes' | 'bookmarks'
 const reactions = ref([])

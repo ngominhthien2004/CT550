@@ -13,6 +13,8 @@ import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
 import { useAuthStore } from '../stores/auth.store'
 import { useFollowStore } from '../stores/follow.store'
+
+import { formatShortDate } from '../utils/date.js'
 import { useTagStore } from '../stores/tag.store'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
@@ -247,7 +249,7 @@ const processedVisibleItems = computed(() =>
       : 'No synopsis has been added for this novel yet.',
     _tags: (item.tags || []).slice(0, 6),
     _readTime: Math.ceil((item.wordCount || 0) / 200),
-    _formattedDate: new Date(item.createdAt || Date.now()).toLocaleDateString(),
+    _formattedDate: formatShortDate(item.createdAt),
   }))
 )
 

@@ -9,6 +9,8 @@ import { useAuthStore } from '../stores/auth.store'
 import { getMyMessages, markMessageRead, userApi, messageApi, reportApi } from '../services/api'
 import { useMessageStore } from '../stores/message.store'
 
+import { formatShortDate } from '../utils/date.js'
+
 const isNavCollapsed = ref(true)
 const selectedThreadId = ref('')
 const threadSearchQuery = ref('')
@@ -64,7 +66,7 @@ function formatDateValue(value, options) {
 }
 
 function formatMessageTime(value) {
-  return formatDateValue(value, timeFormatOptions)
+  return formatShortDate(value)
 }
 
 function formatDayLabel(value) {
