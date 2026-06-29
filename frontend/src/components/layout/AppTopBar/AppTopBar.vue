@@ -7,6 +7,7 @@ import { useFollowStore } from '../../../stores/follow.store'
 import {
   getMyNotifications,
   markNotificationRead,
+  markAllNotificationsRead,
 } from '../../../services/api'
 import { useMessageStore } from '../../../stores/message.store'
 import AppTopBarPostMenu from './AppTopBarPostMenu.vue'
@@ -234,6 +235,19 @@ async function handleMarkNotificationRead(notificationId) {
   }
 }
 
+async function handleMarkAllNotificationsRead() {
+  try {
+    await markAllNotificationsRead()
+    notificationPreviewItems.value = notificationPreviewItems.value.map((item) => ({
+      ...item,
+      isRead: true,
+    }))
+    notificationUnreadCount.value = 0
+  } catch (error) {
+    notificationPreviewError.value = error?.response?.data?.message || 'Failed to mark all as read'
+  }
+}
+
 function openSearchOptions() {
   const query = router.currentRoute.value.query
   searchOptionsDraft.value = {
@@ -316,6 +330,7 @@ async function applySearchOptions(payload) {
         :format-time="formatPanelTime"
         @toggle="handleNotificationMenuToggle"
         @mark-read="handleMarkNotificationRead"
+        @mark-all-read="handleMarkAllNotificationsRead"
       />
       <router-link v-else to="/notifications" class="icon-round" aria-label="Notifications" title="Notifications">
         <i class="fa-regular fa-bell" aria-hidden="true"></i>

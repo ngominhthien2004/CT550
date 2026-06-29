@@ -28,7 +28,7 @@ const props = defineProps({
   },
 })
 
-defineEmits(['toggle', 'mark-read'])
+defineEmits(['toggle', 'mark-read', 'mark-all-read'])
 
 const processedItems = computed(() =>
   props.items.map(item => ({
@@ -47,7 +47,17 @@ const processedItems = computed(() =>
     <div class="quick-panel-box" role="menu" aria-label="Notification preview panel">
       <div class="quick-panel-head">
         <p class="quick-panel-title">Notifications</p>
-        <router-link to="/notifications" class="quick-view-all" role="menuitem">View all</router-link>
+        <div class="quick-panel-actions">
+          <button
+            v-if="unreadCount > 0"
+            type="button"
+            class="btn btn-sm btn-outline-primary"
+            @click="$emit('mark-all-read')"
+          >
+            Mark all read
+          </button>
+          <router-link to="/notifications" class="quick-view-all" role="menuitem">View all</router-link>
+        </div>
       </div>
 
       <p v-if="loading" class="quick-panel-note">Loading...</p>
@@ -69,7 +79,7 @@ const processedItems = computed(() =>
           <button
             v-if="!item.isRead"
             type="button"
-            class="quick-action"
+            class="btn btn-sm btn-outline-primary"
             aria-label="Mark notification as read"
             @click.stop="$emit('mark-read', item._id)"
           >
@@ -155,6 +165,12 @@ const processedItems = computed(() =>
   justify-content: space-between;
   padding: 0.7rem 0.85rem;
   border-bottom: 1px solid var(--line);
+}
+
+.quick-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .quick-panel-title {

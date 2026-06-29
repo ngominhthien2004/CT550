@@ -177,6 +177,18 @@ export const reportApi = {
   getModerationCaseDetail: (params = {}) => api.get('/user-reports/admin/reports/detail', { params }),
 }
 
+export const bannerApi = {
+  getActive: (params) => api.get('/banners', { params }),
+  getAll: () => api.get('/banners/admin'),
+  create: (formData) => api.post('/banners', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  update: (id, formData) => api.put(`/banners/${id}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  delete: (id) => api.delete(`/banners/${id}`),
+}
+
 export const messageApi = {
   getMine: (params = {}) => api.get('/messages', { params }),
   create: (payload) => api.post('/messages', payload),
@@ -188,6 +200,7 @@ export const messageApi = {
 export const notificationApi = {
   getMine: (params = {}) => api.get('/notifications', { params }),
   markRead: (notificationId) => api.patch(`/notifications/${notificationId}/read`),
+  markAllRead: () => api.patch('/notifications/read-all'),
 }
 
 export const requestApi = {
@@ -227,6 +240,7 @@ export const markMessageRead = (messageId) => messageApi.markRead(messageId)
 
 export const getMyNotifications = (params = {}) => notificationApi.getMine(params)
 export const markNotificationRead = (notificationId) => notificationApi.markRead(notificationId)
+export const markAllNotificationsRead = () => notificationApi.markAllRead()
 
 export const getRequestTerms = (params = {}) => requestApi.getTerms(params)
 export const createRequestTerm = (payload) => requestApi.createTerm(payload)

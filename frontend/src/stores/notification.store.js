@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getMyNotifications, markNotificationRead } from '../services/api.js'
+import { getMyNotifications, markNotificationRead, markAllNotificationsRead } from '../services/api.js'
 
 export const useNotificationStore = defineStore('notifications', {
   state: () => ({
@@ -39,6 +39,20 @@ export const useNotificationStore = defineStore('notifications', {
         this.unreadCount = this.items.filter((item) => !item.isRead).length
       } catch (error) {
         this.error = error?.response?.data?.message || 'Failed to mark notification as read'
+        throw error
+      }
+    },
+    async readAllNotifications() {
+      this.error = ''
+      try {
+        await markAllNotificationsRead()
+        this.items = this.items.map((item) => ({
+          ...item,
+          isRead: true,
+        }))
+        this.unreadCount = 0
+      } catch (error) {
+        this.error = error?.response?.data?.message || 'Failed to mark all as read'
         throw error
       }
     },
