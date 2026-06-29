@@ -68,7 +68,7 @@ onMounted(() => {
           >
             Mark all read
           </button>
-          <button type="button" class="btn btn-outline-secondary btn-sm" @click="loadNotifications">Refresh</button>
+          <button type="button" class="action-pill action-pill--small" @click="loadNotifications">Refresh</button>
         </div>
       </header>
 

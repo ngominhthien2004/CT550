@@ -51,7 +51,7 @@ const processedItems = computed(() =>
           <button
             v-if="unreadCount > 0"
             type="button"
-            class="action-pill action-pill--small"
+            class="quick-action-link"
             @click="$emit('mark-all-read')"
           >
             Mark all read
@@ -170,7 +170,21 @@ const processedItems = computed(() =>
 .quick-panel-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.65rem;
+}
+
+.quick-action-link {
+  border: none;
+  background: transparent;
+  color: var(--text-muted, #64748b);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0;
+  cursor: pointer;
+}
+
+.quick-action-link:hover {
+  color: var(--accent);
 }
 
 .quick-panel-title {
