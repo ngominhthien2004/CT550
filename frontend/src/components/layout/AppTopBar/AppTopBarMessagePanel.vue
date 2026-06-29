@@ -31,20 +31,16 @@ const props = defineProps({
 defineEmits(['toggle', 'mark-read'])
 
 const processedItems = computed(() =>
-  props.items.map(item => {
-    const hasImages = Array.isArray(item.images) && item.images.length > 0
-    const truncated = item.content && item.content.length > 80
-      ? item.content.slice(0, 80) + '...'
-      : (item.content || '')
-    const displayText = truncated || (hasImages ? '[Image]' : '')
-    return {
-      ...item,
-      _time: props.formatTime(item.createdAt),
-      _hasImages: hasImages,
-      _firstImage: hasImages ? item.images[0] : '',
-      _displayText: displayText,
-    }
-  })
+  props.items.map(item => ({
+    ...item,
+    _time: props.formatTime(item.createdAt),
+    _previewText: (() => {
+      const hasImages = Array.isArray(item.images) && item.images.length > 0
+      if (hasImages && !item.content) return '[Image]'
+      if (item.content && item.content.length > 80) return item.content.slice(0, 80) + '...'
+      return item.content || ''
+    })(),
+  }))
 )
 </script>
 
@@ -81,25 +77,20 @@ const processedItems = computed(() =>
         >
           <router-link to="/messages" class="quick-panel-link" role="menuitem">
             <div class="quick-item-row">
-              <div class="q-avatar"><img :src="item.sender?.avatar || 'https://s.pximg.net/common/images/no_profile.png'" alt="avatar" @error="(e) => e.target.src = 'https://s.pximg.net/common/images/no_profile.png'" /></div>
+              <div class="q-avatar">
+                <img :src="item.sender?.avatar || 'https://s.pximg.net/common/images/no_profile.png'" alt="avatar"
+                     @error="(e) => e.target.src = 'https://s.pximg.net/common/images/no_profile.png'" />
+              </div>
               <div class="quick-item-meta">
                 <div class="quick-item-top">
                   <strong>{{ item.sender?.displayName || item.sender?.username || 'Unknown' }}</strong>
                   <small>{{ item._time }}</small>
                 </div>
-                <span v-if="item._displayText">{{ item._displayText }}</span>
-                <div v-if="item._hasImages" class="quick-item-images">
-                  <img
-                    v-if="item._firstImage"
-                    :src="item._firstImage"
-                    alt=""
-                    class="quick-image-thumb"
-                    @error="(e) => e.target.style.display = 'none'"
-                  />
-                  <i v-else class="fa-regular fa-image"></i>
-                  <span class="quick-image-count" v-if="item.images?.length > 1">
-                    +{{ item.images.length - 1 }}
-                  </span>
+                <span v-if="item._previewText">{{ item._previewText }}</span>
+                <div v-if="item.images && item.images.length" class="bubble-images">
+                  <img v-for="(imgUrl, idx) in item.images" :key="imgUrl || idx"
+                       :src="imgUrl" alt="Message image" class="bubble-image"
+                       @error="(e) => e.target.style.display = 'none'" />
                 </div>
               </div>
             </div>
@@ -326,7 +317,6 @@ const processedItems = computed(() =>
   object-fit: cover;
 }
 
-
 .quick-item-meta {
   min-width: 0;
   flex: 1;
@@ -334,30 +324,19 @@ const processedItems = computed(() =>
   gap: 0.2rem;
 }
 
-.quick-item-images {
+.bubble-images {
   display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  margin-top: 0.15rem;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
 }
 
-.quick-image-thumb {
-  width: 36px;
-  height: 36px;
-  border-radius: 4px;
+.bubble-image {
+  width: 60px;
+  height: 60px;
   object-fit: cover;
+  border-radius: 6px;
   border: 1px solid var(--line);
   background: var(--surface-alt);
-}
-
-.quick-item-meta .fa-image {
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
-.quick-image-count {
-  font-size: 0.68rem;
-  color: var(--muted);
-  font-weight: 600;
 }
 </style>
