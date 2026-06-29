@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
 require('dotenv').config();
 
 const passport = require('passport');
@@ -8,6 +10,7 @@ require('./config/passport');
 const connectDB = require('./config/db');
 const { getAllowedOrigins, getJwtSecret } = require('./config/env');
 const { errorHandler, notFound } = require('./middlewares/error.middleware');
+const { verifyToken } = require('./middlewares/auth.middleware');
 
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
@@ -24,6 +27,7 @@ const requestRoutes = require('./routes/request.routes');
 const settingRoutes = require('./routes/setting.routes');
 const seriesRoutes = require('./routes/series.routes');
 const userReportRoutes = require('./routes/userReport.routes');
+const bannerRoutes = require('./routes/banner.routes');
 const path = require('path');
 
 // Force IPv4 DNS resolution to avoid timeout issues with IPv6 (e.g., HuggingFace API)
@@ -83,6 +87,7 @@ app.use('/api/settings', settingRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/series', seriesRoutes);
 app.use('/api/user-reports', userReportRoutes);
+app.use('/api/banners', bannerRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
@@ -102,6 +107,70 @@ if (process.env.NODE_ENV === 'production') {
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+const server = http.createServer(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin) || isLocalDevOrigin(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+        credentials: true,
+    },
+});
+
+// Socket.IO JWT authentication middleware
+io.use(async (socket, next) => {
+    try {
+        const token = socket.handshake.auth?.token || socket.handshake.query?.token;
+        if (!token) {
+            return next(new Error('Authentication required'));
+        }
+
+        const jwt = require('jsonwebtoken');
+        const JWT_SECRET = getJwtSecret();
+        const decoded = jwt.verify(token, JWT_SECRET);
+
+        const User = require('./models/User');
+        const user = await User.findById(decoded.id).select('_id username role');
+        if (!user) {
+            return next(new Error('User not found'));
+        }
+
+        socket.userId = user._id.toString();
+        socket.userRole = user.role;
+        next();
+    } catch (error) {
+        next(new Error('Invalid token'));
+    }
+});
+
+io.on('connection', (socket) => {
+    console.log(`User connected: ${socket.userId}`);
+
+    // Join user's personal room
+    socket.join(`user:${socket.userId}`);
+
+    // If admin, join admin room
+    if (socket.userRole === 'admin') {
+        socket.join('admins');
+    }
+
+    socket.on('disconnect', () => {
+        console.log(`User disconnected: ${socket.userId}`);
+    });
+});
+
+// Make io accessible throughout the app
+module.exports = { app, server, io };
+
+// Pass Socket.IO to notification utility
+const { setSocketIO } = require('./utils/notification');
+setSocketIO(io);
+
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

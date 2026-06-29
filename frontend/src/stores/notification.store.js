@@ -79,5 +79,15 @@ export const useNotificationStore = defineStore('notifications', {
         throw error
       }
     },
+    addRealtimeNotification(notification) {
+      // Avoid duplicates
+      if (this.items.some((item) => item._id === notification._id)) {
+        return
+      }
+      this.items = [notification, ...this.items]
+      if (!notification.isRead) {
+        this.unreadCount += 1
+      }
+    },
   },
 })

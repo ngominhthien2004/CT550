@@ -4,11 +4,13 @@ import { useRoute, useRouter } from 'vue-router'
 import SearchOptionsModal from '../../search/SearchOptionsModal.vue'
 import { useAuthStore } from '../../../stores/auth.store'
 import { useFollowStore } from '../../../stores/follow.store'
+import { useNotificationStore } from '../../../stores/notification.store'
 import {
   getMyNotifications,
   markAllNotificationsRead,
 } from '../../../services/api'
 import { useMessageStore } from '../../../stores/message.store'
+import { useSocket } from '../../../composables/useSocket'
 import AppTopBarPostMenu from './AppTopBarPostMenu.vue'
 import AppTopBarMessagePanel from './AppTopBarMessagePanel.vue'
 import AppTopBarNotificationPanel from './AppTopBarNotificationPanel.vue'
@@ -150,14 +152,32 @@ watch(
   { immediate: true },
 )
 
+const { connect, disconnect, on, off, isConnected } = useSocket()
+const notificationStore = useNotificationStore()
+
+function handleNewNotification(notification) {
+  notificationStore.addRealtimeNotification(notification)
+  // Also update quick-panel local state
+  notificationPreviewItems.value = [notification, ...notificationPreviewItems.value]
+  if (!notification.isRead) {
+    notificationUnreadCount.value += 1
+  }
+}
+
 onMounted(() => {
   loadNotificationPreview()
   loadMessagePreview()
   startNotificationPolling()
+
+  // Connect Socket.IO and listen for real-time notifications
+  connect()
+  on('notification:new', handleNewNotification)
 })
 
 onBeforeUnmount(() => {
   stopNotificationPolling()
+  off('notification:new', handleNewNotification)
+  disconnect()
 })
 
 let notificationPollTimer = null
