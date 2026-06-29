@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchOptionsModal from '../../search/SearchOptionsModal.vue'
 import { useAuthStore } from '../../../stores/auth.store'
@@ -146,6 +146,11 @@ watch(
   syncSearchScopeFromRoute,
   { immediate: true },
 )
+
+onMounted(() => {
+  loadNotificationPreview()
+  loadMessagePreview()
+})
 
 function formatPanelTime(value) {
   return formatShortDate(value)
