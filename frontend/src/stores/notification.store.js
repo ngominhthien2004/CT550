@@ -6,21 +6,44 @@ export const useNotificationStore = defineStore('notifications', {
     items: [],
     unreadCount: 0,
     loading: false,
+    loadingMore: false,
     error: '',
+    page: 1,
+    hasMore: true,
   }),
   actions: {
     async fetchNotifications(params = {}) {
       this.loading = true
       this.error = ''
+      this.page = 1
+      this.hasMore = true
       try {
-        const { data } = await getMyNotifications(params)
+        const { data } = await getMyNotifications({ page: 1, ...params })
         this.items = data?.notifications || []
         this.unreadCount = Number(data?.unreadCount || 0)
+        this.hasMore = this.items.length < (data?.total || 0)
       } catch (error) {
         this.error = error?.response?.data?.message || 'Failed to fetch notifications'
         this.items = []
       } finally {
         this.loading = false
+      }
+    },
+    async loadMoreNotifications(params = {}) {
+      if (this.loadingMore || !this.hasMore) return
+      this.loadingMore = true
+      this.error = ''
+      try {
+        const nextPage = this.page + 1
+        const { data } = await getMyNotifications({ page: nextPage, ...params })
+        const newItems = data?.notifications || []
+        this.items = [...this.items, ...newItems]
+        this.page = nextPage
+        this.hasMore = this.items.length < (data?.total || 0)
+      } catch (error) {
+        this.error = error?.response?.data?.message || 'Failed to load more notifications'
+      } finally {
+        this.loadingMore = false
       }
     },
     async readNotification(notificationId) {

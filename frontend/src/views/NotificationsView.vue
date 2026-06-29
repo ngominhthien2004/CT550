@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
@@ -8,6 +8,8 @@ import { useNotificationStore } from '../stores/notification.store'
 
 const isNavCollapsed = ref(true)
 const unreadOnly = ref(false)
+const sentinelRef = ref(null)
+let observer = null
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -26,7 +28,15 @@ async function loadNotifications() {
 
   await notificationStore.fetchNotifications({
     unread: unreadOnly.value,
-    limit: 50,
+    limit: 20,
+  })
+}
+
+async function loadMore() {
+  if (!authStore.isAuthenticated || !notificationStore.hasMore) return
+  await notificationStore.loadMoreNotifications({
+    unread: unreadOnly.value,
+    limit: 20,
   })
 }
 
@@ -42,8 +52,28 @@ function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
 }
 
-onMounted(() => {
-  loadNotifications()
+function setupObserver() {
+  observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0].isIntersecting && !notificationStore.loadingMore) {
+        loadMore()
+      }
+    },
+    { rootMargin: '200px' }
+  )
+  if (sentinelRef.value) {
+    observer.observe(sentinelRef.value)
+  }
+}
+
+onMounted(async () => {
+  await loadNotifications()
+  await nextTick()
+  setupObserver()
+})
+
+onBeforeUnmount(() => {
+  observer?.disconnect()
 })
 </script>
 
@@ -105,6 +135,11 @@ onMounted(() => {
             </button>
           </div>
         </article>
+
+        <div ref="sentinelRef" class="scroll-sentinel">
+          <p v-if="notificationStore.loadingMore" class="text-secondary mb-0">Loading more...</p>
+          <p v-else-if="!notificationStore.hasMore" class="text-secondary mb-0">No more notifications.</p>
+        </div>
       </div>
 
       <p v-else class="text-secondary mb-0">No notifications yet.</p>
@@ -132,5 +167,9 @@ onMounted(() => {
   width: 3px;
   border-radius: 0 2px 2px 0;
   background: #3b82f6;
+}
+.scroll-sentinel {
+  padding: 1rem;
+  text-align: center;
 }
 </style>
