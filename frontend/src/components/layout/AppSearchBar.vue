@@ -482,6 +482,10 @@ defineExpose({
   color: #474747;
   font-size: 0.875rem;
   line-height: 1.4;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .search-field input:focus {
@@ -489,8 +493,21 @@ defineExpose({
 }
 
 .search-field input::placeholder {
-  color: #474747;
+  color: #94a3b8;
   opacity: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .search-field input {
+    font-size: 0.8125rem;
+  }
+
+  .search-field input::placeholder {
+    content: "Search...";
+  }
 }
 
 .search-compact-trailing :deep(.icon-round) {
