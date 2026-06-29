@@ -98,8 +98,11 @@ const isMessageMenuOpen = ref(false)
 const isNotificationMenuOpen = ref(false)
 const notificationPreviewItems = ref([])
 const notificationPreviewLoading = ref(false)
+const notificationPreviewLoadingMore = ref(false)
 const notificationPreviewError = ref('')
 const notificationUnreadCount = ref(0)
+const notificationPreviewPage = ref(1)
+const notificationPreviewHasMore = ref(true)
 
 function handleToggleSidebar() {
   emit('toggle-sidebar')
@@ -178,16 +181,41 @@ async function loadNotificationPreview() {
 
   notificationPreviewLoading.value = true
   notificationPreviewError.value = ''
+  notificationPreviewPage.value = 1
+  notificationPreviewHasMore.value = true
 
   try {
-    const { data } = await getMyNotifications({ limit: 5 })
+    const { data } = await getMyNotifications({ limit: 10, page: 1 })
     notificationPreviewItems.value = data?.notifications || []
     notificationUnreadCount.value = Number(data?.unreadCount || 0)
+    notificationPreviewHasMore.value = notificationPreviewItems.value.length < (data?.total || 0)
   } catch (error) {
     notificationPreviewError.value = error?.response?.data?.message || 'Failed to load notifications'
     notificationPreviewItems.value = []
   } finally {
     notificationPreviewLoading.value = false
+  }
+}
+
+async function loadMoreNotificationPreview() {
+  if (!authStore.isAuthenticated || !notificationPreviewHasMore.value || notificationPreviewLoadingMore.value) {
+    return
+  }
+
+  notificationPreviewLoadingMore.value = true
+  notificationPreviewError.value = ''
+
+  try {
+    const nextPage = notificationPreviewPage.value + 1
+    const { data } = await getMyNotifications({ limit: 10, page: nextPage })
+    const newItems = data?.notifications || []
+    notificationPreviewItems.value = [...notificationPreviewItems.value, ...newItems]
+    notificationPreviewPage.value = nextPage
+    notificationPreviewHasMore.value = notificationPreviewItems.value.length < (data?.total || 0)
+  } catch (error) {
+    notificationPreviewError.value = error?.response?.data?.message || 'Failed to load more notifications'
+  } finally {
+    notificationPreviewLoadingMore.value = false
   }
 }
 
@@ -326,11 +354,14 @@ async function applySearchOptions(payload) {
         :unread-count="notificationUnreadCount"
         :items="notificationPreviewItems"
         :loading="notificationPreviewLoading"
+        :loading-more="notificationPreviewLoadingMore"
+        :has-more="notificationPreviewHasMore"
         :error="notificationPreviewError"
         :format-time="formatPanelTime"
         @toggle="handleNotificationMenuToggle"
         @mark-read="handleMarkNotificationRead"
         @mark-all-read="handleMarkAllNotificationsRead"
+        @load-more="loadMoreNotificationPreview"
       />
       <router-link v-else to="/notifications" class="icon-round" aria-label="Notifications" title="Notifications">
         <i class="fa-regular fa-bell" aria-hidden="true"></i>

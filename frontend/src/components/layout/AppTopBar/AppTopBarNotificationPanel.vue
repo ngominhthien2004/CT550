@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 const props = defineProps({
   open: {
@@ -18,6 +18,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  loadingMore: {
+    type: Boolean,
+    default: false,
+  },
+  hasMore: {
+    type: Boolean,
+    default: true,
+  },
   error: {
     type: String,
     default: '',
@@ -28,7 +36,11 @@ const props = defineProps({
   },
 })
 
-defineEmits(['toggle', 'mark-read', 'mark-all-read'])
+const emit = defineEmits(['toggle', 'mark-read', 'mark-all-read', 'load-more'])
+
+const sentinelRef = ref(null)
+const panelRef = ref(null)
+let observer = null
 
 const processedItems = computed(() =>
   props.items.map(item => ({
@@ -36,6 +48,32 @@ const processedItems = computed(() =>
     _time: props.formatTime(item.createdAt),
   }))
 )
+
+function setupObserver() {
+  observer?.disconnect()
+  if (!sentinelRef.value || !panelRef.value) return
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0].isIntersecting && props.hasMore && !props.loadingMore) {
+        emit('load-more')
+      }
+    },
+    { root: panelRef.value, rootMargin: '50px' }
+  )
+  observer.observe(sentinelRef.value)
+}
+
+watch(() => props.open, async (isOpen) => {
+  if (isOpen) {
+    await nextTick()
+    setupObserver()
+  }
+})
+
+onBeforeUnmount(() => {
+  observer?.disconnect()
+})
 </script>
 
 <template>
@@ -44,7 +82,7 @@ const processedItems = computed(() =>
       <i class="fa-regular fa-bell" aria-hidden="true"></i>
       <span v-if="unreadCount" class="alert-dot" aria-label="Unread notifications">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
     </summary>
-    <div class="quick-panel-box" role="menu" aria-label="Notification preview panel">
+    <div ref="panelRef" class="quick-panel-box" role="menu" aria-label="Notification preview panel">
       <div class="quick-panel-head">
         <p class="quick-panel-title">Notifications</p>
         <div class="quick-panel-actions">
@@ -85,6 +123,10 @@ const processedItems = computed(() =>
           >
             Mark read
           </button>
+        </div>
+        <div ref="sentinelRef" class="quick-panel-sentinel">
+          <span v-if="loadingMore" class="quick-panel-note">Loading more...</span>
+          <span v-else-if="!hasMore && items.length" class="quick-panel-note">No more notifications.</span>
         </div>
       </div>
       <p v-else class="quick-panel-note">No notifications yet.</p>
@@ -288,5 +330,10 @@ const processedItems = computed(() =>
 
 .quick-panel-note.error {
   color: var(--danger);
+}
+
+.quick-panel-sentinel {
+  padding: 0.5rem;
+  text-align: center;
 }
 </style>
