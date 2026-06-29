@@ -409,24 +409,12 @@ async function applySearchOptions(payload) {
 }
 
 @media (max-width: 920px) {
-  .top-nav {
-    flex-wrap: wrap;
-    height: auto;
-    padding: 0.5rem 0;
-  }
-
   .top-nav-left {
     flex-wrap: nowrap;
-    width: 100%;
   }
 
   .top-nav-actions {
     gap: 0.35rem;
-    width: 100%;
-    justify-content: flex-end;
-    padding-top: 0.4rem;
-    border-top: 1px solid var(--line);
-    margin-top: 0.4rem;
   }
 }
 

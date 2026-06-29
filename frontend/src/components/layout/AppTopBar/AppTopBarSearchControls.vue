@@ -199,24 +199,12 @@ function chooseSearchScope(scopeKey) {
 
 @media (max-width: 920px) {
   .top-nav-left-right {
-    width: 100%;
     margin-left: 0;
-    flex-wrap: wrap;
-  }
-
-  .search-unit {
-    width: 100%;
-    order: 2;
   }
 
   .top-search {
     min-width: 0;
-    width: 100%;
-    flex-basis: 100%;
-  }
-
-  .inline-menu {
-    order: 1;
+    width: clamp(200px, 35vw, 500px);
   }
 }
 </style>
