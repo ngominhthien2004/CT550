@@ -3,9 +3,9 @@ import { computed, onMounted, ref } from 'vue'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid, HomeFeedColumn, HomeHeroBanner, HomeRecommendedUsers, HomeTabs, HomeTagStrip } from '@/components/home'
 import { getArtworks, getTags } from '../services/api'
+import { bannerApi } from '../services/api'
 import api from '../services/api'
 
-import heroImage from '../assets/hero.png'
 import { useFollowStore } from '../stores/follow.store'
 import { useAuthStore } from '../stores/auth.store'
 
@@ -14,10 +14,11 @@ const liveWorks = ref([])
 const liveTags = ref([])
 const recommendedUsers = ref([])
 const forYouWorks = ref([])
-const heroSlide = {
+const heroSlide = ref({
   title: 'Featured gallery',
-  image: heroImage,
-}
+  image: '',
+})
+const bannerLink = ref(null)
 const authStore = useAuthStore()
 const followStore = useFollowStore()
 
@@ -109,6 +110,22 @@ async function loadHomeTags() {
   }
 }
 
+async function loadBanners() {
+  try {
+    const { data } = await bannerApi.getActive({ type: 'home' })
+    if (Array.isArray(data) && data.length > 0) {
+      const active = data[0]
+      heroSlide.value = {
+        title: active.title || 'Featured gallery',
+        image: active.image || '',
+      }
+      bannerLink.value = active.link || null
+    }
+  } catch (_error) {
+    // Keep default slide
+  }
+}
+
 async function loadForYou() {
   if (!authStore.isAuthenticated) return
   try {
@@ -122,7 +139,7 @@ async function loadForYou() {
 }
 
 onMounted(async () => {
-  await Promise.all([loadHomeArtworks(), loadHomeTags()])
+  await Promise.all([loadHomeArtworks(), loadHomeTags(), loadBanners()])
   await loadForYou()
 })
 
@@ -141,7 +158,7 @@ async function toggleFollowFromHome(userId) {
       <div class="home-main-column">
         <HomeTabs />
         <HomeTagStrip :tags="liveTags" />
-        <HomeHeroBanner :slide="heroSlide" />
+        <HomeHeroBanner :slide="heroSlide" :banner-link="bannerLink" />
         <HomeArtworkGrid :works="spotlightWorks" />
 
         <div class="home-feed-layout">

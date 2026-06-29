@@ -5,12 +5,11 @@ import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { NovelSection, NovelCreators } from '@/components/novel'
 import { HomeTabs, HomeHeroBanner, HomeTagStrip } from '@/components/home'
 
-import { getArtworks } from '../services/api'
+import { getArtworks, bannerApi } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useFollowStore } from '../stores/follow.store'
 
 import { formatShortDate } from '../utils/date.js'
-import heroImage from '../assets/hero.png'
 
 const DEFAULT_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
@@ -22,6 +21,12 @@ const liveTags = ref([])
 const authStore = useAuthStore()
 const followStore = useFollowStore()
 const router = useRouter()
+
+const heroSlide = ref({
+  title: 'Explore the novel top page',
+  image: '',
+})
+const bannerLink = ref(null)
 
 function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
@@ -159,11 +164,6 @@ const creatorRows = computed(() => {
     .slice(0, 6)
 })
 
-const heroSlide = computed(() => ({
-  title: featuredNovel.value?.title || 'Explore the novel top page',
-  image: featuredNovel.value?.image || heroImage,
-}))
-
 const heroKicker = computed(() => (featuredNovel.value ? 'Featured novel' : 'Novels'))
 
 const heroDescription = computed(() => {
@@ -270,7 +270,36 @@ async function handleToggleFollow(userId) {
   await followStore.toggleFollowByUser(userId)
 }
 
-onMounted(loadNovelTopPage)
+async function loadBanners() {
+  try {
+    const { data } = await bannerApi.getActive({ type: 'novel' })
+    if (Array.isArray(data) && data.length > 0) {
+      const active = data[0]
+      heroSlide.value = {
+        title: active.title || featuredNovel.value?.title || 'Explore the novel top page',
+        image: active.image || featuredNovel.value?.image || '',
+      }
+      bannerLink.value = active.link || null
+    } else {
+      heroSlide.value = {
+        title: featuredNovel.value?.title || 'Explore the novel top page',
+        image: featuredNovel.value?.image || '',
+      }
+      bannerLink.value = null
+    }
+  } catch (_error) {
+    heroSlide.value = {
+      title: featuredNovel.value?.title || 'Explore the novel top page',
+      image: featuredNovel.value?.image || '',
+    }
+    bannerLink.value = null
+  }
+}
+
+onMounted(async () => {
+  await loadNovelTopPage()
+  await loadBanners()
+})
 </script>
 
 <template>
@@ -281,6 +310,7 @@ onMounted(loadNovelTopPage)
 
       <HomeHeroBanner
         :slide="heroSlide"
+        :banner-link="bannerLink"
         :kicker-text="heroKicker"
         :description="heroDescription"
         :primary-link="heroPrimaryLink"

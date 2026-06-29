@@ -31,10 +31,6 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  userBusinessLinks: {
-    type: Array,
-    default: () => [],
-  },
   userSettingLinks: {
     type: Array,
     default: () => [],
@@ -42,7 +38,7 @@ const props = defineProps({
 })
 
 const avatarSrc = computed(() => props.userAvatar || DEFAULT_PROFILE_AVATAR)
-const avatarAlt = computed(() => props.userDisplayName || 'User avatar')
+const avatarAlt = computed(() => props.userDisplayName)
 
 function handleAvatarError(event) {
   if (event.target?.src !== DEFAULT_PROFILE_AVATAR) {
@@ -56,7 +52,7 @@ defineEmits(['logout'])
 <template>
   <details class="user-menu">
     <summary class="user-menu-trigger" aria-label="Open user menu" title="User menu">
-      <router-link to="/account" class="user-avatar-link" aria-label="Go to account" @click.stop @keydown.enter.prevent @keydown.space.prevent>
+      <router-link to="/account" class="user-avatar-link" aria-label="Go to account" @click.stop @keydown.enter.prevent>
         <img class="avatar avatar--sm user-avatar" :src="avatarSrc" :alt="avatarAlt" @error="handleAvatarError" />
       </router-link>
       <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
@@ -64,7 +60,7 @@ defineEmits(['logout'])
     <div class="user-menu-panel" role="menu" aria-label="User menu">
       <div class="user-hero">
         <router-link to="/account" class="user-hero-link" aria-label="Go to account">
-          <img class="avatar avatar--lg user-avatar large" :src="avatarSrc" :alt="avatarAlt" @error="handleAvatarError" />
+          <img class="avatar avatar--lg user-avatar" :src="avatarSrc" :alt="avatarAlt" @error="handleAvatarError" />
         </router-link>
         <div class="user-hero-meta">
           <p class="mb-0 fw-bold">{{ props.userDisplayName }}</p>
@@ -103,18 +99,6 @@ defineEmits(['logout'])
       <div class="menu-group">
         <router-link
           v-for="item in props.userLibraryLinks"
-          :key="item.label"
-          :to="item.to"
-          class="user-menu-item"
-          role="menuitem"
-        >
-          {{ item.label }}
-        </router-link>
-      </div>
-
-      <div class="menu-group">
-        <router-link
-          v-for="item in props.userBusinessLinks"
           :key="item.label"
           :to="item.to"
           class="user-menu-item"

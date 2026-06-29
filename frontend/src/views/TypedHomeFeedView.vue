@@ -2,9 +2,8 @@
 import { computed, ref, watch } from 'vue'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid, HomeFeedColumn, HomeHeroBanner, HomeRecommendedUsers, HomeTabs, HomeTagStrip } from '@/components/home'
-import { getArtworks } from '../services/api'
+import { getArtworks, bannerApi } from '../services/api'
 
-import heroImage from '../assets/hero.png'
 import { useFollowStore } from '../stores/follow.store'
 import { useAuthStore } from '../stores/auth.store'
 
@@ -31,10 +30,11 @@ const novelSortBy = ref('newest')
 const authStore = useAuthStore()
 const followStore = useFollowStore()
 
-const heroSlide = computed(() => ({
-  title: props.pageTitle,
-  image: heroImage,
-}))
+const heroSlide = ref({
+  title: '',
+  image: '',
+})
+const bannerLink = ref(null)
 
 const normalizedWorks = computed(() =>
   liveWorks.value.map((item) => ({
@@ -139,6 +139,33 @@ async function loadTypedArtworks() {
   }
 }
 
+async function loadBanners() {
+  try {
+    const { data } = await bannerApi.getActive({ type: props.workType })
+    if (Array.isArray(data) && data.length > 0) {
+      const active = data[0]
+      heroSlide.value = {
+        title: active.title || props.pageTitle,
+        image: active.image || '',
+      }
+      bannerLink.value = active.link || null
+    } else {
+      heroSlide.value = { title: props.pageTitle, image: '' }
+    }
+  } catch (_error) {
+    heroSlide.value = { title: props.pageTitle, image: '' }
+  }
+}
+
+async function loadData() {
+  isLoading.value = true
+  try {
+    await Promise.all([loadTypedArtworks(), loadBanners()])
+  } finally {
+    isLoading.value = false
+  }
+}
+
 async function toggleFollowFromHome(userId) {
   if (!userId || !authStore.isAuthenticated) {
     return
@@ -150,7 +177,7 @@ async function toggleFollowFromHome(userId) {
 watch(
   () => props.workType,
   async () => {
-    await loadTypedArtworks()
+    await loadData()
   },
   { immediate: true },
 )
@@ -159,7 +186,7 @@ watch(
   [novelSortBy],
   async () => {
     if (props.workType === 'novel') {
-      await loadTypedArtworks()
+      await loadData()
     }
   },
 )
@@ -183,7 +210,7 @@ watch(
         </div>
 
         <HomeTagStrip :tags="liveTags" />
-        <HomeHeroBanner :slide="heroSlide" />
+        <HomeHeroBanner :slide="heroSlide" :banner-link="bannerLink" />
         <p v-if="isLoading" class="type-loading">Loading {{ pageTitle.toLowerCase() }}...</p>
         <HomeArtworkGrid :works="spotlightWorks" />
 

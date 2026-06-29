@@ -12,6 +12,10 @@ defineProps({
     type: String,
     default: 'Discover featured illustrations, manga, and creator highlights in a denser editorial layout.',
   },
+  bannerLink: {
+    type: [String, Object],
+    default: null,
+  },
   primaryLink: {
     type: [String, Object],
     default: '/discovery',
@@ -40,7 +44,29 @@ defineProps({
 </script>
 
 <template>
-  <article class="banner">
+  <a v-if="bannerLink" :href="bannerLink" class="banner-link-wrapper">
+    <article class="banner">
+      <img :src="slide.image" :alt="slide.title" loading="lazy" />
+      <div class="banner-overlay">
+        <span class="banner-kicker">{{ kickerText }}</span>
+        <h1>{{ slide.title }}</h1>
+        <p>{{ description }}</p>
+
+        <div v-if="showNovelStats && novelStats.length" class="banner-stats">
+          <div v-for="stat in novelStats" :key="stat.label" class="banner-stat">
+            <span class="banner-stat-label">{{ stat.label }}</span>
+            <span class="banner-stat-value">{{ stat.value }}</span>
+          </div>
+        </div>
+
+        <div class="banner-actions">
+          <router-link :to="primaryLink" class="primary-link">{{ primaryLabel }}</router-link>
+          <router-link :to="secondaryLink" class="secondary-link">{{ secondaryLabel }}</router-link>
+        </div>
+      </div>
+    </article>
+  </a>
+  <article v-else class="banner">
     <img :src="slide.image" :alt="slide.title" loading="lazy" />
     <div class="banner-overlay">
       <span class="banner-kicker">{{ kickerText }}</span>
@@ -148,6 +174,15 @@ defineProps({
   font-size: 0.92rem;
   font-weight: 800;
   color: #fff;
+}
+
+.banner-link-wrapper {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+.banner-link-wrapper:hover .banner {
+  opacity: 0.97;
 }
 
 @media (max-width: 920px) {

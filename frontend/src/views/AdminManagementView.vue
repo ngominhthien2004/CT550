@@ -10,6 +10,7 @@ import {
   AdminArtworkReportPanel, AdminHiddenArtworksPanel,
   AdminCommentReportPanel, AdminUserReportPanel,
   AdminConfirmModal, AdminPromptModal,
+  AdminBannerPanel,
 } from '@/components/admin'
 
 import { useAuthStore } from '../stores/auth.store'
@@ -68,6 +69,7 @@ const adminTabs = [
   { id: 'reports', label: 'Reports' },
   { id: 'tags', label: 'Tags' },
   { id: 'ai', label: 'AI Settings' },
+  { id: 'banners', label: 'Banners' },
 ]
 
 // --- Modal wrapper functions ---
@@ -282,6 +284,10 @@ onMounted(async () => {
       />
 
       <AdminAISettingsPanel
+        :active-tab="activeTab"
+      />
+
+      <AdminBannerPanel
         :active-tab="activeTab"
       />
     </section>
