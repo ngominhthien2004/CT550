@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchOptionsModal from '../../search/SearchOptionsModal.vue'
 import { useAuthStore } from '../../../stores/auth.store'
@@ -154,7 +154,31 @@ watch(
 onMounted(() => {
   loadNotificationPreview()
   loadMessagePreview()
+  startNotificationPolling()
 })
+
+onBeforeUnmount(() => {
+  stopNotificationPolling()
+})
+
+let notificationPollTimer = null
+const NOTIFICATION_POLL_INTERVAL = 30000
+
+function startNotificationPolling() {
+  stopNotificationPolling()
+  notificationPollTimer = setInterval(() => {
+    if (authStore.isAuthenticated && !notificationPreviewLoading.value) {
+      loadNotificationPreview()
+    }
+  }, NOTIFICATION_POLL_INTERVAL)
+}
+
+function stopNotificationPolling() {
+  if (notificationPollTimer) {
+    clearInterval(notificationPollTimer)
+    notificationPollTimer = null
+  }
+}
 
 function formatPanelTime(value) {
   return formatShortDate(value)

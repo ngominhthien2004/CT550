@@ -5,11 +5,15 @@ import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
 import { useAuthStore } from '../stores/auth.store'
 import { useNotificationStore } from '../stores/notification.store'
+import { formatRelativeTime } from '../utils/date'
 
 const isNavCollapsed = ref(true)
 const unreadOnly = ref(false)
 const sentinelRef = ref(null)
 let observer = null
+let pollTimer = null
+
+const POLL_INTERVAL = 30000
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -66,14 +70,32 @@ function setupObserver() {
   }
 }
 
+function startPolling() {
+  stopPolling()
+  pollTimer = setInterval(() => {
+    if (!notificationStore.loading && authStore.isAuthenticated) {
+      loadNotifications()
+    }
+  }, POLL_INTERVAL)
+}
+
+function stopPolling() {
+  if (pollTimer) {
+    clearInterval(pollTimer)
+    pollTimer = null
+  }
+}
+
 onMounted(async () => {
   await loadNotifications()
   await nextTick()
   setupObserver()
+  startPolling()
 })
 
 onBeforeUnmount(() => {
   observer?.disconnect()
+  stopPolling()
 })
 </script>
 
@@ -113,10 +135,20 @@ onBeforeUnmount(() => {
           :class="{ 'notif-unread': !item.isRead }"
         >
           <div class="card-body d-flex align-items-start justify-content-between gap-3">
-            <div>
+            <div class="d-flex align-items-start gap-3">
+              <div class="notif-avatar">
+                <img
+                  v-if="item.actor?.avatar"
+                  :src="item.actor.avatar"
+                  :alt="item.actor.displayName || item.actor.username"
+                  @error="(e) => e.target.style.display = 'none'"
+                />
+                <i v-else class="fa-regular fa-user" aria-hidden="true"></i>
+              </div>
+              <div>
               <p class="mb-1 fw-semibold">{{ item.message }}</p>
               <p class="mb-1 text-secondary small">
-                {{ item.actor?.displayName || item.actor?.username || 'System' }} · {{ new Date(item.createdAt).toLocaleString() }}
+                {{ item.actor?.displayName || item.actor?.username || 'System' }} · {{ formatRelativeTime(item.createdAt) }}
               </p>
               <router-link
                 v-if="item.artwork?._id"
@@ -125,6 +157,7 @@ onBeforeUnmount(() => {
               >
                 Open related artwork
               </router-link>
+              </div>
             </div>
             <button type="button"
               v-if="!item.isRead"
@@ -171,5 +204,24 @@ onBeforeUnmount(() => {
 .scroll-sentinel {
   padding: 1rem;
   text-align: center;
+}
+.notif-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: var(--surface-alt, #f1f5f9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted, #64748b);
+  font-size: 1rem;
+}
+.notif-avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 </style>

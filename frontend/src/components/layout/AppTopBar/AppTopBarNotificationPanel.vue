@@ -1,5 +1,6 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { formatRelativeTime } from '../../../utils/date'
 
 const props = defineProps({
   open: {
@@ -45,7 +46,7 @@ let observer = null
 const processedItems = computed(() =>
   props.items.map(item => ({
     ...item,
-    _time: props.formatTime(item.createdAt),
+    _time: formatRelativeTime(item.createdAt),
   }))
 )
 
@@ -108,11 +109,24 @@ onBeforeUnmount(() => {
           :class="{ unread: !item.isRead }"
         >
           <router-link to="/notifications" class="quick-panel-link" role="menuitem">
-            <div class="quick-item-top">
-              <strong>{{ item.actor?.displayName || item.actor?.username || 'System' }}</strong>
-              <small>{{ item._time }}</small>
+            <div class="quick-item-row">
+              <div class="q-avatar">
+                <img
+                  v-if="item.actor?.avatar"
+                  :src="item.actor.avatar"
+                  :alt="item.actor.displayName || item.actor.username"
+                  @error="(e) => e.target.style.display = 'none'"
+                />
+                <i v-else class="fa-regular fa-user" aria-hidden="true"></i>
+              </div>
+              <div class="quick-item-content">
+                <div class="quick-item-top">
+                  <strong>{{ item.actor?.displayName || item.actor?.username || 'System' }}</strong>
+                  <small>{{ item._time }}</small>
+                </div>
+                <span>{{ item.message }}</span>
+              </div>
             </div>
-            <span>{{ item.message }}</span>
           </router-link>
           <button
             v-if="!item.isRead"
@@ -271,8 +285,41 @@ onBeforeUnmount(() => {
 .quick-panel-link {
   text-decoration: none;
   color: var(--text);
+  display: block;
+}
+
+.quick-item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+}
+
+.q-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: var(--surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.q-avatar img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.quick-item-content {
+  flex: 1;
+  min-width: 0;
   display: grid;
-  gap: 0.2rem;
+  gap: 0.15rem;
 }
 
 .quick-item-top {
