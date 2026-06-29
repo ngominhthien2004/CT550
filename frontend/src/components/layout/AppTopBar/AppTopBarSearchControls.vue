@@ -94,6 +94,7 @@ function chooseSearchScope(scopeKey) {
   flex: 1 1 auto;
   min-width: 0;
   max-width: none;
+  overflow: hidden;
 }
 
 /* Removed separator since Media is now part of search */
@@ -103,11 +104,11 @@ function chooseSearchScope(scopeKey) {
   align-items: center;
   gap: 0.55rem;
   flex: 1 1 auto;
+  min-width: 0;
 }
 
 .top-search {
-  flex: 1 1 auto;
-  width: clamp(280px, 40vw, 720px);
+  flex: 1 1 0;
   min-width: 0;
 }
 
@@ -201,10 +202,11 @@ function chooseSearchScope(scopeKey) {
   .top-nav-left-right {
     margin-left: 0;
   }
+}
 
-  .top-search {
-    min-width: 0;
-    width: clamp(200px, 35vw, 500px);
+@media (max-width: 600px) {
+  .top-nav-left-right {
+    gap: 0.35rem;
   }
 }
 </style>
