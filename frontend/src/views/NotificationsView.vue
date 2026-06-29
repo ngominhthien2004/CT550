@@ -6,39 +6,18 @@ import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { useAuthStore } from '../stores/auth.store'
 import { useNotificationStore } from '../stores/notification.store'
 import { formatRelativeTime } from '../utils/date'
+import { getNotificationLink } from '../utils/notificationLink'
 
 const isNavCollapsed = ref(true)
 const unreadOnly = ref(false)
 const sentinelRef = ref(null)
 let observer = null
-let pollTimer = null
-
-const POLL_INTERVAL = 30000
 
 const router = useRouter()
 const authStore = useAuthStore()
 const notificationStore = useNotificationStore()
 
 const notifications = computed(() => notificationStore.items)
-
-function getNotificationLink(item) {
-  if (item.type === 'follow' && item.actor?.username) {
-    return `/users/${item.actor.username}`
-  }
-  if (['like', 'bookmark', 'comment'].includes(item.type) && item.artwork?._id) {
-    return `/artworks/${item.artwork._id}`
-  }
-  if (item.type === 'request' && item.request?._id) {
-    return `/requests/${item.request._id}`
-  }
-  if (item.type?.includes('_report')) {
-    return '/admin'
-  }
-  if (item.type === 'system' && item.artwork?._id) {
-    return `/artworks/${item.artwork._id}`
-  }
-  return null
-}
 
 async function goLogin() {
   await router.push('/login')

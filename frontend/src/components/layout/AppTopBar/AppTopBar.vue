@@ -18,6 +18,7 @@ import AppTopBarUserMenu from './AppTopBarUserMenu.vue'
 import { formatShortDate } from '../../../utils/date.js'
 import AppTopBarServicesMenu from './AppTopBarServicesMenu.vue'
 import AppTopBarSearchControls from './AppTopBarSearchControls.vue'
+import NotificationToast from '../../notification/NotificationToast.vue'
 
 const props = defineProps({
   siteName: {
@@ -154,6 +155,7 @@ watch(
 
 const { connect, disconnect, on, off, isConnected } = useSocket()
 const notificationStore = useNotificationStore()
+const toasts = ref([])
 
 function handleNewNotification(notification) {
   notificationStore.addRealtimeNotification(notification)
@@ -162,6 +164,12 @@ function handleNewNotification(notification) {
   if (!notification.isRead) {
     notificationUnreadCount.value += 1
   }
+  // Show toast popup (max 3 visible)
+  toasts.value = [...toasts.value, notification].slice(-3)
+}
+
+function removeToast(id) {
+  toasts.value = toasts.value.filter((t) => t._id !== id)
 }
 
 onMounted(() => {
@@ -406,6 +414,13 @@ async function applySearchOptions(payload) {
       <AppTopBarServicesMenu :site-label="siteLabel" :service-links="serviceLinks" />
     </div>
   </header>
+
+  <NotificationToast
+    v-for="toast in toasts"
+    :key="toast._id"
+    :notification="toast"
+    @close="removeToast(toast._id)"
+  />
 
   <SearchOptionsModal
     v-model="isSearchOptionsOpen"
