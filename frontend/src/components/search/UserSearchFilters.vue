@@ -52,7 +52,7 @@ const emit = defineEmits(['update:userFilterType', 'update:userSortMode', 'reloa
   padding: 0.4rem 0.8rem;
   font-size: 0.88rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--muted);
   cursor: pointer;
   border-radius: 999px;
   transition: all 0.15s;
@@ -60,16 +60,16 @@ const emit = defineEmits(['update:userFilterType', 'update:userSortMode', 'reloa
 
 .user-filter-chip.is-active,
 .user-filter-link.is-active {
-  background: #111827;
+  background: var(--brand);
   color: #fff;
 }
 
 .order-select select {
   padding: 0.4rem 0.65rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--line);
   border-radius: 6px;
-  background: #fff;
+  background: var(--surface);
   font-size: 0.85rem;
-  color: #374151;
+  color: var(--text);
 }
 </style>

@@ -130,7 +130,7 @@ watch(
 .search-options-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.44);
+  background: rgba(15, 23, 42, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -143,20 +143,20 @@ watch(
   width: min(520px, 100%);
   max-height: calc(100vh - 2rem);
   border-radius: 22px;
-  background: #fff;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.24);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
   overflow: auto;
 }
 
 .search-options-header {
   padding: 1rem 1.15rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--line);
 }
 
 .search-options-header h2 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text);
 }
 
 .search-options-body {
@@ -179,24 +179,24 @@ watch(
 .field-label {
   font-size: 0.86rem;
   font-weight: 700;
-  color: #334155;
+  color: var(--text);
 }
 
 .field-block input,
 .field-block select {
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--line);
   border-radius: 11px;
   padding: 0.52rem 0.7rem;
   font-size: 0.92rem;
-  color: #0f172a;
-  background: #fff;
+  color: var(--text);
+  background: var(--surface);
 }
 
 .reset-btn {
   justify-self: center;
   border: none;
   background: transparent;
-  color: #3b82f6;
+  color: var(--accent);
   font-weight: 700;
 }
 
@@ -204,7 +204,7 @@ watch(
   display: grid;
   gap: 0.55rem;
   padding: 1rem 1.15rem 1.15rem;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--line);
 }
 
 @media (max-width: 640px) {

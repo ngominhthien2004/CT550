@@ -72,7 +72,7 @@ const hashedDisplayTags = computed(() => props.displayTags.map(tag => `#${tag}`)
   margin: 0;
   text-transform: lowercase;
   font-size: 2rem;
-  color: #111827;
+  color: var(--brand);
 }
 
 .search-result-page--users .result-header h1 {
@@ -84,26 +84,26 @@ const hashedDisplayTags = computed(() => props.displayTags.map(tag => `#${tag}`)
 
 .result-count-head {
   margin: 0;
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.9rem;
   font-weight: 700;
 }
 
 .search-result-page--users .result-count-head {
-  color: #6b7280;
+  color: var(--muted);
   font-size: 1.08rem;
   font-weight: 500;
 }
 
 .search-result-page--users .result-count-head strong {
-  color: #334155;
+  color: var(--text);
   font-weight: 800;
 }
 
 .show-tag-btn {
   border: none;
   background: transparent;
-  color: #475569;
+  color: var(--muted);
   font-weight: 600;
   font-size: 0.88rem;
 }
@@ -115,9 +115,9 @@ const hashedDisplayTags = computed(() => props.displayTags.map(tag => `#${tag}`)
 }
 
 .favorite-tag-btn {
-  border: 1px solid #d8e1ef;
-  background: #fff;
-  color: #1f2937;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
   border-radius: 999px;
   padding: 0.3rem 0.75rem;
   font-weight: 700;
@@ -128,14 +128,14 @@ const hashedDisplayTags = computed(() => props.displayTags.map(tag => `#${tag}`)
 }
 
 .favorite-tag-btn:hover {
-  background: #f8fbff;
-  border-color: #bfdbfe;
+  background: var(--surface-alt);
+  border-color: var(--accent);
 }
 
 .favorite-tag-btn.is-favorite {
-  background: #fef9c3;
-  border-color: #facc15;
-  color: #92400e;
+  background: rgba(234, 179, 8, 0.15);
+  border-color: #eab308;
+  color: #eab308;
 }
 
 </style>

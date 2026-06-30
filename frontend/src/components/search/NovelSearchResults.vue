@@ -103,7 +103,7 @@ const emit = defineEmits(['search-tag'])
 }
 
 .novel-section-head span {
-  color: #6b7280;
+  color: var(--muted);
   font-size: 0.88rem;
 }
 
@@ -111,7 +111,7 @@ const emit = defineEmits(['search-tag'])
   display: flex;
   gap: 1rem;
   padding: 1rem 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--line);
 }
 
 .novel-cover {
@@ -121,7 +121,7 @@ const emit = defineEmits(['search-tag'])
   border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
-  background: #f1f5f9;
+  background: var(--surface-alt);
 }
 
 .novel-cover img {
@@ -136,8 +136,8 @@ const emit = defineEmits(['search-tag'])
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #e2e8f0, #f1f5f9);
-  color: #94a3b8;
+  background: var(--surface-alt);
+  color: var(--muted);
   font-size: 2rem;
 }
 
@@ -191,7 +191,7 @@ const emit = defineEmits(['search-tag'])
 .novel-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
   text-decoration: none;
 }
 
@@ -205,7 +205,7 @@ const emit = defineEmits(['search-tag'])
 
 .novel-author {
   font-size: 0.82rem;
-  color: #6b7280;
+  color: var(--muted);
   text-decoration: none;
 }
 
@@ -216,7 +216,7 @@ const emit = defineEmits(['search-tag'])
 .novel-excerpt {
   margin: 0.5rem 0;
   font-size: 0.85rem;
-  color: #4b5563;
+  color: var(--muted);
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -233,8 +233,8 @@ const emit = defineEmits(['search-tag'])
 
 .novel-tags button {
   border: none;
-  background: #f1f5f9;
-  color: #6b7280;
+  background: var(--surface-alt);
+  color: var(--muted);
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
   font-size: 0.75rem;
@@ -242,7 +242,7 @@ const emit = defineEmits(['search-tag'])
 }
 
 .novel-tags button:hover {
-  background: #e2e8f0;
+  background: var(--line);
 }
 
 .novel-meta {
@@ -250,7 +250,7 @@ const emit = defineEmits(['search-tag'])
   flex-wrap: wrap;
   gap: 0.75rem;
   font-size: 0.78rem;
-  color: #9ca3af;
+  color: var(--muted);
   margin-top: auto;
 }
 
@@ -266,23 +266,23 @@ const emit = defineEmits(['search-tag'])
   right: 0;
   border: none;
   background: transparent;
-  color: #9ca3af;
+  color: var(--muted);
   font-size: 1.1rem;
   cursor: pointer;
   padding: 0.5rem;
 }
 
 .novel-bookmark-btn:hover {
-  color: #1695f0;
+  color: var(--accent);
 }
 
 .state-note {
   text-align: center;
   padding: 2rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .state-note.error {
-  color: #dc2626;
+  color: var(--danger);
 }
 </style>

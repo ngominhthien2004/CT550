@@ -76,55 +76,55 @@ const emit = defineEmits(['update:sortMode', 'update:ageFilter', 'update:novelSo
 
 .order-select select {
   padding: 0.4rem 0.65rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--line);
   border-radius: 6px;
-  background: #fff;
+  background: var(--surface);
   font-size: 0.85rem;
-  color: #374151;
+  color: var(--text);
 }
 
 .filter-chip {
-  border: 1px solid #d1d5db;
-  background: #fff;
+  border: 1px solid var(--line);
+  background: var(--surface);
   border-radius: 999px;
   padding: 0.35rem 0.85rem;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #4b5563;
+  color: var(--text);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .filter-chip:hover {
-  border-color: #9ca3af;
+  border-color: var(--muted);
 }
 
 .filter-chip.is-active {
-  background: #111827;
+  background: var(--brand);
   color: #fff;
-  border-color: #111827;
+  border-color: var(--brand);
 }
 
 .include-note {
   margin-left: auto;
   font-size: 0.78rem;
-  color: #9ca3af;
+  color: var(--muted);
 }
 
 .filter-separator {
   width: 1px;
   height: 1.2rem;
-  background: #e5e7eb;
+  background: var(--line);
   margin: 0 0.25rem;
 }
 
 .novel-sort-select select {
   padding: 0.4rem 0.65rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--line);
   border-radius: 6px;
-  background: #fff;
+  background: var(--surface);
   font-size: 0.85rem;
-  color: #374151;
+  color: var(--text);
 }
 
 .word-range-label {
@@ -136,12 +136,14 @@ const emit = defineEmits(['update:sortMode', 'update:ageFilter', 'update:novelSo
 .word-range-input {
   width: 5rem;
   padding: 0.35rem 0.5rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--line);
   border-radius: 6px;
   font-size: 0.82rem;
+  background: var(--surface);
+  color: var(--text);
 }
 
 .word-range-sep {
-  color: #9ca3af;
+  color: var(--muted);
 }
 </style>

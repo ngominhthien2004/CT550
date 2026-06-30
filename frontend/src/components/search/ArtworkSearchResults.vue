@@ -48,7 +48,7 @@ defineProps({
   aspect-ratio: 1;
   border-radius: 6px;
   overflow: hidden;
-  background: #f1f5f9;
+  background: var(--surface-alt);
 }
 
 .thumb-link img {
@@ -60,14 +60,14 @@ defineProps({
 .thumb-fallback {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #e2e8f0, #f1f5f9);
+  background: var(--surface-alt);
 }
 
 .title-link {
   margin-top: 0.5rem;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--text);
   text-decoration: none;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -82,7 +82,7 @@ defineProps({
 .author-name {
   margin: 0.2rem 0 0;
   font-size: 0.78rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .placeholder-card {
@@ -92,14 +92,14 @@ defineProps({
 .thumb-placeholder {
   aspect-ratio: 1;
   border-radius: 6px;
-  background: #e2e8f0;
+  background: var(--line);
   animation: pulse 1.5s ease-in-out infinite;
 }
 
 .line-placeholder {
   height: 0.7rem;
   border-radius: 4px;
-  background: #e2e8f0;
+  background: var(--line);
   margin-top: 0.5rem;
   animation: pulse 1.5s ease-in-out infinite;
 }
@@ -115,10 +115,10 @@ defineProps({
 .state-note {
   text-align: center;
   padding: 2rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .state-note.error {
-  color: #dc2626;
+  color: var(--danger);
 }
 </style>

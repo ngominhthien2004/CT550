@@ -107,7 +107,7 @@ const followStore = useFollowStore()
 }
 
 .user-result-section h2 span {
-  color: #6b7280;
+  color: var(--muted);
   font-weight: 400;
 }
 
@@ -115,7 +115,7 @@ const followStore = useFollowStore()
   display: flex;
   gap: 1.5rem;
   padding: 1.25rem 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--line);
 }
 
 .user-profile-column {
@@ -142,13 +142,13 @@ const followStore = useFollowStore()
   margin: 0 0 0.3rem;
   font-size: 1.05rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
 }
 
 .user-bio {
   margin: 0 0 0.75rem;
   font-size: 0.88rem;
-  color: #6b7280;
+  color: var(--muted);
   line-height: 1.5;
 }
 
@@ -163,14 +163,14 @@ const followStore = useFollowStore()
   border-radius: 999px;
   font-weight: 700;
   font-size: 0.88rem;
-  border: 2px solid #111827;
-  background: #fff;
-  color: #111827;
+  border: 2px solid var(--brand);
+  background: var(--surface);
+  color: var(--brand);
   cursor: pointer;
 }
 
 .follow-btn-large.is-following {
-  background: #111827;
+  background: var(--brand);
   color: #fff;
 }
 
@@ -183,7 +183,7 @@ const followStore = useFollowStore()
   background: transparent;
   padding: 0.5rem;
   cursor: pointer;
-  color: #6b7280;
+  color: var(--muted);
   font-size: 1rem;
 }
 
@@ -191,10 +191,10 @@ const followStore = useFollowStore()
   position: absolute;
   top: 100%;
   left: 0;
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-md);
   min-width: 180px;
   z-index: 10;
   padding: 0.35rem 0;
@@ -208,18 +208,18 @@ const followStore = useFollowStore()
   border: none;
   background: transparent;
   font-size: 0.85rem;
-  color: #374151;
+  color: var(--text);
   cursor: pointer;
 }
 
 .user-action-menu button:hover {
-  background: #f9fafb;
+  background: var(--surface-alt);
 }
 
 .menu-separator {
   display: block;
   height: 1px;
-  background: #e5e7eb;
+  background: var(--line);
   margin: 0.25rem 0;
 }
 
@@ -243,7 +243,7 @@ const followStore = useFollowStore()
   height: 110px;
   border-radius: 6px;
   overflow: hidden;
-  background: #f1f5f9;
+  background: var(--surface-alt);
 }
 
 .user-preview-thumb img {
@@ -255,7 +255,7 @@ const followStore = useFollowStore()
 .user-preview-fallback {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #e2e8f0, #f1f5f9);
+  background: var(--surface-alt);
 }
 
 .preview-heart {
@@ -270,7 +270,7 @@ const followStore = useFollowStore()
   font-size: 0.72rem;
   margin-top: 0.3rem;
   line-height: 1.2;
-  color: #374151;
+  color: var(--text);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -278,7 +278,7 @@ const followStore = useFollowStore()
 }
 
 .user-preview-card--empty strong {
-  color: #9ca3af;
+  color: var(--muted);
 }
 
 .pagination-wrapper {
@@ -293,10 +293,10 @@ const followStore = useFollowStore()
 .state-note {
   text-align: center;
   padding: 2rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .state-note.error {
-  color: #dc2626;
+  color: var(--danger);
 }
 </style>
