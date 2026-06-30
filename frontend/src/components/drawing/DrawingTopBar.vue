@@ -382,11 +382,11 @@ function confirmGoHome() {
 }
 
 .confirm-btn.danger {
-  background: #dc2626;
+  background: var(--danger);
   color: #fff;
 }
 
 .confirm-btn.danger:hover {
-  background: #ef4444;
+  opacity: 0.85;
 }
 </style>

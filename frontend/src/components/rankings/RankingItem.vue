@@ -207,8 +207,8 @@ const emit = defineEmits(['like', 'bookmark'])
 
 .action-btn:hover { background: var(--surface-alt); border-color: var(--accent); color: var(--accent); }
 
-.action-btn.is-active { color: #ef4444; border-color: #fecaca; background: #fef2f2; }
-.action-btn.is-active:hover { background: #fee2e2; border-color: #ef4444; }
+.action-btn.is-active { color: var(--danger); border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.08); }
+.action-btn.is-active:hover { background: rgba(239,68,68,0.15); border-color: var(--danger); }
 .action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .bookmark-btn.is-active {

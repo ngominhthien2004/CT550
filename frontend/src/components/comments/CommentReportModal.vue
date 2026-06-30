@@ -106,6 +106,6 @@ async function submitReport() {
 }
 .btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; cursor: pointer; border: 1px solid transparent; }
 .btn-outline-secondary { border-color: var(--border, #ddd); background: transparent; }
-.btn-danger { background: #dc3545; color: #fff; }
+.btn-danger { background: var(--danger, #dc3545); color: #fff; }
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 </style>

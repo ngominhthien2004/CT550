@@ -309,7 +309,7 @@ async function executeDeleteChapter() {
 
 .chapter-form-btn--danger {
   border: none;
-  background: #dc2626;
+  background: var(--danger);
   color: #fff;
 }
 

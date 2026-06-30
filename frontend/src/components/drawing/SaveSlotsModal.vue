@@ -323,6 +323,7 @@ const store = useDrawingStore()
 }
 
 .confirm-btn.danger:hover {
-  background: #c0392b;
+  background: var(--danger);
+  opacity: 0.85;
 }
 </style>

@@ -315,8 +315,8 @@ watch(
 .hero-cta {
   border: none;
   border-radius: 999px;
-  background: #fff;
-  color: #0096fa;
+  background: var(--surface);
+  color: var(--accent);
   font-weight: 800;
   padding: 0.65rem 1.2rem;
   font-size: 0.88rem;
