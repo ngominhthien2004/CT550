@@ -160,7 +160,7 @@ onMounted(() => loadFeedData(1, false))
 .page-title {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #18181b;
+  color: var(--text);
   margin: 20px 0 16px;
 }
 
@@ -169,7 +169,7 @@ onMounted(() => loadFeedData(1, false))
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #e4e4e7;
+  border-bottom: 1px solid var(--line);
   margin-bottom: 24px;
 }
 
@@ -184,18 +184,18 @@ onMounted(() => loadFeedData(1, false))
   padding: 12px 0;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #71717a;
+  color: var(--muted);
   cursor: pointer;
   position: relative;
   transition: color 0.15s;
 }
 
 .tab-btn:hover {
-  color: #18181b;
+  color: var(--text);
 }
 
 .tab-btn.active {
-  color: #18181b;
+  color: var(--text);
 }
 
 .tab-btn.active::after {
@@ -205,7 +205,7 @@ onMounted(() => loadFeedData(1, false))
   left: 0;
   right: 0;
   height: 3px;
-  background: #0096fa;
+  background: var(--accent);
   border-radius: 3px 3px 0 0;
 }
 
@@ -223,18 +223,18 @@ onMounted(() => loadFeedData(1, false))
   font-size: 0.82rem;
   font-weight: 700;
   background: transparent;
-  color: #52525b;
+  color: var(--muted);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
 
 .pill-btn:hover {
-  background: #f4f4f5;
+  background: var(--surface-alt);
 }
 
 .pill-btn.active {
-  background: #f4f4f5;
-  color: #18181b;
+  background: var(--surface-alt);
+  color: var(--text);
 }
 
 /* ─── Grid ─── */
@@ -247,12 +247,12 @@ onMounted(() => loadFeedData(1, false))
 /* ─── States ─── */
 .state-note {
   text-align: center;
-  color: #71717a;
+  color: var(--muted);
   margin: 40px 0;
 }
 
 .state-note.error {
-  color: #ef4444;
+  color: var(--danger);
 }
 
 /* ─── Pagination ─── */
@@ -265,17 +265,17 @@ onMounted(() => loadFeedData(1, false))
 .load-more-btn {
   padding: 9px 48px;
   border-radius: 999px;
-  border: 1px solid #e4e4e7;
-  background: #f4f4f5;
+  border: 1px solid var(--line);
+  background: var(--surface-alt);
   font-weight: 700;
   font-size: 0.9rem;
-  color: #18181b;
+  color: var(--text);
   cursor: pointer;
   transition: background 0.2s;
 }
 
 .load-more-btn:hover:not(:disabled) {
-  background: #e4e4e7;
+  background: var(--line);
 }
 
 .load-more-btn:disabled {

@@ -261,7 +261,7 @@ const processedMessages = computed(() =>
 }
 
 .avatar-ai {
-  background: #f0f0f0;
+  background: var(--surface-alt);
 }
 
 .message-content {
@@ -279,20 +279,20 @@ const processedMessages = computed(() =>
 }
 
 .message-user .message-bubble {
-  background: var(--brand, #4361ee);
+  background: var(--accent);
   color: #fff;
   border-bottom-right-radius: 0.25rem;
 }
 
 .message-assistant .message-bubble {
-  background: #f0f2f5;
-  color: #1a1a1a;
+  background: var(--surface-alt);
+  color: var(--text);
   border-bottom-left-radius: 0.25rem;
 }
 
 .message-error .message-bubble {
-  background: #fff0f0;
-  color: #c00;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
 }
 
 .message-welcome .message-bubble {
@@ -329,7 +329,7 @@ const processedMessages = computed(() =>
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
-  background: #999;
+  background: var(--muted);
   animation: typing-pulse 1.4s ease-in-out infinite;
 }
 
@@ -387,13 +387,15 @@ const processedMessages = computed(() =>
   border-radius: 1.5rem;
   padding: 0.625rem 1rem;
   font-size: 0.9rem;
-  border: 1px solid var(--border-color, #ddd);
+  border: 1px solid var(--line);
   transition: border-color 0.2s;
+  background: var(--surface);
+  color: var(--text);
 }
 
 .chat-input:focus {
-  border-color: var(--brand, #4361ee);
-  box-shadow: 0 0 0 0.125rem rgba(67, 97, 238, 0.15);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 0.125rem rgba(0, 150, 250, 0.15);
 }
 
 .send-btn {
