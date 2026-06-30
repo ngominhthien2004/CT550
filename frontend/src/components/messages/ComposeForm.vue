@@ -190,6 +190,11 @@ function insertEmoji(emoji) {
   width: 32px;
   height: 32px;
   font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.compose-input-actions .icon-btn:hover {
+  color: var(--text);
 }
 
 .compose-input-actions .icon-btn.active {
