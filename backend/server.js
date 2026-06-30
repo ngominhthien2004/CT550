@@ -170,6 +170,10 @@ module.exports = { app, server, io };
 const { setSocketIO } = require('./utils/notification');
 setSocketIO(io);
 
+// Pass Socket.IO to shared socket holder
+const { setSocketIO: setSocketIOForMessages } = require('./utils/socket');
+setSocketIOForMessages(io);
+
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

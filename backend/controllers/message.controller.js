@@ -1,6 +1,8 @@
 const Message = require('../models/Message');
 const User = require('../models/User');
 const path = require('path');
+const { getSocketIO } = require('../utils/socket');
+const { createNotification } = require('../utils/notification');
 
 const getMyMessages = async (req, res, next) => {
     try {
@@ -101,6 +103,24 @@ const createMessage = async (req, res, next) => {
         const populated = await Message.findById(message._id)
             .populate('sender', 'username displayName avatar')
             .populate('recipient', 'username displayName avatar');
+
+        // Emit real-time DM event to recipient
+        const io = getSocketIO();
+        if (io) {
+            io.to(`user:${recipientId}`).emit('message:new', populated);
+        }
+
+        // Create notification record for the new message
+        const preview = msgContent
+            ? (msgContent.length > 100 ? msgContent.substring(0, 100) + '...' : msgContent)
+            : (images.length > 0 ? '[Image]' : '');
+        createNotification({
+            userId: recipientId,
+            actorId: req.user._id,
+            type: 'message',
+            message: preview || 'Sent you a message',
+            metadata: { messageId: message._id, senderUsername: req.user.username },
+        });
 
         res.status(201).json(populated);
     } catch (error) {

@@ -163,6 +163,13 @@ function handleNewNotification(notification) {
   }
 }
 
+function handleNewMessageForBadge(message) {
+  if (!message || !message._id) return
+  const myId = userId.value
+  if (String(message.recipient?._id || '') !== String(myId)) return
+  loadMessagePreview()
+}
+
 onMounted(() => {
   loadNotificationPreview()
   loadMessagePreview()
@@ -171,11 +178,13 @@ onMounted(() => {
   // Connect Socket.IO and listen for real-time notifications
   connect()
   on('notification:new', handleNewNotification)
+  on('message:new', handleNewMessageForBadge)
 })
 
 onBeforeUnmount(() => {
   stopNotificationPolling()
   off('notification:new', handleNewNotification)
+  off('message:new', handleNewMessageForBadge)
   disconnect()
 })
 

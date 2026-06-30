@@ -8,6 +8,7 @@ import ThreadChatPane from '../components/messages/ThreadChatPane.vue'
 import { useAuthStore } from '../stores/auth.store'
 import { getMyMessages, markMessageRead, userApi, messageApi, reportApi } from '../services/api'
 import { useMessageStore } from '../stores/message.store'
+import { useSocket } from '../composables/useSocket'
 
 import { formatShortDate } from '../utils/date.js'
 
@@ -44,6 +45,7 @@ const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 const messageStore = useMessageStore()
+const { connect: connectSocket, disconnect: disconnectSocket, on: socketOn, off: socketOff } = useSocket()
 
 const currentUserId = computed(() => authStore.user?._id || '')
 
@@ -279,6 +281,22 @@ function stopMessagePolling() {
   if (newMessageInterval) { clearInterval(newMessageInterval); newMessageInterval = null }
 }
 
+function handleIncomingMessage(message) {
+  if (!message || !message._id) return
+  const myId = currentUserId.value
+  const isIncoming = String(message.recipient?._id || '') === String(myId)
+  if (!isIncoming) return
+
+  const exists = [...inboxMessages.value, ...sentMessages.value].some(m => m._id === message._id)
+  if (exists) return
+
+  inboxMessages.value = [message, ...inboxMessages.value]
+
+  if (selectedThreadId.value !== String(message.sender?._id || '')) {
+    playNotificationSound()
+  }
+}
+
 async function pollNewMessages() {
   if (!authStore.isAuthenticated || !lastPolledAt.value) return
   try {
@@ -427,7 +445,11 @@ function scrollThreadListToTop() {
 
 function toggleLeftNav() { isNavCollapsed.value = !isNavCollapsed.value }
 
-onMounted(() => { loadMessages() })
+onMounted(() => {
+  loadMessages()
+  connectSocket()
+  socketOn('message:new', handleIncomingMessage)
+})
 watch(threads, () => { scrollThreadListToTop() })
 watch(threadMessages, () => { scrollChatToBottom() })
 watch(() => inboxMessages.value.length, (newCount, oldCount) => {
@@ -446,7 +468,12 @@ watch(selectedThreadId, (newVal, oldVal) => {
   if (newVal && newVal !== oldVal) { startPresencePolling(newVal); startMessagePolling() }
   else if (!newVal) { stopPresencePolling(); stopMessagePolling() }
 })
-onUnmounted(() => { stopPresencePolling(); stopMessagePolling() })
+onUnmounted(() => {
+  stopPresencePolling()
+  stopMessagePolling()
+  socketOff('message:new', handleIncomingMessage)
+  disconnectSocket()
+})
 </script>
 
 <template>
