@@ -53,7 +53,7 @@ function insertEmoji(emoji) {
         ref="textareaRef"
         :value="content"
         class="compose-textarea"
-        placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
+        placeholder="Type a message..."
         rows="1"
         :disabled="sending || !selectedThreadId"
         @input="emit('update:content', $event.target.value); emit('typing')"
