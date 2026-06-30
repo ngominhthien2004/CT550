@@ -31,9 +31,9 @@ const emit = defineEmits(['create'])
 
 <style scoped>
 .plans-section {
-  border: 1px solid #d8e1ef;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface);
   padding: 1rem;
   display: grid;
   gap: 0.9rem;
@@ -50,7 +50,7 @@ const emit = defineEmits(['create'])
 .primary-btn {
   border: none;
   border-radius: 999px;
-  background: #0096fa;
+  background: var(--accent);
   color: #fff;
   font-weight: 900;
   padding: 0.72rem 1rem;
@@ -60,7 +60,7 @@ const emit = defineEmits(['create'])
 .plan-list { display: grid; gap: 0.5rem; }
 
 .plan-card {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--line);
   border-radius: 10px;
   padding: 0.9rem;
 }
@@ -72,11 +72,11 @@ const emit = defineEmits(['create'])
   margin-bottom: 0.4rem;
 }
 
-.plan-title { font-size: 0.95rem; }
+.plan-title { font-size: 0.95rem; color: var(--text); }
 
 .open {
-  background: #d1fae5;
-  color: #065f46;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
   padding: 0.15rem 0.5rem;
   border-radius: 999px;
   font-size: 0.72rem;
@@ -84,15 +84,15 @@ const emit = defineEmits(['create'])
 }
 
 .closed {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: rgba(148, 163, 184, 0.15);
+  color: var(--muted);
   padding: 0.15rem 0.5rem;
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 700;
 }
 
-.plan-meta { margin: 0; font-size: 0.82rem; color: #64748b; }
+.plan-meta { margin: 0; font-size: 0.82rem; color: var(--muted); }
 
-.empty { text-align: center; padding: 1.5rem; color: #94a3b8; font-size: 0.88rem; }
+.empty { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.88rem; }
 </style>

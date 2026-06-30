@@ -131,9 +131,9 @@ watch(() => ({ ...termForm }), () => { requestStore.error = '' })
 
 <style scoped>
 .term-card {
-  border: 1px solid #d8e1ef;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface);
   padding: 1rem;
   display: grid;
   gap: 0.9rem;
@@ -152,24 +152,24 @@ watch(() => ({ ...termForm }), () => { requestStore.error = '' })
   background: transparent;
   font-size: 1.2rem;
   cursor: pointer;
-  color: #64748b;
+  color: var(--muted);
 }
 
-.open { background: #d1fae5; color: #065f46; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
-.closed { background: #f3f4f6; color: #6b7280; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
+.open { background: rgba(34, 197, 94, 0.15); color: #22c55e; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
+.closed { background: rgba(148, 163, 184, 0.15); color: var(--muted); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
 
 .form-section {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--line);
   border-radius: 14px;
-  background: #f8fbff;
+  background: var(--surface-alt);
   padding: 0.9rem;
   display: grid;
   gap: 0.75rem;
 }
 
 .form-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
-.form-section-head h3 { font-size: 1rem; margin: 0; }
-.section-hint { margin: 0; color: #64748b; font-size: 0.82rem; font-weight: 700; }
+.form-section-head h3 { font-size: 1rem; margin: 0; color: var(--text); }
+.section-hint { margin: 0; color: var(--muted); font-size: 0.82rem; font-weight: 700; }
 
 .form-grid {
   display: grid;
@@ -182,29 +182,32 @@ watch(() => ({ ...termForm }), () => { requestStore.error = '' })
   gap: 0.3rem;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--text);
 }
 
 .form-grid input, .form-section > input, .form-section > textarea {
   padding: 0.5rem 0.7rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--line);
   border-radius: 8px;
   font-size: 0.88rem;
+  background: var(--surface);
+  color: var(--text);
 }
 
 .chip-row { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 .chip-row button {
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
-  border: 1px solid #e2e8f0;
-  background: #fff;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
 }
-.chip-row button.active { background: #0096fa; color: #fff; border-color: #0096fa; }
+.chip-row button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-.field-error { color: #dc2626; font-size: 0.82rem; margin: 0; }
+.field-error { color: var(--danger); font-size: 0.82rem; margin: 0; }
 
 .inline-check {
   display: flex;
@@ -212,12 +215,13 @@ watch(() => ({ ...termForm }), () => { requestStore.error = '' })
   gap: 0.5rem;
   font-size: 0.88rem;
   font-weight: 600;
+  color: var(--text);
 }
 
 .primary-btn {
   border: none;
   border-radius: 999px;
-  background: #0096fa;
+  background: var(--accent);
   color: #fff;
   font-weight: 900;
   padding: 0.72rem 1rem;
@@ -225,6 +229,6 @@ watch(() => ({ ...termForm }), () => { requestStore.error = '' })
 }
 
 .state { text-align: center; padding: 0.5rem; font-size: 0.85rem; margin: 0; }
-.state.success { color: #059669; }
-.state.error { color: #dc2626; }
+.state.success { color: #22c55e; }
+.state.error { color: var(--danger); }
 </style>

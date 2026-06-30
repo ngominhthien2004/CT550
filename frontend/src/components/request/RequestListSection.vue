@@ -66,9 +66,9 @@ function statusLabel(value) {
 
 <style scoped>
 .request-list-card {
-  border: 1px solid #d8e1ef;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface);
   padding: 1rem;
   display: grid;
   gap: 0.9rem;
@@ -86,14 +86,14 @@ function statusLabel(value) {
   font-weight: 700;
   border: none;
   background: transparent;
-  color: #64748b;
+  color: var(--muted);
   cursor: pointer;
   border-bottom: 2px solid transparent;
 }
 
 .list-toolbar button.active {
-  color: #0096fa;
-  border-bottom-color: #0096fa;
+  color: var(--accent);
+  border-bottom-color: var(--accent);
 }
 
 .filter-bar {
@@ -107,13 +107,14 @@ function statusLabel(value) {
   width: 180px;
   padding: 0.4rem 0.6rem;
   font-size: 0.82rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--line);
   border-radius: 6px;
-  background: #f8fafc;
+  background: var(--surface-alt);
+  color: var(--text);
   outline: none;
 }
 
-.search-input:focus { border-color: #0096fa; background: #fff; }
+.search-input:focus { border-color: var(--accent); background: var(--surface); }
 
 .filter-bar select {
   padding: 0.4rem 0.6rem;
@@ -121,8 +122,8 @@ function statusLabel(value) {
   border-radius: 6px;
 }
 
-.state { text-align: center; padding: 1rem; color: #64748b; font-size: 0.88rem; }
-.state.error { color: #dc2626; }
+.state { text-align: center; padding: 1rem; color: var(--muted); font-size: 0.88rem; }
+.state.error { color: var(--danger); }
 
 .request-list-items { display: grid; gap: 0.5rem; }
 
@@ -131,13 +132,13 @@ function statusLabel(value) {
   justify-content: space-between;
   gap: 1rem;
   padding: 1rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--line);
   border-radius: 10px;
   cursor: pointer;
   transition: background 0.15s;
 }
 
-.request-row:hover { background: #f8fafc; }
+.request-row:hover { background: var(--surface-alt); }
 
 .status-pill {
   display: inline-block;
@@ -149,29 +150,30 @@ function statusLabel(value) {
   margin: 0 0 0.4rem;
 }
 
-.status-pending { background: #fef3c7; color: #92400e; }
-.status-accepted { background: #dbeafe; color: #1e40af; }
-.status-in_progress { background: #e0e7ff; color: #3730a3; }
-.status-completed { background: #d1fae5; color: #065f46; }
-.status-rejected { background: #fee2e2; color: #991b1b; }
-.status-cancelled { background: #f3f4f6; color: #374151; }
+.status-pending { background: rgba(234, 179, 8, 0.15); color: #f59e0b; }
+.status-accepted { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.status-in_progress { background: rgba(99, 102, 241, 0.15); color: #6366f1; }
+.status-completed { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+.status-rejected { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.status-cancelled { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
 
-.request-row h3 { margin: 0 0 0.25rem; font-size: 0.95rem; }
-.request-row .meta { margin: 0; font-size: 0.82rem; color: #64748b; }
+.request-row h3 { margin: 0 0 0.25rem; font-size: 0.95rem; color: var(--text); }
+.request-row .meta { margin: 0; font-size: 0.82rem; color: var(--muted); }
 
 .row-actions { display: flex; gap: 0.4rem; align-items: flex-start; }
 .row-actions button {
   padding: 0.35rem 0.7rem;
   border-radius: 6px;
-  border: 1px solid #e2e8f0;
-  background: #fff;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
 }
-.row-actions button:hover { background: #f1f5f9; }
-.row-actions button.ghost-danger { color: #dc2626; border-color: #fecaca; }
-.row-actions button.ghost-danger:hover { background: #fef2f2; }
+.row-actions button:hover { background: var(--surface-alt); }
+.row-actions button.ghost-danger { color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
+.row-actions button.ghost-danger:hover { background: rgba(239, 68, 68, 0.1); }
 
-.empty { text-align: center; padding: 2rem; color: #94a3b8; font-size: 0.88rem; }
+.empty { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.88rem; }
 </style>

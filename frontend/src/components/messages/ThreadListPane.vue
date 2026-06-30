@@ -61,8 +61,8 @@ const emit = defineEmits(['select'])
 .thread-list-pane {
   display: flex;
   flex-direction: column;
-  border-right: 1px solid #e5e7eb;
-  background: #fff;
+  border-right: 1px solid var(--line);
+  background: var(--surface);
   overflow: hidden;
 }
 
@@ -71,7 +71,7 @@ const emit = defineEmits(['select'])
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--line);
 }
 
 .pane-link {
@@ -88,14 +88,14 @@ const emit = defineEmits(['select'])
   display: flex;
   gap: 0.75rem;
   padding: 0.75rem 0;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--line);
 }
 
 .skeleton-avatar {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: #e5e7eb;
+  background: var(--line);
 }
 
 .skeleton-meta {
@@ -108,7 +108,7 @@ const emit = defineEmits(['select'])
 .skeleton-line {
   height: 0.75rem;
   border-radius: 4px;
-  background: #e5e7eb;
+  background: var(--line);
 }
 
 .skeleton-line.short { width: 40%; }
@@ -126,11 +126,11 @@ const emit = defineEmits(['select'])
 .pane-note {
   text-align: center;
   padding: 2rem;
-  color: #9ca3af;
+  color: var(--muted);
   font-size: 0.88rem;
 }
 
-.pane-note.error { color: #dc2626; }
+.pane-note.error { color: var(--danger); }
 
 .thread-list {
   flex: 1;
@@ -147,12 +147,12 @@ const emit = defineEmits(['select'])
   background: transparent;
   text-align: left;
   cursor: pointer;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--line);
   transition: background 0.15s;
 }
 
-.thread-item:hover { background: #f9fafb; }
-.thread-item.active { background: #eef2ff; }
+.thread-item:hover { background: var(--surface-alt); }
+.thread-item.active { background: rgba(99, 102, 241, 0.1); }
 
 .thread-avatar {
   flex-shrink: 0;
@@ -179,7 +179,7 @@ const emit = defineEmits(['select'])
 
 .thread-top strong {
   font-size: 0.88rem;
-  color: #1f2937;
+  color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -187,14 +187,14 @@ const emit = defineEmits(['select'])
 
 .thread-top small {
   font-size: 0.72rem;
-  color: #9ca3af;
+  color: var(--muted);
   flex-shrink: 0;
 }
 
 .thread-meta p {
   margin: 0;
   font-size: 0.8rem;
-  color: #6b7280;
+  color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

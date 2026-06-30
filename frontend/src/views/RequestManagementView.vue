@@ -143,7 +143,7 @@ onMounted(loadAll)
 <style scoped>
 .request-management {
   min-height: calc(100vh - 112px);
-  background: #f6f9fd;
+  background: var(--bg);
   padding: 1rem;
 }
 
@@ -163,7 +163,7 @@ onMounted(loadAll)
 }
 
 .eyebrow {
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.75rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -176,7 +176,7 @@ h1 { font-size: 2rem; margin: 0; }
 .profile-link {
   border: none;
   border-radius: 999px;
-  background: #0096fa;
+  background: var(--accent);
   color: #fff;
   font-weight: 900;
   padding: 0.72rem 1rem;

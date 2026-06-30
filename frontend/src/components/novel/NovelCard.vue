@@ -130,7 +130,7 @@ const authorLink = computed(() => {
   padding: 0.85rem;
   border-radius: 22px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.84);
+  background: var(--surface);
   box-shadow: var(--shadow-sm);
 }
 

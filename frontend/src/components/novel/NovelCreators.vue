@@ -79,7 +79,7 @@ async function handleFollow(userId) {
   padding: 1.2rem 0.9rem;
   border-radius: 22px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--surface);
 }
 
 .novel-creators-head {
@@ -115,8 +115,8 @@ async function handleFollow(userId) {
   gap: 0.65rem;
   padding: 0.55rem;
   border-radius: 16px;
-  background: rgba(248, 250, 252, 0.95);
-  border: 1px solid rgba(15, 23, 42, 0.06);
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
 }
 
 .novel-creator-copy {
@@ -173,8 +173,8 @@ async function handleFollow(userId) {
 
 .novel-follow-btn.is-following {
   color: var(--muted);
-  border-color: rgba(15, 23, 42, 0.12);
-  background: rgba(255, 255, 255, 0.92);
+  border-color: var(--line);
+  background: var(--surface);
 }
 
 .novel-follow-btn:disabled {

@@ -182,12 +182,12 @@ defineExpose({ scrollToBottom })
   flex-direction: column;
   flex: 1;
   min-width: 0;
-  background: #fff;
+  background: var(--surface);
 }
 
 .pane-head {
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--line);
 }
 
 .thread-head {
@@ -233,10 +233,10 @@ defineExpose({ scrollToBottom })
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0.3rem 0.5rem;
-  background: #f9fafb;
+  background: var(--surface-alt);
   transition: border-color 0.2s, box-shadow 0.2s, width 0.2s;
   width: 160px;
 }
@@ -244,13 +244,13 @@ defineExpose({ scrollToBottom })
 .thread-search-box:focus-within,
 .thread-search-box.active {
   border-color: #6366f1;
-  box-shadow: 0 0 0 2px rgba(99,102,241,0.1);
-  background: #fff;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.15);
+  background: var(--surface);
 }
 
 .search-icon {
   font-size: 0.7rem;
-  color: #9ca3af;
+  color: var(--muted);
   flex-shrink: 0;
 }
 
@@ -261,17 +261,17 @@ defineExpose({ scrollToBottom })
   font-size: 0.8rem;
   width: 100%;
   min-width: 0;
-  color: #1e293b;
+  color: var(--text);
 }
 
 .thread-search-input::placeholder {
-  color: #9ca3af;
+  color: var(--muted);
 }
 
 .search-clear-btn {
   border: none;
   background: transparent;
-  color: #9ca3af;
+  color: var(--muted);
   font-size: 0.75rem;
   cursor: pointer;
   padding: 0;
@@ -292,10 +292,10 @@ defineExpose({ scrollToBottom })
   position: absolute;
   top: calc(100% + 4px);
   right: 0;
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-md);
   z-index: 30;
   min-width: 140px;
   overflow: hidden;
@@ -310,21 +310,21 @@ defineExpose({ scrollToBottom })
   border: none;
   background: transparent;
   font-size: 0.82rem;
-  color: #374151;
+  color: var(--text);
   cursor: pointer;
   text-align: left;
 }
 
 .thread-menu-item:hover {
-  background: #f3f4f6;
+  background: var(--surface-alt);
 }
 
 .thread-menu-item.danger {
-  color: #dc2626;
+  color: var(--danger);
 }
 
 .thread-menu-item.danger:hover {
-  background: #fef2f2;
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .presence-indicator {
@@ -332,19 +332,19 @@ defineExpose({ scrollToBottom })
   align-items: center;
   gap: 0.3rem;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .presence-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #d1d5db;
+  background: var(--muted);
 }
 
 .presence-dot.online { background: #22c55e; }
 .presence-dot.typing { background: #f59e0b; animation: pulse 1s infinite; }
-.presence-dot.offline { background: #d1d5db; }
+.presence-dot.offline { background: var(--muted); }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
@@ -354,14 +354,14 @@ defineExpose({ scrollToBottom })
 .drag-drop-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(99, 102, 241, 0.12);
   display: grid;
   place-items: center;
   z-index: 10;
 }
 
 .drag-drop-box {
-  background: #fff;
+  background: var(--surface);
   border: 2px dashed #6366f1;
   border-radius: 12px;
   padding: 2rem;
@@ -395,11 +395,11 @@ defineExpose({ scrollToBottom })
   width: 60%;
   height: 40px;
   border-radius: 16px;
-  background: #e5e7eb;
+  background: var(--line);
 }
 
 .skeleton-bubble-wrap.outgoing .skeleton-bubble {
-  background: #c7d2fe;
+  background: rgba(99, 102, 241, 0.2);
 }
 
 .shimmer {
@@ -419,14 +419,14 @@ defineExpose({ scrollToBottom })
 .day-separator {
   text-align: center;
   font-size: 0.78rem;
-  color: #9ca3af;
+  color: var(--muted);
   margin: 1rem 0;
 }
 
 .pane-note {
   text-align: center;
   padding: 2rem;
-  color: #9ca3af;
+  color: var(--muted);
 }
 
 .reply-context-bar {
@@ -434,8 +434,8 @@ defineExpose({ scrollToBottom })
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1rem;
-  background: #eef2ff;
-  border-top: 1px solid #c7d2fe;
+  background: rgba(99, 102, 241, 0.08);
+  border-top: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 .reply-context-info {
@@ -454,7 +454,7 @@ defineExpose({ scrollToBottom })
 .reply-to-snippet {
   margin: 0;
   font-size: 0.78rem;
-  color: #6b7280;
+  color: var(--muted);
   max-width: 300px;
   white-space: nowrap;
   overflow: hidden;
@@ -464,7 +464,7 @@ defineExpose({ scrollToBottom })
 .btn-close-reply {
   border: none;
   background: transparent;
-  color: #6b7280;
+  color: var(--muted);
   cursor: pointer;
 }
 

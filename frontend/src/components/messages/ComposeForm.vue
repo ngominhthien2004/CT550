@@ -143,8 +143,8 @@ function insertEmoji(emoji) {
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  border-top: 1px solid #e5e7eb;
-  background: #fff;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
   position: relative;
   z-index: 1060;
 }
@@ -167,6 +167,8 @@ function insertEmoji(emoji) {
   max-height: 120px;
   line-height: 1.4;
   overflow-y: hidden;
+  background: var(--surface-alt);
+  color: var(--text);
 }
 
 .compose-textarea:focus {
@@ -230,10 +232,10 @@ function insertEmoji(emoji) {
   bottom: 100%;
   right: 0;
   width: 300px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 12px;
-  box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-lg);
   z-index: 20;
   margin-bottom: 0.5rem;
 }
@@ -242,7 +244,7 @@ function insertEmoji(emoji) {
   display: flex;
   gap: 0.25rem;
   padding: 0.5rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--line);
   overflow-x: auto;
 }
 
@@ -254,11 +256,11 @@ function insertEmoji(emoji) {
   font-size: 0.78rem;
   cursor: pointer;
   white-space: nowrap;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .emoji-tab-btn.active {
-  background: #eef2ff;
+  background: rgba(99, 102, 241, 0.12);
   color: #6366f1;
   font-weight: 600;
 }
@@ -282,7 +284,7 @@ function insertEmoji(emoji) {
 }
 
 .emoji-item-btn:hover {
-  background: #f3f4f6;
+  background: var(--surface-alt);
 }
 
 .image-summary {
@@ -290,16 +292,16 @@ function insertEmoji(emoji) {
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1rem;
-  background: #f9fafb;
-  border-top: 1px solid #e5e7eb;
+  background: var(--surface-alt);
+  border-top: 1px solid var(--line);
   font-size: 0.82rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .image-summary button {
   border: none;
   background: transparent;
-  color: #dc2626;
+  color: var(--danger);
   font-size: 0.82rem;
   cursor: pointer;
 }

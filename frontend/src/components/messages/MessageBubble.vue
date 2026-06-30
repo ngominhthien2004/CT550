@@ -83,15 +83,15 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 }
 
 .bubble.incoming {
-  background: #f1f5f9;
-  color: #1e293b;
+  background: var(--surface-alt);
+  color: var(--text);
   margin-right: auto;
   border-bottom-left-radius: 4px;
 }
 
 .bubble.outgoing {
-  background: #e0f2fe;
-  color: #0369a1;
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--text);
   margin-left: auto;
   border-bottom-right-radius: 4px;
 }
@@ -109,7 +109,7 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 }
 
 .bubble-quote {
-  background: rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.06);
   border-radius: 8px;
   padding: 0.5rem;
   margin-bottom: 0.4rem;
@@ -123,13 +123,14 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 
 .quote-text {
   margin: 0;
-  color: #6b7280;
+  color: var(--muted);
   font-size: 0.82rem;
 }
 
 .bubble-body {
   margin: 0;
   line-height: 1.5;
+  color: var(--text);
 }
 
 .bubble-images {
@@ -168,6 +169,7 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 
 .msg-time {
   opacity: 0.7;
+  color: var(--muted);
 }
 
 .bubble-actions-wrapper {
@@ -203,9 +205,9 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -215,15 +217,15 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 }
 
 .bubble-reply-btn:hover {
-  background: #eff6ff;
+  background: rgba(59, 130, 246, 0.1);
   color: #3b82f6;
-  border-color: #bfdbfe;
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 .bubble-delete-btn:hover {
-  background: #fef2f2;
+  background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
-  border-color: #fecaca;
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .mark-read {

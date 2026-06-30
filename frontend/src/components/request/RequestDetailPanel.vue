@@ -226,9 +226,9 @@ defineExpose({ updateChatMessages, setChatLoading })
 
 <style scoped>
 .detail-panel {
-  border: 1px solid #d8e1ef;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface);
   display: flex;
   flex-direction: column;
   max-height: calc(100vh - 160px);
@@ -241,18 +241,19 @@ defineExpose({ updateChatMessages, setChatLoading })
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0.75rem 1rem 0.5rem;
-  border-bottom: 1px solid #edf0f4;
+  border-bottom: 1px solid var(--line);
 }
 
 .panel-header h2 {
   margin: 0;
   font-size: 1.05rem;
   line-height: 1.3;
+  color: var(--text);
 }
 
 .panel-header .meta {
   margin-top: 0.25rem;
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.78rem;
 }
 
@@ -260,16 +261,16 @@ defineExpose({ updateChatMessages, setChatLoading })
   background: none;
   border: none;
   font-size: 1.4rem;
-  color: #94a3b8;
+  color: var(--muted);
   cursor: pointer;
   padding: 0.1rem 0.35rem;
   line-height: 1;
 }
-.close-btn:hover { color: #334155; }
+.close-btn:hover { color: var(--text); }
 
 .tabs {
   display: flex;
-  border-bottom: 1px solid #edf0f4;
+  border-bottom: 1px solid var(--line);
 }
 .tabs button {
   flex: 1;
@@ -279,12 +280,12 @@ defineExpose({ updateChatMessages, setChatLoading })
   padding: 0.55rem;
   font-weight: 700;
   font-size: 0.82rem;
-  color: #64748b;
+  color: var(--muted);
   cursor: pointer;
 }
 .tabs button.active {
-  color: #0096fa;
-  border-bottom-color: #0096fa;
+  color: var(--accent);
+  border-bottom-color: var(--accent);
 }
 
 .tab-content {
@@ -298,7 +299,7 @@ defineExpose({ updateChatMessages, setChatLoading })
 }
 .info-section h3 {
   font-size: 0.85rem;
-  color: #64748b;
+  color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0 0 0.4rem;
@@ -311,11 +312,12 @@ defineExpose({ updateChatMessages, setChatLoading })
   font-size: 0.85rem;
 }
 .info-grid dt {
-  color: #64748b;
+  color: var(--muted);
   font-weight: 600;
 }
 .info-grid dd {
   margin: 0;
+  color: var(--text);
 }
 
 .status-badge {
@@ -323,14 +325,15 @@ defineExpose({ updateChatMessages, setChatLoading })
   font-size: 0.72rem;
   font-weight: 900;
   padding: 0.2rem 0.5rem;
-  background: #ecfeff;
-  color: #0f766e;
+  background: rgba(20, 184, 166, 0.15);
+  color: var(--accent);
   display: inline-block;
 }
 
 .desc-text {
   white-space: pre-wrap;
   line-height: 1.5;
+  color: var(--text);
 }
 
 .file-group {
@@ -338,7 +341,7 @@ defineExpose({ updateChatMessages, setChatLoading })
 }
 .file-group h4 {
   font-size: 0.8rem;
-  color: #475569;
+  color: var(--muted);
   margin: 0 0 0.4rem;
 }
 
@@ -356,7 +359,7 @@ defineExpose({ updateChatMessages, setChatLoading })
   width: 100px;
   text-decoration: none;
   color: inherit;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--line);
   border-radius: 8px;
   overflow: hidden;
   padding: 0.25rem;
@@ -369,7 +372,7 @@ defineExpose({ updateChatMessages, setChatLoading })
 }
 .file-thumb .file-name {
   font-size: 0.7rem;
-  color: #64748b;
+  color: var(--muted);
   text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -382,16 +385,16 @@ defineExpose({ updateChatMessages, setChatLoading })
   align-items: center;
   gap: 0.35rem;
   padding: 0.35rem 0.6rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--line);
   border-radius: 8px;
   text-decoration: none;
-  color: #334155;
+  color: var(--text);
   font-size: 0.8rem;
 }
-.file-link i { font-size: 1rem; color: #64748b; }
-.file-link:hover { background: #f8fafc; }
+.file-link i { font-size: 1rem; color: var(--muted); }
+.file-link:hover { background: var(--surface-alt); }
 .file-size {
-  color: #94a3b8;
+  color: var(--muted);
   font-size: 0.72rem;
   margin-left: auto;
 }
@@ -407,23 +410,23 @@ defineExpose({ updateChatMessages, setChatLoading })
 }
 
 .chat-message {
-  border: 1px solid #edf0f4;
+  border: 1px solid var(--line);
   border-radius: 10px;
   padding: 0.5rem 0.7rem;
 }
 .chat-message.system-message {
-  background: #f8fafc;
-  border-color: #e2e8f0;
+  background: var(--surface-alt);
+  border-color: var(--line);
   display: flex;
   align-items: center;
   gap: 0.4rem;
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--muted);
   font-style: italic;
   padding: 0.4rem 0.7rem;
 }
 .chat-message.system-message i {
-  color: #94a3b8;
+  color: var(--muted);
   font-size: 0.9rem;
   flex-shrink: 0;
 }
@@ -443,7 +446,7 @@ defineExpose({ updateChatMessages, setChatLoading })
   margin-bottom: 0.3rem;
 }
 .msg-time {
-  color: #94a3b8;
+  color: var(--muted);
   font-size: 0.72rem;
 }
 .msg-content {
@@ -451,6 +454,7 @@ defineExpose({ updateChatMessages, setChatLoading })
   font-size: 0.85rem;
   line-height: 1.45;
   white-space: pre-wrap;
+  color: var(--text);
 }
 .msg-attachments {
   margin-top: 0.35rem;
@@ -464,24 +468,26 @@ defineExpose({ updateChatMessages, setChatLoading })
   gap: 0.3rem;
   font-size: 0.78rem;
   padding: 0.2rem 0.5rem;
-  background: #f1f5f9;
+  background: var(--surface-alt);
   border-radius: 6px;
   text-decoration: none;
-  color: #334155;
+  color: var(--text);
 }
 
 .chat-input {
-  border-top: 1px solid #edf0f4;
+  border-top: 1px solid var(--line);
   padding-top: 0.5rem;
 }
 .chat-input textarea {
   width: 100%;
-  border: 1px solid #d8e1ef;
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0.5rem;
   font: inherit;
   font-size: 0.85rem;
   resize: vertical;
+  background: var(--surface);
+  color: var(--text);
 }
 .chat-input-actions {
   display: flex;
@@ -491,20 +497,20 @@ defineExpose({ updateChatMessages, setChatLoading })
 }
 .file-btn {
   cursor: pointer;
-  color: #64748b;
+  color: var(--muted);
   font-size: 1.1rem;
   display: flex;
   align-items: center;
 }
 .file-count {
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--muted);
 }
 .send-btn {
   margin-left: auto;
   border: none;
   border-radius: 999px;
-  background: #0096fa;
+  background: var(--accent);
   color: #fff;
   font-weight: 700;
   padding: 0.35rem 0.8rem;
@@ -514,7 +520,7 @@ defineExpose({ updateChatMessages, setChatLoading })
 .send-btn:disabled { opacity: 0.5; cursor: default; }
 
 .state-note {
-  color: #94a3b8;
+  color: var(--muted);
   font-size: 0.82rem;
   text-align: center;
   padding: 1rem;
