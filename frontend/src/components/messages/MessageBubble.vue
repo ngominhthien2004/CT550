@@ -90,7 +90,7 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 }
 
 .bubble.outgoing {
-  background: rgba(99, 102, 241, 0.12);
+  background: rgba(99, 102, 241, 0.2);
   color: var(--text);
   margin-left: auto;
   border-bottom-right-radius: 4px;
@@ -109,7 +109,7 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 }
 
 .bubble-quote {
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(0, 0, 0, 0.08);
   border-radius: 8px;
   padding: 0.5rem;
   margin-bottom: 0.4rem;
@@ -164,12 +164,17 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 }
 
 .msg-status.read {
-  color: #a5b4fc;
+  color: #6366f1;
 }
 
 .msg-time {
-  opacity: 0.7;
+  opacity: 1;
   color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.outgoing .msg-time {
+  color: rgba(99, 102, 241, 0.7);
 }
 
 .bubble-actions-wrapper {
