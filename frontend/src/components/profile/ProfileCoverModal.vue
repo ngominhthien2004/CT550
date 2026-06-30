@@ -126,8 +126,8 @@ function handleUpload() {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  border-top: 1px solid #f1f5f9;
-  border-bottom: 1px solid #f1f5f9;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   flex-shrink: 0;
 }
 
@@ -151,23 +151,23 @@ function handleUpload() {
 }
 
 .spec-label {
-  color: #000;
+  color: var(--brand);
   font-weight: 700;
 }
 
 .spec-value {
-  color: #666;
+  color: var(--muted);
 }
 
 .guidelines-text {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--muted);
   line-height: 1.5;
   margin: 0 0 24px 0;
 }
 
 .guidelines-text a {
-  color: #0096fa;
+  color: var(--accent, #0096fa);
   text-decoration: none;
 }
 

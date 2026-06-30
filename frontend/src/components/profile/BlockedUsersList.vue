@@ -79,11 +79,11 @@ onMounted(loadBlocked)
 }
 .state-text {
   text-align: center;
-  color: #64748b;
+  color: var(--muted);
   padding: 2rem;
 }
 .state-text.error {
-  color: #dc2626;
+  color: var(--danger, #dc2626);
 }
 .user-list {
   display: flex;
@@ -95,7 +95,7 @@ onMounted(loadBlocked)
   align-items: center;
   justify-content: space-between;
   padding: 0.6rem 0.8rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--line);
   border-radius: 10px;
 }
 .user-info {
@@ -112,22 +112,22 @@ onMounted(loadBlocked)
 .username {
   display: block;
   font-size: 0.78rem;
-  color: #94a3b8;
+  color: var(--muted);
 }
 .unblock-btn {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: #fff;
-  color: #64748b;
+  background: var(--surface);
+  color: var(--muted);
   padding: 0.35rem 0.8rem;
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
 }
 .unblock-btn:hover:not(:disabled) {
-  border-color: #fca5a5;
-  color: #dc2626;
-  background: #fef2f2;
+  border-color: var(--danger-line, #fca5a5);
+  color: var(--danger, #dc2626);
+  background: var(--danger-bg, #fef2f2);
 }
 .unblock-btn:disabled {
   opacity: 0.5;

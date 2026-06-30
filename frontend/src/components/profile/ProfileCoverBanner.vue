@@ -40,7 +40,7 @@ defineEmits(['edit-cover', 'delete-cover'])
 .profile-cover {
   --cover-bleed: 72px;
   height: 300px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--line);
   position: relative;
   margin-inline: -72px;
   display: block;

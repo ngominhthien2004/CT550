@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onUnmounted } from 'vue'
 import { userApi } from '../../services/api'
 import { useAuthStore } from '../../stores/auth.store'
 import UserReportModal from '../user/UserReportModal.vue'
@@ -100,6 +100,7 @@ const genderLabel = computed(() => {
 const emit = defineEmits(['toggle-follow', 'edit-profile', 'edit-avatar', 'open-requests'])
 
 const shareTooltip = ref('')
+let shareTimeout = null
 const authStore = useAuthStore()
 const blockedByMe = ref(false)
 const blockedMe = ref(false)
@@ -160,12 +161,16 @@ async function handleShare() {
   try {
     await navigator.clipboard.writeText(url)
     shareTooltip.value = 'Link copied!'
-    setTimeout(() => { shareTooltip.value = '' }, 2000)
+    shareTimeout = setTimeout(() => { shareTooltip.value = '' }, 2000)
   } catch {
     shareTooltip.value = 'Copy failed'
-    setTimeout(() => { shareTooltip.value = '' }, 2000)
+    shareTimeout = setTimeout(() => { shareTooltip.value = '' }, 2000)
   }
 }
+
+onUnmounted(() => {
+  if (shareTimeout) clearTimeout(shareTimeout)
+})
 
 const canReportUser = computed(() => {
   if (!authStore.isAuthenticated) return false
@@ -605,8 +610,8 @@ function closeReportModal() {
   bottom: -28px;
   left: 50%;
   transform: translateX(-50%);
-  background: #1f2937;
-  color: #fff;
+  background: var(--surface-alt);
+  color: var(--text);
   font-size: 0.72rem;
   font-weight: 600;
   padding: 3px 8px;
@@ -661,14 +666,14 @@ function closeReportModal() {
   cursor: pointer;
 }
 .block-btn:hover:not(:disabled) {
-  background: #fef2f2;
-  border-color: #fca5a5;
-  color: #dc2626;
+  background: var(--danger-bg, #fef2f2);
+  border-color: var(--danger-line, #fca5a5);
+  color: var(--danger, #dc2626);
 }
 .block-btn.is-blocked {
-  border-color: #fca5a5;
-  background: #fef2f2;
-  color: #dc2626;
+  border-color: var(--danger-line, #fca5a5);
+  background: var(--danger-bg, #fef2f2);
+  color: var(--danger, #dc2626);
 }
 .block-btn:disabled {
   opacity: 0.5;
@@ -676,9 +681,9 @@ function closeReportModal() {
 }
 .blocked-notice {
   grid-column: 1 / -1;
-  background: #fef2f2;
-  border: 1px solid #fca5a5;
-  color: #dc2626;
+  background: var(--danger-bg, #fef2f2);
+  border: 1px solid var(--danger-line, #fca5a5);
+  color: var(--danger, #dc2626);
   border-radius: 10px;
   padding: 0.6rem 0.9rem;
   font-size: 0.85rem;
@@ -704,8 +709,8 @@ function closeReportModal() {
 }
 
 .report-user-btn:hover {
-  background: #fef2f2;
-  border-color: #fca5a5;
-  color: #dc2626;
+  background: var(--danger-bg, #fef2f2);
+  border-color: var(--danger-line, #fca5a5);
+  color: var(--danger, #dc2626);
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRoute } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
@@ -46,6 +46,7 @@ const showEditModal = ref(false)
 const showCoverModal = ref(false)
 const showAvatarModal = ref(false)
 const confirmDeleteCover = ref(false)
+const deleteCoverTimeout = ref(null)
 const profileSeries = ref([])
 const profileSeriesLoading = ref(false)
 const profileSeriesError = ref('')
@@ -489,10 +490,14 @@ async function handleDeleteCover() {
   if (!confirmDeleteCover.value) {
     confirmDeleteCover.value = true
     showInfo('Click delete again to confirm')
-    setTimeout(() => { confirmDeleteCover.value = false }, 3000)
+    deleteCoverTimeout.value = setTimeout(() => { confirmDeleteCover.value = false }, 3000)
     return
   }
 
+  if (deleteCoverTimeout.value) {
+    clearTimeout(deleteCoverTimeout.value)
+    deleteCoverTimeout.value = null
+  }
   confirmDeleteCover.value = false
 
   try {
@@ -550,12 +555,21 @@ watch(
   },
 )
 
-watch(showEditModal, (val) => {
+function syncBodyOverflow(val) {
   if (val) {
     document.body.style.overflow = 'hidden'
   } else {
     document.body.style.overflow = ''
   }
+}
+
+watch(showEditModal, syncBodyOverflow)
+watch(showCoverModal, syncBodyOverflow)
+watch(showAvatarModal, syncBodyOverflow)
+
+onUnmounted(() => {
+  if (deleteCoverTimeout.value) clearTimeout(deleteCoverTimeout.value)
+  document.body.style.overflow = ''
 })
 </script>
 

@@ -89,7 +89,7 @@ function handleSave() {
 .avatar-card {
   max-height: 90vh;
   border-radius: 24px;
-  box-shadow: 0 30px 70px rgba(15, 23, 42, 0.28);
+  box-shadow: 0 30px 70px var(--shadow-heavy, rgba(15,23,42,0.28));
 }
 
 .modal-header {
@@ -106,14 +106,14 @@ function handleSave() {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .avatar-close {
   width: 40px;
   height: 40px;
-  background: #f1f5f9;
-  color: #334155;
+  background: var(--surface-alt);
+  color: var(--text);
   position: static;
   transform: none;
 }
@@ -135,9 +135,9 @@ function handleSave() {
   height: 160px;
   border-radius: 999px;
   overflow: hidden;
-  border: 4px solid #fff;
+  border: 4px solid var(--surface);
   box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
-  background: #f1f5f9;
+  background: var(--surface-alt);
 }
 
 .avatar-preview img {
@@ -165,7 +165,7 @@ function handleSave() {
 
 .avatar-help {
   margin: 0;
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.9rem;
   text-align: center;
   max-width: 320px;

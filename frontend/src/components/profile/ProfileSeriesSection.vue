@@ -129,19 +129,19 @@ function goToSeries(id) {
 .series-loading,
 .series-error {
   margin: 0;
-  color: #6b7280;
+  color: var(--muted);
   padding: 2rem 0;
 }
 
 .series-error p {
-  color: #dc2626;
+  color: var(--danger, #dc2626);
 }
 
 .series-empty {
   min-height: 220px;
   display: grid;
   place-items: center;
-  color: #b4bac5;
+  color: var(--muted);
 }
 
 .series-empty i {
@@ -167,7 +167,7 @@ function goToSeries(id) {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #1f2937;
+  color: var(--brand);
 }
 
 .series-group-title i {
@@ -186,17 +186,17 @@ function goToSeries(id) {
 /* ── Card ── */
 
 .series-card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 4px var(--shadow-light, rgba(0,0,0,0.06));
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .series-card:hover {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px var(--shadow-medium, rgba(0,0,0,0.1));
   transform: translateY(-2px);
 }
 
@@ -206,7 +206,7 @@ function goToSeries(id) {
   width: 100%;
   height: 180px;
   overflow: hidden;
-  background: #f3f4f6;
+  background: var(--surface-alt);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -224,9 +224,9 @@ function goToSeries(id) {
   place-items: center;
   width: 100%;
   height: 100%;
-  color: #b4bac5;
+  color: var(--muted);
   font-size: 2.2rem;
-  background: #f9fafb;
+  background: var(--surface-alt);
 }
 
 /* ── Info ── */
@@ -266,7 +266,7 @@ function goToSeries(id) {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--brand);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -279,18 +279,18 @@ function goToSeries(id) {
   align-items: center;
   gap: 0.3rem;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--muted);
   flex-wrap: wrap;
 }
 
 .meta-sep {
-  color: #d1d5db;
+  color: var(--line);
 }
 
 .series-card-desc {
   margin: 0.15rem 0 0;
   font-size: 0.78rem;
-  color: #64748b;
+  color: var(--muted);
   line-height: 1.45;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -304,7 +304,7 @@ function goToSeries(id) {
   gap: 0.75rem;
   margin-top: 0.3rem;
   font-size: 0.72rem;
-  color: #9ca3af;
+  color: var(--muted);
 }
 
 .series-card-stats span {

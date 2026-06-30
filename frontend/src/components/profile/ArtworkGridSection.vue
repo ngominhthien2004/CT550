@@ -141,10 +141,10 @@ const filteredCount = computed(() => props.items.length)
 }
 
 .type-tab {
-  border: 1px solid #dbe4ef;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: #fff;
-  color: #4b5563;
+  background: var(--surface);
+  color: var(--text);
   font-size: 0.8rem;
   font-weight: 700;
   padding: 0.42rem 0.82rem;
@@ -155,14 +155,14 @@ const filteredCount = computed(() => props.items.length)
 }
 
 .type-tab.active {
-  border-color: #93c5fd;
-  color: #0369a1;
-  background: #e0f2fe;
+  border-color: var(--accent-line, #93c5fd);
+  color: var(--accent, #0369a1);
+  background: var(--accent-bg, #e0f2fe);
 }
 
 .type-count {
   font-size: 0.72rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .section-header {
@@ -188,8 +188,8 @@ const filteredCount = computed(() => props.items.length)
   height: 1.3rem;
   padding: 0 0.35rem;
   border-radius: 999px;
-  background: #e5e7eb;
-  color: #475569;
+  background: var(--surface-alt);
+  color: var(--text);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -198,18 +198,18 @@ const filteredCount = computed(() => props.items.length)
 }
 
 .filter-note {
-  color: #6b7280;
+  color: var(--muted);
   font-size: 0.8rem;
   text-transform: capitalize;
 }
 
 .section-note {
   margin: 0;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .section-note.error {
-  color: #dc2626;
+  color: var(--danger, #dc2626);
 }
 
 .section-note.subtle {
@@ -227,7 +227,7 @@ const filteredCount = computed(() => props.items.length)
   min-height: 180px;
   display: grid;
   place-items: center;
-  color: #b4bac5;
+  color: var(--muted);
 }
 
 .section-empty i {
@@ -245,8 +245,8 @@ const filteredCount = computed(() => props.items.length)
   margin: 0.55rem auto 0;
   border: none;
   border-radius: 999px;
-  background: #171717;
-  color: #fff;
+  background: var(--text);
+  color: var(--surface);
   padding: 0.88rem 1.2rem;
   font-size: 0.96rem;
   font-weight: 700;
@@ -256,10 +256,10 @@ const filteredCount = computed(() => props.items.length)
 .load-more-btn {
   width: min(400px, 100%);
   margin: 0.5rem auto;
-  border: 2px solid #dbe4ef;
+  border: 2px solid var(--line);
   border-radius: 999px;
-  background: #fff;
-  color: #374151;
+  background: var(--surface);
+  color: var(--text);
   padding: 0.7rem 1.2rem;
   font-size: 0.9rem;
   font-weight: 700;
@@ -268,7 +268,7 @@ const filteredCount = computed(() => props.items.length)
 }
 
 .load-more-btn:hover:not(:disabled) {
-  background: #f3f4f6;
+  background: var(--surface-alt);
 }
 
 .load-more-btn:disabled {

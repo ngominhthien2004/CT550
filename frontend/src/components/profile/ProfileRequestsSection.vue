@@ -281,7 +281,7 @@ watch(
 }
 
 .eyebrow {
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -290,7 +290,7 @@ watch(
 
 .request-section-head h2,
 .form-title-row h3 {
-  color: #172033;
+  color: var(--brand);
   font-size: 1.35rem;
 }
 
@@ -298,8 +298,8 @@ watch(
 .submit-request-btn {
   border: none;
   border-radius: 999px;
-  background: #0096fa;
-  color: #fff;
+  background: var(--accent, #0096fa);
+  color: var(--surface);
   font-weight: 800;
   padding: 0.7rem 1rem;
   text-decoration: none;
@@ -314,9 +314,9 @@ watch(
 .request-plan,
 .request-form,
 .empty-panel {
-  border: 1px solid #d8e1ef;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface);
   padding: 1rem;
 }
 
@@ -357,8 +357,8 @@ watch(
 }
 
 .request-plan.selected {
-  border-color: #0096fa;
-  box-shadow: 0 0 0 3px rgba(0, 150, 250, 0.12);
+  border-color: var(--accent, #0096fa);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #0096fa) 12%, transparent);
 }
 
 .request-plan h3 {
@@ -366,7 +366,7 @@ watch(
 }
 
 .request-plan p {
-  color: #475569;
+  color: var(--text);
   font-size: 0.86rem;
   line-height: 1.55;
 }
@@ -385,15 +385,15 @@ watch(
 
 .plan-tags span {
   border-radius: 999px;
-  background: #edf3fb;
-  color: #334155;
+  background: var(--surface-alt);
+  color: var(--text);
   font-size: 0.72rem;
   font-weight: 800;
   padding: 0.26rem 0.55rem;
 }
 
 .rules {
-  border-top: 1px solid #edf0f4;
+  border-top: 1px solid var(--line);
   padding-top: 0.55rem;
 }
 
@@ -411,7 +411,7 @@ watch(
 label {
   display: grid;
   gap: 0.35rem;
-  color: #334155;
+  color: var(--text);
   font-size: 0.82rem;
   font-weight: 800;
 }
@@ -420,9 +420,10 @@ input,
 select,
 textarea {
   width: 100%;
-  border: 1px solid #d8e1ef;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  color: #172033;
+  background: var(--surface);
+  color: var(--text);
   font: inherit;
   font-weight: 600;
   padding: 0.68rem 0.72rem;
@@ -445,13 +446,13 @@ textarea {
 }
 
 .state-text {
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.88rem;
   font-weight: 700;
 }
 
 .state-text.error {
-  color: #dc2626;
+  color: var(--danger, #dc2626);
 }
 
 .state-text.success {
@@ -463,9 +464,9 @@ textarea {
 }
 
 .manage-link.outline {
-  background: #fff;
-  color: #0096fa;
-  border: 1px solid #0096fa;
+  background: var(--surface);
+  color: var(--accent, #0096fa);
+  border: 1px solid var(--accent, #0096fa);
   text-align: center;
 }
 

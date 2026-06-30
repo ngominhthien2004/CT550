@@ -226,7 +226,7 @@ function handleSave() {
   font-size: 0.85rem;
   font-weight: 700;
   margin-bottom: 8px;
-  color: #333;
+  color: var(--text);
 }
 
 .input-with-limit {
@@ -236,18 +236,18 @@ function handleSave() {
 .form-input, .form-textarea, .form-select, .social-input {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--line);
   border-radius: 8px;
   font-size: 0.95rem;
-  background: #f8f9fa;
+  background: var(--surface-alt);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .form-input:focus, .form-textarea:focus, .form-select:focus {
   outline: none;
-  border-color: #0096fa;
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(0, 150, 250, 0.1);
+  border-color: var(--accent, #0096fa);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #0096fa) 10%, transparent);
 }
 
 .char-limit {
@@ -256,7 +256,7 @@ function handleSave() {
   top: 50%;
   transform: translateY(-50%);
   font-size: 0.75rem;
-  color: #999;
+  color: var(--muted);
 }
 
 .social-row {
@@ -269,8 +269,8 @@ function handleSave() {
   flex: 1;
   display: flex;
   align-items: center;
-  background: #f8f9fa;
-  border: 1px solid #ddd;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -278,7 +278,7 @@ function handleSave() {
 .social-icon {
   width: 36px;
   text-align: center;
-  color: #666;
+  color: var(--muted);
   font-size: 1rem;
 }
 
@@ -318,7 +318,7 @@ function handleSave() {
 }
 
 .workspace-link {
-  color: #0096fa;
+  color: var(--accent, #0096fa);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 600;
@@ -334,7 +334,7 @@ function handleSave() {
   flex-direction: column;
   gap: 12px;
   padding: 20px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--line);
 }
 
 /* Custom Scrollbar */
@@ -345,7 +345,7 @@ function handleSave() {
   background: transparent;
 }
 .modal-body--scroll::-webkit-scrollbar-thumb {
-  background: #ddd;
+  background: var(--line);
   border-radius: 10px;
 }
 </style>

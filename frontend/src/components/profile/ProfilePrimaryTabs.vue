@@ -32,14 +32,14 @@ const emit = defineEmits(['select'])
   display: flex;
   align-items: center;
   gap: 0.9rem;
-  border-bottom: 1px solid #edf0f4;
+  border-bottom: 1px solid var(--line);
   overflow-x: auto;
 }
 
 .profile-tab {
   border: none;
   background: transparent;
-  color: #6b7280;
+  color: var(--muted);
   font-size: 0.95rem;
   font-weight: 700;
   padding: 0.95rem 0.1rem 0.85rem;
@@ -48,7 +48,7 @@ const emit = defineEmits(['select'])
 }
 
 .profile-tab.active {
-  color: #1f2937;
+  color: var(--brand);
   border-bottom-color: #0096fa;
 }
 </style>
