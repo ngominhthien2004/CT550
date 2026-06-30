@@ -205,7 +205,7 @@ watch(
 
 <style scoped>
 .favorites-page {
-  background: #f8fafc;
+  background: var(--bg);
   min-height: calc(100vh - 112px);
 }
 
@@ -228,12 +228,12 @@ watch(
 .favorites-head h1 {
   margin: 0;
   font-size: 2rem;
-  color: #1f2937;
+  color: var(--brand);
 }
 
 .favorites-head p {
   margin: 0.35rem 0 0;
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.92rem;
 }
 
@@ -245,16 +245,16 @@ watch(
 
 .overview-item {
   margin: 0;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--line);
   border-radius: 999px;
   padding: 0.32rem 0.75rem;
-  color: #475569;
-  background: #fff;
+  color: var(--text);
+  background: var(--surface);
   font-size: 0.8rem;
 }
 
 .overview-item strong {
-  color: #0f172a;
+  color: var(--brand);
 }
 
 .favorite-type-tabs {
@@ -264,10 +264,10 @@ watch(
 }
 
 .favorite-type-tab {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: #f8fafc;
-  color: #4b5563;
+  background: var(--surface-alt);
+  color: var(--text);
   font-size: 0.78rem;
   font-weight: 700;
   padding: 0.35rem 0.7rem;
@@ -277,18 +277,18 @@ watch(
 }
 
 .favorite-type-tab.active {
-  border-color: #93c5fd;
-  color: #0369a1;
-  background: #e0f2fe;
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(0, 150, 250, 0.1);
 }
 
 .state-note {
   margin: 0;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .state-note.error {
-  color: #dc2626;
+  color: var(--danger);
 }
 
 .favorites-grid {
@@ -300,11 +300,11 @@ watch(
 .favorite-card {
   display: grid;
   gap: 0.25rem;
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 0.45rem;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .favorite-card img {
@@ -312,12 +312,12 @@ watch(
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 9px;
-  background: #f1f5f9;
+  background: var(--surface-alt);
 }
 
 .favorite-title {
   text-decoration: none;
-  color: #111827;
+  color: var(--text);
   font-size: 0.92rem;
   font-weight: 700;
   line-height: 1.25;
@@ -326,7 +326,7 @@ watch(
 .favorite-meta,
 .favorite-author {
   margin: 0;
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.78rem;
 }
 
@@ -335,7 +335,7 @@ watch(
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #475569;
+  color: var(--muted);
   font-size: 0.78rem;
 }
 
@@ -347,12 +347,12 @@ watch(
 
 .favorites-empty {
   min-height: 280px;
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed var(--line);
   border-radius: 12px;
   display: grid;
   place-items: center;
-  color: #94a3b8;
-  background: #fff;
+  color: var(--muted);
+  background: var(--surface);
 }
 
 .favorites-empty i {

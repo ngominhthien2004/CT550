@@ -338,7 +338,7 @@ onMounted(async () => {
 }
 
 .plans-state--error {
-  color: #b42318;
+  color: var(--danger);
   background: rgba(180, 35, 24, 0.06);
   border-color: rgba(180, 35, 24, 0.16);
 }
@@ -346,7 +346,7 @@ onMounted(async () => {
 .section-heading {
   font-size: 1.15rem;
   font-weight: 800;
-  color: #172033;
+  color: var(--brand);
   margin: 0 0 0.75rem;
 }
 
@@ -361,10 +361,10 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  border: 1px solid #d8e1ef;
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 0.6rem 0.85rem;
-  background: #fff;
+  background: var(--surface);
   text-decoration: none;
   color: inherit;
   white-space: nowrap;
@@ -389,21 +389,21 @@ onMounted(async () => {
 .creator-chip-name {
   font-size: 0.82rem;
   font-weight: 700;
-  color: #172033;
+  color: var(--text);
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .creator-chip-count {
   font-size: 0.7rem;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .follow-btn-sm {
-  border: 1px solid #0096fa;
+  border: 1px solid var(--accent);
   border-radius: 999px;
-  background: #fff;
-  color: #0096fa;
+  background: var(--surface);
+  color: var(--accent);
   font-size: 0.7rem;
   font-weight: 700;
   padding: 0.3rem 0.6rem;
@@ -412,7 +412,7 @@ onMounted(async () => {
 }
 
 .follow-btn-sm.following {
-  background: #0096fa;
+  background: var(--accent);
   color: #fff;
 }
 
@@ -427,9 +427,9 @@ onMounted(async () => {
 }
 
 .plan-card {
-  border: 1px solid #d8e1ef;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface);
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -448,7 +448,7 @@ onMounted(async () => {
   align-items: center;
   gap: 0.45rem;
   text-decoration: none;
-  color: #334155;
+  color: var(--text);
   font-size: 0.82rem;
   font-weight: 700;
   min-width: 0;
@@ -469,7 +469,7 @@ onMounted(async () => {
 }
 
 .plan-price {
-  color: #0f766e;
+  color: var(--accent);
   font-weight: 900;
   font-size: 0.88rem;
   white-space: nowrap;
@@ -478,12 +478,12 @@ onMounted(async () => {
 .plan-title {
   font-size: 1rem;
   font-weight: 800;
-  color: #172033;
+  color: var(--text);
   margin: 0;
 }
 
 .plan-strengths {
-  color: #475569;
+  color: var(--muted);
   font-size: 0.82rem;
   line-height: 1.55;
   margin: 0;
@@ -509,13 +509,13 @@ onMounted(async () => {
 }
 
 .badge-open {
-  background: #dcfce7;
-  color: #15803d;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
 }
 
 .badge-accepting {
-  background: #e0f2fe;
-  color: #0369a1;
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
 }
 
 .plan-tags {
@@ -526,24 +526,24 @@ onMounted(async () => {
 
 .plan-tag {
   border-radius: 999px;
-  background: #edf3fb;
-  color: #334155;
+  background: var(--surface-alt);
+  color: var(--text);
   font-size: 0.7rem;
   font-weight: 800;
   padding: 0.22rem 0.5rem;
 }
 
 .plan-tag.tag-active {
-  background: #0096fa;
+  background: var(--accent);
   color: #fff;
 }
 
 .plan-rules {
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.78rem;
   line-height: 1.5;
   margin: 0;
-  border-top: 1px solid #edf0f4;
+  border-top: 1px solid var(--line);
   padding-top: 0.5rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -552,7 +552,7 @@ onMounted(async () => {
 }
 
 .plan-meta {
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.75rem;
   margin: 0;
 }
@@ -562,7 +562,7 @@ onMounted(async () => {
   margin-top: 0.2rem;
   border: none;
   border-radius: 999px;
-  background: #0096fa;
+  background: var(--accent);
   color: #fff;
   font-size: 0.78rem;
   font-weight: 700;
