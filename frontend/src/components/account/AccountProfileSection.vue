@@ -57,9 +57,6 @@ const props = defineProps({
   profileSeriesLoading: { type: Boolean, default: false },
   profileSeriesError: { type: String, default: '' },
   showFeaturedWorks: { type: Boolean, default: true },
-  showIllustSeries: { type: Boolean, default: true },
-  showMangaSeries: { type: Boolean, default: true },
-  showNovelSeries: { type: Boolean, default: true },
 })
 
 const emit = defineEmits([
@@ -85,6 +82,8 @@ const emit = defineEmits([
   'load-more-likes',
 ])
 
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
 const profileGender = computed(() => {
   const g = props.user?.gender || ''
   return g === 'rather_not_say' ? '' : g
@@ -95,7 +94,7 @@ const profileBirthday = computed(() => {
   const month = props.user?.birthdayMonth
   const day = props.user?.birthdayDay
   if (!year && !month && !day) return ''
-  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  const monthNames = MONTH_NAMES
   const parts = [
     ...(month ? [monthNames[month - 1] || ''] : []),
     ...(day ? [String(day)] : []),
@@ -165,7 +164,6 @@ const profileBirthday = computed(() => {
       <!-- ════ ILLUSTRATIONS TAB ════ -->
       <template v-else-if="activeMainTab === 'illustrations'">
         <ProfileSeriesSection
-          v-if="showIllustSeries"
           :series="profileSeries.filter(s => s.type === 'illust')"
           :loading="profileSeriesLoading"
           :error="profileSeriesError"
@@ -186,7 +184,6 @@ const profileBirthday = computed(() => {
       <!-- ════ MANGA TAB ════ -->
       <template v-else-if="activeMainTab === 'manga'">
         <ProfileSeriesSection
-          v-if="showMangaSeries"
           :series="profileSeries.filter(s => s.type === 'manga')"
           :loading="profileSeriesLoading"
           :error="profileSeriesError"
@@ -207,7 +204,6 @@ const profileBirthday = computed(() => {
       <!-- ════ NOVELS TAB ════ -->
       <template v-else-if="activeMainTab === 'novels'">
         <ProfileSeriesSection
-          v-if="showNovelSeries"
           :series="profileSeries.filter(s => s.type === 'novel')"
           :loading="profileSeriesLoading"
           :error="profileSeriesError"
@@ -302,7 +298,7 @@ const profileBirthday = computed(() => {
 
 <style scoped>
 .profile-page {
-  background: #fff;
+  background: var(--surface);
   min-height: calc(100vh - 112px);
   overflow: hidden;
 }
@@ -317,11 +313,11 @@ const profileBirthday = computed(() => {
 
 .bookmarks-placeholder {
   margin-top: 1.25rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--line);
   border-radius: 20px;
   padding: 1rem 1.1rem;
-  color: #64748b;
-  background: #fff;
+  color: var(--muted);
+  background: var(--surface);
 }
 
 @media (max-width: 820px) {

@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { formatShortDate } from '@/utils/date.js'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -33,9 +34,7 @@ const seriesGroups = computed(() => {
 })
 
 function formatDate(dateStr) {
-  if (!dateStr) return ''
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  return formatShortDate(dateStr)
 }
 
 function truncate(text, max) {
