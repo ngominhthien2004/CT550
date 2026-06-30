@@ -185,10 +185,6 @@ watch(
 
         <div class="follow-topline">
           <h2>Users <span>{{ visibleUsers.length }}</span></h2>
-          <div class="visibility-chip-wrap">
-            <button type="button" class="visibility-chip active">Public</button>
-            <button type="button" class="visibility-chip">Private</button>
-          </div>
         </div>
 
         <p v-if="error" class="state-note error">{{ error }}</p>
@@ -292,27 +288,6 @@ watch(
   color: #94a3b8;
   font-size: 0.78rem;
   margin-left: 0.2rem;
-}
-
-.visibility-chip-wrap {
-  display: inline-flex;
-  border: 1px solid #e2e8f0;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.visibility-chip {
-  border: none;
-  background: #fff;
-  color: #64748b;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 0.25rem 0.6rem;
-}
-
-.visibility-chip.active {
-  background: #f8fafc;
-  color: #334155;
 }
 
 .follow-grid {
