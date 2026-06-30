@@ -133,8 +133,10 @@ const profileBirthday = computed(() => {
         @edit-avatar="emit('edit-avatar')"
         @open-requests="emit('open-requests')"
       />
-      <p v-if="profileLoading" class="text-secondary mb-1">Loading profile...</p>
-      <p v-if="profileError" class="text-danger mb-1">{{ profileError }}</p>
+      <div aria-live="polite">
+        <p v-if="profileLoading" class="text-secondary mb-1">Loading profile...</p>
+        <p v-if="profileError" class="text-danger mb-1">{{ profileError }}</p>
+      </div>
       <ProfilePrimaryTabs :active-tab="activeMainTab" :is-own-profile="isOwnProfile" @select="emit('select-main-tab', $event)" />
 
       <!-- ════ HOME TAB ════ -->
@@ -300,7 +302,7 @@ const profileBirthday = computed(() => {
 .profile-page {
   background: var(--surface);
   min-height: calc(100vh - 112px);
-  overflow: hidden;
+  overflow: clip;
 }
 
 .profile-main {

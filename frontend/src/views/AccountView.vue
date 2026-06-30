@@ -28,7 +28,6 @@ const profileUser = ref(null)
 const profileLoading = ref(false)
 const profileError = ref('')
 
-const profileLocation = computed(() => user.value?.location || '')
 const followingCount = computed(() => followStore.followingCount)
 const followersCount = computed(() => followStore.followersCount)
 const artworks = ref([])
@@ -582,7 +581,7 @@ onUnmounted(() => {
       :is-own-profile="isOwnProfile"
       :following-count="followingCount"
       :followers-count="followersCount"
-      :profile-location="profileLocation"
+      :profile-location="user?.location || ''"
       :is-following-profile="isFollowingProfile"
       :follow-loading="followLoading"
       :follow-error="followError"
