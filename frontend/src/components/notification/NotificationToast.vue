@@ -41,26 +41,24 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <Transition name="toast">
-    <div v-if="visible" class="toast-container" @click="handleClick">
-      <div class="toast-avatar">
-        <img
-          v-if="notification.actor?.avatar"
-          :src="notification.actor.avatar"
-          :alt="notification.actor.displayName || notification.actor.username"
-          @error="(e) => e.target.style.display = 'none'"
-        />
-        <i v-else class="fa-regular fa-bell" aria-hidden="true"></i>
-      </div>
-      <div class="toast-content">
-        <p class="toast-message">{{ notification.message }}</p>
-        <small class="toast-time">{{ formatRelativeTime(notification.createdAt) }}</small>
-      </div>
-      <button class="toast-close" @click.stop="emit('close')" aria-label="Dismiss">
-        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-      </button>
+  <div v-if="visible" class="toast-container" :class="{ 'toast-enter': visible }" @click="handleClick">
+    <div class="toast-avatar">
+      <img
+        v-if="notification.actor?.avatar"
+        :src="notification.actor.avatar"
+        :alt="notification.actor.displayName || notification.actor.username"
+        @error="(e) => e.target.style.display = 'none'"
+      />
+      <i v-else class="fa-regular fa-bell" aria-hidden="true"></i>
     </div>
-  </Transition>
+    <div class="toast-content">
+      <p class="toast-message">{{ notification.message }}</p>
+      <small class="toast-time">{{ formatRelativeTime(notification.createdAt) }}</small>
+    </div>
+    <button class="toast-close" @click.stop="emit('close')" aria-label="Dismiss">
+      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+    </button>
+  </div>
 </template>
 
 <style scoped>
@@ -139,12 +137,8 @@ onBeforeUnmount(() => {
   color: var(--text);
 }
 
-.toast-enter-active {
+.toast-enter {
   animation: slideIn 0.3s ease;
-}
-
-.toast-leave-active {
-  animation: slideOut 0.3s ease;
 }
 
 @keyframes slideIn {
@@ -155,17 +149,6 @@ onBeforeUnmount(() => {
   to {
     opacity: 1;
     transform: translateX(0);
-  }
-}
-
-@keyframes slideOut {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(100px);
   }
 }
 </style>
