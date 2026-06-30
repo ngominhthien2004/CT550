@@ -84,6 +84,9 @@
   font-size: 1rem;
   cursor: pointer;
   color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .icon-btn:hover {
