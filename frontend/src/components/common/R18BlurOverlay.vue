@@ -161,7 +161,7 @@ watch(
 
 .r18-icon {
   font-size: 2rem;
-  color: #dc3545;
+  color: var(--danger);
 }
 
 .r18-overlay-body-sm .r18-icon {
@@ -194,8 +194,8 @@ watch(
 }
 
 .r18-reveal-btn:hover {
-  background: #fff;
-  color: #111;
+  background: var(--surface);
+  color: var(--text);
 }
 
 .r18-overlay-body-sm .r18-reveal-btn {
@@ -216,7 +216,7 @@ watch(
 .r18-remember input[type="checkbox"] {
   width: 14px;
   height: 14px;
-  accent-color: #dc3545;
+  accent-color: var(--danger);
   cursor: pointer;
 }
 
@@ -242,8 +242,8 @@ watch(
   gap: 2px;
   border: none;
   border-radius: 4px;
-  background: #dc3545;
-  color: #fff;
+  background: var(--danger);
+  color: var(--surface);
   font-size: 0.72rem;
   font-weight: 700;
   padding: 2px 6px;
@@ -277,8 +277,8 @@ watch(
   display: inline-flex;
   align-items: center;
   border-radius: 4px;
-  background: #dc3545;
-  color: #fff;
+  background: var(--danger);
+  color: var(--surface);
   font-size: 0.72rem;
   font-weight: 700;
   padding: 2px 7px;

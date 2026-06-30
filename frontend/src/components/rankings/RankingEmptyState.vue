@@ -93,7 +93,7 @@ const emit = defineEmits(['retry', 'filter-period'])
   color: var(--muted);
 }
 
-.empty-icon.error { background: #fef2f2; color: var(--danger); }
+.empty-icon.error { background: var(--surface-alt); color: var(--danger); }
 
 .empty-title { margin: 0 0 8px; font-size: 20px; font-weight: 700; color: var(--text); }
 

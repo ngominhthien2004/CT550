@@ -85,15 +85,15 @@ const store = useDrawingStore()
 }
 
 .modal-content {
-  background: #222226;
-  border: 1px solid #333338;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 12px;
   width: 460px;
   max-width: 90vw;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
-  color: #e0e0e0;
+  color: var(--text);
 }
 
 .modal-content--wide {
@@ -105,7 +105,7 @@ const store = useDrawingStore()
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  border-bottom: 1px solid #333338;
+  border-bottom: 1px solid var(--line);
 }
 
 .modal-header h2 {
@@ -121,7 +121,7 @@ const store = useDrawingStore()
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #888;
+  color: var(--muted);
   font-size: 20px;
   cursor: pointer;
   display: flex;
@@ -130,8 +130,8 @@ const store = useDrawingStore()
 }
 
 .modal-close-btn:hover {
-  background: #33333a;
-  color: #fff;
+  background: var(--surface-alt);
+  color: var(--surface);
 }
 
 .modal-body {
@@ -148,15 +148,15 @@ const store = useDrawingStore()
 }
 
 .slot-card {
-  background: #1a1a1e;
-  border: 1px solid #333338;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
   border-radius: 8px;
   overflow: hidden;
   transition: border-color 0.15s ease;
 }
 
 .slot-card:hover {
-  border-color: #4a6cf7;
+  border-color: var(--accent);
 }
 
 .slot-thumb {
@@ -164,7 +164,7 @@ const store = useDrawingStore()
   aspect-ratio: 16 / 9;
   object-fit: cover;
   display: block;
-  background: #fff;
+  background: var(--surface);
 }
 
 .slot-info {
@@ -184,12 +184,12 @@ const store = useDrawingStore()
 
 .slot-date {
   font-size: 11px;
-  color: #888;
+  color: var(--muted);
 }
 
 .slot-actions {
   display: flex;
-  border-top: 1px solid #333338;
+  border-top: 1px solid var(--line);
 }
 
 .slot-btn {
@@ -197,29 +197,29 @@ const store = useDrawingStore()
   padding: 6px;
   border: none;
   background: transparent;
-  color: #aaa;
+  color: var(--muted);
   font-size: 12px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .slot-btn:hover {
-  background: #33333a;
+  background: var(--surface-alt);
 }
 
 .slot-btn.load {
-  border-right: 1px solid #333338;
-  color: #4a6cf7;
+  border-right: 1px solid var(--line);
+  color: var(--accent);
 }
 
 .slot-btn.delete:hover {
-  color: #ff4757;
+  color: var(--danger);
 }
 
 .empty-state {
   text-align: center;
   padding: 40px 20px;
-  color: #888;
+  color: var(--muted);
   font-size: 14px;
 }
 
@@ -235,13 +235,13 @@ const store = useDrawingStore()
 }
 
 .confirm-modal {
-  background: #222226;
-  border: 1px solid #333338;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 12px;
   width: 380px;
   max-width: 90vw;
-  color: #e0e0e0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
 }
 
 .confirm-header {
@@ -249,7 +249,7 @@ const store = useDrawingStore()
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  border-bottom: 1px solid #333338;
+  border-bottom: 1px solid var(--line);
 }
 
 .confirm-header h3 {
@@ -265,7 +265,7 @@ const store = useDrawingStore()
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #888;
+  color: var(--muted);
   font-size: 20px;
   cursor: pointer;
   display: flex;
@@ -274,8 +274,8 @@ const store = useDrawingStore()
 }
 
 .confirm-close-btn:hover {
-  background: #33333a;
-  color: #fff;
+  background: var(--surface-alt);
+  color: var(--surface);
 }
 
 .confirm-body {
@@ -286,7 +286,7 @@ const store = useDrawingStore()
   margin: 0;
   font-size: 14px;
   line-height: 1.5;
-  color: #c0c0c0;
+  color: var(--muted);
 }
 
 .confirm-footer {
@@ -294,7 +294,7 @@ const store = useDrawingStore()
   justify-content: flex-end;
   gap: 8px;
   padding: 12px 20px;
-  border-top: 1px solid #333338;
+  border-top: 1px solid var(--line);
 }
 
 .confirm-btn {
@@ -308,18 +308,18 @@ const store = useDrawingStore()
 }
 
 .confirm-btn.cancel {
-  background: #33333a;
-  color: #aaa;
+  background: var(--surface-alt);
+  color: var(--muted);
 }
 
 .confirm-btn.cancel:hover {
-  background: #3a3a42;
-  color: #e0e0e0;
+  background: var(--line);
+  color: var(--text);
 }
 
 .confirm-btn.danger {
-  background: #e74c3c;
-  color: #fff;
+  background: var(--danger);
+  color: var(--surface);
 }
 
 .confirm-btn.danger:hover {

@@ -156,10 +156,10 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
 <style scoped>
 /* === Single card wrapper === */
 .tag-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 6px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--shadow-sm);
   overflow: visible;
 }
 
@@ -224,11 +224,11 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
 .row-label {
   font-size: 0.88rem;
   font-weight: 500;
-  color: #334155;
+  color: var(--text);
 }
 
 .row-label.required-label {
-  color: #ef4444;
+  color: var(--danger);
 }
 
 /* === Center column === */
@@ -251,13 +251,13 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
 
 .tag-input-field {
   width: 100%;
-  border: 1.5px solid #cbd5e1;
+  border: 1.5px solid var(--line);
   border-radius: 6px;
   padding: 0.45rem 3.5rem 0.45rem 0.75rem;
   font-size: 0.88rem;
-  color: #334155;
+  color: var(--text);
   transition: border-color 0.2s;
-  background-color: #ffffff;
+  background-color: var(--surface);
 }
 
 .tag-input-field:focus {
@@ -267,7 +267,7 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
 }
 
 .tag-input-field::placeholder {
-  color: #94a3b8;
+  color: var(--muted);
 }
 
 .counter-badge {
@@ -275,7 +275,7 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
   right: 0.85rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #94a3b8;
+  color: var(--muted);
   font-size: 0.8rem;
   pointer-events: none;
   user-select: none;
@@ -319,10 +319,10 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
 }
 
 .tag-pill {
-  border: 1px solid #d2dae6;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: #f8fafc;
-  color: #334155;
+  background: var(--surface-alt);
+  color: var(--text);
   font-size: 0.84rem;
   padding: 0.28rem 0.65rem;
   display: inline-flex;
@@ -353,7 +353,7 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
 /* === Card separator === */
 .card-separator {
   height: 1px;
-  background-color: #edf2f7;
+  background-color: var(--line);
   margin: 0 1.25rem;
 }
 
@@ -381,8 +381,8 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
   display: inline-block;
   width: 18px;
   height: 18px;
-  background-color: #ffffff;
-  border: 1.5px solid #cbd5e1;
+  background-color: var(--surface);
+  border: 1.5px solid var(--line);
   border-radius: 4px;
   transition: all 0.2s ease-in-out;
   flex-shrink: 0;
@@ -390,7 +390,7 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
 
 .custom-checkbox:hover .checkbox-indicator {
   border-color: #3b82f6;
-  background-color: #f8fafc;
+  background-color: var(--surface-alt);
 }
 
 .custom-checkbox input:checked ~ .checkbox-indicator {
@@ -422,11 +422,11 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
   top: calc(100% + 0.35rem);
   left: 0;
   right: 0;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--line);
   border-radius: 6px;
-  background: #ffffff;
+  background: var(--surface);
   padding: 0.35rem;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-md);
   display: grid;
   gap: 0.2rem;
   max-height: 220px;
@@ -439,8 +439,8 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
   text-align: left;
   padding: 0.5rem 0.65rem;
   font-size: 0.86rem;
-  background: #ffffff;
-  color: #334155;
+  background: var(--surface);
+  color: var(--text);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -448,8 +448,8 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
 }
 
 .tag-suggestion-item:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--surface-alt);
+  color: var(--text);
 }
 
 .tag-name {
@@ -457,7 +457,7 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
 }
 
 .tag-count {
-  color: #94a3b8;
+  color: var(--muted);
   font-size: 0.8rem;
 }
 

@@ -86,27 +86,28 @@ async function submitReport() {
   display: flex; align-items: center; justify-content: center; z-index: 9999;
 }
 .modal-container {
-  background: var(--surface, #fff); border-radius: 12px; width: 480px; max-width: 90vw;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  background: var(--surface); border-radius: 12px; width: 480px; max-width: 90vw;
+  box-shadow: var(--shadow-lg);
 }
 .modal-header {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 16px 24px; border-bottom: 1px solid var(--border, #eee);
+  padding: 16px 24px; border-bottom: 1px solid var(--line);
 }
 .modal-header h3 { margin: 0; font-size: 1.1rem; }
 .btn-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 0; line-height: 1; }
 .modal-body { padding: 24px; }
 .modal-footer {
   display: flex; justify-content: flex-end; gap: 8px;
-  padding: 12px 24px; border-top: 1px solid var(--border, #eee);
+  padding: 12px 24px; border-top: 1px solid var(--line);
 }
 .form-group label { display: block; margin-bottom: 4px; font-weight: 500; font-size: 0.9rem; }
 .form-select, .form-control {
-  width: 100%; padding: 8px 12px; border: 1px solid var(--border, #ddd);
-  border-radius: 6px; font-size: 0.9rem; background: var(--input-bg, #fff);
+  width: 100%; padding: 8px 12px; border: 1px solid var(--line);
+  border-radius: 6px; font-size: 0.9rem; background: var(--surface);
+  color: var(--text);
 }
 .btn { padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; cursor: pointer; border: 1px solid transparent; }
-.btn-outline-secondary { border-color: var(--border, #ddd); background: transparent; }
-.btn-danger { background: #dc3545; color: #fff; }
+.btn-outline-secondary { border-color: var(--line); background: transparent; }
+.btn-danger { background: var(--danger); color: var(--surface); }
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 </style>

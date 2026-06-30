@@ -72,15 +72,15 @@ function submit() {
 }
 
 .modal-content {
-  background: #222226;
-  border: 1px solid #333338;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 12px;
   width: 460px;
   max-width: 90vw;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
-  color: #e0e0e0;
+  color: var(--text);
 }
 
 .modal-header {
@@ -88,7 +88,7 @@ function submit() {
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  border-bottom: 1px solid #333338;
+  border-bottom: 1px solid var(--line);
 }
 
 .modal-header h2 {
@@ -104,7 +104,7 @@ function submit() {
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #888;
+  color: var(--muted);
   font-size: 20px;
   cursor: pointer;
   display: flex;
@@ -113,8 +113,8 @@ function submit() {
 }
 
 .modal-close-btn:hover {
-  background: #33333a;
-  color: #fff;
+  background: var(--surface-alt);
+  color: var(--surface);
 }
 
 .modal-body {
@@ -128,7 +128,7 @@ function submit() {
   justify-content: flex-end;
   gap: 8px;
   padding: 12px 20px;
-  border-top: 1px solid #333338;
+  border-top: 1px solid var(--line);
 }
 
 .modal-btn {
@@ -141,18 +141,18 @@ function submit() {
 }
 
 .modal-btn.cancel {
-  background: #33333a;
-  color: #aaa;
+  background: var(--surface-alt);
+  color: var(--muted);
 }
 
 .modal-btn.cancel:hover {
-  background: #444;
-  color: #fff;
+  background: var(--line);
+  color: var(--surface);
 }
 
 .modal-btn.submit {
-  background: #4a6cf7;
-  color: #fff;
+  background: var(--accent);
+  color: var(--surface);
 }
 
 .modal-btn.submit:hover:not(:disabled) {
@@ -169,7 +169,7 @@ function submit() {
   margin-bottom: 16px;
   border-radius: 8px;
   overflow: hidden;
-  background: #fff;
+  background: var(--surface);
   max-height: 240px;
   display: flex;
   align-items: center;
@@ -193,7 +193,7 @@ function submit() {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #888;
+  color: var(--muted);
   margin-bottom: 6px;
 }
 
@@ -201,10 +201,10 @@ function submit() {
 .form-select {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid #444;
+  border: 1px solid var(--line);
   border-radius: 6px;
-  background: #1a1a1e;
-  color: #e0e0e0;
+  background: var(--surface);
+  color: var(--text);
   font-size: 14px;
   outline: none;
   box-sizing: border-box;
@@ -212,7 +212,7 @@ function submit() {
 
 .form-input:focus,
 .form-select:focus {
-  border-color: #4a6cf7;
+  border-color: var(--accent);
 }
 
 .form-row {
@@ -225,7 +225,7 @@ function submit() {
 }
 
 .form-error {
-  color: #ff4757;
+  color: var(--danger);
   font-size: 13px;
   margin: 8px 0 0;
 }

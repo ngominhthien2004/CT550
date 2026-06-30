@@ -175,15 +175,15 @@ onUnmounted(() => {
 
 <style scoped>
 .novel-reader-shell {
-  --novel-text-color: #1f2937;
-  --novel-bg: #ffffff;
-  --novel-accent: #0096fa;
+  --novel-text-color: var(--text);
+  --novel-bg: var(--surface);
+  --novel-accent: var(--accent);
   --novel-accent-hover: #007bd0;
-  --novel-muted: #6b7280;
-  --novel-border: #e5e7eb;
-  --novel-surface: #f9fafb;
-  --novel-progress-bg: #e5e7eb;
-  --novel-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --novel-muted: var(--muted);
+  --novel-border: var(--line);
+  --novel-surface: var(--surface-alt);
+  --novel-progress-bg: var(--line);
+  --novel-shadow: var(--shadow-sm);
 
   max-width: 800px;
   margin: 0 auto;

@@ -172,13 +172,13 @@ const excerpt = computed(() => {
 
 .novel-promo-cta--primary {
   background: var(--brand);
-  color: #fff;
+  color: var(--surface);
 }
 
 .novel-promo-cta--secondary {
   color: var(--text);
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--surface);
 }
 
 .novel-promo-visual {
@@ -239,7 +239,7 @@ const excerpt = computed(() => {
   border-radius: 16px;
   background: rgba(7, 13, 31, 0.66);
   backdrop-filter: blur(8px);
-  color: #fff;
+  color: var(--surface);
 }
 
 .novel-promo-stat dt {

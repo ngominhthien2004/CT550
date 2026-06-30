@@ -275,9 +275,9 @@ onMounted(() => {
 }
 
 .series-sort-select {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
   font-size: 0.82rem;
   border-radius: 8px;
   height: 34px;
@@ -287,7 +287,7 @@ onMounted(() => {
 }
 
 .series-sort-select:hover {
-  border-color: #9ca3af;
+  border-color: var(--muted);
 }
 
 .series-sort-select:focus {
@@ -301,9 +301,9 @@ onMounted(() => {
 }
 
 .create-series-btn {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
   font-size: 0.82rem;
   font-weight: 600;
   border-radius: 999px;
@@ -317,8 +317,8 @@ onMounted(() => {
 }
 
 .create-series-btn:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
+  background: var(--surface-alt);
+  border-color: var(--muted);
 }
 
 .create-dropdown-menu {
@@ -327,10 +327,10 @@ onMounted(() => {
   top: 100%;
   right: 0;
   margin-top: 0.25rem;
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  box-shadow: var(--shadow-md);
   min-width: 200px;
   z-index: 20;
   overflow: hidden;
@@ -348,13 +348,13 @@ onMounted(() => {
   background: transparent;
   padding: 0.65rem 1rem;
   font-size: 0.82rem;
-  color: #374151;
+  color: var(--text);
   cursor: pointer;
   transition: background 0.1s;
 }
 
 .dropdown-item:hover {
-  background: #f3f4f6;
+  background: var(--surface-alt);
 }
 
 .series-empty {
@@ -364,7 +364,7 @@ onMounted(() => {
 
 .empty-title {
   font-size: 1.1rem;
-  color: #6b7280;
+  color: var(--muted);
   font-weight: 600;
   margin-bottom: 1.5rem;
 }
@@ -377,9 +377,9 @@ onMounted(() => {
 }
 
 .empty-btn {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
   font-size: 0.85rem;
   font-weight: 600;
   border-radius: 999px;
@@ -391,8 +391,8 @@ onMounted(() => {
 }
 
 .empty-btn:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
+  background: var(--surface-alt);
+  border-color: var(--muted);
 }
 
 .series-grid {
@@ -403,16 +403,16 @@ onMounted(() => {
 
 .series-card {
   position: relative;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--line);
   border-radius: 8px;
   overflow: hidden;
-  background: #fff;
+  background: var(--surface);
   cursor: pointer;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .series-card:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-sm);
   transform: translateY(-2px);
 }
 
@@ -420,7 +420,7 @@ onMounted(() => {
   position: relative;
   z-index: 4;
   aspect-ratio: 1;
-  background: #f3f4f6;
+  background: var(--surface-alt);
   overflow: hidden;
 }
 
@@ -435,7 +435,7 @@ onMounted(() => {
   height: 100%;
   display: grid;
   place-items: center;
-  color: #d1d5db;
+  color: var(--line);
   font-size: 2.5rem;
 }
 
@@ -452,9 +452,9 @@ onMounted(() => {
   height: 28px;
   border-radius: 50%;
   border: none;
-  background: rgba(255,255,255,0.85);
+  background: var(--surface);
   backdrop-filter: blur(4px);
-  color: #374151;
+  color: var(--text);
   font-size: 0.75rem;
   cursor: pointer;
   display: grid;
@@ -463,7 +463,7 @@ onMounted(() => {
 }
 
 .series-card-menu-btn:hover {
-  background: rgba(255,255,255,1);
+  background: var(--surface);
 }
 
 .series-card-menu-dropdown {
@@ -471,10 +471,10 @@ onMounted(() => {
   top: 100%;
   right: 0;
   margin-top: 4px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  box-shadow: var(--shadow-md);
   min-width: 120px;
   overflow: hidden;
   z-index: 10;
@@ -488,17 +488,17 @@ onMounted(() => {
   background: transparent;
   padding: 0.5rem 0.75rem;
   font-size: 0.8rem;
-  color: #374151;
+  color: var(--text);
   cursor: pointer;
   transition: background 0.1s;
 }
 
 .menu-dropdown-item:hover {
-  background: #f3f4f6;
+  background: var(--surface-alt);
 }
 
 .menu-dropdown-item--danger {
-  color: #dc2626;
+  color: var(--danger);
 }
 
 .menu-dropdown-item--danger:hover {
@@ -512,7 +512,7 @@ onMounted(() => {
 .series-card-title {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--text);
   margin: 0 0 0.35rem;
   line-height: 1.3;
 }
@@ -522,12 +522,12 @@ onMounted(() => {
   align-items: center;
   gap: 0.35rem;
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--muted);
   margin-bottom: 0.5rem;
 }
 
 .series-card-separator {
-  color: #d1d5db;
+  color: var(--line);
 }
 
 .series-card-stats {
@@ -542,7 +542,7 @@ onMounted(() => {
   align-items: center;
   gap: 0.3rem;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .stat-item i {
@@ -552,15 +552,15 @@ onMounted(() => {
 }
 
 .stat-item:nth-child(1) i { color: #f59e0b; }
-.stat-item:nth-child(2) i { color: #ef4444; }
+.stat-item:nth-child(2) i { color: var(--danger); }
 .stat-item:nth-child(3) i { color: #6366f1; }
 .stat-item:nth-child(4) i { color: #10b981; }
 
 .series-card-status {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--muted);
   padding-top: 0.35rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--line);
 }
 
 .series-card-status i {
@@ -572,7 +572,7 @@ onMounted(() => {
 }
 
 .state-note {
-  color: #4b5563;
+  color: var(--muted);
   font-weight: 600;
   text-align: center;
   padding: 2rem;
@@ -596,12 +596,12 @@ onMounted(() => {
 }
 
 .delete-confirm-dialog {
-  background: #fff;
+  background: var(--surface);
   border-radius: 12px;
   padding: 1.5rem;
   max-width: 400px;
   width: 100%;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-lg);
   animation: csSlideUp 0.2s ease;
 }
 
@@ -613,12 +613,12 @@ onMounted(() => {
 .delete-confirm-title {
   font-weight: 700;
   font-size: 1rem;
-  color: #1f2937;
+  color: var(--text);
   margin: 0 0 0.5rem;
 }
 
 .delete-confirm-text {
-  color: #6b7280;
+  color: var(--muted);
   font-size: 0.85rem;
   margin: 0;
   line-height: 1.5;
@@ -643,22 +643,22 @@ onMounted(() => {
 }
 
 .cs-btn--cancel {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
 }
 
 .cs-btn--cancel:hover {
-  background: #f9fafb;
+  background: var(--surface-alt);
 }
 
 .cs-btn--delete {
-  background: #dc2626;
+  background: var(--danger);
   color: #fff;
 }
 
 .cs-btn--delete:hover:not(:disabled) {
-  background: #b91c1c;
+  background: var(--danger);
 }
 
 .cs-btn--delete:disabled {

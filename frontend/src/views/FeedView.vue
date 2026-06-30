@@ -342,7 +342,7 @@ watch(
 
 .tag-chip:nth-child(4n + 4) {
   background: #a3e635;
-  color: #334155;
+  color: var(--text);
 }
 
 .result-tabs {
@@ -478,7 +478,7 @@ watch(
 .thumb-fallback {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #cbd5e1, #e2e8f0);
+  background: linear-gradient(135deg, var(--line), var(--surface-alt));
 }
 
 .title-link {

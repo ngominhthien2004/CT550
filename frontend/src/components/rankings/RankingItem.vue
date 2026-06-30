@@ -101,7 +101,7 @@ const emit = defineEmits(['like', 'bookmark'])
 }
 
 .rank-top-1 { color: #facc15; font-size: 32px; }
-.rank-top-2 { color: #94a3b8; font-size: 28px; }
+.rank-top-2 { color: var(--muted); font-size: 28px; }
 .rank-top-3 { color: #d97706; font-size: 26px; }
 
 .rank-trend { font-size: 10px; color: var(--muted); margin-top: 4px; }

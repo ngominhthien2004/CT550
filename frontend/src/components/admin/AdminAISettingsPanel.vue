@@ -213,16 +213,16 @@ watch(() => props.activeTab, (tab) => {
 }
 .success-note {
   color: #155724;
-  background: #d4edda;
-  border: 1px solid #c3e6cb;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
   border-radius: 4px;
   padding: 0.5rem 0.75rem;
   font-size: 0.9rem;
 }
 .error-note {
-  color: #721c24;
-  background: #f8d7da;
-  border: 1px solid #f5c6cb;
+  color: var(--danger);
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
   border-radius: 4px;
   padding: 0.5rem 0.75rem;
   font-size: 0.9rem;

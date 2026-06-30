@@ -194,17 +194,17 @@ async function executeDelete() {
 <style scoped>
 /* ── Manager Shell ──────────────────────────────────────────────── */
 .chapter-manager {
-  --cm-bg: #ffffff;
-  --cm-text: #1a1a1a;
-  --cm-muted: #6b7280;
-  --cm-border: #e5e7eb;
-  --cm-surface: #f9fafb;
-  --cm-accent: #3b82f6;
+  --cm-bg: var(--surface);
+  --cm-text: var(--text);
+  --cm-muted: var(--muted);
+  --cm-border: var(--line);
+  --cm-surface: var(--surface-alt);
+  --cm-accent: var(--accent);
   --cm-accent-hover: #2563eb;
-  --cm-danger: #ef4444;
+  --cm-danger: var(--danger);
   --cm-danger-hover: #dc2626;
   --cm-radius: 8px;
-  --cm-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --cm-shadow: var(--shadow-sm);
 
   background: var(--cm-bg);
   border: 1px solid var(--cm-border);
@@ -238,7 +238,7 @@ async function executeDelete() {
   border: none;
   border-radius: 6px;
   background: var(--cm-accent);
-  color: #ffffff;
+  color: var(--surface);
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -421,9 +421,7 @@ async function executeDelete() {
   overflow-y: auto;
   background: var(--cm-bg);
   border-radius: 12px;
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.15),
-    0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-lg);
   padding: 1.5rem;
   animation: modal-in 0.2s ease-out;
 }
@@ -594,7 +592,7 @@ async function executeDelete() {
   border: none;
   border-radius: 6px;
   background: var(--cm-accent);
-  color: #ffffff;
+  color: var(--surface);
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -620,7 +618,7 @@ async function executeDelete() {
   border: none;
   border-radius: 6px;
   background: var(--cm-danger);
-  color: #ffffff;
+  color: var(--surface);
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;

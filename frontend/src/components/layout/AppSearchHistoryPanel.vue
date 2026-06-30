@@ -320,10 +320,10 @@ watch(favoriteTagKey, loadFavoriteTags)
   left: 0;
   z-index: 40;
   width: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: #ffffff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
   max-height: min(72vh, 620px);
   overflow: auto;
   scrollbar-width: none;
@@ -341,31 +341,31 @@ watch(favoriteTagKey, loadFavoriteTags)
   align-items: center;
   justify-content: space-between;
   padding: 0.45rem 0.55rem;
-  color: #474747;
+  color: var(--text);
 }
 
 .history-head strong {
   font-size: 0.72rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #858585;
+  color: var(--muted);
 }
 
 .history-head button {
   border: none;
   background: transparent;
-  color: #858585;
+  color: var(--muted);
   font-size: 0.72rem;
 }
 
 .history-head button:hover {
-  color: #0096fa;
+  color: var(--accent);
 }
 
 /* --- Empty State --- */
 .history-empty {
   padding: 0.35rem 0.55rem 0.5rem;
-  color: #858585;
+  color: var(--muted);
   font-size: 0.8rem;
   display: grid;
   gap: 0.15rem;
@@ -382,14 +382,14 @@ watch(favoriteTagKey, loadFavoriteTags)
   grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 0.45rem;
-  color: #474747;
+  color: var(--text);
   text-align: left;
   font-size: 0.84rem;
 }
 
 .history-item:hover,
 .history-item:focus-visible {
-  background: #f5f5f5;
+  background: var(--surface-alt);
 }
 
 .history-item > span:first-child {
@@ -399,7 +399,7 @@ watch(favoriteTagKey, loadFavoriteTags)
 }
 
 .history-item i {
-  color: #858585;
+  color: var(--muted);
 }
 
 .history-remove {
@@ -413,7 +413,7 @@ watch(favoriteTagKey, loadFavoriteTags)
 }
 
 .history-remove:hover {
-  background: #f5f5f5;
+  background: var(--surface-alt);
 }
 
 /* --- Suggestions --- */
@@ -426,14 +426,14 @@ watch(favoriteTagKey, loadFavoriteTags)
   display: inline-flex;
   align-items: center;
   gap: 0.46rem;
-  color: #858585;
+  color: var(--muted);
   text-align: left;
   font-size: 0.82rem;
 }
 
 .history-suggestion:hover,
 .history-suggestion:focus-visible {
-  background: #f5f5f5;
+  background: var(--surface-alt);
 }
 
 .history-suggestion i {
@@ -446,7 +446,7 @@ watch(favoriteTagKey, loadFavoriteTags)
   width: 100%;
   border: none;
   background: transparent;
-  color: #3d7699;
+  color: var(--accent);
   padding: 0.5rem 0.55rem;
   text-align: center;
   font-weight: 500;
@@ -455,12 +455,12 @@ watch(favoriteTagKey, loadFavoriteTags)
 }
 
 .history-view-more:hover {
-  background: #f5f5f5;
+  background: var(--surface-alt);
 }
 
 /* --- Panel Sections --- */
 .panel-block {
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid var(--line);
   margin-top: 0.2rem;
   padding: 0.75rem 0.55rem 0.45rem;
 }
@@ -473,7 +473,7 @@ watch(favoriteTagKey, loadFavoriteTags)
 }
 
 .panel-block-head strong {
-  color: #474747;
+  color: var(--text);
   font-size: 0.9rem;
   font-weight: 600;
 }
@@ -481,12 +481,12 @@ watch(favoriteTagKey, loadFavoriteTags)
 .panel-block-head button {
   border: none;
   background: transparent;
-  color: #858585;
+  color: var(--muted);
   font-size: 0.78rem;
 }
 
 .panel-block-head button:hover {
-  color: #0096fa;
+  color: var(--accent);
 }
 
 /* --- Favorite Tags (Pixiv accent style) --- */
@@ -498,7 +498,7 @@ watch(favoriteTagKey, loadFavoriteTags)
 
 .favorite-empty {
   margin: 0;
-  color: #858585;
+  color: var(--muted);
   font-size: 0.78rem;
 }
 
@@ -515,7 +515,7 @@ watch(favoriteTagKey, loadFavoriteTags)
   border: none;
   border-radius: 6px;
   overflow: hidden;
-  background: #f5f5f5;
+  background: var(--surface-alt);
   display: grid;
   padding: 0;
   text-align: left;
@@ -558,9 +558,9 @@ watch(favoriteTagKey, loadFavoriteTags)
   min-height: 320px;
   max-height: 78vh;
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: #ffffff;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
   padding: 0.85rem 1.15rem 1rem;
   position: relative;
   overflow: auto;
@@ -572,13 +572,13 @@ watch(favoriteTagKey, loadFavoriteTags)
   font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: #1f1f1f;
+  color: var(--text);
 }
 
 .favorite-count {
   text-align: right;
   margin: 0.4rem 0 0.3rem;
-  color: #858585;
+  color: var(--muted);
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -589,7 +589,7 @@ watch(favoriteTagKey, loadFavoriteTags)
   right: 0.68rem;
   border: none;
   background: transparent;
-  color: #858585;
+  color: var(--muted);
   font-size: 1.4rem;
   line-height: 1;
 }
@@ -607,27 +607,27 @@ watch(favoriteTagKey, loadFavoriteTags)
 }
 
 .favorite-modal-item strong {
-  color: #1f1f1f;
+  color: var(--text);
   font-size: 1rem;
   line-height: 1.2;
 }
 
 .favorite-modal-item p {
   margin: 0.1rem 0 0;
-  color: #858585;
+  color: var(--muted);
   font-size: 0.82rem;
 }
 
 .favorite-modal-item button {
   border: none;
   background: transparent;
-  color: #858585;
+  color: var(--muted);
   font-size: 1.1rem;
   padding: 0.1rem 0.24rem;
 }
 
 .favorite-modal-item button:hover {
-  color: #0096fa;
+  color: var(--accent);
 }
 
 /* --- Favorite Tags Add Input --- */
@@ -642,24 +642,24 @@ watch(favoriteTagKey, loadFavoriteTags)
 
 .favorite-add-input {
   flex: 1;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--line);
   border-radius: 6px;
   padding: 0.45rem 0.6rem;
   font-size: 0.88rem;
-  color: #1f1f1f;
-  background: #fafafa;
+  color: var(--text);
+  background: var(--surface);
   outline: none;
   transition: border-color 0.15s;
 }
 
 .favorite-add-input:focus {
-  border-color: #0096fa;
-  background: #fff;
+  border-color: var(--accent);
+  background: var(--surface);
 }
 
 .favorite-add-btn {
   border: none;
-  background: #0096fa;
+  background: var(--accent);
   color: #fff;
   border-radius: 999px;
   height: 38px;
@@ -682,7 +682,7 @@ watch(favoriteTagKey, loadFavoriteTags)
 
 .favorite-add-error {
   margin: 0.3rem 0 0;
-  color: #e74c3c;
+  color: var(--danger);
   font-size: 0.78rem;
 }
 
@@ -701,7 +701,7 @@ watch(favoriteTagKey, loadFavoriteTags)
 
 .favorite-modal-empty {
   text-align: center;
-  color: #858585;
+  color: var(--muted);
   font-size: 0.82rem;
   padding: 1rem 0;
   margin: 0;

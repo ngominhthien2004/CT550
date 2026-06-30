@@ -139,11 +139,11 @@ const props = defineProps({
   display: grid;
   grid-template-columns: 240px 1fr auto;
   align-items: center;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 6px;
   padding: 0.95rem 1.25rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--shadow-sm);
 }
 
 .settings-row-card.info-row {
@@ -183,11 +183,11 @@ const props = defineProps({
 .row-label {
   font-size: 0.88rem;
   font-weight: 500;
-  color: #334155;
+  color: var(--text);
 }
 
 .row-label.required-label {
-  color: #ef4444;
+  color: var(--danger);
 }
 
 .row-center {
@@ -207,7 +207,7 @@ const props = defineProps({
   cursor: pointer;
   user-select: none;
   font-size: 0.88rem;
-  color: #334155;
+  color: var(--text);
 }
 
 .custom-radio input {
@@ -223,15 +223,15 @@ const props = defineProps({
   display: inline-block;
   width: 18px;
   height: 18px;
-  background-color: #ffffff;
-  border: 1.5px solid #cbd5e1;
+  background-color: var(--surface);
+  border: 1.5px solid var(--line);
   border-radius: 50%;
   transition: all 0.2s ease-in-out;
 }
 
 .custom-radio:hover .radio-indicator {
   border-color: #3b82f6;
-  background-color: #f8fafc;
+  background-color: var(--surface-alt);
 }
 
 .custom-radio input:checked ~ .radio-indicator {
@@ -263,7 +263,7 @@ const props = defineProps({
   cursor: pointer;
   user-select: none;
   font-size: 0.88rem;
-  color: #334155;
+  color: var(--text);
 }
 
 .custom-checkbox input {
@@ -279,15 +279,15 @@ const props = defineProps({
   display: inline-block;
   width: 18px;
   height: 18px;
-  background-color: #ffffff;
-  border: 1.5px solid #cbd5e1;
+  background-color: var(--surface);
+  border: 1.5px solid var(--line);
   border-radius: 4px;
   transition: all 0.2s ease-in-out;
 }
 
 .custom-checkbox:hover .checkbox-indicator {
   border-color: #3b82f6;
-  background-color: #f8fafc;
+  background-color: var(--surface-alt);
 }
 
 .custom-checkbox input:checked ~ .checkbox-indicator {
@@ -313,7 +313,7 @@ const props = defineProps({
 }
 
 .auto-enabled-text {
-  color: #ef4444;
+  color: var(--danger);
   font-size: 0.82rem;
   font-weight: 500;
   margin-top: 0.25rem;
@@ -337,12 +337,12 @@ const props = defineProps({
 
 .custom-select {
   max-width: 240px;
-  border: 1.5px solid #cbd5e1;
+  border: 1.5px solid var(--line);
   border-radius: 6px;
   padding: 0.4rem 0.75rem;
   font-size: 0.88rem;
-  color: #334155;
-  background-color: #ffffff;
+  color: var(--text);
+  background-color: var(--surface);
   transition: border-color 0.2s;
 }
 
@@ -353,11 +353,11 @@ const props = defineProps({
 }
 
 .custom-input {
-  border: 1.5px solid #cbd5e1;
+  border: 1.5px solid var(--line);
   border-radius: 6px;
   padding: 0.4rem 0.75rem;
   font-size: 0.88rem;
-  color: #334155;
+  color: var(--text);
   transition: border-color 0.2s;
 }
 

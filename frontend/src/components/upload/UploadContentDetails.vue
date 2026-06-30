@@ -114,10 +114,10 @@ const props = defineProps({
 
 /* Premium Pixiv Style Title & Caption Box */
 .content-details-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 6px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
@@ -131,20 +131,20 @@ const props = defineProps({
   border: none;
   font-size: 1.05rem;
   font-weight: 500;
-  color: #1e293b;
+  color: var(--text);
   background: transparent;
   outline: none;
   padding: 0.2rem 0;
 }
 
 .title-input-field::placeholder {
-  color: #94a3b8;
+  color: var(--muted);
   font-weight: 400;
 }
 
 .separator-line {
   height: 1px;
-  background-color: #edf2f7;
+  background-color: var(--line);
   width: 100%;
 }
 
@@ -157,7 +157,7 @@ const props = defineProps({
   width: 100%;
   border: none;
   font-size: 0.95rem;
-  color: #334155;
+  color: var(--text);
   background: transparent;
   outline: none;
   resize: vertical;
@@ -165,12 +165,12 @@ const props = defineProps({
 }
 
 .caption-textarea-field::placeholder {
-  color: #94a3b8;
+  color: var(--muted);
 }
 
 .counter-badge {
   position: absolute;
-  color: #94a3b8;
+  color: var(--muted);
   font-size: 0.78rem;
   user-select: none;
   pointer-events: none;
@@ -192,11 +192,11 @@ const props = defineProps({
   display: grid;
   grid-template-columns: 240px 1fr;
   align-items: center;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 6px;
   padding: 0.95rem 1.25rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--shadow-sm);
 }
 
 .additional-settings-card.vertical-layout {
@@ -219,7 +219,7 @@ const props = defineProps({
 .row-label {
   font-size: 0.88rem;
   font-weight: 500;
-  color: #334155;
+  color: var(--text);
 }
 
 .row-center {
@@ -234,11 +234,11 @@ const props = defineProps({
 
 .custom-input {
   max-width: 320px;
-  border: 1.5px solid #cbd5e1;
+  border: 1.5px solid var(--line);
   border-radius: 6px;
   padding: 0.4rem 0.75rem;
   font-size: 0.88rem;
-  color: #334155;
+  color: var(--text);
   transition: border-color 0.2s;
 }
 
@@ -249,11 +249,11 @@ const props = defineProps({
 }
 
 .custom-textarea {
-  border: 1.5px solid #cbd5e1;
+  border: 1.5px solid var(--line);
   border-radius: 6px;
   padding: 0.55rem 0.75rem;
   font-size: 0.88rem;
-  color: #334155;
+  color: var(--text);
   transition: border-color 0.2s;
   width: 100%;
 }
@@ -302,7 +302,7 @@ const props = defineProps({
   cursor: pointer;
   user-select: none;
   font-size: 0.88rem;
-  color: #334155;
+  color: var(--text);
 }
 
 .custom-radio input {
@@ -318,15 +318,15 @@ const props = defineProps({
   display: inline-block;
   width: 18px;
   height: 18px;
-  background-color: #ffffff;
-  border: 1.5px solid #cbd5e1;
+  background-color: var(--surface);
+  border: 1.5px solid var(--line);
   border-radius: 50%;
   transition: all 0.2s ease-in-out;
 }
 
 .custom-radio:hover .radio-indicator {
   border-color: #3b82f6;
-  background-color: #f8fafc;
+  background-color: var(--surface-alt);
 }
 
 .custom-radio input:checked ~ .radio-indicator {

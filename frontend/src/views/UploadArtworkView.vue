@@ -573,14 +573,14 @@ onBeforeUnmount(() => {
 }
 
 .settings-card {
-  border: 1px solid #dbe2ec;
+  border: 1px solid var(--line);
   border-radius: 0.75rem;
   padding: 0.9rem;
-  background: #fff;
+  background: var(--surface);
 }
 
 .counter {
-  color: #6b7280;
+  color: var(--muted);
   font-size: 0.84rem;
 }
 
