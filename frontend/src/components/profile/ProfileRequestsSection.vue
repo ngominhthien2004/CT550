@@ -332,18 +332,18 @@ watch(
 }
 
 .status-open {
-  background: #dcfce7;
-  color: #15803d;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
 }
 
 .status-closed {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
 }
 
 .status-accepting {
-  background: #e0f2fe;
-  color: #0369a1;
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
 }
 
 .request-plan.selected {

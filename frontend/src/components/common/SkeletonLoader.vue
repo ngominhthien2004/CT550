@@ -32,14 +32,14 @@ defineProps({
 .skeleton-card {
   border-radius: 12px;
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #f0f0f0;
+  background: var(--surface);
+  border: 1px solid var(--line);
 }
 
 .skeleton-image {
   width: 100%;
   aspect-ratio: 1;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, var(--line) 25%, var(--surface-alt) 50%, var(--line) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -47,7 +47,7 @@ defineProps({
 .skeleton-line {
   height: 12px;
   border-radius: 6px;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, var(--line) 25%, var(--surface-alt) 50%, var(--line) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   margin: 8px 10px;
@@ -74,7 +74,7 @@ defineProps({
   width: 94px;
   height: 94px;
   border-radius: 50%;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, var(--line) 25%, var(--surface-alt) 50%, var(--line) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -82,7 +82,7 @@ defineProps({
 .skeleton-banner {
   height: 300px;
   border-radius: 0;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, var(--line) 25%, var(--surface-alt) 50%, var(--line) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }

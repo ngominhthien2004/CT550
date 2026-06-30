@@ -75,7 +75,7 @@ onMounted(loadBlocked)
 .blocked-list h2 {
   font-size: 1.2rem;
   margin-bottom: 1rem;
-  color: #1f2937;
+  color: var(--brand);
 }
 .state-text {
   text-align: center;

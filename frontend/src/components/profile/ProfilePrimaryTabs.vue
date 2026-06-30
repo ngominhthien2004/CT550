@@ -42,6 +42,6 @@ const selectTab = inject('selectMainTab')
 
 .profile-tab.active {
   color: var(--brand);
-  border-bottom-color: #0096fa;
+  border-bottom-color: var(--accent);
 }
 </style>
