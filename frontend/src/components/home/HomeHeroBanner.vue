@@ -130,7 +130,7 @@ defineProps({
   color: #fff;
   font-size: 1.2rem;
   line-height: 1.04;
-  max-width: 13ch;
+  max-width: 24ch;
 }
 
 .banner-overlay p {
