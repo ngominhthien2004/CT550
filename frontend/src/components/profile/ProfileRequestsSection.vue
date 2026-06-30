@@ -1,5 +1,5 @@
 <script setup>
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth.store'
 import { useRequestStore } from '../../stores/request.store'
@@ -8,14 +8,6 @@ const props = defineProps({
   terms: {
     type: Array,
     default: () => [],
-  },
-  creator: {
-    type: Object,
-    required: true,
-  },
-  isOwnProfile: {
-    type: Boolean,
-    default: false,
   },
   loading: {
     type: Boolean,
@@ -30,6 +22,8 @@ const props = defineProps({
 const router = useRouter()
 const authStore = useAuthStore()
 const requestStore = useRequestStore()
+const user = inject('profileUser')
+const isOwnProfile = inject('isOwnProfile')
 const selectedTermId = ref('')
 const referenceFiles = ref([])
 const submitMessage = ref('')
@@ -53,16 +47,12 @@ const form = reactive({
 })
 
 const openTerms = computed(() => props.terms.filter((term) => term.isOpen))
-const visibleTerms = computed(() => (props.isOwnProfile ? props.terms : openTerms.value))
+const visibleTerms = computed(() => (isOwnProfile.value ? props.terms : openTerms.value))
 const selectedTerm = computed(() => openTerms.value.find((term) => term._id === selectedTermId.value) || openTerms.value[0] || null)
-const canSubmit = computed(() => Boolean(selectedTerm.value && authStore.isAuthenticated && !props.isOwnProfile))
-
-
+const canSubmit = computed(() => Boolean(selectedTerm.value && authStore.isAuthenticated && !isOwnProfile.value))
 
 function syncTermDefaults(term) {
-  if (!term) {
-    return
-  }
+  if (!term) return
   selectedTermId.value = term._id
   form.workType = term.acceptedWorkTypes?.[0] || 'illust'
   form.proposedAmount = term.targetPrice || ''
@@ -77,7 +67,7 @@ async function submitRequest() {
   submitError.value = ''
 
   if (!authStore.isAuthenticated) {
-    await router.push({ name: 'login', query: { redirect: `/account?user=${props.creator._id}&tab=requests` } })
+    await router.push({ name: 'login', query: { redirect: `/account?user=${user.value._id}&tab=requests` } })
     return
   }
 
@@ -470,13 +460,7 @@ textarea {
   text-align: center;
 }
 
-
-
-
-
-
 .submit-request-btn:disabled {
   opacity: 0.55;
 }
 </style>
-

@@ -1,24 +1,22 @@
 <script setup>
-import { computed, watch } from 'vue'
+import { computed, watch, inject } from 'vue'
 import { useImageUpload } from '@/composables/useImageUpload'
 
 const DEFAULT_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
-const props = defineProps({
-  show: { type: Boolean, default: false },
-  user: { type: Object, default: () => ({}) },
-})
-
-const emit = defineEmits(['close', 'save'])
+const show = inject('showAvatarModal')
+const user = inject('profileUser')
+const close = inject('closeAvatarModal')
+const save = inject('saveAvatar')
 
 const upload = useImageUpload({
   formats: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
 })
 
-const currentAvatar = computed(() => props.user?.avatar || DEFAULT_AVATAR)
+const currentAvatar = computed(() => user?.avatar || DEFAULT_AVATAR)
 
 watch(
-  () => props.show,
+  show,
   (visible) => {
     if (!visible) {
       upload.reset()
@@ -35,19 +33,19 @@ watch(currentAvatar, (next) => {
 
 function handleSave() {
   const fd = upload.toFormData('avatar')
-  if (fd) emit('save', fd)
+  if (fd) save(fd)
 }
 </script>
 
 <template>
-  <div v-if="show" class="modal-backdrop" @click.self="emit('close')" @keydown.enter.prevent="emit('close')" @keydown.space.prevent="emit('close')" tabindex="0" role="button">
+  <div v-if="show" class="modal-backdrop" @click.self="close" @keydown.enter.prevent="close" @keydown.space.prevent="close" tabindex="0" role="button">
     <div class="modal-card avatar-card">
       <header class="modal-header">
         <div>
           <p class="avatar-kicker">Profile picture</p>
           <h2 class="modal-title">Edit profile image</h2>
         </div>
-        <button type="button" class="modal-close avatar-close" aria-label="Close avatar editor" @click="emit('close')">
+        <button type="button" class="modal-close avatar-close" aria-label="Close avatar editor" @click="close">
           <i class="fa-solid fa-xmark" aria-hidden="true"></i>
         </button>
       </header>
@@ -72,7 +70,7 @@ function handleSave() {
 
       <footer class="modal-footer modal-footer--row">
         <button type="button" class="modal-btn modal-btn--accent modal-btn--inline" @click="handleSave">Save picture</button>
-        <button type="button" class="modal-btn modal-btn--secondary modal-btn--inline" @click="emit('close')">Cancel</button>
+        <button type="button" class="modal-btn modal-btn--secondary modal-btn--inline" @click="close">Cancel</button>
       </footer>
     </div>
   </div>

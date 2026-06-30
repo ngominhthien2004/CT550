@@ -1,16 +1,14 @@
 <script setup>
-import { computed, watch } from 'vue'
+import { computed, watch, inject } from 'vue'
 import { useImageUpload } from '@/composables/useImageUpload'
 
 const DEFAULT_COVER = 'linear-gradient(135deg, #f1f5f9 0%, #dbeafe 52%, #fef3c7 100%)'
 
-const props = defineProps({
-  show: { type: Boolean, default: false },
-  user: { type: Object, default: () => ({}) },
-  coverImage: { type: String, default: '' },
-})
-
-const emit = defineEmits(['close', 'save'])
+const show = inject('showCoverModal')
+const user = inject('profileUser')
+const coverImage = inject('profileCoverImage')
+const close = inject('closeCoverModal')
+const save = inject('saveCover')
 
 const upload = useImageUpload({
   maxSize: 8 * 1024 * 1024,
@@ -19,10 +17,10 @@ const upload = useImageUpload({
   formats: ['image/jpeg', 'image/png', 'image/gif'],
 })
 
-const currentCover = computed(() => props.coverImage || props.user?.coverImage || '')
+const currentCover = computed(() => coverImage || user?.coverImage || '')
 
 watch(
-  () => props.show,
+  show,
   (visible) => {
     if (!visible) {
       upload.reset()
@@ -43,16 +41,16 @@ function handleUpload() {
     upload.error.value = 'Please select an image first.'
     return
   }
-  emit('save', fd)
+  save(fd)
 }
 </script>
 
 <template>
-  <div v-if="show" class="modal-backdrop modal-backdrop--top" @click.self="emit('close')" @keydown.enter.prevent="emit('close')" @keydown.space.prevent="emit('close')" tabindex="0" role="button">
+  <div v-if="show" class="modal-backdrop modal-backdrop--top" @click.self="close" @keydown.enter.prevent="close" @keydown.space.prevent="close" tabindex="0" role="button">
     <div class="modal-card cover-card">
       <header class="modal-header">
         <h2 class="modal-title">Edit cover image</h2>
-        <button type="button" class="modal-close" aria-label="Close" @click="emit('close')">
+        <button type="button" class="modal-close" aria-label="Close" @click="close">
           <i class="fa-solid fa-xmark" aria-hidden="true"></i>
         </button>
       </header>
@@ -105,7 +103,7 @@ function handleUpload() {
           Agree and upload
         </button>
         
-        <button type="button" class="modal-btn modal-btn--secondary" @click="emit('close')">Cancel</button>
+        <button type="button" class="modal-btn modal-btn--secondary" @click="close">Cancel</button>
       </div>
     </div>
   </div>

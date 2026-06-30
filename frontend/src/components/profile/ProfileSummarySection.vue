@@ -1,103 +1,50 @@
 <script setup>
-import { computed, ref, watch, onUnmounted } from 'vue'
+import { computed, ref, watch, onUnmounted, inject } from 'vue'
 import { userApi } from '../../services/api'
 import { useAuthStore } from '../../stores/auth.store'
 import UserReportModal from '../user/UserReportModal.vue'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
-const props = defineProps({
-  user: {
-    type: Object,
-    required: true,
-  },
-  followingCount: {
-    type: Number,
-    default: 0,
-  },
-  followersCount: {
-    type: Number,
-    default: 0,
-  },
-  profileLocation: {
-    type: String,
-    default: '',
-  },
-  profileGender: {
-    type: String,
-    default: '',
-  },
-  profileBirthday: {
-    type: String,
-    default: '',
-  },
-  isOwnProfile: {
-    type: Boolean,
-    default: true,
-  },
-  isFollowing: {
-    type: Boolean,
-    default: false,
-  },
-  followLoading: {
-    type: Boolean,
-    default: false,
-  },
-  followError: {
-    type: String,
-    default: '',
-  },
-  artworkCount: {
-    type: Number,
-    default: 0,
-  },
-  isAcceptingRequests: {
-    type: Boolean,
-    default: false,
-  },
-})
+const user = inject('profileUser')
+const isOwnProfile = inject('isOwnProfile')
+const followingCount = inject('followingCount')
+const followersCount = inject('followersCount')
+const profileLocation = inject('profileLocation')
+const profileGender = inject('profileGender')
+const profileBirthday = inject('profileBirthday')
+const isFollowing = inject('isFollowingProfile')
+const followLoading = inject('followLoading')
+const followError = inject('followError')
+const isAcceptingRequests = inject('isAcceptingRequests')
+const editProfile = inject('openEditModal')
+const editAvatar = inject('openAvatarModal')
+const openRequests = inject('openRequestsTab')
+const toggleFollow = inject('toggleFollow')
 
-const avatarSrc = computed(() => props.user?.avatar || DEFAULT_PROFILE_AVATAR)
-const profileBio = computed(() => props.user?.bio || (props.isOwnProfile ? 'Curate your cover, avatar, and gallery to give your profile more character.' : 'This creator has not added a bio yet.'))
+const avatarSrc = computed(() => user?.avatar || DEFAULT_PROFILE_AVATAR)
+const profileBio = computed(() => user?.bio || (isOwnProfile ? 'Curate your cover, avatar, and gallery to give your profile more character.' : 'This creator has not added a bio yet.'))
 const socialLinks = computed(() => {
-  const links = props.user?.socialLinks || {}
+  const links = user?.socialLinks || {}
   const rows = [
-    {
-      key: 'twitter',
-      icon: 'fa-brands fa-x-twitter',
-      href: links.twitter,
-      label: 'X (Twitter)',
-    },
-    {
-      key: 'instagram',
-      icon: 'fa-brands fa-instagram',
-      href: links.instagram,
-      label: 'Instagram',
-    },
-    {
-      key: 'portfolio',
-      icon: 'fa-solid fa-globe',
-      href: links.portfolio,
-      label: 'Portfolio',
-    },
+    { key: 'twitter', icon: 'fa-brands fa-x-twitter', href: links.twitter, label: 'X (Twitter)' },
+    { key: 'instagram', icon: 'fa-brands fa-instagram', href: links.instagram, label: 'Instagram' },
+    { key: 'portfolio', icon: 'fa-solid fa-globe', href: links.portfolio, label: 'Portfolio' },
   ]
-
   return rows.filter((item) => typeof item.href === 'string' && item.href.trim())
 })
 
 const genderIcon = computed(() => {
-  if (props.profileGender === 'male') return 'fa-solid fa-mars'
-  if (props.profileGender === 'female') return 'fa-solid fa-venus'
+  if (profileGender.value === 'male') return 'fa-solid fa-mars'
+  if (profileGender.value === 'female') return 'fa-solid fa-venus'
   return ''
 })
 
 const genderLabel = computed(() => {
-  if (props.profileGender === 'male') return 'Male'
-  if (props.profileGender === 'female') return 'Female'
+  if (profileGender.value === 'male') return 'Male'
+  if (profileGender.value === 'female') return 'Female'
   return ''
 })
-
-const emit = defineEmits(['toggle-follow', 'edit-profile', 'edit-avatar', 'open-requests'])
 
 const shareTooltip = ref('')
 let shareTimeout = null
@@ -109,11 +56,9 @@ const blockError = ref('')
 const showReportModal = ref(false)
 
 async function fetchBlockStatus() {
-  if (props.isOwnProfile || !props.user?._id || !authStore.isAuthenticated) {
-    return
-  }
+  if (isOwnProfile || !user?._id || !authStore.isAuthenticated) return
   try {
-    const { data } = await userApi.getBlockStatus(props.user._id)
+    const { data } = await userApi.getBlockStatus(user._id)
     blockedByMe.value = data.blockedByMe
     blockedMe.value = data.blockedMe
   } catch {
@@ -122,20 +67,20 @@ async function fetchBlockStatus() {
 }
 
 async function handleBlockToggle() {
-  if (!props.user?._id || !authStore.isAuthenticated) return
+  if (!user?._id || !authStore.isAuthenticated) return
   blockLoading.value = true
   blockError.value = ''
   try {
     if (blockedByMe.value) {
-      await userApi.unblock(props.user._id)
+      await userApi.unblock(user._id)
       blockedByMe.value = false
     } else {
-      const confirmed = window.confirm(`Block ${props.user.displayName || props.user.username}? You will no longer follow each other.`)
+      const confirmed = window.confirm(`Block ${user.displayName || user.username}? You will no longer follow each other.`)
       if (!confirmed) {
         blockLoading.value = false
         return
       }
-      await userApi.block(props.user._id)
+      await userApi.block(user._id)
       blockedByMe.value = true
     }
   } catch (err) {
@@ -145,8 +90,7 @@ async function handleBlockToggle() {
   }
 }
 
-// Fetch block status when user changes
-watch(() => props.user?._id, () => {
+watch(() => user?._id, () => {
   fetchBlockStatus()
 }, { immediate: true })
 
@@ -174,7 +118,7 @@ onUnmounted(() => {
 
 const canReportUser = computed(() => {
   if (!authStore.isAuthenticated) return false
-  if (props.isOwnProfile) return false
+  if (isOwnProfile) return false
   return true
 })
 
@@ -192,7 +136,7 @@ function closeReportModal() {
     <div class="avatar-shell">
       <div class="avatar-wrap">
         <img :src="avatarSrc" :alt="user.displayName || user.username" @error="handleAvatarError" />
-        <div v-if="isOwnProfile" class="avatar-edit-overlay" @click="emit('edit-avatar')" @keydown.enter.prevent="emit('edit-avatar')" @keydown.space.prevent="emit('edit-avatar')" role="button" aria-label="Edit profile picture">
+        <div v-if="isOwnProfile" class="avatar-edit-overlay" @click="editAvatar" @keydown.enter.prevent="editAvatar" @keydown.space.prevent="editAvatar" role="button" aria-label="Edit profile picture">
           <i class="fa-solid fa-camera" aria-hidden="true"></i>
         </div>
       </div>
@@ -205,7 +149,7 @@ function closeReportModal() {
         v-if="isAcceptingRequests"
         type="button"
         class="request-badge"
-        @click="emit('open-requests')"
+        @click="openRequests"
       >
         <i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i>
         Accepting Requests
@@ -214,7 +158,6 @@ function closeReportModal() {
       <div class="profile-stats">
         <router-link :to="`/users/${user._id}/followers`" class="stat-link"><strong>{{ followersCount }}</strong> Followers</router-link>
         <router-link :to="`/users/${user._id}/following`" class="stat-link"><strong>{{ followingCount }}</strong> Following</router-link>
-        <span><strong>{{ artworkCount }}</strong> Works</span>
       </div>
 
       <p class="profile-bio">{{ profileBio }}</p>
@@ -232,7 +175,7 @@ function closeReportModal() {
           <i class="fa-solid fa-cake-candles" aria-hidden="true"></i>
           {{ profileBirthday }}
         </p>
-        <button v-if="isOwnProfile" type="button" class="profile-link profile-link-btn" @click="emit('edit-profile')">Change</button>
+        <button v-if="isOwnProfile" type="button" class="profile-link profile-link-btn" @click="editProfile">Change</button>
         <div v-if="socialLinks.length" class="profile-socials" aria-label="Social media links">
           <a
             v-for="social in socialLinks"
@@ -254,13 +197,13 @@ function closeReportModal() {
     </div>
 
     <div class="profile-actions">
-      <button v-if="isOwnProfile" type="button" class="edit-profile-btn" @click="emit('edit-profile')">Edit profile</button>
+      <button v-if="isOwnProfile" type="button" class="edit-profile-btn" @click="editProfile">Edit profile</button>
       <button
         v-if="isAcceptingRequests"
         type="button"
         class="request-action-btn"
         :aria-label="isOwnProfile ? 'Manage requests' : 'Send request'"
-        @click="emit('open-requests')"
+        @click="openRequests"
       >
         {{ isOwnProfile ? 'Manage Request' : 'Request' }}
       </button>
@@ -271,7 +214,7 @@ function closeReportModal() {
         :class="isFollowing ? 'is-following' : 'is-not-following'"
         :disabled="followLoading"
         :aria-label="isFollowing ? 'Unfollow user' : 'Follow user'"
-        @click="emit('toggle-follow')"
+        @click="toggleFollow"
       >
         {{ isFollowing ? 'Following' : 'Follow' }}
       </button>

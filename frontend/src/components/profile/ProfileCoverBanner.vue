@@ -1,22 +1,13 @@
 <script setup>
+import { inject } from 'vue'
+
 const DEFAULT_COVER = 'linear-gradient(135deg, #f1f5f9 0%, #dbeafe 52%, #fef3c7 100%)'
 
-defineProps({
-  user: {
-    type: Object,
-    required: true,
-  },
-  coverImage: {
-    type: String,
-    default: '',
-  },
-  isOwnProfile: {
-    type: Boolean,
-    default: false,
-  },
-})
-
-defineEmits(['edit-cover', 'delete-cover'])
+const user = inject('profileUser')
+const isOwnProfile = inject('isOwnProfile')
+const coverImage = inject('profileCoverImage')
+const editCover = inject('openCoverModal')
+const deleteCover = inject('deleteCover')
 </script>
 
 <template>
@@ -26,10 +17,10 @@ defineEmits(['edit-cover', 'delete-cover'])
     aria-label="Profile cover area"
   >
     <div v-if="isOwnProfile" class="cover-actions">
-      <button type="button" class="cover-edit-btn" aria-label="Edit cover" @click="$emit('edit-cover')">
+      <button type="button" class="cover-edit-btn" aria-label="Edit cover" @click="editCover">
         <i class="fa-solid fa-pen" aria-hidden="true"></i>
       </button>
-      <button type="button" class="cover-delete-btn" aria-label="Delete cover" @click="$emit('delete-cover')">
+      <button type="button" class="cover-delete-btn" aria-label="Delete cover" @click="deleteCover">
         <i class="fa-solid fa-trash" aria-hidden="true"></i>
       </button>
     </div>

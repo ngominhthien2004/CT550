@@ -1,12 +1,10 @@
 <script setup>
-import { reactive, computed, watch } from 'vue'
+import { reactive, computed, watch, inject } from 'vue'
 
-const props = defineProps({
-  show: { type: Boolean, default: false },
-  user: { type: Object, default: () => ({}) },
-})
-
-const emit = defineEmits(['close', 'save'])
+const show = inject('showEditModal')
+const user = inject('profileUser')
+const close = inject('closeEditModal')
+const save = inject('saveProfile')
 
 const form = reactive({
   displayName: '',
@@ -49,7 +47,7 @@ function getDaySuffix(day) {
 
 const daysWithSuffix = computed(() => days.map(d => ({ value: d, label: `${d}${getDaySuffix(d)}` })))
 
-watch(() => props.user, (u) => {
+watch(user, (u) => {
   if (!u) return
   form.displayName = u.displayName || u.username || ''
   form.bio = u.bio || ''
@@ -77,16 +75,16 @@ function handleSave() {
   if (form.birthYear) fd.append('birthYear', form.birthYear)
   fd.append('birthdayMonth', form.birthdayMonth)
   fd.append('birthdayDay', form.birthdayDay)
-  emit('save', fd)
+  save(fd)
 }
 </script>
 
 <template>
-  <div v-if="show" class="modal-backdrop" @click.self="emit('close')" @keydown.enter.prevent="emit('close')" @keydown.space.prevent="emit('close')" tabindex="0" role="button">
+  <div v-if="show" class="modal-backdrop" @click.self="close" @keydown.enter.prevent="close" @keydown.space.prevent="close" tabindex="0" role="button">
     <div class="modal-card edit-card">
       <header class="modal-header">
         <h2 class="modal-title">Edit profile</h2>
-        <button type="button" class="modal-close" aria-label="Close" @click="emit('close')">
+        <button type="button" class="modal-close" aria-label="Close" @click="close">
           <i class="fa-solid fa-xmark" aria-hidden="true"></i>
         </button>
       </header>
@@ -198,7 +196,7 @@ function handleSave() {
 
       <footer class="edit-footer">
         <button type="button" class="modal-btn modal-btn--primary" @click="handleSave">Save Changes</button>
-        <button type="button" class="modal-btn modal-btn--secondary" @click="emit('close')">Cancel</button>
+        <button type="button" class="modal-btn modal-btn--secondary" @click="close">Cancel</button>
       </footer>
     </div>
   </div>

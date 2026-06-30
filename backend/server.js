@@ -111,13 +111,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: (origin, callback) => {
-            if (!origin || allowedOrigins.includes(origin) || isLocalDevOrigin(origin)) {
-                callback(null, true);
-            } else {
-                callback(new Error('Not allowed by CORS'));
-            }
-        },
+        origin: '*',
         credentials: true,
     },
 });
@@ -127,23 +121,28 @@ io.use(async (socket, next) => {
     try {
         const token = socket.handshake.auth?.token || socket.handshake.query?.token;
         if (!token) {
+            console.log('[Socket] No token provided');
             return next(new Error('Authentication required'));
         }
 
         const jwt = require('jsonwebtoken');
         const JWT_SECRET = getJwtSecret();
         const decoded = jwt.verify(token, JWT_SECRET);
+        console.log('[Socket] Token decoded:', decoded.id);
 
         const User = require('./models/User');
         const user = await User.findById(decoded.id).select('_id username role');
         if (!user) {
+            console.log('[Socket] User not found');
             return next(new Error('User not found'));
         }
 
         socket.userId = user._id.toString();
         socket.userRole = user.role;
+        console.log('[Socket] Authenticated user:', socket.userId);
         next();
     } catch (error) {
+        console.log('[Socket] Auth error:', error.message);
         next(new Error('Invalid token'));
     }
 });

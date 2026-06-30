@@ -1,28 +1,21 @@
 <script setup>
-defineProps({
-  activeTab: {
-    type: String,
-    default: 'home',
-  },
-  isOwnProfile: {
-    type: Boolean,
-    default: true,
-  },
-})
+import { inject } from 'vue'
 
-const emit = defineEmits(['select'])
+const isOwnProfile = inject('isOwnProfile')
+const activeTab = inject('activeMainTab')
+const selectTab = inject('selectMainTab')
 </script>
 
 <template>
   <nav class="profile-tabs" aria-label="Profile sections">
-    <button type="button" class="profile-tab" :class="{ active: activeTab === 'home' }" @click="emit('select', 'home')">Home</button>
-    <button type="button" class="profile-tab" :class="{ active: activeTab === 'illustrations' }" @click="emit('select', 'illustrations')">Illustrations</button>
-    <button type="button" class="profile-tab" :class="{ active: activeTab === 'manga' }" @click="emit('select', 'manga')">Manga</button>
-    <button type="button" class="profile-tab" :class="{ active: activeTab === 'novels' }" @click="emit('select', 'novels')">Novels</button>
-    <button type="button" class="profile-tab" :class="{ active: activeTab === 'requests' }" @click="emit('select', 'requests')">Requests</button>
-    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'bookmarks' }" @click="emit('select', 'bookmarks')">Bookmarks</button>
-    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'likes' }" @click="emit('select', 'likes')">Favorites</button>
-    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'blocked' }" @click="emit('select', 'blocked')">Blocked</button>
+    <button type="button" class="profile-tab" :class="{ active: activeTab === 'home' }" @click="selectTab('home')">Home</button>
+    <button type="button" class="profile-tab" :class="{ active: activeTab === 'illustrations' }" @click="selectTab('illustrations')">Illustrations</button>
+    <button type="button" class="profile-tab" :class="{ active: activeTab === 'manga' }" @click="selectTab('manga')">Manga</button>
+    <button type="button" class="profile-tab" :class="{ active: activeTab === 'novels' }" @click="selectTab('novels')">Novels</button>
+    <button type="button" class="profile-tab" :class="{ active: activeTab === 'requests' }" @click="selectTab('requests')">Requests</button>
+    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'bookmarks' }" @click="selectTab('bookmarks')">Bookmarks</button>
+    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'likes' }" @click="selectTab('likes')">Favorites</button>
+    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'blocked' }" @click="selectTab('blocked')">Blocked</button>
   </nav>
 </template>
 

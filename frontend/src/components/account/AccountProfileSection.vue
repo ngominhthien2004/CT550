@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { inject, computed } from 'vue'
 import ProfileCoverBanner from '../profile/ProfileCoverBanner.vue'
 import ProfileSummarySection from '../profile/ProfileSummarySection.vue'
 import ProfilePrimaryTabs from '../profile/ProfilePrimaryTabs.vue'
@@ -11,133 +11,68 @@ import ProfileEditModal from '../profile/ProfileEditModal.vue'
 import ProfileAvatarModal from '../profile/ProfileAvatarModal.vue'
 import BlockedUsersList from '../profile/BlockedUsersList.vue'
 
-const props = defineProps({
-  user: { type: Object, required: true },
-  profileCoverImage: { type: String, default: '' },
-  isOwnProfile: { type: Boolean, default: false },
-  followingCount: { type: Number, default: 0 },
-  followersCount: { type: Number, default: 0 },
-  profileLocation: { type: String, default: '' },
-  isFollowingProfile: { type: Boolean, default: false },
-  followLoading: { type: Boolean, default: false },
-  followError: { type: String, default: '' },
-  artworksCount: { type: Number, default: 0 },
-  isAcceptingRequests: { type: Boolean, default: false },
-  profileLoading: { type: Boolean, default: false },
-  profileError: { type: String, default: '' },
-  activeMainTab: { type: String, default: 'home' },
-  typeTabs: { type: Array, default: () => [] },
-  activeType: { type: String, default: '' },
-  visibleArtworks: { type: Array, default: () => [] },
-  loadingArtworks: { type: Boolean, default: false },
-  artworksError: { type: String, default: '' },
-  bookmarkTypeTabs: { type: Array, default: () => [] },
-  activeBookmarkType: { type: String, default: '' },
-  visibleBookmarks: { type: Array, default: () => [] },
-  bookmarkLoading: { type: Boolean, default: false },
-  bookmarkError: { type: String, default: '' },
-  likeTypeTabs: { type: Array, default: () => [] },
-  activeLikeType: { type: String, default: '' },
-  visibleLikes: { type: Array, default: () => [] },
-  likeLoading: { type: Boolean, default: false },
-  likeError: { type: String, default: '' },
-  requestTerms: { type: Array, default: () => [] },
-  requestTermsLoading: { type: Boolean, default: false },
-  requestTermsError: { type: String, default: '' },
-  showEditModal: { type: Boolean, default: false },
-  showCoverModal: { type: Boolean, default: false },
-  showAvatarModal: { type: Boolean, default: false },
-  worksHasMore: { type: Boolean, default: false },
-  worksLimit: { type: Number, default: 24 },
-  bookmarkHasMore: { type: Boolean, default: false },
-  bookmarkLimit: { type: Number, default: 24 },
-  likeHasMore: { type: Boolean, default: false },
-  likeLimit: { type: Number, default: 24 },
-  profileSeries: { type: Array, default: () => [] },
-  profileSeriesLoading: { type: Boolean, default: false },
-  profileSeriesError: { type: String, default: '' },
-  showFeaturedWorks: { type: Boolean, default: true },
-})
+const user = inject('profileUser')
+const isOwnProfile = inject('isOwnProfile')
+const activeMainTab = inject('activeMainTab')
+const profileSeries = inject('profileSeries')
+const profileSeriesLoading = inject('profileSeriesLoading')
+const profileSeriesError = inject('profileSeriesError')
+const showFeaturedWorks = inject('showFeaturedWorks')
+const typeTabs = inject('typeTabs')
+const activeType = inject('activeType')
+const visibleArtworks = inject('visibleArtworks')
+const loadingArtworks = inject('loadingArtworks')
+const artworksError = inject('artworksError')
+const worksHasMore = inject('worksHasMore')
+const worksLimit = inject('worksLimit')
+const bookmarkTypeTabs = inject('bookmarkTypeTabs')
+const activeBookmarkType = inject('activeBookmarkType')
+const visibleBookmarks = inject('visibleBookmarks')
+const bookmarkLoading = inject('bookmarkLoading')
+const bookmarkError = inject('bookmarkError')
+const bookmarkHasMore = inject('bookmarkHasMore')
+const bookmarkLimit = inject('bookmarkLimit')
+const likeTypeTabs = inject('likeTypeTabs')
+const activeLikeType = inject('activeLikeType')
+const visibleLikes = inject('visibleLikes')
+const likeLoading = inject('likeLoading')
+const likeError = inject('likeError')
+const likeHasMore = inject('likeHasMore')
+const likeLimit = inject('likeLimit')
+const requestTerms = inject('requestTerms')
+const requestTermsLoading = inject('requestTermsLoading')
+const requestTermsError = inject('requestTermsError')
+const showEditModal = inject('showEditModal')
+const showCoverModal = inject('showCoverModal')
+const showAvatarModal = inject('showAvatarModal')
+const selectType = inject('selectType')
+const selectBookmarkType = inject('selectBookmarkType')
+const selectLikeType = inject('selectLikeType')
+const showAllWorks = inject('showAllWorks')
+const loadMoreWorks = inject('loadMoreWorks')
+const loadMoreBookmarks = inject('loadMoreBookmarks')
+const loadMoreLikes = inject('loadMoreLikes')
+const profileLoading = inject('profileLoading')
+const profileError = inject('profileError')
 
-const emit = defineEmits([
-  'edit-cover',
-  'delete-cover',
-  'toggle-follow',
-  'edit-profile',
-  'edit-avatar',
-  'open-requests',
-  'select-main-tab',
-  'select-type',
-  'show-all-works',
-  'select-bookmark-type',
-  'select-like-type',
-  'close-avatar',
-  'close-cover',
-  'close-edit',
-  'save-avatar',
-  'save-cover',
-  'save-profile',
-  'load-more-works',
-  'load-more-bookmarks',
-  'load-more-likes',
-])
-
-const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-
-const profileGender = computed(() => {
-  const g = props.user?.gender || ''
-  return g === 'rather_not_say' ? '' : g
-})
-
-const profileBirthday = computed(() => {
-  const year = props.user?.birthYear
-  const month = props.user?.birthdayMonth
-  const day = props.user?.birthdayDay
-  if (!year && !month && !day) return ''
-  const monthNames = MONTH_NAMES
-  const parts = [
-    ...(month ? [monthNames[month - 1] || ''] : []),
-    ...(day ? [String(day)] : []),
-    ...(year ? [String(year)] : []),
-  ]
-  return parts.length ? `Born ${parts.join(' ')}` : ''
-})
+const workTypeTabs = [
+  { key: 'illustrations', type: 'illust', heading: 'Illustrations' },
+  { key: 'manga', type: 'manga', heading: 'Manga' },
+  { key: 'novels', type: 'novel', heading: 'Novels' },
+]
 </script>
 
 <template>
   <section class="profile-page page-block">
-    <ProfileCoverBanner
-      :user="user"
-      :cover-image="profileCoverImage"
-      :is-own-profile="isOwnProfile"
-      @edit-cover="emit('edit-cover')"
-      @delete-cover="emit('delete-cover')"
-    />
+    <ProfileCoverBanner />
 
     <div class="profile-main">
-      <ProfileSummarySection
-        :user="user"
-        :following-count="followingCount"
-        :followers-count="followersCount"
-        :profile-location="profileLocation"
-        :profile-gender="profileGender"
-        :profile-birthday="profileBirthday"
-        :is-own-profile="isOwnProfile"
-        :is-following="isFollowingProfile"
-        :follow-loading="followLoading"
-        :follow-error="followError"
-        :artwork-count="artworksCount"
-        :is-accepting-requests="isAcceptingRequests"
-        @toggle-follow="emit('toggle-follow')"
-        @edit-profile="emit('edit-profile')"
-        @edit-avatar="emit('edit-avatar')"
-        @open-requests="emit('open-requests')"
-      />
+      <ProfileSummarySection />
       <div aria-live="polite">
         <p v-if="profileLoading" class="text-secondary mb-1">Loading profile...</p>
         <p v-if="profileError" class="text-danger mb-1">{{ profileError }}</p>
       </div>
-      <ProfilePrimaryTabs :active-tab="activeMainTab" :is-own-profile="isOwnProfile" @select="emit('select-main-tab', $event)" />
+      <ProfilePrimaryTabs />
 
       <!-- ════ HOME TAB ════ -->
       <template v-if="activeMainTab === 'home'">
@@ -157,74 +92,35 @@ const profileBirthday = computed(() => {
           :error="artworksError"
           :has-more="worksHasMore"
           :limit="worksLimit"
-          @select-type="emit('select-type', $event)"
-          @show-all="emit('show-all-works')"
-          @load-more="emit('load-more-works')"
+          @select-type="selectType"
+          @show-all="showAllWorks"
+          @load-more="loadMoreWorks"
         />
       </template>
 
-      <!-- ════ ILLUSTRATIONS TAB ════ -->
-      <template v-else-if="activeMainTab === 'illustrations'">
-        <ProfileSeriesSection
-          :series="profileSeries.filter(s => s.type === 'illust')"
-          :loading="profileSeriesLoading"
-          :error="profileSeriesError"
-        />
-        <ArtworkGridSection
-          heading="Illustrations"
-          :tabs="[]"
-          :active-type="activeType"
-          :items="visibleArtworks"
-          :loading="loadingArtworks"
-          :error="artworksError"
-          :has-more="worksHasMore"
-          :limit="worksLimit"
-          @load-more="emit('load-more-works')"
-        />
-      </template>
-
-      <!-- ════ MANGA TAB ════ -->
-      <template v-else-if="activeMainTab === 'manga'">
-        <ProfileSeriesSection
-          :series="profileSeries.filter(s => s.type === 'manga')"
-          :loading="profileSeriesLoading"
-          :error="profileSeriesError"
-        />
-        <ArtworkGridSection
-          heading="Manga"
-          :tabs="[]"
-          :active-type="activeType"
-          :items="visibleArtworks"
-          :loading="loadingArtworks"
-          :error="artworksError"
-          :has-more="worksHasMore"
-          :limit="worksLimit"
-          @load-more="emit('load-more-works')"
-        />
-      </template>
-
-      <!-- ════ NOVELS TAB ════ -->
-      <template v-else-if="activeMainTab === 'novels'">
-        <ProfileSeriesSection
-          :series="profileSeries.filter(s => s.type === 'novel')"
-          :loading="profileSeriesLoading"
-          :error="profileSeriesError"
-        />
-        <ArtworkGridSection
-          heading="Novels"
-          :tabs="[]"
-          :active-type="activeType"
-          :items="visibleArtworks"
-          :loading="loadingArtworks"
-          :error="artworksError"
-          :has-more="worksHasMore"
-          :limit="worksLimit"
-          @load-more="emit('load-more-works')"
-        />
+      <template v-for="tab in workTypeTabs" :key="tab.key">
+        <template v-if="activeMainTab === tab.key">
+          <ProfileSeriesSection
+            :series="profileSeries.filter(s => s.type === tab.type)"
+            :loading="profileSeriesLoading"
+            :error="profileSeriesError"
+          />
+          <ArtworkGridSection
+            :heading="tab.heading"
+            :tabs="[]"
+            :active-type="activeType"
+            :items="visibleArtworks"
+            :loading="loadingArtworks"
+            :error="artworksError"
+            :has-more="worksHasMore"
+            :limit="worksLimit"
+            @load-more="loadMoreWorks"
+          />
+        </template>
       </template>
 
       <ArtworkGridSection
-        v-else-if="activeMainTab === 'bookmarks' && isOwnProfile"
+        v-if="activeMainTab === 'bookmarks' && isOwnProfile"
         heading="Bookmarks"
         :tabs="bookmarkTypeTabs"
         :active-type="activeBookmarkType"
@@ -236,8 +132,8 @@ const profileBirthday = computed(() => {
         nested-field="artwork"
         empty-icon="fa-regular fa-bookmark"
         empty-text="No bookmark found."
-        @select-type="emit('select-bookmark-type', $event)"
-        @load-more="emit('load-more-bookmarks')"
+        @select-type="selectBookmarkType"
+        @load-more="loadMoreBookmarks"
       />
 
       <ArtworkGridSection
@@ -253,15 +149,13 @@ const profileBirthday = computed(() => {
         nested-field="artwork"
         empty-icon="fa-solid fa-heart"
         empty-text="No favorites found."
-        @select-type="emit('select-like-type', $event)"
-        @load-more="emit('load-more-likes')"
+        @select-type="selectLikeType"
+        @load-more="loadMoreLikes"
       />
 
       <ProfileRequestsSection
         v-else-if="activeMainTab === 'requests'"
         :terms="requestTerms"
-        :creator="user"
-        :is-own-profile="isOwnProfile"
         :loading="requestTermsLoading"
         :error="requestTermsError"
       />
@@ -275,25 +169,9 @@ const profileBirthday = computed(() => {
       </section>
     </div>
     <Teleport to="body">
-      <ProfileAvatarModal
-        :show="showAvatarModal"
-        :user="user"
-        @close="emit('close-avatar')"
-        @save="emit('save-avatar', $event)"
-      />
-      <ProfileCoverModal
-        :show="showCoverModal"
-        :user="user"
-        :cover-image="profileCoverImage"
-        @close="emit('close-cover')"
-        @save="emit('save-cover', $event)"
-      />
-      <ProfileEditModal
-        :show="showEditModal"
-        :user="user"
-        @close="emit('close-edit')"
-        @save="emit('save-profile', $event)"
-      />
+      <ProfileAvatarModal />
+      <ProfileCoverModal />
+      <ProfileEditModal />
     </Teleport>
   </section>
 </template>
