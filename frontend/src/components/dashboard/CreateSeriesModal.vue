@@ -474,7 +474,7 @@ onBeforeUnmount(() => {
 
 .cs-cover-upload:hover {
   border-color: var(--accent, #0096fa);
-  background: #f0f7ff;
+  background: var(--surface-alt);
 }
 
 .cs-cover-upload--has-image {
@@ -667,7 +667,7 @@ onBeforeUnmount(() => {
 .cs-add-work:hover {
   border-color: var(--accent, #0096fa);
   color: var(--accent, #0096fa);
-  background: #f0f7ff;
+  background: var(--surface-alt);
 }
 
 .cs-work-thumb {
@@ -720,7 +720,7 @@ onBeforeUnmount(() => {
   height: 22px;
   border-radius: 11px;
   border: none;
-  background: #d1d5db;
+  background: var(--line);
   cursor: pointer;
   position: relative;
   transition: background 0.2s;
@@ -738,7 +738,7 @@ onBeforeUnmount(() => {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--surface);
   transition: transform 0.2s;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }

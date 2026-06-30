@@ -659,14 +659,14 @@ watch(
   border: none;
   border-radius: 0;
   box-shadow: none;
-  background: #fff;
+  background: var(--surface);
 }
 
 .result-tabs {
   display: flex;
   align-items: flex-end;
   gap: 1.35rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--line);
 }
 
 .search-result-page--users .result-tabs {
@@ -680,7 +680,7 @@ watch(
 .tab-item {
   text-decoration: none;
   padding-bottom: 0.62rem;
-  color: #64748b;
+  color: var(--muted);
   font-weight: 700;
   border-bottom: 3px solid transparent;
 }
@@ -689,14 +689,14 @@ watch(
   position: relative;
   padding: 1rem 0 0;
   min-width: 4.55rem;
-  color: #7a7f87;
+  color: var(--muted);
   text-align: center;
   font-size: 1.08rem;
   line-height: 1;
 }
 
 .search-result-page--users .tab-item.active {
-  color: #111827;
+  color: var(--brand);
   border-bottom-color: transparent;
 }
 
@@ -714,13 +714,13 @@ watch(
 }
 
 .tab-count {
-  color: #94a3b8;
+  color: var(--muted);
   font-size: 0.72rem;
   margin-left: 0.2rem;
 }
 
 .tab-item.active {
-  color: #0f172a;
+  color: var(--brand);
   border-bottom-color: #1695f0;
 }
 
@@ -728,7 +728,7 @@ watch(
   margin-left: auto;
   border: none;
   background: transparent;
-  color: #4b5563;
+  color: var(--muted);
   font-weight: 700;
 }
 

@@ -174,7 +174,7 @@ onMounted(async () => {
 .state-error {
   text-align: center;
   padding: 4rem 1rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .state-error h2 { color: #ef4444; margin-bottom: 0.5rem; }
@@ -196,9 +196,9 @@ onMounted(async () => {
 .back-link:hover { opacity: 0.75; }
 
 .back-btn {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
   font-size: 0.85rem;
   font-weight: 600;
   border-radius: 999px;
@@ -208,7 +208,7 @@ onMounted(async () => {
   margin-top: 1rem;
 }
 
-.back-btn:hover { background: #f9fafb; }
+.back-btn:hover { background: var(--surface-alt); }
 
 .owner-actions {
   margin-top: 1.5rem;
@@ -227,10 +227,10 @@ onMounted(async () => {
 }
 
 .owner-btn--edit {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
 }
 
-.owner-btn--edit:hover { background: #f9fafb; }
+.owner-btn--edit:hover { background: var(--surface-alt); }
 </style>

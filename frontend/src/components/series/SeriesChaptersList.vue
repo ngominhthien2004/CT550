@@ -219,7 +219,7 @@ async function executeDeleteChapter() {
 .section-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--brand);
   margin: 0;
 }
 
@@ -244,13 +244,13 @@ async function executeDeleteChapter() {
 .add-chapter-btn:hover { background: #4f46e5; }
 
 .chapter-error {
-  color: #dc2626;
+  color: var(--danger);
   font-size: 0.85rem;
   margin-bottom: 1rem;
 }
 
 .chapter-form {
-  background: #fff;
+  background: var(--surface);
   border-radius: 12px;
   padding: 1.25rem;
   margin-bottom: 1rem;
@@ -260,7 +260,7 @@ async function executeDeleteChapter() {
 .chapter-form-input {
   width: 100%;
   padding: 0.6rem 0.8rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--line);
   border-radius: 8px;
   font-size: 0.9rem;
   margin-bottom: 0.75rem;
@@ -269,7 +269,7 @@ async function executeDeleteChapter() {
 .chapter-form-textarea {
   width: 100%;
   padding: 0.6rem 0.8rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--line);
   border-radius: 8px;
   font-size: 0.9rem;
   resize: vertical;
@@ -291,9 +291,9 @@ async function executeDeleteChapter() {
 }
 
 .chapter-form-btn--cancel {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
 }
 
 .chapter-form-btn--submit {
@@ -314,7 +314,7 @@ async function executeDeleteChapter() {
 }
 
 .chapters-list {
-  background: #fff;
+  background: var(--surface);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
@@ -324,7 +324,7 @@ async function executeDeleteChapter() {
   display: flex;
   align-items: center;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--line);
 }
 
 .chapter-row:last-child { border-bottom: none; }
@@ -333,7 +333,7 @@ async function executeDeleteChapter() {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #eef2ff;
+  background: var(--surface-alt);
   color: #6366f1;
   font-weight: 700;
   font-size: 0.85rem;
@@ -352,18 +352,18 @@ async function executeDeleteChapter() {
 .chapter-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--brand);
   margin-bottom: 0.2rem;
 }
 
 .chapter-meta {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--muted);
   display: flex;
   gap: 0.35rem;
 }
 
-.chapter-sep { color: #d1d5db; }
+.chapter-sep { color: var(--line); }
 
 .chapter-actions {
   display: flex;
@@ -376,19 +376,19 @@ async function executeDeleteChapter() {
   height: 32px;
   border: none;
   border-radius: 8px;
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--surface-alt);
+  color: var(--muted);
   cursor: pointer;
   display: grid;
   place-items: center;
 }
 
-.chapter-action-btn:hover { background: #e5e7eb; }
+.chapter-action-btn:hover { background: var(--line); }
 .chapter-action-btn--danger { color: #dc2626; }
-.chapter-action-btn--danger:hover { background: #fef2f2; }
+.chapter-action-btn--danger:hover { background: rgba(220, 38, 38, 0.06); }
 
 .chapter-arrow {
-  color: #d1d5db;
+  color: var(--line);
   font-size: 0.8rem;
   margin-left: 0.5rem;
   cursor: pointer;
@@ -401,15 +401,15 @@ async function executeDeleteChapter() {
 .state-loading {
   text-align: center;
   padding: 2rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .empty-section {
   text-align: center;
   padding: 3rem 1rem;
-  background: #fff;
+  background: var(--surface);
   border-radius: 12px;
-  color: #9ca3af;
+  color: var(--muted);
   font-size: 0.9rem;
 }
 
@@ -423,7 +423,7 @@ async function executeDeleteChapter() {
 }
 
 .delete-dialog {
-  background: #fff;
+  background: var(--surface);
   border-radius: 12px;
   padding: 1.5rem;
   max-width: 400px;
@@ -436,7 +436,7 @@ async function executeDeleteChapter() {
 }
 
 .delete-dialog p {
-  color: #6b7280;
+  color: var(--muted);
   font-size: 0.9rem;
   margin: 0 0 1.25rem;
 }

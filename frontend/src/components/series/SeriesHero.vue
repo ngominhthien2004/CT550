@@ -80,7 +80,7 @@ function getSeriesIcon(type) {
 .series-hero {
   display: flex;
   gap: 1.5rem;
-  background: #fff;
+  background: var(--surface);
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
@@ -93,7 +93,7 @@ function getSeriesIcon(type) {
   height: 220px;
   border-radius: 8px;
   overflow: hidden;
-  background: #f3f4f6;
+  background: var(--surface-alt);
 }
 
 .series-hero-cover img {
@@ -107,7 +107,7 @@ function getSeriesIcon(type) {
   height: 100%;
   display: grid;
   place-items: center;
-  color: #d1d5db;
+  color: var(--line);
   font-size: 3rem;
 }
 
@@ -156,14 +156,14 @@ function getSeriesIcon(type) {
 .series-hero-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--brand);
   margin: 0 0 0.5rem;
   line-height: 1.3;
 }
 
 .series-hero-desc {
   font-size: 0.88rem;
-  color: #6b7280;
+  color: var(--muted);
   line-height: 1.5;
   margin: 0 0 1rem;
 }
@@ -180,7 +180,7 @@ function getSeriesIcon(type) {
   align-items: center;
   gap: 0.3rem;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .hero-stat i { font-size: 0.8rem; width: 16px; text-align: center; }
@@ -188,7 +188,7 @@ function getSeriesIcon(type) {
 .hero-stat i.fa-heart { color: #ef4444; }
 .hero-stat i.fa-comment { color: #10b981; }
 
-.hero-stat-label { font-size: 0.75rem; color: #9ca3af; }
+.hero-stat-label { font-size: 0.75rem; color: var(--muted); }
 
-.series-hero-episodes { font-size: 0.8rem; color: #9ca3af; }
+.series-hero-episodes { font-size: 0.8rem; color: var(--muted); }
 </style>

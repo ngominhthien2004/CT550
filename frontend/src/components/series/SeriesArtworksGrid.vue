@@ -47,7 +47,7 @@ const emit = defineEmits(['select'])
 .section-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--brand);
   margin: 0 0 1rem;
 }
 
@@ -58,7 +58,7 @@ const emit = defineEmits(['select'])
 }
 
 .artwork-card {
-  background: #fff;
+  background: var(--surface);
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
@@ -73,7 +73,7 @@ const emit = defineEmits(['select'])
 
 .artwork-card-thumb {
   aspect-ratio: 1;
-  background: #f3f4f6;
+  background: var(--surface-alt);
   overflow: hidden;
 }
 
@@ -88,7 +88,7 @@ const emit = defineEmits(['select'])
   height: 100%;
   display: grid;
   place-items: center;
-  color: #d1d5db;
+  color: var(--line);
   font-size: 2rem;
 }
 
@@ -96,7 +96,7 @@ const emit = defineEmits(['select'])
   padding: 0.5rem 0.65rem 0.25rem;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--brand);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -105,15 +105,15 @@ const emit = defineEmits(['select'])
 .artwork-card-meta {
   padding: 0 0.65rem 0.5rem;
   font-size: 0.72rem;
-  color: #9ca3af;
+  color: var(--muted);
 }
 
 .empty-section {
   text-align: center;
   padding: 3rem 1rem;
-  background: #fff;
+  background: var(--surface);
   border-radius: 12px;
-  color: #9ca3af;
+  color: var(--muted);
   font-size: 0.9rem;
 }
 </style>

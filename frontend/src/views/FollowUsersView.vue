@@ -211,7 +211,7 @@ watch(
 
 <style scoped>
 .follow-users-page {
-  background: #fff;
+  background: var(--surface);
   overflow: hidden;
 }
 
@@ -230,7 +230,7 @@ watch(
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: #0f172a;
+  color: var(--brand);
   font-size: 0.86rem;
   font-weight: 700;
 }
@@ -240,20 +240,20 @@ watch(
   height: 28px;
   border-radius: 999px;
   object-fit: cover;
-  background: #cbd5e1;
+  background: var(--line);
 }
 
 .follow-tabs {
   display: flex;
   align-items: center;
   gap: 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--line);
   margin-bottom: 0.85rem;
 }
 
 .follow-tab {
   text-decoration: none;
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.85rem;
   font-weight: 700;
   padding: 0.55rem 0.15rem;
@@ -261,7 +261,7 @@ watch(
 }
 
 .follow-tab.active {
-  color: #0f172a;
+  color: var(--brand);
   border-bottom-color: #1695f0;
 }
 
@@ -280,12 +280,12 @@ watch(
 
 .follow-topline h2 {
   margin: 0;
-  color: #1f2937;
+  color: var(--brand);
   font-size: 1.02rem;
 }
 
 .follow-topline h2 span {
-  color: #94a3b8;
+  color: var(--muted);
   font-size: 0.78rem;
   margin-left: 0.2rem;
 }
@@ -298,7 +298,7 @@ watch(
 
 .state-note {
   margin: 0;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .state-note.error {

@@ -502,7 +502,7 @@ onMounted(() => {
 }
 
 .menu-dropdown-item--danger:hover {
-  background: #fef2f2;
+  background: rgba(220, 38, 38, 0.06);
 }
 
 .series-card-info {

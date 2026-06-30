@@ -30,16 +30,16 @@
   flex-direction: column;
   min-width: 180px;
   padding: 0.35rem;
-  border: 1px solid #dce3ec;
+  border: 1px solid var(--line);
   border-radius: 0.72rem;
-  background: #fff;
+  background: var(--surface);
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
   z-index: 20;
 }
 
 .post-menu-item {
   text-decoration: none;
-  color: #1f2937;
+  color: var(--text);
   padding: 0.45rem 0.6rem;
   border-radius: 0.5rem;
   font-size: 0.9rem;
@@ -47,6 +47,6 @@
 
 .post-menu-item:hover,
 .post-menu-item:focus-visible {
-  background: #f1f5f9;
+  background: var(--surface-alt);
 }
 </style>

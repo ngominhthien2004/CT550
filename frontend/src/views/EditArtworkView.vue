@@ -608,7 +608,7 @@ onBeforeUnmount(() => {
 }
 
 .required-badge {
-  background: #ff3b30;
+  background: var(--danger);
   color: #fff;
   font-size: 0.68rem;
   font-weight: 700;
@@ -626,7 +626,7 @@ onBeforeUnmount(() => {
 }
 
 .label-text--required {
-  color: #ef4444;
+  color: var(--danger);
 }
 
 .placeholder-badge {
@@ -672,7 +672,7 @@ onBeforeUnmount(() => {
   position: relative;
   width: 18px;
   height: 18px;
-  border: 1.5px solid #cbd5e1;
+  border: 1.5px solid var(--line);
   border-radius: 50%;
   transition: all 0.2s ease-in-out;
 }

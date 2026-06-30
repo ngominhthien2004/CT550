@@ -309,7 +309,7 @@ onBeforeUnmount(() => {
 }
 
 .ea-dialog {
-  background: #fff;
+  background: var(--surface);
   border-radius: 16px;
   width: min(520px, 100%);
   max-height: 90vh;
@@ -336,14 +336,14 @@ onBeforeUnmount(() => {
 .ea-header-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--brand);
   margin: 0;
 }
 
 .ea-close {
   border: none;
   background: transparent;
-  color: #6b7280;
+  color: var(--muted);
   font-size: 1.15rem;
   cursor: pointer;
   width: 32px;
@@ -355,8 +355,8 @@ onBeforeUnmount(() => {
 }
 
 .ea-close:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--surface-alt);
+  color: var(--text);
 }
 
 .ea-body {
@@ -373,7 +373,7 @@ onBeforeUnmount(() => {
   display: block;
   font-size: 0.82rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--text);
   margin-bottom: 0.4rem;
 }
 
@@ -388,14 +388,14 @@ onBeforeUnmount(() => {
 
 .ea-input {
   width: 100%;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--line);
   border-radius: 10px;
   padding: 0.6rem 0.85rem;
   padding-right: 4rem;
   font-size: 0.88rem;
   font-family: inherit;
-  color: #1f2937;
-  background: #fff;
+  color: var(--text);
+  background: var(--surface);
   transition: border-color 0.15s, box-shadow 0.15s;
   box-sizing: border-box;
   outline: none;
@@ -407,7 +407,7 @@ onBeforeUnmount(() => {
 }
 
 .ea-input::placeholder {
-  color: #9ca3af;
+  color: var(--muted);
 }
 
 .ea-textarea {
@@ -427,12 +427,12 @@ onBeforeUnmount(() => {
   transform: translateY(-50%);
   font-size: 0.7rem;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--muted);
   pointer-events: none;
 }
 
 .ea-counter--over {
-  color: #dc2626;
+  color: var(--danger);
 }
 
 .ea-radio-group {
@@ -446,11 +446,11 @@ onBeforeUnmount(() => {
   gap: 0.4rem;
   cursor: pointer;
   font-size: 0.85rem;
-  color: #374151;
+  color: var(--text);
 }
 
 .ea-radio {
-  accent-color: #0096fa;
+  accent-color: var(--accent);
 }
 
 .ea-radio-text {
@@ -467,7 +467,7 @@ onBeforeUnmount(() => {
 .ea-tag-count {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--muted);
 }
 
 .ea-tag-wrap {
@@ -489,9 +489,9 @@ onBeforeUnmount(() => {
   top: calc(100% + 0.35rem);
   left: 0;
   right: 0;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface);
   padding: 0.35rem;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
   display: grid;
@@ -503,7 +503,7 @@ onBeforeUnmount(() => {
 .ea-suggestion-loading,
 .ea-suggestion-empty {
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: var(--muted);
   padding: 0.5rem 0.65rem;
   margin: 0;
 }
@@ -514,8 +514,8 @@ onBeforeUnmount(() => {
   text-align: left;
   padding: 0.5rem 0.65rem;
   font-size: 0.86rem;
-  background: #fff;
-  color: #334155;
+  background: var(--surface);
+  color: var(--text);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -523,8 +523,8 @@ onBeforeUnmount(() => {
 }
 
 .ea-suggestion-item:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--surface-alt);
+  color: var(--brand);
 }
 
 .ea-suggestion-name {
@@ -532,7 +532,7 @@ onBeforeUnmount(() => {
 }
 
 .ea-suggestion-count {
-  color: #94a3b8;
+  color: var(--muted);
   font-size: 0.8rem;
 }
 
@@ -544,7 +544,7 @@ onBeforeUnmount(() => {
 }
 
 .ea-tag-pill {
-  border: 1px solid #d2dae6;
+  border: 1px solid var(--line);
   border-radius: 999px;
   background: #e6f4ea;
   color: #137333;
@@ -570,7 +570,7 @@ onBeforeUnmount(() => {
 }
 
 .ea-error {
-  color: #dc2626;
+  color: var(--danger);
   font-size: 0.8rem;
   font-weight: 600;
   margin: 0 0 1rem;
@@ -595,17 +595,17 @@ onBeforeUnmount(() => {
 }
 
 .ea-btn--cancel {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
 }
 
 .ea-btn--cancel:hover {
-  background: #f9fafb;
+  background: var(--surface-alt);
 }
 
 .ea-btn--save {
-  background: #0096fa;
+  background: var(--accent);
   color: #fff;
 }
 
