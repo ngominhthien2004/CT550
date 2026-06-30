@@ -14,9 +14,9 @@ export function useSocket() {
     const token = localStorage.getItem('token')
     if (!token || !authStore.isAuthenticated) return
 
-    const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 
-    socket.value = io(API_BASE, {
+    socket.value = io(API_BASE || window.location.origin, {
       auth: { token },
       transports: ['websocket', 'polling'],
       reconnection: true,
