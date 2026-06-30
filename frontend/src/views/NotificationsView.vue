@@ -6,7 +6,6 @@ import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { useAuthStore } from '../stores/auth.store'
 import { useNotificationStore } from '../stores/notification.store'
 import { formatRelativeTime } from '../utils/date'
-import { getNotificationLink } from '../utils/notificationLink'
 
 const isNavCollapsed = ref(true)
 const unreadOnly = ref(false)
@@ -122,12 +121,10 @@ onBeforeUnmount(() => {
       <p v-else-if="notificationStore.error" class="text-danger mb-0">{{ notificationStore.error }}</p>
 
       <div v-else-if="notifications.length" class="d-grid gap-2">
-        <component
+        <article
           v-for="item in notifications"
           :key="item._id"
-          :is="getNotificationLink(item) ? 'router-link' : 'article'"
-          :to="getNotificationLink(item) || undefined"
-          class="card border-0 shadow-sm notif-card"
+          class="card border-0 shadow-sm"
           :class="{ 'notif-unread': !item.isRead }"
         >
           <div class="card-body d-flex align-items-start justify-content-between gap-3">
@@ -150,7 +147,7 @@ onBeforeUnmount(() => {
             </div>
 
           </div>
-        </component>
+        </article>
 
         <div ref="sentinelRef" class="scroll-sentinel">
           <p v-if="notificationStore.loadingMore" class="text-secondary mb-0">Loading more...</p>

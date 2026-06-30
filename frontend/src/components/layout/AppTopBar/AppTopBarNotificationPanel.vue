@@ -1,7 +1,6 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { formatRelativeTime } from '../../../utils/date'
-import { getNotificationLink } from '../../../utils/notificationLink'
 
 const props = defineProps({
   open: {
@@ -48,7 +47,6 @@ const processedItems = computed(() =>
   props.items.map(item => ({
     ...item,
     _time: formatRelativeTime(item.createdAt),
-    _link: getNotificationLink(item),
   }))
 )
 
