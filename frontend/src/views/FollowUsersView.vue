@@ -162,14 +162,6 @@ watch(
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="follow-users-page page-block">
-      <div class="profile-hero">
-        <button type="button" class="hero-edit" aria-label="Edit profile cover">
-          <i class="fa-solid fa-pen" aria-hidden="true"></i>
-        </button>
-        <p v-if="profileLoading" class="hero-hint">Loading profile...</p>
-        <p v-else class="hero-hint">Choose a cover and customize your profile!</p>
-      </div>
-
       <div class="follow-content">
         <header class="follow-header">
           <router-link :to="`/account?user=${routeUserId}`" class="owner-link">
@@ -225,34 +217,6 @@ watch(
 .follow-users-page {
   background: #fff;
   overflow: hidden;
-}
-
-.profile-hero {
-  height: 164px;
-  border-bottom: 1px solid #e5e7eb;
-  background: linear-gradient(180deg, #f3f4f6, #e5e7eb);
-  display: grid;
-  place-items: center;
-  position: relative;
-}
-
-.hero-edit {
-  position: absolute;
-  right: 1rem;
-  bottom: 0.8rem;
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  border: none;
-  background: rgba(100, 116, 139, 0.85);
-  color: #fff;
-}
-
-.hero-hint {
-  margin: 0;
-  color: #6b7280;
-  font-size: 0.86rem;
-  font-weight: 600;
 }
 
 .follow-content {
