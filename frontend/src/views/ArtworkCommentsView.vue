@@ -1,13 +1,16 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { useAuthStore } from '../stores/auth.store'
 import { useCommentStore } from '../stores/comment.store'
 import CommentList from '../components/comments/CommentList.vue'
 
 const route = useRoute()
+const authStore = useAuthStore()
 const commentStore = useCommentStore()
 const artworkId = computed(() => route.params.id)
 const content = ref('')
+const isAdmin = computed(() => authStore.user?.role === 'admin')
 
 const submitComment = async () => {
   if (!artworkId.value || !content.value.trim()) {
@@ -45,7 +48,7 @@ onMounted(() => {
     </div>
     <p v-if="commentStore.loading" class="text-secondary mb-0">Loading comments...</p>
     <p v-else-if="commentStore.error" class="text-danger mb-0">{{ commentStore.error }}</p>
-    <CommentList v-else :comments="commentStore.items" :can-delete="true" @delete="removeComment" />
+    <CommentList v-else :comments="commentStore.items" :can-delete="isAdmin" @delete="removeComment" />
   </section>
 </template>
 

@@ -55,8 +55,7 @@ const isAdmin = computed(() => authStore.user?.role === 'admin')
 const canDeleteComment = (comment) => {
   if (!currentUserId.value) return false
   return isAdmin.value 
-    || comment?.user?._id === currentUserId.value 
-    || props.artworkOwnerId === currentUserId.value
+    || comment?.user?._id === currentUserId.value
 }
 
 const canReportComment = (comment) => {
