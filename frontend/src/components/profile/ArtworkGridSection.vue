@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import ArtworkCard from '../artwork/ArtworkCard.vue'
+import BookmarkCard from '../artwork/BookmarkCard.vue'
 import SkeletonLoader from '../common/SkeletonLoader.vue'
 
 const props = defineProps({
@@ -17,7 +18,7 @@ const props = defineProps({
   limit: { type: Number, default: 24 },
   nestedField: { type: String, default: '' },
   previewLimit: { type: Number, default: 8 },
-  cardMode: { type: String, default: 'like' },
+  cardType: { type: String, default: 'artwork' },
 })
 
 const emit = defineEmits(['select-type', 'show-all', 'load-more'])
@@ -96,7 +97,8 @@ const filteredCount = computed(() => props.items.length)
 
     <!-- Grid -->
     <div v-else-if="displayItems.length" class="artwork-grid" :class="{ compact: showFeatured }">
-      <ArtworkCard v-for="item in displayItems" :key="item._id" :item="item" :mode="cardMode" />
+      <BookmarkCard v-if="cardType === 'bookmark'" v-for="item in displayItems" :key="item._id" :item="item" />
+      <ArtworkCard v-else v-for="item in displayItems" :key="item._id" :item="item" />
     </div>
 
     <!-- Empty state -->

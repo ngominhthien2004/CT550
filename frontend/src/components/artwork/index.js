@@ -1,4 +1,5 @@
 export { default as ArtworkCard } from './ArtworkCard.vue'
+export { default as BookmarkCard } from './BookmarkCard.vue'
 export { default as ArtworkDetailCard } from './ArtworkDetailCard.vue'
 export { default as ArtworkDetailCommentsCard } from './detail/ArtworkDetailCommentsCard.vue'
 export { default as ArtworkDetailRelatedGrid } from './detail/ArtworkDetailRelatedGrid.vue'
