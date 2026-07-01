@@ -189,7 +189,7 @@ watch(
   padding: 0.52rem 0.7rem;
   font-size: 0.92rem;
   color: var(--text);
-  background: var(--surface);
+  background-color: var(--surface);
 }
 
 .reset-btn {
