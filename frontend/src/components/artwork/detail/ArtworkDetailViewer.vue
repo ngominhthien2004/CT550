@@ -167,7 +167,7 @@ watch(() => artwork.value?._id, resetViewerState, { immediate: true })
         </button>
         <button
           type="button"
-          class="icon-btn"
+          class="icon-btn bookmark-btn"
           :class="{ active: isBookmarked }"
           :disabled="bookmarkLoading"
           aria-label="Bookmark"
@@ -369,6 +369,11 @@ watch(() => artwork.value?._id, resetViewerState, { immediate: true })
   border-color: #f91880;
 }
 
+.image-stack .viewer-actions .icon-btn.active.bookmark-btn {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+
 .icon-btn {
   width: 2.5rem;
   height: 2.5rem;
@@ -392,6 +397,11 @@ watch(() => artwork.value?._id, resetViewerState, { immediate: true })
   color: var(--surface);
   background: #f91880; /* Consistent with caption */
   border-color: #f91880;
+}
+
+.icon-btn.active.bookmark-btn {
+  background: #3b82f6;
+  border-color: #3b82f6;
 }
 
 .icon-btn:disabled {

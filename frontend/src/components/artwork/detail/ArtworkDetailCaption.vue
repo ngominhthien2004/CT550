@@ -86,7 +86,7 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
       </button>
       <button
         type="button"
-        class="stat-inline stat-button"
+        class="stat-inline stat-button bookmark-btn"
         :class="{ active: isBookmarked }"
         :disabled="bookmarkLoading"
         :aria-label="isBookmarked ? 'Remove bookmark' : 'Add bookmark'"
@@ -174,7 +174,11 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
 }
 
 .stat-button.active {
-  color: #f91880; /* Brand like accent */
+  color: #f91880; /* Like accent */
+}
+
+.stat-button.active.bookmark-btn {
+  color: #3b82f6; /* Bookmark accent */
 }
 
 .read-more-link {
