@@ -172,12 +172,17 @@ defineEmits(['logout'])
   width: 216px;
   max-height: min(76vh, 498px);
   overflow-y: auto;
+  scrollbar-width: none;
   padding: 0 0 1.2rem;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
   box-shadow: var(--shadow-lg);
   z-index: 22;
+}
+
+.user-menu-panel::-webkit-scrollbar {
+  display: none;
 }
 
 .user-hero {
