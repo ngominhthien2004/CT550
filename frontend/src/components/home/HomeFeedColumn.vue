@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import R18BlurOverlay from '../common/R18BlurOverlay.vue'
 import { formatShortDate } from '../../utils/date.js'
 
@@ -12,29 +12,13 @@ const props = defineProps({
   },
 })
 
-function getAuthorInitial(work) {
-  const value = work?.user?.displayName || work?.user?.username || 'U'
-  return value.charAt(0).toUpperCase()
-}
-
 function formatDate(value) {
   return formatShortDate(value)
 }
 
 function visibleImages(work) {
   const images = Array.isArray(work?.images) ? work.images.filter(Boolean) : []
-  return images.slice(0, 4)
-}
-
-function imageGridClass(work) {
-  const count = visibleImages(work).length
-  if (count <= 1) return 'is-single'
-  if (count === 2) return 'is-double'
-  return 'is-mosaic'
-}
-
-function hasMultipleImages(work) {
-  return visibleImages(work).length > 1
+  return images.slice(0, 20)
 }
 
 function profileLink(userId) {
@@ -61,13 +45,38 @@ const processedWorks = computed(() =>
       _profileLink: profileLink(work.user?._id),
       _profileAvatar: profileAvatar(work),
       _createdAt: formatDate(work.createdAt),
-      _imageGridClass: count <= 1 ? 'is-single' : count === 2 ? 'is-double' : 'is-mosaic',
       _visibleImages: imgs,
       _hasMultipleImages: count > 1,
       _visibleImagesLength: count,
     }
   })
 )
+
+// Carousel state
+const carouselRefs = ref({})
+const currentPage = ref({})
+
+function setCarouselRef(workId, el) {
+  if (el) {
+    carouselRefs.value[workId] = el
+  }
+}
+
+function onCarouselScroll(workId, event) {
+  const el = event.target
+  const scrollLeft = el.scrollLeft
+  const width = el.clientWidth
+  const index = Math.round(scrollLeft / width)
+  if (currentPage.value[workId] === index) return
+  currentPage.value[workId] = index
+}
+
+function scrollCarousel(workId, direction) {
+  const el = carouselRefs.value[workId]
+  if (!el) return
+  const width = el.clientWidth
+  el.scrollBy({ left: direction * width, behavior: 'smooth' })
+}
 </script>
 
 <template>
@@ -105,33 +114,52 @@ const processedWorks = computed(() =>
         </header>
 
         <R18BlurOverlay :artwork="work" :showBadgeOnly="true">
-          <router-link :to="`/artworks/${work._id}`" class="feed-cover" :class="work._imageGridClass">
-            <template v-for="image in work._visibleImages" :key="image">
-              <img :src="image" :alt="work.title" loading="lazy" />
-            </template>
+          <div class="feed-carousel-wrapper">
+            <div
+              :ref="(el) => setCarouselRef(work._id, el)"
+              class="feed-carousel"
+              :class="{ 'is-single': !work._hasMultipleImages }"
+              @scroll="onCarouselScroll(work._id, $event)"
+            >
+              <router-link
+                v-for="image in work._visibleImages"
+                :key="image"
+                :to="`/artworks/${work._id}`"
+                class="feed-carousel-item"
+              >
+                <img :src="image" :alt="work.title" loading="lazy" />
+              </router-link>
+            </div>
 
             <template v-if="work._hasMultipleImages">
-              <span class="feed-arrow left" aria-hidden="true">
+              <button
+                type="button"
+                class="feed-arrow left"
+                aria-label="Previous image"
+                @click.prevent="scrollCarousel(work._id, -1)"
+              >
                 <i class="fa-solid fa-chevron-left"></i>
-              </span>
-              <span class="feed-arrow right" aria-hidden="true">
+              </button>
+              <button
+                type="button"
+                class="feed-arrow right"
+                aria-label="Next image"
+                @click.prevent="scrollCarousel(work._id, 1)"
+              >
                 <i class="fa-solid fa-chevron-right"></i>
+              </button>
+              <span class="feed-page-badge" aria-hidden="true">
+                {{ (currentPage[work._id] || 0) + 1 }}/{{ work._visibleImagesLength }}
               </span>
-              <span class="feed-page-count" aria-hidden="true">{{ work._visibleImagesLength }}</span>
             </template>
-          </router-link>
+          </div>
         </R18BlurOverlay>
 
         <div class="feed-card-body">
           <router-link :to="`/artworks/${work._id}`" class="feed-title">{{ work.title }}</router-link>
-          <p class="feed-description">
-            {{ work.description || 'Artwork details will appear here once the artist adds a caption.' }}
-          </p>
-          <div class="feed-actions" aria-label="Artwork actions">
-            <button type="button" class="heart-btn" aria-label="Like artwork">
-              <i class="fa-regular fa-heart" aria-hidden="true"></i>
-            </button>
-          </div>
+          <button type="button" class="heart-btn" aria-label="Like artwork">
+            <i class="fa-regular fa-heart" aria-hidden="true"></i>
+          </button>
         </div>
       </article>
     </div>
@@ -183,13 +211,8 @@ const processedWorks = computed(() =>
 }
 
 .feed-card {
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  background: var(--surface);
-  padding: 0.85rem;
   display: grid;
-  gap: 0.7rem;
-  box-shadow: var(--shadow-sm);
+  gap: 0.6rem;
 }
 
 .feed-card-head {
@@ -255,52 +278,39 @@ const processedWorks = computed(() =>
   color: var(--muted);
 }
 
-.feed-cover {
-  display: grid;
-  gap: 0.35rem;
-  text-decoration: none;
+.feed-carousel-wrapper {
   position: relative;
-  width: fit-content;
-  max-width: 100%;
 }
 
-.feed-cover img {
+.feed-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 4px;
+  scrollbar-width: none;
+  touch-action: pan-x;
+}
+
+.feed-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.feed-carousel.is-single {
+  scroll-snap-type: none;
+}
+
+.feed-carousel-item {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  text-decoration: none;
+}
+
+.feed-carousel-item img {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 16/10;
   object-fit: cover;
-  border-radius: 16px;
   display: block;
   background: var(--surface-alt);
-}
-
-.feed-cover.is-single {
-  grid-template-columns: 1fr;
-  width: min(100%, 600px);
-}
-
-.feed-cover.is-double {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  width: min(100%, 480px);
-}
-
-.feed-cover.is-mosaic {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  width: min(100%, 480px);
-}
-
-.feed-cover.is-single img {
-  width: min(100%, 600px);
-  height: min(100%, 600px);
-  max-width: 600px;
-  max-height: 600px;
-}
-
-.feed-cover.is-double img,
-.feed-cover.is-mosaic img {
-  width: min(100%, 480px);
-  height: min(100%, 480px);
-  max-width: 480px;
-  max-height: 480px;
 }
 
 .feed-arrow {
@@ -310,13 +320,21 @@ const processedWorks = computed(() =>
   width: 2.4rem;
   height: 2.4rem;
   border-radius: 999px;
+  border: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(17, 24, 39, 0.34);
+  background: rgba(0, 0, 0, 0.55);
   color: #fff;
   font-size: 0.95rem;
-  backdrop-filter: blur(8px);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 2;
+}
+
+.feed-carousel-wrapper:hover .feed-arrow {
+  opacity: 1;
 }
 
 .feed-arrow.left {
@@ -327,75 +345,63 @@ const processedWorks = computed(() =>
   right: 0.75rem;
 }
 
-.feed-page-count {
+.feed-page-badge {
   position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
+  bottom: 0.75rem;
+  left: 0.75rem;
   min-width: 2rem;
-  height: 2rem;
-  padding: 0 0.5rem;
+  height: 1.7rem;
+  padding: 0 0.45rem;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(17, 24, 39, 0.48);
+  background: rgba(0, 0, 0, 0.55);
   color: #fff;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 700;
+  pointer-events: none;
+  z-index: 2;
 }
 
 .feed-card-body {
-  display: grid;
-  gap: 0.42rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
 .feed-title {
   text-decoration: none;
-  color: var(--brand);
+  color: var(--text);
   font-size: 0.94rem;
   font-weight: 700;
-}
-
-.feed-description {
-  color: var(--muted);
-  font-size: 0.82rem;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  min-width: 0;
   overflow: hidden;
-}
-
-.feed-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
 }
 
 .heart-btn {
-  width: 2.15rem;
-  height: 2.15rem;
-  border: 1px solid var(--line);
+  width: 2rem;
+  height: 2rem;
+  border: none;
   border-radius: 999px;
-  background: var(--surface);
-  color: var(--text);
+  background: transparent;
+  color: var(--muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.heart-btn:hover {
+  color: #e74c6f;
 }
 
 @media (max-width: 700px) {
-  .feed-card {
-    border-radius: 18px;
-    padding: 0.8rem;
-  }
-
-  .feed-cover.is-double,
-  .feed-cover.is-mosaic {
-    grid-template-columns: 1fr 1fr;
-  }
-
   .feed-arrow {
     width: 2rem;
     height: 2rem;
