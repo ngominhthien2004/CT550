@@ -20,7 +20,7 @@ function toggleLeftNav() {
       <p class="text-secondary mb-4">The route <strong>{{ route.fullPath }}</strong> does not exist.</p>
       <div class="d-flex justify-content-center gap-2 flex-wrap">
         <router-link to="/" class="btn btn-primary">Back to home</router-link>
-        <router-link to="/feed" class="btn btn-outline-secondary">Go to feed</router-link>
+        <router-link to="/discovery" class="btn btn-outline-secondary">Explore</router-link>
       </div>
     </section>
   </MainLayoutTemplate>

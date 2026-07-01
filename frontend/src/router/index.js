@@ -4,7 +4,6 @@ import TypedHomeFeedView from '../views/TypedHomeFeedView.vue'
 import NovelTopPageView from '../views/NovelTopPageView.vue'
 import PlansTopPageView from '../views/PlansTopPageView.vue'
 import EditArtworkView from '../views/EditArtworkView.vue'
-import FeedView from '../views/FeedView.vue'
 import SearchResultsView from '../views/SearchResultsView.vue'
 import BookmarksView from '../views/BookmarksView.vue'
 import FavoritesView from '../views/FavoritesView.vue'
@@ -71,7 +70,7 @@ const routes = [
     name: 'plans',
     component: PlansTopPageView,
   },
-  { path: '/feed', name: 'feed', component: FeedView },
+  { path: '/feed', redirect: '/' },
   { path: '/search', name: 'search-results', component: SearchResultsView },
   { path: '/search/users', name: 'user-search-results', component: SearchResultsView },
   { path: '/discovery', name: 'discovery', component: DiscoveryView },
