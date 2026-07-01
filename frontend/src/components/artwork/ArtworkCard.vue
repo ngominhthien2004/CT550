@@ -119,7 +119,7 @@ function getImageCount(item) {
       </R18BlurOverlay>
 
       <!-- Action button (like or bookmark) -->
-      <button type="button" class="btn-like" :class="{ 'is-active': isActive }" :aria-label="mode === 'bookmark' ? 'Bookmark' : 'Like'" @click.prevent="handleAction" :disabled="isTogglingAction">
+      <button type="button" class="btn-like" :class="{ 'is-active': isActive, 'bookmark-mode': mode === 'bookmark' }" :aria-label="mode === 'bookmark' ? 'Bookmark' : 'Like'" @click.prevent="handleAction" :disabled="isTogglingAction">
         <i v-if="mode === 'bookmark'" :class="isActive ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'"></i>
         <i v-else :class="isActive ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
       </button>
@@ -252,6 +252,10 @@ function getImageCount(item) {
 }
 
 .btn-like.is-active {
+  color: #ef4444;
+}
+
+.btn-like.is-active.bookmark-mode {
   color: #3b82f6;
 }
 
