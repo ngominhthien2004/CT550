@@ -200,11 +200,16 @@ onBeforeUnmount(() => {
   width: 352px;
   max-height: min(72vh, 430px);
   overflow-y: auto;
+  scrollbar-width: none;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--surface);
   box-shadow: var(--shadow-lg);
   z-index: 24;
+}
+
+.quick-panel-box::-webkit-scrollbar {
+  display: none;
 }
 
 .quick-panel-head {
