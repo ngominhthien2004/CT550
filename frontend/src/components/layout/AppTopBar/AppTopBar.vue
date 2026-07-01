@@ -379,6 +379,24 @@ async function applySearchOptions(payload) {
         <i class="fa-regular fa-envelope" aria-hidden="true"></i>
       </router-link>
 
+      <AppTopBarNotificationPanel
+        v-if="authStore.isAuthenticated"
+        :open="isNotificationMenuOpen"
+        :unread-count="notificationUnreadCount"
+        :items="notificationPreviewItems"
+        :loading="notificationPreviewLoading"
+        :loading-more="notificationPreviewLoadingMore"
+        :has-more="notificationPreviewHasMore"
+        :error="notificationPreviewError"
+        :format-time="formatPanelTime"
+        @toggle="handleNotificationMenuToggle"
+        @mark-all-read="handleMarkAllNotificationsRead"
+        @load-more="loadMoreNotificationPreview"
+      />
+      <router-link v-else to="/notifications" class="icon-round" aria-label="Notifications" title="Notifications">
+        <i class="fa-regular fa-bell" aria-hidden="true"></i>
+      </router-link>
+
       <AppTopBarUserMenu
         v-if="authStore.isAuthenticated"
         :user-id="userId"

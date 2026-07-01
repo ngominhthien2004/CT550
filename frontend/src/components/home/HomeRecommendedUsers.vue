@@ -118,12 +118,7 @@ function handleAvatarError(event) {
   background: var(--surface);
   padding: 1rem;
   max-height: calc(100vh - 1rem);
-  overflow-y: auto;
-  scrollbar-width: none;
-}
-
-.recommend-users::-webkit-scrollbar {
-  display: none;
+  overflow: auto;
 }
 
 .section-head {
