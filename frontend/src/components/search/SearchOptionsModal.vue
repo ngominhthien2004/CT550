@@ -100,6 +100,8 @@ watch(
               <select v-model="formState.target" aria-label="Search targets">
                 <option value="tag_partial">Tags (partial match)</option>
                 <option value="tag_exact">Tags (perfect match)</option>
+                <option value="title_caption">Title, Caption</option>
+                <option value="all">Tags, Titles, Captions</option>
               </select>
             </label>
 

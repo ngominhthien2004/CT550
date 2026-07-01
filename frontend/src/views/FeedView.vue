@@ -129,6 +129,12 @@ function buildTargetText(item, target) {
   if (target === 'description') {
     return description.toLowerCase()
   }
+  if (target === 'title_caption') {
+    return `${title} ${description}`.toLowerCase()
+  }
+  if (target === 'tag_partial' || target === 'tag_exact') {
+    return tags.toLowerCase()
+  }
 
   return `${title} ${description} ${tags} ${author}`.toLowerCase()
 }

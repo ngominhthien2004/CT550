@@ -42,7 +42,7 @@ const searchOptionsDraft = ref({
   includeAll: '',
   includeAny: '',
   exclude: '',
-  target: 'all',
+  target: 'tag_partial',
   type: 'illust',
 })
 
@@ -313,7 +313,7 @@ function openSearchOptions() {
     includeAll: typeof query.qall === 'string' ? query.qall : '',
     includeAny: typeof query.qany === 'string' ? query.qany : '',
     exclude: typeof query.qnot === 'string' ? query.qnot : '',
-    target: typeof query.target === 'string' ? query.target : 'all',
+    target: typeof query.target === 'string' ? query.target : 'tag_partial',
     type: typeof query.type === 'string' ? query.type : 'illust',
   }
   isSearchOptionsOpen.value = true
