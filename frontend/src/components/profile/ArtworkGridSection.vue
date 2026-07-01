@@ -17,6 +17,7 @@ const props = defineProps({
   limit: { type: Number, default: 24 },
   nestedField: { type: String, default: '' },
   previewLimit: { type: Number, default: 8 },
+  cardMode: { type: String, default: 'like' },
 })
 
 const emit = defineEmits(['select-type', 'show-all', 'load-more'])
@@ -95,7 +96,7 @@ const filteredCount = computed(() => props.items.length)
 
     <!-- Grid -->
     <div v-else-if="displayItems.length" class="artwork-grid" :class="{ compact: showFeatured }">
-      <ArtworkCard v-for="item in displayItems" :key="item._id" :item="item" />
+      <ArtworkCard v-for="item in displayItems" :key="item._id" :item="item" :mode="cardMode" />
     </div>
 
     <!-- Empty state -->

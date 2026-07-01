@@ -130,6 +130,7 @@ const workTypeTabs = [
         :has-more="bookmarkHasMore"
         :limit="bookmarkLimit"
         nested-field="artwork"
+        card-mode="bookmark"
         empty-icon="fa-regular fa-bookmark"
         empty-text="No bookmark found."
         @select-type="selectBookmarkType"

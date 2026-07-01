@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLikeStore } from '../../stores/like.store'
+import { useBookmarkStore } from '../../stores/bookmark.store'
 import { useAuthStore } from '../../stores/auth.store'
 import ArtworkReportModal from './ArtworkReportModal.vue'
 import R18BlurOverlay from '../common/R18BlurOverlay.vue'
@@ -11,14 +12,29 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  mode: {
+    type: String,
+    default: 'like',
+    validator: (v) => ['like', 'bookmark'].includes(v),
+  },
 })
 
 const router = useRouter()
 const likeStore = useLikeStore()
+const bookmarkStore = useBookmarkStore()
 const authStore = useAuthStore()
 
 const showReportModal = ref(false)
 const isLoggedIn = computed(() => !!authStore.user)
+
+const isBookmarked = computed(() => {
+  if (bookmarkStore.statusByArtwork[props.item._id] !== undefined) {
+    return bookmarkStore.getBookmarkStatus(props.item._id)
+  }
+  return Boolean(props.item.isBookmarked)
+})
+
+const isBookmarkToggling = computed(() => bookmarkStore.isTogglingBookmark(props.item._id))
 
 const isLiked = computed(() => {
   if (likeStore.statusByArtwork[props.item._id] !== undefined) {
@@ -29,7 +45,10 @@ const isLiked = computed(() => {
 
 const isToggling = computed(() => likeStore.isTogglingLike(props.item._id))
 
-async function handleLike(e) {
+const isActive = computed(() => props.mode === 'bookmark' ? isBookmarked.value : isLiked.value)
+const isTogglingAction = computed(() => props.mode === 'bookmark' ? isBookmarkToggling.value : isToggling.value)
+
+async function handleAction(e) {
   e.preventDefault()
   e.stopPropagation()
 
@@ -37,15 +56,26 @@ async function handleLike(e) {
     router.push('/login')
     return
   }
-  if (isToggling.value) return
+  if (isTogglingAction.value) return
 
-  try {
-    if (likeStore.statusByArtwork[props.item._id] === undefined) {
-       likeStore.statusByArtwork[props.item._id] = Boolean(props.item.isLiked)
+  if (props.mode === 'bookmark') {
+    try {
+      if (bookmarkStore.statusByArtwork[props.item._id] === undefined) {
+        bookmarkStore.statusByArtwork[props.item._id] = Boolean(props.item.isBookmarked)
+      }
+      await bookmarkStore.toggleBookmarkByArtwork(props.item._id)
+    } catch (error) {
+      console.error('Failed to toggle bookmark:', error)
     }
-    await likeStore.toggleLikeByArtwork(props.item._id)
-  } catch (error) {
-    console.error('Failed to toggle like:', error)
+  } else {
+    try {
+      if (likeStore.statusByArtwork[props.item._id] === undefined) {
+        likeStore.statusByArtwork[props.item._id] = Boolean(props.item.isLiked)
+      }
+      await likeStore.toggleLikeByArtwork(props.item._id)
+    } catch (error) {
+      console.error('Failed to toggle like:', error)
+    }
   }
 }
 
@@ -88,9 +118,10 @@ function getImageCount(item) {
         </router-link>
       </R18BlurOverlay>
 
-      <!-- Like button -->
-      <button type="button" class="btn-like" :class="{ 'is-liked': isLiked }" aria-label="Like" @click.prevent="handleLike" :disabled="isToggling">
-        <i :class="isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
+      <!-- Action button (like or bookmark) -->
+      <button type="button" class="btn-like" :class="{ 'is-active': isActive }" :aria-label="mode === 'bookmark' ? 'Bookmark' : 'Like'" @click.prevent="handleAction" :disabled="isTogglingAction">
+        <i v-if="mode === 'bookmark'" :class="isActive ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'"></i>
+        <i v-else :class="isActive ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
       </button>
       <!-- Report button -->
       <button type="button" v-if="isLoggedIn" class="btn-report" @click.stop="showReportModal = true" title="Report artwork">
@@ -220,8 +251,8 @@ function getImageCount(item) {
   background: var(--surface);
 }
 
-.btn-like.is-liked {
-  color: #ef4444;
+.btn-like.is-active {
+  color: #3b82f6;
 }
 
 .btn-report {
