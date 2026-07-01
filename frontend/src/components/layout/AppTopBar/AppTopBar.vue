@@ -97,6 +97,7 @@ const userStats = computed(() => ({
 
 const isMessageMenuOpen = ref(false)
 const isNotificationMenuOpen = ref(false)
+const forceCloseUserMenu = ref(false)
 const notificationPreviewItems = ref([])
 const notificationPreviewLoading = ref(false)
 const notificationPreviewLoadingMore = ref(false)
@@ -274,6 +275,7 @@ function handleMessageMenuToggle(event) {
   isMessageMenuOpen.value = event.target.open
   if (isMessageMenuOpen.value) {
     isNotificationMenuOpen.value = false
+    forceCloseUserMenu.value = true
     loadMessagePreview()
   }
 }
@@ -282,7 +284,15 @@ function handleNotificationMenuToggle(event) {
   isNotificationMenuOpen.value = event.target.open
   if (isNotificationMenuOpen.value) {
     isMessageMenuOpen.value = false
+    forceCloseUserMenu.value = true
     loadNotificationPreview()
+  }
+}
+
+function handleUserMenuToggle(event) {
+  if (event.target.open) {
+    isMessageMenuOpen.value = false
+    isNotificationMenuOpen.value = false
   }
 }
 
@@ -406,7 +416,9 @@ async function applySearchOptions(payload) {
         :user-main-links="userMainLinks"
         :user-library-links="userLibraryLinks"
         :user-setting-links="userSettingLinks"
+        :force-close="forceCloseUserMenu"
         @logout="handleLogout"
+        @toggle="handleUserMenuToggle"
       />
 
       <router-link v-else to="/login" class="action-pill action-pill--auth" aria-label="Go to login" title="Go to login">Log in</router-link>

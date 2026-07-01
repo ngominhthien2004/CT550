@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useTheme } from '../../../composables/useTheme'
 
 const { isDark, toggle } = useTheme()
@@ -35,10 +35,15 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  forceClose: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const avatarSrc = computed(() => props.userAvatar || DEFAULT_PROFILE_AVATAR)
 const avatarAlt = computed(() => props.userDisplayName)
+const detailsRef = ref(null)
 
 function handleAvatarError(event) {
   if (event.target?.src !== DEFAULT_PROFILE_AVATAR) {
@@ -46,11 +51,17 @@ function handleAvatarError(event) {
   }
 }
 
-defineEmits(['logout'])
+watch(() => props.forceClose, (shouldClose) => {
+  if (shouldClose && detailsRef.value) {
+    detailsRef.value.open = false
+  }
+})
+
+defineEmits(['logout', 'toggle'])
 </script>
 
 <template>
-  <details class="user-menu">
+  <details ref="detailsRef" class="user-menu" @toggle="$emit('toggle', $event)">
     <summary class="user-menu-trigger" aria-label="Open user menu" title="User menu">
       <router-link to="/account" class="user-avatar-link" aria-label="Go to account" @click.stop @keydown.enter.prevent>
         <img class="avatar avatar--sm user-avatar" :src="avatarSrc" :alt="avatarAlt" @error="handleAvatarError" />
