@@ -5,6 +5,15 @@ import { useAuthStore } from '../stores/auth.store'
 const socket = ref(null)
 const isConnected = ref(false)
 
+function getBackendUrl() {
+  const uploadsUrl = import.meta.env.VITE_UPLOADS_BASE_URL || ''
+  if (uploadsUrl.startsWith('http://') || uploadsUrl.startsWith('https://')) {
+    try { return new URL(uploadsUrl).origin } catch { /* ignore */ }
+  }
+  // In dev, fall back to current origin (Vite proxy handles /socket.io)
+  return window.location.origin
+}
+
 export function useSocket() {
   const authStore = useAuthStore()
 
@@ -14,8 +23,7 @@ export function useSocket() {
     const token = localStorage.getItem('token')
     if (!token || !authStore.isAuthenticated) return
 
-    // Use current origin for Socket.IO (proxied via Vite in dev)
-    socket.value = io(window.location.origin, {
+    socket.value = io(getBackendUrl(), {
       auth: { token },
       transports: ['websocket', 'polling'],
       reconnection: true,
