@@ -153,7 +153,7 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
   </div>
 </template>
 
-<style scoped src="./upload-form-styles.css"></style>
+<style scoped src="../../assets/styles/upload-form.css"></style>
 <style scoped>
 /* === Single card wrapper === */
 .tag-card {

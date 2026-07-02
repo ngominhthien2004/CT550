@@ -129,7 +129,7 @@ const props = defineProps({
   </div>
 </template>
 
-<style scoped src="./upload-form-styles.css"></style>
+<style scoped src="../../assets/styles/upload-form.css"></style>
 <style scoped>
 .settings-container {
   display: grid;

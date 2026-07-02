@@ -169,7 +169,7 @@ onBeforeUnmount(() => {
   </details>
 </template>
 
-<style scoped src="./quick-panel-styles.css"></style>
+<style scoped src="../../../assets/styles/quick-panel.css"></style>
 <style scoped>
 /* Overrides — NotificationPanel needs slightly different values */
 .quick-panel-box {

@@ -106,7 +106,7 @@ const processedItems = computed(() =>
   </details>
 </template>
 
-<style scoped src="./quick-panel-styles.css"></style>
+<style scoped src="../../../assets/styles/quick-panel.css"></style>
 <style scoped>
 .alert-dot.is-dot-only {
   min-width: 10px;

@@ -245,7 +245,7 @@ function getArtworkThumb(artwork) {
   </div>
 </template>
 
-<style scoped src="./dashboard-panel-styles.css"></style>
+<style scoped src="../../assets/styles/dashboard-panel.css"></style>
 <style scoped>
 .reactions-panel {
   background: var(--surface);
