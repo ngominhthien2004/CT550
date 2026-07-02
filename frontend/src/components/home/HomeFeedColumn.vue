@@ -215,6 +215,19 @@ function scrollCarousel(workId, direction) {
   gap: 0.6rem;
 }
 
+.feed-card + .feed-card {
+  position: relative;
+}
+
+.feed-card + .feed-card::before {
+  content: '';
+  position: absolute;
+  top: -0.5rem;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #d9dce3;
+}
+
 .feed-card-head {
   display: flex;
   align-items: center;

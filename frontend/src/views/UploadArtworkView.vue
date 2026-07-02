@@ -6,6 +6,7 @@ import { UploadTypeHero, UploadTagSelector, UploadContentDetails, UploadPublicat
 
 import api, { autoTagImage, getTags } from '../services/api'
 import { useArtworkStore } from '../stores/artwork.store'
+import { useSeriesStore } from '@/stores/series.store'
 import { getApiErrorMessage } from '../utils/apiErrors'
 import { toggleNavCollapsed } from '../utils/viewNavigation'
 
@@ -36,6 +37,8 @@ const kindMeta = {
 const route = useRoute()
 const router = useRouter()
 const artworkStore = useArtworkStore()
+const seriesStore = useSeriesStore()
+const createdSeries = ref(null)
 const isNavCollapsed = ref(true)
 const localError = ref('')
 const tagSuggestions = ref([])
@@ -398,6 +401,29 @@ function validateForm() {
   return ''
 }
 
+async function handleCreateSeries() {
+  const name = form.mangaSeriesName.trim()
+  if (!name) {
+    localError.value = 'Please enter a series name first.'
+    return
+  }
+  try {
+    const series = await seriesStore.createSeries({ title: name, type: 'manga' })
+    createdSeries.value = series
+    localError.value = '' // clear any previous error
+    // Show brief success feedback by setting a temporary success message
+    const prevMsg = localError.value
+    localError.value = `Series "${name}" created successfully!`
+    setTimeout(() => {
+      if (localError.value === `Series "${name}" created successfully!`) {
+        localError.value = prevMsg
+      }
+    }, 3000)
+  } catch (err) {
+    localError.value = seriesStore.error || 'Failed to create series'
+  }
+}
+
 async function submitArtwork() {
   localError.value = ''
 
@@ -516,6 +542,7 @@ onBeforeUnmount(() => {
           :title-count="titleCount"
           :caption-count="captionCount"
           :novel-text-count="novelTextCount"
+          @create-series="handleCreateSeries"
         />
 
         <UploadTagSelector

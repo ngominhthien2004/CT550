@@ -33,6 +33,7 @@ const props = defineProps({
     default: 0,
   },
 })
+const emit = defineEmits(['create-series'])
 </script>
 
 <template>
@@ -77,7 +78,7 @@ const props = defineProps({
       <div class="row-center">
         <div class="row-inline">
           <input v-model="props.form.mangaSeriesName" type="text" class="form-control custom-input" placeholder="Series name" aria-label="Series name" />
-          <button type="button" class="btn btn-outline-primary btn-sm custom-btn">Create series</button>
+          <button type="button" class="btn btn-primary action-pill action-pill--post" @click="emit('create-series')">Create series</button>
         </div>
       </div>
     </div>
@@ -215,6 +216,23 @@ const props = defineProps({
   display: flex;
   gap: 0.65rem;
   align-items: center;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.row-center {
+  min-width: 0;
+}
+
+.row-inline .custom-input {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.row-inline .action-pill {
+  flex: 0 0 auto;
+  max-width: 100%;
+  white-space: normal;
 }
 
 .custom-textarea {
@@ -242,30 +260,11 @@ const props = defineProps({
   bottom: 0.6rem;
 }
 
-.custom-btn {
-  border-radius: 6px;
-  padding: 0.4rem 0.85rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  transition: all 0.2s;
-  color: #0076ff;
-  border-color: #0076ff;
-}
-
-.custom-btn:hover {
-  background-color: #0076ff;
-  color: #ffffff;
-}
-
 @media (max-width: 991px) {
   .additional-settings-card {
     grid-template-columns: 1fr;
     gap: 0.65rem;
     align-items: flex-start;
-  }
-
-  .row-inline {
-    flex-wrap: wrap;
   }
 }
 </style>
