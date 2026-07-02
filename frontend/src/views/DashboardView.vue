@@ -182,22 +182,32 @@ watch(
           <p v-if="loading" class="state-note">Loading dashboard...</p>
           <p v-else-if="error" class="state-note state-note--error">{{ error }}</p>
 
-          <div v-if="onboardingStep > 0" class="coachmark-backdrop" @click.self="finishOnboarding" @keydown.enter.prevent="finishOnboarding" @keydown.space.prevent="finishOnboarding" tabindex="0" role="button">
-            <div class="coachmark-card">
-              <p v-if="onboardingStep === 1" class="coachmark-text">
-                Up to three recent posts will be displayed.
-                The numbers are updated in real-time and the increase since your last visit to the Dashboard is shown in blue text.
-              </p>
-              <p v-else class="coachmark-text">
-                Other content will be displayed, making it easier for you to get feedback on your work,
-                as well as finding new content recommended for you. This content changes regularly.
-              </p>
-
-              <button type="button" class="coachmark-btn" @click="onboardingStep === 1 ? nextOnboardingStep() : finishOnboarding()">
-                {{ onboardingStep === 1 ? 'Next' : 'Try it now' }}
-              </button>
+          <!-- Coachmark modal -->
+          <Teleport to="body">
+            <div v-if="onboardingStep > 0" class="coachmark-overlay" @click.self="finishOnboarding">
+              <div class="coachmark-modal">
+                <div class="coachmark-header">
+                  <h2>{{ onboardingStep === 1 ? 'Welcome to Dashboard' : 'Discover More' }}</h2>
+                  <button type="button" class="coachmark-close-btn" @click="finishOnboarding">&times;</button>
+                </div>
+                <div class="coachmark-body">
+                  <p v-if="onboardingStep === 1" class="coachmark-text">
+                    Up to three recent posts will be displayed.
+                    The numbers are updated in real-time and the increase since your last visit to the Dashboard is shown in blue text.
+                  </p>
+                  <p v-else class="coachmark-text">
+                    Other content will be displayed, making it easier for you to get feedback on your work,
+                    as well as finding new content recommended for you. This content changes regularly.
+                  </p>
+                </div>
+                <div class="coachmark-footer">
+                  <button type="button" class="coachmark-btn" @click="onboardingStep === 1 ? nextOnboardingStep() : finishOnboarding()">
+                    {{ onboardingStep === 1 ? 'Next' : 'Try it now' }}
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
+          </Teleport>
         </template>
 
         <!-- Works tab content -->
@@ -349,5 +359,95 @@ watch(
   .guide-btn {
     align-self: flex-start;
   }
+}
+
+/* Coachmark modal */
+.coachmark-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.coachmark-modal {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  width: 420px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  color: var(--text);
+}
+
+.coachmark-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.coachmark-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: inherit;
+}
+
+.coachmark-close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coachmark-close-btn:hover {
+  background: var(--surface-alt);
+  color: var(--surface);
+}
+
+.coachmark-body {
+  padding: 20px;
+}
+
+.coachmark-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.coachmark-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 20px;
+  border-top: 1px solid var(--line);
+}
+
+.coachmark-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--accent);
+  color: var(--surface);
+  transition: background 0.15s ease;
+}
+
+.coachmark-btn:hover {
+  background: #5b7df8;
 }
 </style>
