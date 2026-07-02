@@ -237,6 +237,7 @@ function handleSave() {
   border: 1px solid var(--line);
   border-radius: 8px;
   font-size: 0.95rem;
+  color: var(--text);
   background: var(--surface-alt);
   transition: border-color 0.2s, box-shadow 0.2s;
 }

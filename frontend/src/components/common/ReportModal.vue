@@ -185,6 +185,7 @@ async function submitReport() {
   border: 1px solid var(--border, #ddd);
   border-radius: 6px;
   font-size: 0.9rem;
+  color: var(--text);
   background: var(--input-bg, #fff);
 }
 .report-modal-footer {

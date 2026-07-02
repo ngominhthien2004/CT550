@@ -187,3 +187,22 @@ select:not(.form-select):disabled {
 :root.dark-theme select:not(.form-select):focus {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
 }
+
+/* Dark mode form elements */
+:root.dark-theme .form-control,
+:root.dark-theme .form-select {
+  color: var(--text);
+  background-color: var(--surface-alt);
+  border-color: var(--line);
+}
+
+:root.dark-theme .form-control::placeholder {
+  color: var(--muted);
+}
+
+:root.dark-theme .form-control:focus,
+:root.dark-theme .form-select:focus {
+  background-color: var(--surface);
+  border-color: var(--accent);
+  color: var(--text);
+}
