@@ -43,10 +43,39 @@ const sentinelRef = ref(null)
 const panelRef = ref(null)
 let observer = null
 
+function computeNotificationLink(item) {
+  const type = item.type || ''
+  const artworkId = item.artwork?._id
+  const username = item.actor?.username
+
+  if (['like', 'bookmark', 'comment'].includes(type) && artworkId) {
+    return `/artworks/${artworkId}`
+  }
+  if (type === 'follow' && username) {
+    return `/${username}`
+  }
+  if (type === 'message') {
+    return '/messages'
+  }
+  if (type === 'request') {
+    return '/requests'
+  }
+  if (type.startsWith('system:')) {
+    if (type === 'system:artwork_report') return '/admin/reports?type=artwork'
+    if (type === 'system:comment_report') return '/admin/reports?type=comment'
+    if (type === 'system:user_report') return '/admin/reports?type=user'
+  }
+  if (type === 'system' && artworkId) {
+    return `/artworks/${artworkId}`
+  }
+  return '/notifications'
+}
+
 const processedItems = computed(() =>
   props.items.map(item => ({
     ...item,
     _time: formatRelativeTime(item.createdAt),
+    _link: computeNotificationLink(item),
   }))
 )
 

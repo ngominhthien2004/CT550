@@ -1,6 +1,6 @@
 <script setup>
 import { computed, nextTick, onBeforeUpdate, onMounted, onUnmounted, ref, toRefs, watch } from 'vue'
-import ArtworkReportModal from '../ArtworkReportModal.vue'
+import ReportModal from '@/components/common/ReportModal.vue'
 import { useAuthStore } from '../../../stores/auth.store'
 import R18BlurOverlay from '../../common/R18BlurOverlay.vue'
 
@@ -225,9 +225,10 @@ watch(() => artwork.value?._id, resetViewerState, { immediate: true })
 
   <div v-if="showToast" class="toast-notification">{{ toastMessage }}</div>
 
-  <ArtworkReportModal
+  <ReportModal
     :visible="showReportModal"
-    :artwork="artwork"
+    report-type="artwork"
+    :target="artwork"
     @close="showReportModal = false"
     @reported="showReportModal = false"
   />

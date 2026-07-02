@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLikeStore } from '../../stores/like.store'
 import { useAuthStore } from '../../stores/auth.store'
-import ArtworkReportModal from './ArtworkReportModal.vue'
+import ReportModal from '@/components/common/ReportModal.vue'
 import R18BlurOverlay from '../common/R18BlurOverlay.vue'
 
 const props = defineProps({
@@ -112,9 +112,10 @@ function getImageCount(item) {
       </router-link>
     </div>
 
-    <ArtworkReportModal
+    <ReportModal
       :visible="showReportModal"
-      :artwork="item"
+      report-type="artwork"
+      :target="item"
       @close="showReportModal = false"
       @reported="showReportModal = false"
     />

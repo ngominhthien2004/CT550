@@ -2,7 +2,7 @@
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useCommentStore } from '../../../stores/comment.store.js'
 import { useAuthStore } from '../../../stores/auth.store.js'
-import CommentReportModal from '../../comments/CommentReportModal.vue'
+import ReportModal from '@/components/common/ReportModal.vue'
 import { formatShortDate } from '../../../utils/date.js'
 
 const props = defineProps({
@@ -438,9 +438,10 @@ const getAvatar = (user) => {
     </div>
 
     <!-- Report Comment Modal -->
-    <CommentReportModal
+    <ReportModal
       :visible="showReportModal"
-      :comment="reportModalComment"
+      report-type="comment"
+      :target="reportModalComment"
       @close="closeReportModal"
       @reported="closeReportModal"
     />

@@ -1,0 +1,234 @@
+﻿[1mClones[22m:
+config/passport.js 32-37 ~ 122-127
+config/passport.js 37-50 ~ 127-140
+config/passport.js 72-97 ~ 162-187
+controllers/ai.controller.js 143-151 ~ 156-164
+controllers/artwork.controller.js 116-125 ~ 473-482
+controllers/artwork.controller.js 359-364 ~ 744-750
+controllers/artwork.controller.js 359-364 ~ 870-876
+controllers/ artwork.controller.js:359-364 ~ comment.controller.js:241-246
+controllers/ artwork.controller.js:359-368 ~ comment.controller.js:329-338
+controllers/ artwork.controller.js:359-364 ~ request.controller.js:831-839
+controllers/ artwork.controller.js:359-364 ~ user.controller.js:347-352
+controllers/ artwork.controller.js:359-364 ~ userReport.controller.js:59-65
+controllers/ artwork.controller.js:359-368 ~ userReport.controller.js:108-117
+controllers/artwork.controller.js 398-410 ~ 451-462
+controllers/artwork.controller.js 398-408 ~ 586-593
+controllers/artwork.controller.js 398-405 ~ 695-701
+controllers/artwork.controller.js 400-410 ~ 527-536
+controllers/artwork.controller.js 400-410 ~ 911-919
+controllers/artwork.controller.js 570-579 ~ 625-634
+controllers/artwork.controller.js 570-582 ~ 900-912
+controllers/artwork.controller.js 588-598 ~ 911-921
+controllers/ artwork.controller.js:722-730 ~ comment.controller.js:307-315
+controllers/ artwork.controller.js:746-754 ~ comment.controller.js:331-339
+controllers/ artwork.controller.js:762-777 ~ userReport.controller.js:126-141
+controllers/ artwork.controller.js:782-792 ~ comment.controller.js:373-383
+controllers/ artwork.controller.js:782-790 ~ userReport.controller.js:146-154
+controllers/auth.controller.js 24-35 ~ 49-60
+controllers/banner.controller.js 67-73 ~ 106-112
+controllers/ bookmark.controller.js:7-20 ~ like.controller.js:7-20
+controllers/bookmark.controller.js 11-23 ~ 125-137
+controllers/bookmark.controller.js 23-34 ~ 137-148
+controllers/ bookmark.controller.js:36-44 ~ like.controller.js:35-43
+controllers/ bookmark.controller.js:50-56 ~ feed.controller.js:9-15
+controllers/ bookmark.controller.js:50-58 ~ like.controller.js:49-57
+controllers/ bookmark.controller.js:50-56 ~ message.controller.js:7-12
+controllers/ bookmark.controller.js:50-56 ~ notification.controller.js:3-8
+controllers/ bookmark.controller.js:50-56 ~ user.controller.js:624-630
+controllers/ bookmark.controller.js:59-69 ~ like.controller.js:58-68
+controllers/ bookmark.controller.js:102-111 ~ like.controller.js:101-110
+controllers/comment.controller.js:33-44 ~ middlewares/blockCheck.middleware.js:75-88
+controllers/ comment.controller.js:303-315 ~ userReport.controller.js:34-46
+controllers/ comment.controller.js:306-314 ~ request.controller.js:814-820
+controllers/feed.controller.js 24-45 ~ 109-130
+controllers/like.controller.js 11-33 ~ 124-146
+controllers/message.controller.js 170-177 ~ 199-206
+controllers/request.controller.js 376-386 ~ 411-421
+controllers/request.controller.js 376-386 ~ 443-453
+controllers/request.controller.js 376-384 ~ 469-477
+controllers/request.controller.js 376-386 ~ 496-506
+controllers/request.controller.js 376-384 ~ 537-545
+controllers/request.controller.js 376-386 ~ 591-601
+controllers/request.controller.js 376-386 ~ 632-642
+controllers/request.controller.js 376-386 ~ 663-673
+controllers/request.controller.js 376-386 ~ 699-709
+controllers/request.controller.js 376-386 ~ 723-733
+controllers/request.controller.js 376-384 ~ 771-779
+controllers/request.controller.js 376-386 ~ 794-804
+controllers/ series.controller.js:83-93 ~ user.controller.js:508-518
+controllers/ series.controller.js:93-101 ~ user.controller.js:518-526
+controllers/series.controller.js 166-179 ~ 217-229
+controllers/series.controller.js 166-179 ~ 257-269
+controllers/series.controller.js 166-185 ~ 334-351
+controllers/series.controller.js 166-185 ~ 387-404
+controllers/series.controller.js 166-180 ~ 441-454
+controllers/series.controller.js 318-334 ~ 371-387
+controllers/series.controller.js 318-334 ~ 425-441
+controllers/series.controller.js 425-436 ~ 473-484
+controllers/user.controller.js 76-84 ~ 113-121
+middlewares/auth.middleware.js 9-18 ~ 34-41
+models/ ArtworkReport.js:9-18 ~ CommentReport.js:9-18
+models/ ArtworkReport.js:9-18 ~ UserReport.js:9-18
+models/ Request.js:9-16 ~ RequestChatMessage.js:3-10
+package-lock.json:10-27 ~ package.json:14-31
+routes/ artwork.routes.js:45-60 ~ request.routes.js:38-53
+routes/ artwork.routes.js:45-54 ~ series.routes.js:33-42
+routes/ artwork.routes.js:45-61 ~ user.routes.js:36-52
+routes/ artwork.routes.js:55-61 ~ message.routes.js:24-30
+routes/ message.routes.js:29-34 ~ series.routes.js:48-55
+assets/styles/buttons.css:94-113 ~ components/layout/AppTopBar/AppTopBar.vue:css:483-502
+assets/styles/buttons.css:98-115 ~ components/layout/AppTopBar/AppTopBarMessagePanel.vue:css:111-128
+components/admin/ AdminAISettingsPanel.vue:css:211-229 ~ AdminBannerPanel.vue:css:355-373
+components/admin/ AdminActionsDropdown.vue:javascript:9-22 ~ AdminPillSelect.vue:javascript:22-35
+components/admin/ AdminArtworkReportPanel.vue:css:115-140 ~ AdminCommentReportPanel.vue:css:119-144
+components/admin/ AdminArtworkReportPanel.vue:css:115-130 ~ AdminUserReportPanel.vue:css:117-132
+components/admin/ AdminArtworkReportPanel.vue:html:1-31 ~ AdminCommentReportPanel.vue:html:1-31
+components/admin/ AdminArtworkReportPanel.vue:html:1-31 ~ AdminUserReportPanel.vue:html:1-31
+components/admin/ AdminArtworkReportPanel.vue:html:33-42 ~ AdminCommentReportPanel.vue:html:33-42
+components/admin/ AdminArtworkReportPanel.vue:html:33-42 ~ AdminUserReportPanel.vue:html:33-42
+components/admin/ AdminArtworkReportPanel.vue:html:56-68 ~ AdminCommentReportPanel.vue:html:57-69
+components/admin/ AdminArtworkReportPanel.vue:html:57-68 ~ AdminUserReportPanel.vue:html:57-68
+components/admin/ AdminArtworkReportPanel.vue:html:70-83 ~ AdminCommentReportPanel.vue:html:74-87
+components/admin/ AdminArtworkReportPanel.vue:html:72-81 ~ AdminUserReportPanel.vue:html:68-77
+components/admin/ AdminArtworkReportPanel.vue:javascript:8-15 ~ AdminCommentReportPanel.vue:javascript:8-15
+components/admin/ AdminArtworkReportPanel.vue:javascript:8-17 ~ AdminUserReportPanel.vue:javascript:8-18
+components/admin/ AdminConfirmModal.vue:css:43-69 ~ AdminPromptModal.vue:css:61-87
+components/admin/ AdminConfirmModal.vue:html:1-23 ~ AdminPromptModal.vue:html:1-31
+components/admin/AdminPagination.vue:css:35-46 ~ styles/admin-management.css:235-246
+components/admin/ AdminPillSelect.vue:css:103-115 ~ AdminUserManagementPanel.vue:css:266-278
+components/artwork/ ArtworkCard.vue:css:125-190 ~ BookmarkCard.vue:css:125-190
+components/artwork/ ArtworkCard.vue:css:190-209 ~ BookmarkCard.vue:css:190-209
+components/artwork/ ArtworkCard.vue:css:215-224 ~ BookmarkCard.vue:css:215-224
+components/artwork/ ArtworkCard.vue:css:224-285 ~ BookmarkCard.vue:css:224-285
+components/artwork/ ArtworkCard.vue:html:67-88 ~ BookmarkCard.vue:html:67-88
+components/artwork/ ArtworkCard.vue:html:89-121 ~ BookmarkCard.vue:html:89-121
+components/artwork/ ArtworkCard.vue:javascript:48-63 ~ BookmarkCard.vue:javascript:48-63
+components/artwork/ArtworkDetailCard.vue:html:172-186 ~ views/ArtworkDetailView.vue:html:479-492
+components/artwork/ArtworkDetailCard.vue:javascript:102-118 ~ views/ArtworkDetailView.vue:javascript:77-91
+components/ artwork/ArtworkReportModal.vue:css:83-110 ~ comments/CommentReportModal.vue:css:83-110
+components/ artwork/ArtworkReportModal.vue:css:83-88 ~ user/UserReportModal.vue:css:84-89
+components/ artwork/ArtworkReportModal.vue:css:93-100 ~ user/UserReportModal.vue:css:94-101
+components/ artwork/ArtworkReportModal.vue:html:5-10 ~ comments/CommentReportModal.vue:html:5-11
+components/ artwork/ArtworkReportModal.vue:html:5-10 ~ user/UserReportModal.vue:html:5-11
+components/ artwork/ArtworkReportModal.vue:html:10-17 ~ comments/CommentReportModal.vue:html:11-19
+components/ artwork/ArtworkReportModal.vue:html:10-18 ~ user/UserReportModal.vue:html:11-20
+components/ artwork/ArtworkReportModal.vue:html:19-38 ~ comments/CommentReportModal.vue:html:19-38
+components/ artwork/ArtworkReportModal.vue:html:19-38 ~ user/UserReportModal.vue:html:20-39
+components/ artwork/ArtworkReportModal.vue:javascript:47-63 ~ comments/CommentReportModal.vue:javascript:47-63
+components/ artwork/ArtworkReportModal.vue:javascript:47-63 ~ user/UserReportModal.vue:javascript:48-64
+components/ artwork/ArtworkReportModal.vue:javascript:63-79 ~ comments/CommentReportModal.vue:javascript:63-79
+components/ artwork/ArtworkReportModal.vue:javascript:63-79 ~ user/UserReportModal.vue:javascript:64-80
+components/artwork/detail/ ArtworkDetailAuthorRow.vue:javascript:4-10 ~ ArtworkDetailSidebar.vue:javascript:6-12
+components/ artwork/detail/ArtworkDetailViewer.vue:css:460-469 ~ novel/NovelActionToolbar.vue:css:181-190
+components/ artwork/detail/ArtworkDetailViewer.vue:css:470-483 ~ novel/NovelActionToolbar.vue:css:191-204
+components/ artwork/detail/ArtworkDetailViewer.vue:css:488-502 ~ novel/NovelActionToolbar.vue:css:209-223
+components/ artwork/detail/ArtworkDetailViewer.vue:html:157-170 ~ novel/NovelActionToolbar.vue:html:76-90
+components/ artwork/detail/ArtworkDetailViewer.vue:html:171-187 ~ novel/NovelActionToolbar.vue:html:91-109
+components/ artwork/detail/ArtworkDetailViewer.vue:javascript:12-18 ~ novel/NovelActionToolbar.vue:javascript:5-11
+components/ artwork/detail/ArtworkDetailViewer.vue:javascript:69-94 ~ novel/NovelActionToolbar.vue:javascript:19-44
+components/ artwork/detail/ArtworkDetailViewer.vue:javascript:99-125 ~ novel/NovelActionToolbar.vue:javascript:46-72
+components/common/SkeletonLoader.vue:css 41-47 ~ 76-82
+components/dashboard/ ArtworkPickerModal.vue:css:184-198 ~ CreateSeriesModal.vue:css:426-440
+components/dashboard/ ArtworkPickerModal.vue:css:187-198 ~ EditArtworkModal.vue:css:346-357
+components/dashboard/ CreateSeriesModal.vue:css:375-390 ~ DashboardSeriesPanel.vue:css:581-596
+components/dashboard/ CreateSeriesModal.vue:css:769-784 ~ DashboardSeriesPanel.vue:css:631-646
+components/dashboard/ CreateSeriesModal.vue:css:772-783 ~ DashboardWorksPanel.vue:css:449-460
+components/dashboard/ CreateSeriesModal.vue:css:772-783 ~ EditArtworkModal.vue:css:586-597
+components/dashboard/DashboardSeriesPanel.vue:css:379-386 ~ views/SeriesDetailView.vue:css:198-205
+components/dashboard/ DashboardSeriesPanel.vue:css:455-465 ~ DashboardWorksPanel.vue:css:281-291
+components/dashboard/ DashboardSeriesPanel.vue:css:469-476 ~ DashboardWorksPanel.vue:css:295-302
+components/dashboard/ DashboardSeriesPanel.vue:css:477-508 ~ DashboardWorksPanel.vue:css:303-334
+components/dashboard/ DashboardSeriesPanel.vue:css:608-634 ~ DashboardWorksPanel.vue:css:423-449
+components/ dashboard/DashboardSeriesPanel.vue:javascript:82-95 ~ series/SeriesHero.vue:javascript:6-19
+components/ dashboard/EditArtworkModal.vue:css:486-493 ~ upload/UploadTagSelector.vue:css:419-426
+components/ dashboard/EditArtworkModal.vue:css:513-525 ~ upload/UploadTagSelector.vue:css:438-450
+components/dashboard/EditArtworkModal.vue:javascript:34-58 ~ views/EditArtworkView.vue:javascript:48-72
+components/dashboard/EditArtworkModal.vue:javascript:85-107 ~ views/UploadArtworkView.vue:javascript:334-357
+components/dashboard/EditArtworkModal.vue:javascript:86-107 ~ views/EditArtworkView.vue:javascript:100-121
+components/drawing/ PostDrawingModal.vue:css:64-86 ~ SaveSlotsModal.vue:css:77-99
+components/drawing/ PostDrawingModal.vue:css:83-124 ~ SaveSlotsModal.vue:css:100-141
+components/drawing/ PostDrawingModal.vue:css:101-115 ~ SaveSlotsModal.vue:css:262-276
+components/home/HomeArtworkGrid.vue:css 148-159 ~ 162-173
+components/ home/HomeArtworkGrid.vue:css:149-159 ~ novel/NovelCard.vue:css:192-202
+components/ home/HomeArtworkGrid.vue:css:159-173 ~ novel/NovelCard.vue:css:206-220
+components/ home/HomeArtworkGrid.vue:css:161-173 ~ novel/NovelCard.vue:css:178-190
+components/home/HomeHeroBanner.vue:html 48-67 ~ 69-88
+components/ home/HomeRecommendedUsers.vue:javascript:7-27 ~ novel/NovelCreators.vue:javascript:5-24
+components/layout/AppSearchBar.vue:html 290-306 ~ 310-326
+components/layout/AppSidebarMenu.vue:css 290-298 ~ 358-366
+components/layout/AppSidebarMenu.vue:css 290-299 ~ 588-597
+components/layout/AppSidebarMenu.vue:css 356-367 ~ 374-385
+components/layout/AppTopBar/ AppTopBarMessagePanel.vue:css:110-168 ~ AppTopBarNotificationPanel.vue:css:173-231
+components/layout/AppTopBar/ AppTopBarMessagePanel.vue:css:110-128 ~ AppTopBarServicesMenu.vue:css:41-59
+components/layout/AppTopBar/ AppTopBarMessagePanel.vue:css:168-176 ~ AppTopBarNotificationPanel.vue:css:232-240
+components/layout/AppTopBar/ AppTopBarMessagePanel.vue:css:173-184 ~ AppTopBarNotificationPanel.vue:css:241-252
+components/layout/AppTopBar/ AppTopBarMessagePanel.vue:css:181-193 ~ AppTopBarNotificationPanel.vue:css:269-281
+components/layout/AppTopBar/ AppTopBarMessagePanel.vue:css:197-233 ~ AppTopBarNotificationPanel.vue:css:278-314
+components/layout/AppTopBar/ AppTopBarMessagePanel.vue:css:234-294 ~ AppTopBarNotificationPanel.vue:css:348-408
+components/layout/AppTopBar/ AppTopBarMessagePanel.vue:html:66-78 ~ AppTopBarNotificationPanel.vue:html:128-140
+components/layout/AppTopBar/ AppTopBarMessagePanel.vue:javascript:4-20 ~ AppTopBarNotificationPanel.vue:javascript:5-21
+components/novel/ChapterManager.vue:css 237-245 ~ 591-599
+components/novel/ChapterManager.vue:css 498-505 ~ 516-523
+components/profile/ ProfileAvatarModal.vue:html:1-42 ~ ProfileEditModal.vue:html:1-84
+components/profile/ProfileSummarySection.vue:css 521-532 ~ 597-608
+components/profile/ProfileSummarySection.vue:css 521-535 ~ 639-654
+components/rankings/RankingEmptyState.vue:css:139-147 ~ views/RankingsView.vue:css:255-263
+components/request/ CreatePlanForm.vue:css:133-150 ~ PlansSection.vue:css:33-50
+components/request/ CreatePlanForm.vue:css:155-161 ~ PlansSection.vue:css:75-95
+components/request/ CreatePlanForm.vue:css:218-231 ~ PlansSection.vue:css:48-60
+components/search/ SearchFilterBar.vue:css:74-84 ~ UserSearchFilters.vue:css:64-74
+components/search/SearchFilterBar.vue:css 77-86 ~ 121-130
+components/series/ SeriesArtworksGrid.vue:css:107-118 ~ SeriesChaptersList.vue:css:403-414
+components/series/SeriesHero.vue:javascript:4-19 ~ views/SeriesDetailView.vue:javascript:52-67
+components/upload/UploadContentDetails.vue:css:129-140 ~ views/EditArtworkView.vue:css:527-538
+components/upload/ UploadContentDetails.vue:css:193-202 ~ UploadPublicationSettings.vue:css:140-149
+components/upload/ UploadContentDetails.vue:css:210-225 ~ UploadPublicationSettings.vue:css:174-189
+components/upload/ UploadContentDetails.vue:css:237-249 ~ UploadPublicationSettings.vue:css:356-368
+components/upload/ UploadContentDetails.vue:css:292-352 ~ UploadPublicationSettings.vue:css:197-257
+components/upload/ UploadContentDetails.vue:css:316-323 ~ UploadPublicationSettings.vue:css:277-284
+components/upload/UploadContentDetails.vue:css:338-347 ~ views/EditArtworkView.vue:css:689-698
+components/upload/ UploadPublicationSettings.vue:css:156-191 ~ UploadTagSelector.vue:css:197-232
+components/upload/ UploadPublicationSettings.vue:css:178-193 ~ UploadTagSelector.vue:css:219-234
+components/upload/ UploadPublicationSettings.vue:css:266-285 ~ UploadTagSelector.vue:css:368-387
+components/upload/ UploadPublicationSettings.vue:css:285-313 ~ UploadTagSelector.vue:css:388-416
+composables/useAdminReports.js 22-28 ~ 100-106
+composables/useAdminReports.js 22-28 ~ 156-162
+composables/useAdminReports.js 22-28 ~ 212-218
+composables/useAdminReports.js 22-28 ~ 266-272
+composables/ useAdminReports.js:22-28 ~ useAdminTags.js:19-25
+composables/ useAdminReports.js:22-28 ~ useAdminUsers.js:21-27
+composables/useAdminReports.js:308-325 ~ views/AdminManagementView.vue:javascript:41-53
+stores/drawing.store.js 514-529 ~ 948-963
+stores/drawing.store.js 684-694 ~ 946-956
+stores/drawing.store.js 786-820 ~ 830-863
+stores/series.store.js 67-72 ~ 98-103
+stores/series.store.js 98-103 ~ 114-119
+views/ AdminManagementView.vue:html:145-150 ~ ModerationCaseDetailView.vue:html:157-162
+views/ BrowseHistoryView.vue:html:67-75 ~ MyReportsView.vue:html:136-144
+views/ BrowseHistoryView.vue:javascript:48-58 ~ ModerationCaseDetailView.vue:javascript:43-53
+views/ DashboardView.vue:html:218-153 ~ EditArtworkView.vue:html:376-206
+views/ EditArtworkView.vue:css:398-406 ~ PlansTopPageView.vue:css:332-340
+views/EditArtworkView.vue:html 252-271 ~ 332-351
+views/ EditArtworkView.vue:javascript:42-69 ~ UploadArtworkView.vue:javascript:111-138
+views/ FollowingNewestView.vue:javascript:11-21 ~ HomePage.vue:javascript:23-33
+views/ FollowingNewestView.vue:javascript:11-23 ~ TypedHomeFeedView.vue:javascript:37-48
+views/ HomePage.vue:html:167-181 ~ TypedHomeFeedView.vue:html:220-232
+views/ HomePage.vue:javascript:43-62 ~ TypedHomeFeedView.vue:javascript:62-81
+views/ HomePage.vue:javascript:63-75 ~ TypedHomeFeedView.vue:javascript:81-93
+views/ LoginView.vue:html:1-57 ~ SignUpView.vue:html:1-64
+views/ LoginView.vue:html:65-73 ~ SignUpView.vue:html:86-95
+views/ LoginView.vue:javascript:35-46 ~ SignUpView.vue:javascript:42-53
+views/ModerationCaseDetailView.vue:html 285-296 ~ 297-308
+views/ ModerationCaseDetailView.vue:javascript:39-52 ~ MyReportsView.vue:javascript:43-56
+views/ MyReportsView.vue:html:1-126 ~ NotificationsView.vue:html:1-100
+views/PlansTopPageView.vue:html 168-183 ~ 204-219
+views/PlansTopPageView.vue:html 168-180 ~ 238-250
+views/PlansTopPageView.vue:html 183-188 ~ 218-223
+---
+[1m226[22m clones ┬╖ [1m2.2%[22m duplication
+[90mtime: 91.424ms[39m
+
+[90m≡ƒÆí Auto-refactor with AI: [1m[39mnpx skills add https://github.com/kucherenko/jscpd --skill dry-refactoring[90m[22m
+[90m≡ƒÄ⌐ New: Gangsta Agents ΓÇö discipline your AI coding ΓåÆ gangsta.page[39m
+[90m≡ƒÆû Support jscpd project ΓåÆ https://opencollective.com/jscpd[39m

@@ -130,6 +130,24 @@ function ensureRequester(request, userId) {
     return (request.requester?._id || request.requester).toString() === userId.toString();
 }
 
+async function findRequestOrFail(id) {
+    const request = await Request.findById(id);
+    if (!request) {
+        const err = new Error('Request not found');
+        err.statusCode = 404;
+        throw err;
+    }
+    return request;
+}
+
+function authorizeOrFail(condition, message) {
+    if (!condition) {
+        const err = new Error(message);
+        err.statusCode = 403;
+        throw err;
+    }
+}
+
 async function populateRequest(query) {
     return query.populate(REQUEST_POPULATE);
 }
@@ -375,16 +393,8 @@ async function transitionRequest({ request, actorId, toStatus, type, metadata = 
 
 const acceptRequest = async (req, res, next) => {
     try {
-        const request = await Request.findById(req.params.id);
-        if (!request) {
-            res.status(404);
-            return next(new Error('Request not found'));
-        }
-
-        if (!ensureCreator(request, req.user._id)) {
-            res.status(403);
-            return next(new Error('Only the creator can accept this request'));
-        }
+        const request = await findRequestOrFail(req.params.id);
+        authorizeOrFail(ensureCreator(request, req.user._id), 'Only the creator can accept this request');
 
         request.dueAt = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000);
         await transitionRequest({
@@ -410,16 +420,8 @@ const acceptRequest = async (req, res, next) => {
 
 const rejectRequest = async (req, res, next) => {
     try {
-        const request = await Request.findById(req.params.id);
-        if (!request) {
-            res.status(404);
-            return next(new Error('Request not found'));
-        }
-
-        if (!ensureCreator(request, req.user._id)) {
-            res.status(403);
-            return next(new Error('Only the creator can reject this request'));
-        }
+        const request = await findRequestOrFail(req.params.id);
+        authorizeOrFail(ensureCreator(request, req.user._id), 'Only the creator can reject this request');
         await transitionRequest({
             request,
             actorId: req.user._id,
@@ -442,16 +444,8 @@ const rejectRequest = async (req, res, next) => {
 
 const startRequest = async (req, res, next) => {
     try {
-        const request = await Request.findById(req.params.id);
-        if (!request) {
-            res.status(404);
-            return next(new Error('Request not found'));
-        }
-
-        if (!ensureCreator(request, req.user._id)) {
-            res.status(403);
-            return next(new Error('Only the creator can start this request'));
-        }
+        const request = await findRequestOrFail(req.params.id);
+        authorizeOrFail(ensureCreator(request, req.user._id), 'Only the creator can start this request');
 
         await transitionRequest({
             request,
@@ -468,16 +462,8 @@ const startRequest = async (req, res, next) => {
 
 const cancelRequest = async (req, res, next) => {
     try {
-        const request = await Request.findById(req.params.id);
-        if (!request) {
-            res.status(404);
-            return next(new Error('Request not found'));
-        }
-
-        if (!ensureParticipant(request, req.user._id)) {
-            res.status(403);
-            return next(new Error('Only request participants can cancel this request'));
-        }
+        const request = await findRequestOrFail(req.params.id);
+        authorizeOrFail(ensureParticipant(request, req.user._id), 'Only request participants can cancel this request');
         request.chatClosedAt = new Date();
         await transitionRequest({
             request,
@@ -495,16 +481,8 @@ const cancelRequest = async (req, res, next) => {
 
 const submitDraft = async (req, res, next) => {
     try {
-        const request = await Request.findById(req.params.id);
-        if (!request) {
-            res.status(404);
-            return next(new Error('Request not found'));
-        }
-
-        if (!ensureCreator(request, req.user._id)) {
-            res.status(403);
-            return next(new Error('Only the creator can submit a draft'));
-        }
+        const request = await findRequestOrFail(req.params.id);
+        authorizeOrFail(ensureCreator(request, req.user._id), 'Only the creator can submit a draft');
 
         const draftFiles = filesFor(req, 'draftFiles');
         if (!draftFiles.length) {
@@ -536,16 +514,8 @@ const submitDraft = async (req, res, next) => {
 
 const createRevision = async (req, res, next) => {
     try {
-        const request = await Request.findById(req.params.id);
-        if (!request) {
-            res.status(404);
-            return next(new Error('Request not found'));
-        }
-
-        if (!ensureRequester(request, req.user._id)) {
-            res.status(403);
-            return next(new Error('Only the requester can request revisions'));
-        }
+        const request = await findRequestOrFail(req.params.id);
+        authorizeOrFail(ensureRequester(request, req.user._id), 'Only the requester can request revisions');
 
         const revisionCheck = canCreateRevision(request);
         if (!revisionCheck.allowed) {
@@ -590,16 +560,8 @@ const createRevision = async (req, res, next) => {
 
 const completeRequest = async (req, res, next) => {
     try {
-        const request = await Request.findById(req.params.id);
-        if (!request) {
-            res.status(404);
-            return next(new Error('Request not found'));
-        }
-
-        if (!ensureCreator(request, req.user._id)) {
-            res.status(403);
-            return next(new Error('Only the creator can complete this request'));
-        }
+        const request = await findRequestOrFail(req.params.id);
+        authorizeOrFail(ensureCreator(request, req.user._id), 'Only the creator can complete this request');
 
         const finalFiles = filesFor(req, 'finalFiles');
         if (!finalFiles.length) {
@@ -631,16 +593,8 @@ const completeRequest = async (req, res, next) => {
 
 const approveRequest = async (req, res, next) => {
     try {
-        const request = await Request.findById(req.params.id);
-        if (!request) {
-            res.status(404);
-            return next(new Error('Request not found'));
-        }
-
-        if (!ensureRequester(request, req.user._id)) {
-            res.status(403);
-            return next(new Error('Only the requester can approve completion'));
-        }
+        const request = await findRequestOrFail(req.params.id);
+        authorizeOrFail(ensureRequester(request, req.user._id), 'Only the requester can approve completion');
 
         if (request.status !== REQUEST_STATUSES.DRAFT_SUBMITTED && request.status !== REQUEST_STATUSES.REVISION) {
             res.status(400);
@@ -662,16 +616,8 @@ const approveRequest = async (req, res, next) => {
 
 const requestExtension = async (req, res, next) => {
     try {
-        const request = await Request.findById(req.params.id);
-        if (!request) {
-            res.status(404);
-            return next(new Error('Request not found'));
-        }
-
-        if (!ensureCreator(request, req.user._id)) {
-            res.status(403);
-            return next(new Error('Only the creator can request an extension'));
-        }
+        const request = await findRequestOrFail(req.params.id);
+        authorizeOrFail(ensureCreator(request, req.user._id), 'Only the creator can request an extension');
 
         if (request.extensionDays > 0) {
             res.status(400);
@@ -698,16 +644,8 @@ const requestExtension = async (req, res, next) => {
 
 const getRequestChat = async (req, res, next) => {
     try {
-        const request = await Request.findById(req.params.id);
-        if (!request) {
-            res.status(404);
-            return next(new Error('Request not found'));
-        }
-
-        if (!ensureParticipant(request, req.user._id)) {
-            res.status(403);
-            return next(new Error('Only request participants can view this chat'));
-        }
+        const request = await findRequestOrFail(req.params.id);
+        authorizeOrFail(ensureParticipant(request, req.user._id), 'Only request participants can view this chat');
 
         const messages = await RequestChatMessage.find({ request: request._id })
             .populate('sender', 'username displayName avatar')
@@ -722,16 +660,8 @@ const getRequestChat = async (req, res, next) => {
 
 const createRequestChatMessage = async (req, res, next) => {
     try {
-        const request = await Request.findById(req.params.id);
-        if (!request) {
-            res.status(404);
-            return next(new Error('Request not found'));
-        }
-
-        if (!ensureParticipant(request, req.user._id)) {
-            res.status(403);
-            return next(new Error('Only request participants can send chat messages'));
-        }
+        const request = await findRequestOrFail(req.params.id);
+        authorizeOrFail(ensureParticipant(request, req.user._id), 'Only request participants can send chat messages');
 
         if (request.chatClosedAt) {
             res.status(400);
@@ -770,16 +700,11 @@ const createRequestChatMessage = async (req, res, next) => {
 
 const getRequestEvents = async (req, res, next) => {
     try {
-        const request = await Request.findById(req.params.id);
-        if (!request) {
-            res.status(404);
-            return next(new Error('Request not found'));
-        }
-
-        if (!ensureParticipant(request, req.user._id) && req.user.role !== 'admin') {
-            res.status(403);
-            return next(new Error('Not authorized to view request events'));
-        }
+        const request = await findRequestOrFail(req.params.id);
+        authorizeOrFail(
+            ensureParticipant(request, req.user._id) || req.user.role === 'admin',
+            'Not authorized to view request events'
+        );
 
         const events = await RequestEvent.find({ request: request._id })
             .populate('actor', 'username displayName avatar')
@@ -793,16 +718,8 @@ const getRequestEvents = async (req, res, next) => {
 
 const reportRequest = async (req, res, next) => {
     try {
-        const request = await Request.findById(req.params.id);
-        if (!request) {
-            res.status(404);
-            return next(new Error('Request not found'));
-        }
-
-        if (!ensureParticipant(request, req.user._id)) {
-            res.status(403);
-            return next(new Error('Only request participants can report this request'));
-        }
+        const request = await findRequestOrFail(req.params.id);
+        authorizeOrFail(ensureParticipant(request, req.user._id), 'Only request participants can report this request');
 
         await logRequestEvent({
             requestId: request._id,

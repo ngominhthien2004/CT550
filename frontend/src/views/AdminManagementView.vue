@@ -7,8 +7,7 @@ import {
   AdminUserManagementPanel,
   AdminReportReviewPanel, AdminTagManagementPanel,
   AdminAISettingsPanel,
-  AdminArtworkReportPanel, AdminHiddenArtworksPanel,
-  AdminCommentReportPanel, AdminUserReportPanel,
+  AdminReportPanel, AdminHiddenArtworksPanel,
   AdminConfirmModal, AdminPromptModal,
   AdminBannerPanel,
 } from '@/components/admin'
@@ -198,10 +197,11 @@ onMounted(async () => {
         @go-page="goToUserPage"
       />
 
-      <AdminArtworkReportPanel
+      <AdminReportPanel
         v-if="activeTab === 'reports'"
         :active-tab="activeReportTab"
-        :artwork-reports="artworkReports"
+        report-type="artwork"
+        :reports="artworkReports"
         :loading-reports="loadingArtworkReports"
         :mutating="mutating"
         :report-pagination="artworkReportPagination"
@@ -225,10 +225,11 @@ onMounted(async () => {
         @go-page="goToHiddenArtworkPage"
       />
 
-      <AdminCommentReportPanel
+      <AdminReportPanel
         v-if="activeTab === 'reports'"
         :active-tab="activeReportTab"
-        :comment-reports="commentReports"
+        report-type="comment"
+        :reports="commentReports"
         :loading-reports="loadingCommentReports"
         :mutating="mutating"
         :report-pagination="commentReportPagination"
@@ -239,10 +240,11 @@ onMounted(async () => {
         @update:report-status-filter="commentReportStatusFilter = $event; loadCommentReports(1)"
       />
 
-      <AdminUserReportPanel
+      <AdminReportPanel
         v-if="activeTab === 'reports'"
         :active-tab="activeReportTab"
-        :user-reports="userReports"
+        report-type="user"
+        :reports="userReports"
         :loading-reports="loadingUserReports"
         :mutating="mutating"
         :report-pagination="userReportPagination"

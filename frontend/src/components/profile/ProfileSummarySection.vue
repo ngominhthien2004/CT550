@@ -2,7 +2,7 @@
 import { computed, ref, watch, onUnmounted, inject } from 'vue'
 import { userApi } from '../../services/api'
 import { useAuthStore } from '../../stores/auth.store'
-import UserReportModal from '../user/UserReportModal.vue'
+import ReportModal from '@/components/common/ReportModal.vue'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
@@ -262,9 +262,10 @@ function closeReportModal() {
       </div>
 
     <!-- Report User Modal -->
-    <UserReportModal
+    <ReportModal
       :visible="showReportModal"
-      :user="user"
+      report-type="user"
+      :target="user"
       @close="closeReportModal"
       @reported="closeReportModal"
     />

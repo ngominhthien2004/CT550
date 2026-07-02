@@ -1,23 +1,18 @@
 <template>
   <div v-if="visible" class="modal-overlay" @click.self="$emit('close')" @keydown.enter.prevent="$emit('close')" @keydown.space.prevent="$emit('close')" tabindex="0" role="button">
-    <div class="modal-container" role="dialog" aria-modal="true" aria-labelledby="comment-report-modal-title">
+    <div class="modal-container" role="dialog" aria-modal="true" :aria-labelledby="modalId + '-title'">
       <div class="modal-header">
-        <h3 id="comment-report-modal-title">Report Comment</h3>
+        <h3 :id="modalId + '-title'">{{ config.title }}</h3>
         <button type="button" class="btn-close" @click="$emit('close')" aria-label="Close">&times;</button>
       </div>
       <form @submit.prevent="submitReport">
         <div class="modal-body">
-          <p class="text-muted mb-3">
-            Why are you reporting this comment by "{{ comment?.user?.displayName || comment?.user?.username }}"?
-          </p>
+          <p class="text-muted mb-3" v-html="config.description"></p>
           <div class="form-group mb-3">
             <label>Reason</label>
             <select v-model="reason" class="form-select" required aria-label="Report reason">
               <option value="" disabled>Select a reason</option>
-              <option value="spam">Spam</option>
-              <option value="inappropriate">Inappropriate content</option>
-              <option value="harassment">Harassment</option>
-              <option value="other">Other</option>
+              <option v-for="opt in config.reasonOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
             </select>
           </div>
           <div class="form-group mb-3">
@@ -39,12 +34,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { reportComment } from '@/services/api'
+import { ref, computed } from 'vue'
+import { reportArtwork, reportComment, reportApi } from '@/services/api'
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
-  comment: { type: Object, default: null },
+  reportType: { type: String, required: true }, // 'artwork' | 'comment' | 'user'
+  target: { type: Object, default: null },
 })
 const emit = defineEmits(['close', 'reported'])
 
@@ -54,13 +50,57 @@ const submitting = ref(false)
 const error = ref('')
 const success = ref('')
 
+const modalId = computed(() => props.reportType + '-report-modal')
+
+const config = computed(() => {
+  const configs = {
+    artwork: {
+      title: 'Report Artwork',
+      description: 'Why are you reporting "' + (props.target?.title || '') + '"?',
+      reasonOptions: [
+        { value: 'spam', label: 'Spam' },
+        { value: 'inappropriate', label: 'Inappropriate content' },
+        { value: 'copyright', label: 'Copyright infringement' },
+        { value: 'harassment', label: 'Harassment' },
+        { value: 'nsfw', label: 'Missing age rating / NSFW' },
+        { value: 'other', label: 'Other' },
+      ],
+      apiCall: (id, payload) => reportArtwork(id, payload),
+    },
+    comment: {
+      title: 'Report Comment',
+      description: 'Why are you reporting this comment by "' + (props.target?.user?.displayName || props.target?.user?.username || '') + '"?',
+      reasonOptions: [
+        { value: 'spam', label: 'Spam' },
+        { value: 'inappropriate', label: 'Inappropriate content' },
+        { value: 'harassment', label: 'Harassment' },
+        { value: 'other', label: 'Other' },
+      ],
+      apiCall: (id, payload) => reportComment(id, payload),
+    },
+    user: {
+      title: 'Report User',
+      description: 'Why are you reporting "' + (props.target?.displayName || props.target?.username || '') + '"?',
+      reasonOptions: [
+        { value: 'spam', label: 'Spam' },
+        { value: 'inappropriate', label: 'Inappropriate content' },
+        { value: 'harassment', label: 'Harassment' },
+        { value: 'impersonation', label: 'Impersonation' },
+        { value: 'other', label: 'Other' },
+      ],
+      apiCall: (id, payload) => reportApi.reportUser(id, payload),
+    },
+  }
+  return configs[props.reportType] || configs.artwork
+})
+
 async function submitReport() {
   if (!reason.value || submitting.value) return
   submitting.value = true
   error.value = ''
   success.value = ''
   try {
-    await reportComment(props.comment._id, {
+    await config.value.apiCall(props.target._id, {
       reason: reason.value,
       description: description.value,
     })
