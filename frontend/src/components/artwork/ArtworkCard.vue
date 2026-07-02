@@ -39,13 +39,23 @@ async function handleLike(e) {
   }
   if (isToggling.value) return
 
+  const previousStatus = isLiked.value
+  const previousCount = props.item.likeCount || 0
+  const nextStatus = !previousStatus
+
+  // Optimistic: flip immediately
+  if (likeStore.statusByArtwork[props.item._id] === undefined) {
+    likeStore.statusByArtwork[props.item._id] = previousStatus
+  }
+  likeStore.statusByArtwork[props.item._id] = nextStatus
+  props.item.likeCount = Math.max(0, previousCount + (nextStatus ? 1 : -1))
+
   try {
-    if (likeStore.statusByArtwork[props.item._id] === undefined) {
-      likeStore.statusByArtwork[props.item._id] = Boolean(props.item.isLiked)
-    }
     await likeStore.toggleLikeByArtwork(props.item._id)
   } catch (error) {
-    console.error('Failed to toggle like:', error)
+    // Rollback on failure
+    likeStore.statusByArtwork[props.item._id] = previousStatus
+    props.item.likeCount = previousCount
   }
 }
 
