@@ -29,7 +29,7 @@ const upload = useImageUpload({
   formats: ['image/jpeg', 'image/png', 'image/gif'],
 })
 
-const currentCover = computed(() => coverImage || user?.coverImage || '')
+const currentCover = computed(() => coverImage || user.value?.coverImage || '')
 
 watch(
   show,

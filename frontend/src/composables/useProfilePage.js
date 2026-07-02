@@ -395,10 +395,10 @@ export function useProfilePage() {
       }
       const { data } = await userApi.updateProfile(formData)
       if (profileUser.value) {
-        profileUser.value = { ...profileUser.value, ...data }
+        Object.assign(profileUser.value, data)
       }
       if (isOwnProfile.value) {
-        authStore.user = { ...authStore.user, ...data }
+        Object.assign(authStore.user, data)
         localStorage.setItem('authUser', JSON.stringify(authStore.user))
       }
       modalRef.value = false

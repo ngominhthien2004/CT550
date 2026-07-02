@@ -14,7 +14,7 @@ const upload = useImageUpload({
   formats: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
 })
 
-const currentAvatar = computed(() => user?.avatar || DEFAULT_AVATAR)
+const currentAvatar = computed(() => user.value?.avatar || DEFAULT_AVATAR)
 
 function handleClose() {
   try {

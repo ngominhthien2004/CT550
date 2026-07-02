@@ -22,10 +22,10 @@ const editAvatar = inject('openAvatarModal')
 const openRequests = inject('openRequestsTab')
 const toggleFollow = inject('toggleFollow')
 
-const avatarSrc = computed(() => user?.avatar || DEFAULT_PROFILE_AVATAR)
-const profileBio = computed(() => user?.bio || (isOwnProfile ? 'Curate your cover, avatar, and gallery to give your profile more character.' : 'This creator has not added a bio yet.'))
+const avatarSrc = computed(() => user.value?.avatar || DEFAULT_PROFILE_AVATAR)
+const profileBio = computed(() => user.value?.bio || (isOwnProfile ? 'Curate your cover, avatar, and gallery to give your profile more character.' : 'This creator has not added a bio yet.'))
 const socialLinks = computed(() => {
-  const links = user?.socialLinks || {}
+  const links = user.value?.socialLinks || {}
   const rows = [
     { key: 'twitter', icon: 'fa-brands fa-x-twitter', href: links.twitter, label: 'X (Twitter)' },
     { key: 'instagram', icon: 'fa-brands fa-instagram', href: links.instagram, label: 'Instagram' },
@@ -56,7 +56,7 @@ const blockError = ref('')
 const showReportModal = ref(false)
 
 async function fetchBlockStatus() {
-  if (isOwnProfile || !user?._id || !authStore.isAuthenticated) return
+  if (isOwnProfile || !user.value?._id || !authStore.isAuthenticated) return
   try {
     const { data } = await userApi.getBlockStatus(user._id)
     blockedByMe.value = data.blockedByMe
@@ -67,7 +67,7 @@ async function fetchBlockStatus() {
 }
 
 async function handleBlockToggle() {
-  if (!user?._id || !authStore.isAuthenticated) return
+  if (!user.value?._id || !authStore.isAuthenticated) return
   blockLoading.value = true
   blockError.value = ''
   try {
@@ -90,7 +90,7 @@ async function handleBlockToggle() {
   }
 }
 
-watch(() => user?._id, () => {
+  watch(() => user.value?._id, () => {
   fetchBlockStatus()
 }, { immediate: true })
 
