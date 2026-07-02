@@ -398,14 +398,6 @@ function validateForm() {
   return ''
 }
 
-function handleDraftClick() {
-  localError.value = 'Draft saving is not available yet. Use Post when ready.'
-}
-
-function handlePreviewClick() {
-  localError.value = 'Preview is not available yet. Please review in the form before posting.'
-}
-
 async function submitArtwork() {
   localError.value = ''
 
@@ -552,14 +544,11 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="d-flex flex-wrap gap-2">
-          <template v-if="isNovel">
-            <button type="button" class="btn btn-outline-secondary action-pill action-pill--post" :disabled="artworkStore.createLoading" @click="handleDraftClick">Save draft</button>
-            <button type="button" class="btn btn-outline-secondary action-pill action-pill--post" :disabled="artworkStore.createLoading" @click="handlePreviewClick">Preview</button>
-          </template>
+          <!-- Novel draft/preview buttons removed — see docs/future-features.md -->
           <button type="submit" class="btn btn-primary action-pill action-pill--post" :disabled="artworkStore.createLoading" :aria-busy="artworkStore.createLoading">
             {{ artworkStore.createLoading ? 'Posting...' : 'Post' }}
           </button>
-          <button v-if="!isNovel" type="button" class="btn btn-outline-secondary action-pill action-pill--post" :disabled="artworkStore.createLoading" @click="resetForm">Reset</button>
+          <button type="button" class="btn btn-outline-secondary action-pill action-pill--post" :disabled="artworkStore.createLoading" @click="resetForm">Reset</button>
         </div>
       </form>
     </section>
