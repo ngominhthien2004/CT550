@@ -85,6 +85,10 @@ Workflow: start frontend + backend dev servers → navigate page → inspect/int
 8. **Bootstrap global heading colors override Vue scoped CSS**: Bootstrap sets global colors on `h1`–`h6` (e.g. `h2 { color: #0f172a }`). In Vue `scoped` components, if you don't explicitly set `color` on a heading, Bootstrap's global rule wins — even on dark backgrounds. Always set `color: inherit` (or an explicit light color) on heading elements inside dark-themed modals/panels.
 9. **Chrome DevTools tab management**: Before opening a new tab with `chrome-devtools_new_page`, ALWAYS call `chrome-devtools_list_pages` first to check what tabs already exist. Reuse existing isolated contexts (`isolatedContext`) for the same user session instead of creating new tabs. This prevents accumulating too many open tabs (max 5 recommended). When done with a test session, close unused tabs with `chrome-devtools_close_page`.
 10. **No build needed for CSS-only changes**: When editing `.vue` `<style>` blocks or `.css` files, skip `npm run build` — Vite's dev server hot-reloads styles instantly. Only run build before committing or when testing production behavior.
+11. **Always grep for ALL importers before renaming/moving a shared file**: Before relocating a CSS file imported via `<style scoped src="...">`, run `grep` to find every component that references it. Missing one (like `DashboardSeriesPanel.vue` importing `dashboard-panel-styles.css`) causes a build failure.
+12. **CSS class name standardization when extracting shared styles**: When merging prefixed class names (e.g., `.series-card-menu-btn` / `.work-card-menu-btn`), standardize to a common name (`.card-menu-btn`). Update both the CSS selectors AND the template `class` bindings in all affected components.
+13. **Shared CSS with overrides for minor differences**: When two components share 95% of a CSS class but differ on 1-2 properties (e.g., `.quick-panel-link { display: grid }` vs `display: block`), put the common version in shared CSS and let the deviating component add override rules in its own `<style scoped>` block. No need to duplicate the entire selector.
+14. **jscpd clone counts vary across runs**: The reported clone count depends on jscpd version, which files are present, and thresholds. Track the trend direction (downward after refactoring) rather than absolute numbers. Always use the same CLI flags (`--ignore "**/node_modules/**,**/dist/**"`) for comparable results.
 
 ## Test artifact convention
 
@@ -107,6 +111,7 @@ Screenshots captured during testing / debugging sessions MUST be saved to `test-
 - Design tokens in `src/assets/styles/global.css` (CSS custom properties: `--bg`, `--text`, `--brand`, etc.).
 - Full layout architecture documented in `docs/layout-architecture.md`.
 - **Drawing Tool module**: `DrawingView.vue` composes 6 child components under `components/drawing/`: `DrawingTopBar`, `DrawingToolPanel`, `DrawingCanvas`, `DrawingLayersPanel`, `PostDrawingModal`, `SaveSlotsModal`. State lives in `stores/drawing.store.js` (Pinia). Drawing uses Konva.js via vue-konva — see quirk #7.
+- **Shared CSS extraction pattern**: When identical CSS appears across multiple components, extract shared selectors to a file in `src/assets/styles/` (e.g., `quick-panel.css`, `upload-form.css`, `dashboard-panel.css`). Import it in each component via `<style scoped src="../../assets/styles/<name>.css">` before the component's own `<style scoped>` block. Vue's scoped attribute ensures isolation — the shared CSS only applies within the importing component. For components with minor CSS differences from the shared baseline, add override rules in the component's own scoped block.
 
 ## Deployment
 
