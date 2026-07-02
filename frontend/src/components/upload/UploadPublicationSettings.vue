@@ -129,6 +129,7 @@ const props = defineProps({
   </div>
 </template>
 
+<style scoped src="./upload-form-styles.css"></style>
 <style scoped>
 .settings-container {
   display: grid;
@@ -153,164 +154,6 @@ const props = defineProps({
   padding-bottom: 0;
 }
 
-.row-left {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.required-badge {
-  background-color: #ff3b30;
-  color: #ffffff;
-  font-size: 0.68rem;
-  font-weight: 700;
-  padding: 0.22rem 0.45rem;
-  border-radius: 4px;
-  text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 62px;
-  letter-spacing: 0.02em;
-}
-
-.placeholder-badge {
-  display: inline-block;
-  min-width: 62px;
-  height: 1px;
-}
-
-.row-label {
-  font-size: 0.88rem;
-  font-weight: 500;
-  color: var(--text);
-}
-
-.row-label.required-label {
-  color: var(--danger);
-}
-
-.row-center {
-  padding-left: 0.5rem;
-}
-
-.options-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-}
-
-.custom-radio {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  user-select: none;
-  font-size: 0.88rem;
-  color: var(--text);
-}
-
-.custom-radio input {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-
-.radio-indicator {
-  position: relative;
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  background-color: var(--surface);
-  border: 1.5px solid var(--line);
-  border-radius: 50%;
-  transition: all 0.2s ease-in-out;
-}
-
-.custom-radio:hover .radio-indicator {
-  border-color: #3b82f6;
-  background-color: var(--surface-alt);
-}
-
-.custom-radio input:checked ~ .radio-indicator {
-  border-color: #0076ff;
-  background-color: #ffffff;
-}
-
-.radio-indicator::after {
-  content: "";
-  position: absolute;
-  display: none;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #0076ff;
-}
-
-.custom-radio input:checked ~ .radio-indicator::after {
-  display: block;
-}
-
-.custom-checkbox {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  user-select: none;
-  font-size: 0.88rem;
-  color: var(--text);
-}
-
-.custom-checkbox input {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-
-.checkbox-indicator {
-  position: relative;
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  background-color: var(--surface);
-  border: 1.5px solid var(--line);
-  border-radius: 4px;
-  transition: all 0.2s ease-in-out;
-}
-
-.custom-checkbox:hover .checkbox-indicator {
-  border-color: #3b82f6;
-  background-color: var(--surface-alt);
-}
-
-.custom-checkbox input:checked ~ .checkbox-indicator {
-  border-color: #0076ff;
-  background-color: #0076ff;
-}
-
-.checkbox-indicator::after {
-  content: "";
-  position: absolute;
-  display: none;
-  left: 5px;
-  top: 1px;
-  width: 5px;
-  height: 10px;
-  border: solid #ffffff;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-
-.custom-checkbox input:checked ~ .checkbox-indicator::after {
-  display: block;
-}
 
 .auto-enabled-text {
   color: var(--danger);
@@ -352,21 +195,6 @@ const props = defineProps({
   box-shadow: 0 0 0 3px rgba(0, 118, 255, 0.15);
 }
 
-.custom-input {
-  border: 1.5px solid var(--line);
-  border-radius: 6px;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.88rem;
-  color: var(--text);
-  transition: border-color 0.2s;
-}
-
-.custom-input:focus {
-  border-color: #0076ff;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 118, 255, 0.15);
-}
-
 @media (max-width: 991px) {
   .settings-row-card {
     grid-template-columns: 1fr;
@@ -377,10 +205,6 @@ const props = defineProps({
   .row-right {
     justify-content: flex-start;
     min-width: unset;
-  }
-
-  .placeholder-badge {
-    display: none;
   }
 }
 </style>

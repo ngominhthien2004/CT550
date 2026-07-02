@@ -99,7 +99,7 @@ function handleArtworkUpdated() {
 <template>
   <div class="works-panel">
     <!-- Sub-tabs: Works / Series -->
-    <div class="works-subtabs">
+    <div class="subtab-bar">
       <button
         type="button"
         class="subtab-btn"
@@ -195,55 +195,6 @@ function handleArtworkUpdated() {
 <style scoped>
 .works-panel {
   margin-top: 0.5rem;
-}
-
-.works-subtabs {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 0.5rem;
-}
-
-.subtab-btn {
-  border: none;
-  background: transparent;
-  color: var(--muted);
-  font-size: 0.88rem;
-  font-weight: 700;
-  border-radius: 999px;
-  height: 32px;
-  padding: 0 1rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.subtab-btn:hover {
-  color: var(--text);
-  background: var(--surface-alt);
-}
-
-.subtab-btn--active {
-  color: var(--accent);
-  background: var(--surface-alt);
-}
-
-.subtab-badge {
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  border-radius: 999px;
-  min-width: 18px;
-  height: 18px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 0.3rem;
 }
 
 .works-grid {

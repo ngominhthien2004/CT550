@@ -153,6 +153,7 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
   </div>
 </template>
 
+<style scoped src="./upload-form-styles.css"></style>
 <style scoped>
 /* === Single card wrapper === */
 .tag-card {
@@ -191,49 +192,6 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
 .checkbox-row {
   padding-top: 0.65rem;
   padding-bottom: 0.75rem;
-}
-
-/* === Left column === */
-.row-left {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.required-badge {
-  background-color: #ff3b30;
-  color: #ffffff;
-  font-size: 0.68rem;
-  font-weight: 700;
-  padding: 0.22rem 0.45rem;
-  border-radius: 4px;
-  text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 62px;
-  letter-spacing: 0.02em;
-}
-
-.placeholder-badge {
-  display: inline-block;
-  min-width: 62px;
-  height: 1px;
-}
-
-.row-label {
-  font-size: 0.88rem;
-  font-weight: 500;
-  color: var(--text);
-}
-
-.row-label.required-label {
-  color: var(--danger);
-}
-
-/* === Center column === */
-.row-center {
-  padding-left: 0.5rem;
 }
 
 /* === Tag input === */
@@ -357,64 +315,6 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
   margin: 0 1.25rem;
 }
 
-/* === Checkbox === */
-.custom-checkbox {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  cursor: pointer;
-  user-select: none;
-  font-size: 0.88rem;
-  color: #475569;
-}
-
-.custom-checkbox input {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-
-.checkbox-indicator {
-  position: relative;
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  background-color: var(--surface);
-  border: 1.5px solid var(--line);
-  border-radius: 4px;
-  transition: all 0.2s ease-in-out;
-  flex-shrink: 0;
-}
-
-.custom-checkbox:hover .checkbox-indicator {
-  border-color: #3b82f6;
-  background-color: var(--surface-alt);
-}
-
-.custom-checkbox input:checked ~ .checkbox-indicator {
-  border-color: #0076ff;
-  background-color: #0076ff;
-}
-
-.checkbox-indicator::after {
-  content: "";
-  position: absolute;
-  display: none;
-  left: 5px;
-  top: 1px;
-  width: 5px;
-  height: 10px;
-  border: solid #ffffff;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-
-.custom-checkbox input:checked ~ .checkbox-indicator::after {
-  display: block;
-}
-
 /* === Suggestion panel === */
 .tag-suggestion-panel {
   position: absolute;
@@ -472,8 +372,5 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
     align-items: flex-start;
   }
 
-  .placeholder-badge {
-    display: none;
-  }
 }
 </style>

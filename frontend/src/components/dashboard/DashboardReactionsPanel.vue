@@ -89,27 +89,27 @@ function getArtworkThumb(artwork) {
 <template>
   <div class="reactions-panel">
     <!-- Sub-tabs header -->
-    <div class="sub-tabs">
+    <div class="subtab-bar">
       <button
         type="button"
-        class="sub-tab"
-        :class="{ 'sub-tab--active': currentTab === 'comments' }"
+        class="subtab-btn"
+        :class="{ 'subtab-btn--active': currentTab === 'comments' }"
         @click="setTab('comments')"
       >
         Comments
       </button>
       <button
         type="button"
-        class="sub-tab"
-        :class="{ 'sub-tab--active': currentTab === 'likes' }"
+        class="subtab-btn"
+        :class="{ 'subtab-btn--active': currentTab === 'likes' }"
         @click="setTab('likes')"
       >
         Likes
       </button>
       <button
         type="button"
-        class="sub-tab"
-        :class="{ 'sub-tab--active': currentTab === 'bookmarks' }"
+        class="subtab-btn"
+        :class="{ 'subtab-btn--active': currentTab === 'bookmarks' }"
         @click="setTab('bookmarks')"
       >
         Bookmarks
@@ -245,50 +245,13 @@ function getArtworkThumb(artwork) {
   </div>
 </template>
 
+<style scoped src="./dashboard-panel-styles.css"></style>
 <style scoped>
 .reactions-panel {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 1.25rem;
-}
-
-.sub-tabs {
-  display: flex;
-  gap: 0.5rem;
-  border-bottom: 2px solid var(--line);
-  padding-bottom: 0.2rem;
-}
-
-.sub-tab {
-  border: none;
-  background: transparent;
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 700;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  position: relative;
-  transition: color 0.15s ease;
-}
-
-.sub-tab:hover {
-  color: var(--text);
-}
-
-.sub-tab--active {
-  color: var(--accent);
-}
-
-.sub-tab--active::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background-color: var(--accent);
-  border-radius: 99px;
 }
 
 .reactions-content {
