@@ -10,6 +10,18 @@ const coverImage = inject('profileCoverImage')
 const close = inject('closeCoverModal')
 const save = inject('saveCover')
 
+function handleClose() {
+  try {
+    if (typeof close === 'function') {
+      close()
+    } else {
+      show.value = false
+    }
+  } catch (e) {
+    show.value = false
+  }
+}
+
 const upload = useImageUpload({
   maxSize: 8 * 1024 * 1024,
   maxWidth: 1920,
@@ -22,11 +34,15 @@ const currentCover = computed(() => coverImage || user?.coverImage || '')
 watch(
   show,
   (visible) => {
-    if (!visible) {
-      upload.reset()
-      return
+    try {
+      if (!visible) {
+        upload.reset()
+        return
+      }
+      upload.setPreview(currentCover.value)
+    } catch (e) {
+      // swallow watcher errors to prevent modal close from failing
     }
-    upload.setPreview(currentCover.value)
   },
   { immediate: true },
 )
@@ -46,11 +62,11 @@ function handleUpload() {
 </script>
 
 <template>
-  <div v-if="show" class="modal-backdrop modal-backdrop--top" @click.self="close" @keydown.enter.prevent="close" @keydown.space.prevent="close" tabindex="0" role="button">
+  <div v-if="show" class="modal-backdrop modal-backdrop--top" @click.self="handleClose">
     <div class="modal-card cover-card">
       <header class="modal-header">
         <h2 class="modal-title">Edit cover image</h2>
-        <button type="button" class="modal-close" aria-label="Close" @click="close">
+        <button type="button" class="modal-close" aria-label="Close" @click="handleClose">
           <i class="fa-solid fa-xmark" aria-hidden="true"></i>
         </button>
       </header>
@@ -99,11 +115,12 @@ function handleUpload() {
 
         <p v-if="upload.error.value" class="modal-error">{{ upload.error.value }}</p>
 
-        <button type="button" class="modal-btn modal-btn--primary" @click="handleUpload">
-          Agree and upload
-        </button>
-        
-        <button type="button" class="modal-btn modal-btn--secondary" @click="close">Cancel</button>
+        <div class="modal-footer--row">
+          <button type="button" class="action-pill" @click="handleClose">Cancel</button>
+          <button type="button" class="action-pill action-pill--post" @click="handleUpload">
+            Agree and upload
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -171,6 +188,13 @@ function handleUpload() {
 
 .guidelines-text a:hover {
   text-decoration: underline;
+}
+
+.modal-footer--row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
 }
 
 @media (max-width: 640px) {
