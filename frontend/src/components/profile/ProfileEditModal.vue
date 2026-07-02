@@ -284,6 +284,12 @@ function handleSave() {
 .social-input {
   border: none;
   background: transparent;
+  outline: none;
+  color: var(--text);
+}
+
+.social-input::placeholder {
+  color: var(--muted);
 }
 
 .split-row {
