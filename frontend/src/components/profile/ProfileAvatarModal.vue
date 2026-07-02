@@ -8,6 +8,7 @@ const show = inject('showAvatarModal')
 const user = inject('profileUser')
 const close = inject('closeAvatarModal')
 const save = inject('saveAvatar')
+const deleteCover = inject('deleteCover')
 
 const upload = useImageUpload({
   formats: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
@@ -15,14 +16,30 @@ const upload = useImageUpload({
 
 const currentAvatar = computed(() => user?.avatar || DEFAULT_AVATAR)
 
+function handleClose() {
+  try {
+    if (typeof close === 'function') {
+      close()
+    } else {
+      show.value = false
+    }
+  } catch (e) {
+    show.value = false
+  }
+}
+
 watch(
   show,
   (visible) => {
-    if (!visible) {
-      upload.reset()
-      return
+    try {
+      if (!visible) {
+        upload.reset()
+        return
+      }
+      upload.setPreview(currentAvatar.value)
+    } catch (e) {
+      // swallow watcher errors
     }
-    upload.setPreview(currentAvatar.value)
   },
   { immediate: true },
 )
@@ -38,39 +55,62 @@ function handleSave() {
 </script>
 
 <template>
-  <div v-if="show" class="modal-backdrop" @click.self="close" @keydown.enter.prevent="close" @keydown.space.prevent="close" tabindex="0" role="button">
+  <div v-if="show" class="modal-backdrop" @click.self="handleClose">
     <div class="modal-card avatar-card">
       <header class="modal-header">
-        <div>
-          <p class="avatar-kicker">Profile picture</p>
-          <h2 class="modal-title">Edit profile image</h2>
-        </div>
-        <button type="button" class="modal-close avatar-close" aria-label="Close avatar editor" @click="close">
+        <h2 class="modal-title">Edit profile image</h2>
+        <button type="button" class="modal-close" aria-label="Close" @click="handleClose">
           <i class="fa-solid fa-xmark" aria-hidden="true"></i>
         </button>
       </header>
 
-      <div class="modal-body modal-body--scroll avatar-body">
+      <div class="modal-body avatar-body">
         <div class="avatar-preview-wrap">
           <div class="avatar-preview">
             <img :src="upload.preview.value || DEFAULT_AVATAR" alt="Avatar preview" />
-            <label class="upload-overlay">
+            <label class="upload-trigger">
               <input type="file" accept="image/*" hidden @change="upload.selectFile" aria-label="Upload avatar image">
-              <span class="avatar-upload-icon">
+              <span class="upload-trigger-icon">
                 <i class="fa-solid fa-camera" aria-hidden="true"></i>
               </span>
             </label>
           </div>
+          <button type="button" class="avatar-delete-btn" title="Delete avatar" @click="deleteCover">
+            <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+          </button>
         </div>
 
-        <p class="avatar-help">
-          Pick an image to replace the current profile picture. The picture on the profile page stays the same until you save.
+        <div class="avatar-specs">
+          <div class="spec-row">
+            <span class="spec-label">Supported formats</span>
+            <span class="spec-value">JPEG / PNG / GIF</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Maximum file size</span>
+            <span class="spec-value">5 MB</span>
+          </div>
+        </div>
+
+        <div class="avatar-info-box avatar-info-premium">
+          <p>Become a pixiv Premium member to enable animated GIFs for your profile image.</p>
+          <button type="button" class="btn-premium">Register for pixiv Premium</button>
+        </div>
+
+        <div class="avatar-info-box avatar-info-note">
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          <span>The image you upload will be cropped and displayed as a circle in your profile.</span>
+        </div>
+
+        <p class="avatar-guidelines">
+          Please do not upload R18 images or works that violate the <a href="#">Guidelines</a>. If your cover image falls into any of those categories, the settings will be disabled.
         </p>
+
+        <p v-if="upload.error.value" class="avatar-error">{{ upload.error.value }}</p>
       </div>
 
-      <footer class="modal-footer modal-footer--row">
-        <button type="button" class="modal-btn modal-btn--accent modal-btn--inline" @click="handleSave">Save picture</button>
-        <button type="button" class="modal-btn modal-btn--secondary modal-btn--inline" @click="close">Cancel</button>
+      <footer class="modal-footer avatar-footer">
+        <button type="button" class="action-pill action-pill--post avatar-confirm-btn" @click="handleSave">Confirm</button>
+        <button type="button" class="action-pill avatar-cancel-btn" @click="handleClose">Cancel</button>
       </footer>
     </div>
   </div>
@@ -86,56 +126,65 @@ function handleSave() {
 
 .avatar-card {
   max-height: 90vh;
-  border-radius: 24px;
-  box-shadow: 0 30px 70px var(--shadow-heavy, rgba(15,23,42,0.28));
+  border-radius: 16px;
+  width: min(400px, 90vw);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
 }
 
 .modal-header {
+  display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 1.2rem 1.25rem 1rem;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
   height: auto;
 }
 
-.avatar-kicker {
-  margin: 0 0 0.2rem;
-  font-size: 0.78rem;
+.modal-title {
+  margin: 0;
+  font-size: 1rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
 }
 
-.avatar-close {
-  width: 40px;
-  height: 40px;
-  background: var(--surface-alt);
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 4px;
+  line-height: 1;
+}
+
+.modal-close:hover {
   color: var(--text);
-  position: static;
-  transform: none;
 }
 
 .avatar-body {
+  padding: 24px 20px 16px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 1.5rem 1.25rem;
+  align-items: stretch;
 }
 
 .avatar-preview-wrap {
-  margin-bottom: 1.5rem;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
 .avatar-preview {
   position: relative;
-  width: 160px;
-  height: 160px;
+  width: 140px;
+  height: 140px;
   border-radius: 999px;
   overflow: hidden;
-  border: 4px solid var(--surface);
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+  border: 3px solid var(--surface);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   background: var(--surface-alt);
+  cursor: pointer;
 }
 
 .avatar-preview img {
@@ -145,43 +194,173 @@ function handleSave() {
   display: block;
 }
 
-.avatar-preview:hover .upload-overlay {
+.upload-trigger {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.upload-trigger:hover .upload-trigger-icon {
   opacity: 1;
 }
 
-.avatar-upload-icon {
-  width: 48px;
-  height: 48px;
+.upload-trigger-icon {
+  width: 44px;
+  height: 44px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   display: grid;
   place-items: center;
   color: #fff;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
+  opacity: 0;
+  transition: opacity 0.2s;
 }
 
-.avatar-help {
-  margin: 0;
+.avatar-delete-btn {
+  position: absolute;
+  right: calc(50% - 90px);
+  bottom: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: var(--surface-alt);
   color: var(--muted);
-  font-size: 0.9rem;
-  text-align: center;
-  max-width: 320px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: background 0.2s, color 0.2s;
+}
+
+.avatar-delete-btn:hover {
+  background: var(--danger, #dc3545);
+  color: #fff;
+}
+
+.avatar-specs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.spec-label {
+  font-weight: 600;
+  color: var(--brand);
+}
+
+.spec-value {
+  color: var(--muted);
+}
+
+.avatar-info-box {
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
   line-height: 1.5;
 }
 
+.avatar-info-premium {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  text-align: center;
+}
+
+.avatar-info-premium p {
+  margin: 0 0 10px;
+}
+
+.btn-premium {
+  display: inline-block;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 999px;
+  background: #f97316;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-premium:hover {
+  background: #ea580c;
+}
+
+.avatar-info-note {
+  background: var(--surface-alt);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--muted);
+}
+
+.avatar-info-note i {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.avatar-guidelines {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.avatar-guidelines a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.avatar-guidelines a:hover {
+  text-decoration: underline;
+}
+
+.avatar-error {
+  color: var(--danger, #dc3545);
+  font-size: 0.85rem;
+  margin: 8px 0 0;
+}
+
+.avatar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 20px 20px;
+  border-top: 1px solid var(--line);
+}
+
+.avatar-confirm-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.avatar-cancel-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 10px 0;
+}
+
 @media (max-width: 640px) {
-  .modal-footer--row {
-    flex-direction: column;
-  }
-
-  .modal-btn--inline {
-    width: 100%;
-  }
-
-  .upload-overlay {
-    opacity: 1;
-    background: rgba(15, 23, 42, 0.2);
+  .avatar-card {
+    width: 95vw;
+    max-height: 95vh;
   }
 }
 </style>
