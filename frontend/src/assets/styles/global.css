@@ -44,7 +44,6 @@
 
 :root.dark-theme #app {
   background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(6px);
 }
 
 :root.dark-theme .page-block {
@@ -90,7 +89,6 @@ a {
   border: none;
   border-radius: 0;
   min-height: 100vh;
-  backdrop-filter: blur(6px);
   box-shadow: none;
 }
 
