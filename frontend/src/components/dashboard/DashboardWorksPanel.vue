@@ -132,10 +132,10 @@ function handleArtworkUpdated() {
         <div v-for="artwork in artworks" :key="artwork._id" class="work-card" @click="goToArtworkDetail(artwork._id)">
           <!-- Card menu -->
           <div class="work-card-menu">
-            <button type="button" class="work-card-menu-btn" @click.stop="toggleMenu(artwork._id)">
+            <button type="button" class="card-menu-btn" @click.stop="toggleMenu(artwork._id)">
               <i class="fa-solid fa-ellipsis-vertical"></i>
             </button>
-            <div v-if="openMenuId === artwork._id" class="work-card-menu-dropdown">
+            <div v-if="openMenuId === artwork._id" class="card-menu-dropdown">
               <button type="button" class="menu-dropdown-item" @click.stop="openEditModal(artwork)">
                 <i class="fa-solid fa-pen"></i> Edit
               </button>
@@ -176,13 +176,13 @@ function handleArtworkUpdated() {
     />
 
     <!-- Delete confirmation -->
-    <div v-if="showDeleteConfirm" class="ea-backdrop" @click.self="showDeleteConfirm = false">
+    <div v-if="showDeleteConfirm" class="del-backdrop" @click.self="showDeleteConfirm = false">
       <div class="delete-confirm-dialog">
         <h3 class="delete-confirm-title">Delete artwork</h3>
         <p class="delete-confirm-text">Are you sure you want to delete "{{ deletingArtwork?.title }}"? This action cannot be undone.</p>
         <div class="delete-confirm-actions">
-          <button type="button" class="dc-btn dc-btn--cancel" @click="showDeleteConfirm = false">Cancel</button>
-          <button type="button" class="dc-btn dc-btn--delete" @click="confirmDelete" :disabled="deleting">
+          <button type="button" class="del-btn del-btn--cancel" @click="showDeleteConfirm = false">Cancel</button>
+          <button type="button" class="del-btn del-btn--delete" @click="confirmDelete" :disabled="deleting">
             {{ deleting ? 'Deleting...' : 'Delete' }}
           </button>
         </div>
@@ -191,6 +191,7 @@ function handleArtworkUpdated() {
   </div>
 </template>
 
+<style scoped src="./dashboard-panel-styles.css"></style>
 <style scoped>
 .works-panel {
   margin-top: 0.5rem;
@@ -273,64 +274,6 @@ function handleArtworkUpdated() {
   z-index: 10;
 }
 
-.work-card-menu-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(4px);
-  color: var(--text);
-  font-size: 0.75rem;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  transition: background 0.12s;
-}
-
-.work-card-menu-btn:hover {
-  background: rgba(255, 255, 255, 1);
-}
-
-.work-card-menu-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 4px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: var(--shadow-lg);
-  min-width: 120px;
-  overflow: hidden;
-  z-index: 10;
-}
-
-.menu-dropdown-item {
-  display: block;
-  width: 100%;
-  text-align: left;
-  border: none;
-  background: transparent;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.8rem;
-  color: var(--text);
-  cursor: pointer;
-  transition: background 0.1s;
-}
-
-.menu-dropdown-item:hover {
-  background: var(--surface-alt);
-}
-
-.menu-dropdown-item--danger {
-  color: var(--danger);
-}
-
-.menu-dropdown-item--danger:hover {
-  background: rgba(220, 38, 38, 0.06);
-}
-
 .work-card-thumb {
   aspect-ratio: 1;
   background: var(--surface-alt);
@@ -393,91 +336,4 @@ function handleArtworkUpdated() {
   border: 1px solid var(--line);
 }
 
-/* Delete confirmation */
-.ea-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  z-index: 150;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  animation: eaFadeIn 0.15s ease;
-}
-
-@keyframes eaFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.delete-confirm-dialog {
-  background: var(--surface);
-  border-radius: 14px;
-  padding: 1.5rem;
-  max-width: 400px;
-  width: 100%;
-  box-shadow: var(--shadow-lg);
-  animation: eaSlideUp 0.2s ease;
-}
-
-@keyframes eaSlideUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.delete-confirm-title {
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--text);
-  margin: 0 0 0.5rem;
-}
-
-.delete-confirm-text {
-  color: var(--muted);
-  font-size: 0.85rem;
-  margin: 0;
-  line-height: 1.5;
-}
-
-.delete-confirm-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.dc-btn {
-  border: none;
-  font-size: 0.85rem;
-  font-weight: 600;
-  border-radius: 999px;
-  height: 38px;
-  padding: 0 1.5rem;
-  cursor: pointer;
-  transition: background 0.12s, opacity 0.12s;
-}
-
-.dc-btn--cancel {
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--text);
-}
-
-.dc-btn--cancel:hover {
-  background: var(--surface-alt);
-}
-
-.dc-btn--delete {
-  background: var(--danger);
-  color: #fff;
-}
-
-.dc-btn--delete:hover:not(:disabled) {
-  opacity: 0.9;
-}
-
-.dc-btn--delete:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
 </style>

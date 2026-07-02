@@ -168,10 +168,10 @@ onMounted(() => {
       <div v-for="series in processedSeriesList" :key="series._id" class="series-card" role="button" tabindex="0" @click="goToSeriesDetail(series._id)" @keydown.enter="goToSeriesDetail(series._id)">
         <!-- Card menu (top-right corner) -->
         <div class="series-card-menu">
-          <button type="button" class="series-card-menu-btn" @click.stop="toggleMenu(series._id)">
+          <button type="button" class="card-menu-btn" @click.stop="toggleMenu(series._id)">
             <i class="fa-solid fa-ellipsis-vertical"></i>
           </button>
-          <div v-if="openMenuId === series._id" class="series-card-menu-dropdown">
+          <div v-if="openMenuId === series._id" class="card-menu-dropdown">
             <button type="button" class="menu-dropdown-item" @click.stop="openEditModal(series)">
               <i class="fa-solid fa-pen"></i> Edit
             </button>
@@ -242,13 +242,13 @@ onMounted(() => {
     />
 
     <!-- Delete confirmation -->
-    <div v-if="showDeleteConfirm" class="cs-backdrop" @click.self="showDeleteConfirm = false" @keydown.enter.prevent="showDeleteConfirm = false" @keydown.space.prevent="showDeleteConfirm = false" tabindex="0" role="button">
+    <div v-if="showDeleteConfirm" class="del-backdrop" @click.self="showDeleteConfirm = false" @keydown.enter.prevent="showDeleteConfirm = false" @keydown.space.prevent="showDeleteConfirm = false" tabindex="0" role="button">
       <div class="delete-confirm-dialog">
         <h3 class="delete-confirm-title">Delete series</h3>
         <p class="delete-confirm-text">Are you sure you want to delete "{{ deletingSeries?.title }}"? This action cannot be undone.</p>
         <div class="delete-confirm-actions">
-          <button type="button" class="cs-btn cs-btn--cancel" @click="showDeleteConfirm = false">Cancel</button>
-          <button type="button" class="cs-btn cs-btn--delete" @click="confirmDelete" :disabled="deleting">
+          <button type="button" class="del-btn del-btn--cancel" @click="showDeleteConfirm = false">Cancel</button>
+          <button type="button" class="del-btn del-btn--delete" @click="confirmDelete" :disabled="deleting">
             {{ deleting ? 'Deleting...' : 'Delete' }}
           </button>
         </div>
@@ -257,6 +257,7 @@ onMounted(() => {
   </div>
 </template>
 
+<style scoped src="./dashboard-panel-styles.css"></style>
 <style scoped>
 .series-panel {
   margin-top: 0.5rem;
@@ -447,64 +448,6 @@ onMounted(() => {
   z-index: 10;
 }
 
-.series-card-menu-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: none;
-  background: var(--surface);
-  backdrop-filter: blur(4px);
-  color: var(--text);
-  font-size: 0.75rem;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  transition: background 0.12s;
-}
-
-.series-card-menu-btn:hover {
-  background: var(--surface);
-}
-
-.series-card-menu-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 4px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: var(--shadow-md);
-  min-width: 120px;
-  overflow: hidden;
-  z-index: 10;
-}
-
-.menu-dropdown-item {
-  display: block;
-  width: 100%;
-  text-align: left;
-  border: none;
-  background: transparent;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.8rem;
-  color: var(--text);
-  cursor: pointer;
-  transition: background 0.1s;
-}
-
-.menu-dropdown-item:hover {
-  background: var(--surface-alt);
-}
-
-.menu-dropdown-item--danger {
-  color: var(--danger);
-}
-
-.menu-dropdown-item--danger:hover {
-  background: rgba(220, 38, 38, 0.06);
-}
-
 .series-card-info {
   padding: 0.75rem;
 }
@@ -578,91 +521,4 @@ onMounted(() => {
   padding: 2rem;
 }
 
-/* Delete confirmation */
-.cs-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  z-index: 150;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  animation: csFadeIn 0.15s ease;
-}
-
-@keyframes csFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.delete-confirm-dialog {
-  background: var(--surface);
-  border-radius: 12px;
-  padding: 1.5rem;
-  max-width: 400px;
-  width: 100%;
-  box-shadow: var(--shadow-lg);
-  animation: csSlideUp 0.2s ease;
-}
-
-@keyframes csSlideUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.delete-confirm-title {
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--text);
-  margin: 0 0 0.5rem;
-}
-
-.delete-confirm-text {
-  color: var(--muted);
-  font-size: 0.85rem;
-  margin: 0;
-  line-height: 1.5;
-}
-
-.delete-confirm-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.cs-btn {
-  border: none;
-  font-size: 0.85rem;
-  font-weight: 600;
-  border-radius: 999px;
-  height: 38px;
-  padding: 0 1.5rem;
-  cursor: pointer;
-  transition: background 0.12s, opacity 0.12s;
-}
-
-.cs-btn--cancel {
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--text);
-}
-
-.cs-btn--cancel:hover {
-  background: var(--surface-alt);
-}
-
-.cs-btn--delete {
-  background: var(--danger);
-  color: #fff;
-}
-
-.cs-btn--delete:hover:not(:disabled) {
-  background: var(--danger);
-}
-
-.cs-btn--delete:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
 </style>

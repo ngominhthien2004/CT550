@@ -1,0 +1,150 @@
+/* Card menu dropdown items (identical in both components) */
+.menu-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.menu-dropdown-item:hover {
+  background: var(--surface-alt);
+}
+
+.menu-dropdown-item--danger {
+  color: var(--danger);
+}
+
+.menu-dropdown-item--danger:hover {
+  background: rgba(220, 38, 38, 0.06);
+}
+
+/* Card menu button (standardized from series-card-menu-btn / work-card-menu-btn) */
+.card-menu-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--surface);
+  backdrop-filter: blur(4px);
+  color: var(--text);
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.12s;
+}
+
+.card-menu-btn:hover {
+  background: var(--surface-alt);
+}
+
+/* Card menu dropdown (standardized from series-card-menu-dropdown / work-card-menu-dropdown) */
+.card-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  min-width: 120px;
+  overflow: hidden;
+  z-index: 10;
+}
+
+/* Delete confirmation backdrop (standardized from cs-backdrop / ea-backdrop) */
+.del-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 150;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  animation: delFadeIn 0.15s ease;
+}
+
+@keyframes delFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Delete confirmation dialog (standardized) */
+.delete-confirm-dialog {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  animation: delSlideUp 0.2s ease;
+}
+
+@keyframes delSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.delete-confirm-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
+  margin: 0 0 0.5rem;
+}
+
+.delete-confirm-text {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.delete-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Delete confirmation buttons (standardized from cs-btn / dc-btn) */
+.del-btn {
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 999px;
+  height: 38px;
+  padding: 0 1.5rem;
+  cursor: pointer;
+  transition: background 0.12s, opacity 0.12s;
+}
+
+.del-btn--cancel {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.del-btn--cancel:hover {
+  background: var(--surface-alt);
+}
+
+.del-btn--delete {
+  background: var(--danger);
+  color: white;
+}
+
+.del-btn--delete:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.del-btn--delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
