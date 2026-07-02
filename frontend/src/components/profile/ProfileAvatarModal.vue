@@ -91,19 +91,10 @@ function handleSave() {
           </div>
         </div>
 
-        <div class="avatar-info-box avatar-info-premium">
-          <p>Become a pixiv Premium member to enable animated GIFs for your profile image.</p>
-          <button type="button" class="btn-premium">Register for pixiv Premium</button>
-        </div>
-
         <div class="avatar-info-box avatar-info-note">
           <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
           <span>The image you upload will be cropped and displayed as a circle in your profile.</span>
         </div>
-
-        <p class="avatar-guidelines">
-          Please do not upload R18 images or works that violate the <a href="#">Guidelines</a>. If your cover image falls into any of those categories, the settings will be disabled.
-        </p>
 
         <p v-if="upload.error.value" class="avatar-error">{{ upload.error.value }}</p>
       </div>
@@ -274,34 +265,6 @@ function handleSave() {
   line-height: 1.5;
 }
 
-.avatar-info-premium {
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
-  color: #9a3412;
-  text-align: center;
-}
-
-.avatar-info-premium p {
-  margin: 0 0 10px;
-}
-
-.btn-premium {
-  display: inline-block;
-  padding: 8px 20px;
-  border: none;
-  border-radius: 999px;
-  background: #f97316;
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.btn-premium:hover {
-  background: #ea580c;
-}
-
 .avatar-info-note {
   background: var(--surface-alt);
   display: flex;
@@ -313,22 +276,6 @@ function handleSave() {
 .avatar-info-note i {
   margin-top: 2px;
   flex-shrink: 0;
-}
-
-.avatar-guidelines {
-  font-size: 0.82rem;
-  color: var(--muted);
-  line-height: 1.5;
-  margin: 0;
-}
-
-.avatar-guidelines a {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.avatar-guidelines a:hover {
-  text-decoration: underline;
 }
 
 .avatar-error {
