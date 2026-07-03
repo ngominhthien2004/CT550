@@ -83,9 +83,16 @@ const allMessages = computed(() => {
 
 function parseMessageContent(text) {
   if (!text) return { quote: null, body: '' }
-  const match = text.match(/^>\s\*\*Replying to @([^*]+)\*\*:\s"([\s\S]*?)"\n\n([\s\S]*)$/)
+  // New format: > Replying to @user\n\nbody  or  > Replying to @user: [Image]\n\nbody
+  const match = text.match(/^>\sReplying to @([^\n]+?)(?::\s(.+))?\n\n([\s\S]*)$/)
   if (match) {
-    return { quote: { user: match[1], content: match[2] }, body: match[3] }
+    return { quote: { user: match[1], content: match[2] || '' }, body: match[3] }
+  }
+  // Old format (backward compat for existing messages):
+  // > **Replying to @user**: "text"\n\nbody
+  const oldMatch = text.match(/^>\s\*\*Replying to @([^*]+)\*\*:\s"([\s\S]*?)"\n\n([\s\S]*)$/)
+  if (oldMatch) {
+    return { quote: { user: oldMatch[1], content: oldMatch[2] }, body: oldMatch[3] }
   }
   return { quote: null, body: text }
 }
@@ -171,7 +178,8 @@ const displayedTimeline = computed(() => {
   }
   return raw.map((row) => {
     if (row.type === 'day') return row
-    return { ...row, _parsed: parseMessageContent(row.item.content), _body: parseMessageBody(row.item.content), _formattedTime: formatMessageTime(row.item.createdAt) }
+    const parsed = parseMessageContent(row.item.content)
+    return { ...row, _parsed: parsed, _body: parseMessageBody(parsed.body || row.item.content), _formattedTime: formatMessageTime(row.item.createdAt) }
   })
 })
 
@@ -369,9 +377,10 @@ async function sendMessage() {
   if (!trimmedContent && !hasFiles) { error.value = 'Please enter a message or choose at least one image'; return }
   let payloadContent = trimmedContent
   if (replyingTo.value) {
-    const cleanQuoteContent = replyingTo.value.content.replace(/\r?\n/g, ' ')
     const peerName = replyingTo.value.sender?.displayName || replyingTo.value.sender?.username || 'user'
-    payloadContent = `> **Replying to @${peerName}**: "${cleanQuoteContent}"\n\n${payloadContent || ''}`
+    const hasImages = (replyingTo.value.images && replyingTo.value.images.length > 0) || parseMessageBody(replyingTo.value.content || '').images.length > 0
+    const contentText = hasImages ? '[Image]' : ''
+    payloadContent = `> Replying to @${peerName}${contentText ? ': ' + contentText : ''}\n\n${payloadContent || ''}`
   }
   sending.value = true; error.value = ''
   try {

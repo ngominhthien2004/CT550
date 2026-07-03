@@ -633,3 +633,9 @@ const illuWrlStyleSections = computed(() => {
   }
 }
 </style>
+
+<style>
+.dark-theme .nav-item-icon-img {
+  filter: invert(1);
+}
+</style>

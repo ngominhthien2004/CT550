@@ -90,6 +90,13 @@ function chooseSearchScope(scopeKey) {
    Pixiv Charcoal — Top Bar Search Controls
    ======================================== */
 
+.scope-icon-img {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
 .top-nav-left-right {
   display: flex;
   align-items: center;
@@ -172,5 +179,11 @@ function chooseSearchScope(scopeKey) {
   .top-nav-left-right {
     gap: 0.35rem;
   }
+}
+</style>
+
+<style>
+.dark-theme .scope-icon-img {
+  filter: invert(1);
 }
 </style>

@@ -1,8 +1,9 @@
 .message-shell {
   display: grid;
   grid-template-columns: 340px minmax(0, 1fr);
+  grid-template-rows: 1fr;
   gap: 0;
-  min-height: calc(100vh - 110px);
+  height: calc(100vh - 110px);
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--surface);
@@ -154,6 +155,7 @@
 .thread-pane {
   overflow: hidden;
   grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: 0;
 }
 
 .message-flow {
@@ -674,7 +676,8 @@
 @media (max-width: 920px) {
   .message-shell {
     grid-template-columns: 1fr;
-    min-height: auto;
+    height: calc(100vh - 110px);
+    min-height: 0;
   }
 
   .mobile-chat-open .thread-list-pane {
