@@ -57,18 +57,18 @@ function chooseSearchScope(scopeKey) {
               <i v-else :class="['scope-icon', selectedScopeIcon]" aria-hidden="true"></i>
               <span class="scope-text">{{ selectedScopeLabel }}</span>
             </button>
-            <div v-if="isSearchScopeOpen" class="inline-menu-panel" role="menu" aria-label="Search scope menu">
+            <div v-if="isSearchScopeOpen" class="dd-panel" role="menu" aria-label="Search scope menu">
               <button
                 v-for="scope in props.searchScopes"
                 :key="scope.key"
                 type="button"
-                class="inline-menu-item"
+                class="dd-item"
                 :class="{ 'is-active': props.selectedSearchScope === scope.key }"
                 role="menuitem"
                 @click="chooseSearchScope(scope.key)"
               >
-                <img v-if="scope.icon.startsWith('/')" :src="scope.icon" class="scope-icon-img" alt="" aria-hidden="true" />
-                <i v-else :class="['scope-menu-icon', scope.icon]" aria-hidden="true"></i>
+                <img v-if="scope.icon.startsWith('/')" :src="scope.icon" class="dd-item-icon-img" alt="" aria-hidden="true" />
+                <i v-else :class="['dd-item-icon', scope.icon]" aria-hidden="true"></i>
                 <span>{{ scope.label }}</span>
               </button>
             </div>
@@ -82,6 +82,8 @@ function chooseSearchScope(scopeKey) {
     </button>
   </div>
 </template>
+
+<style scoped src="../../../assets/styles/dropdown.css"></style>
 
 <style scoped>
 /* ========================================
@@ -154,56 +156,10 @@ function chooseSearchScope(scopeKey) {
   position: static;
 }
 
-.inline-menu-panel {
-  position: absolute;
-  right: 0;
-  left: auto;
-  top: calc(100% + 0.4rem);
-  width: min(280px, 100%);
-  max-width: 100%;
-  min-width: 0;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  box-shadow: var(--shadow-md);
-  z-index: 50;
-  padding: 0.35rem;
-  display: grid;
-  gap: 0.1rem;
-}
-
-.inline-menu-item {
-  border: none;
-  background: transparent;
-  color: var(--text);
-  border-radius: 6px;
-  font-size: 0.9rem;
-  line-height: 1.2;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 0.46rem;
+/* Search scope menu item sizing override */
+.dd-panel .dd-item {
   padding: 0.4rem 0.5rem;
-}
-
-.inline-menu-item:hover,
-.inline-menu-item:focus-visible,
-.inline-menu-item.is-active {
-  background: var(--surface-alt);
-}
-
-.scope-icon,
-.scope-menu-icon {
-  width: 1rem;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.scope-icon-img {
-  width: 1rem;
-  height: 1rem;
-  flex-shrink: 0;
-  object-fit: contain;
+  font-size: 0.9rem;
 }
 
 @media (max-width: 920px) {

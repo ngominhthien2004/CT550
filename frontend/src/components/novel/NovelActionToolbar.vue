@@ -57,7 +57,7 @@ function showToastMessage(msg) {
 function onClickOutside(event) {
   if (showMoreMenu.value) {
     const target = event.target
-    if (!target.closest('.more-dropdown') && !target.closest('.icon-btn[aria-label="More options"]')) {
+    if (!target.closest('.dd-panel') && !target.closest('.icon-btn[aria-label="More options"]')) {
       showMoreMenu.value = false
     }
   }
@@ -104,15 +104,17 @@ onUnmounted(() => {
       <button type="button" class="icon-btn" aria-label="More options" @click="toggleMoreMenu">
         <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
       </button>
-      <div v-if="showMoreMenu" class="more-dropdown">
-        <button type="button" @click="handleCopyLink">Copy link</button>
-        <button type="button" @click="handleReport">Report</button>
+      <div v-if="showMoreMenu" class="dd-panel">
+        <button type="button" class="dd-item" @click="handleCopyLink">Copy link</button>
+        <button type="button" class="dd-item" @click="handleReport">Report</button>
       </div>
     </div>
   </div>
 
   <div v-if="showToast" class="toast-notification">{{ toastMessage }}</div>
 </template>
+
+<style scoped src="../../assets/styles/dropdown.css"></style>
 
 <style scoped>
 .novel-action-toolbar {
@@ -159,41 +161,10 @@ onUnmounted(() => {
   position: relative;
 }
 
-.more-dropdown {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 4px);
-  background: var(--novel-bg);
-  border: 1px solid var(--novel-border);
-  border-radius: 8px;
-  padding: 4px;
-  min-width: 160px;
-  box-shadow: var(--shadow-md);
-  z-index: 10;
-}
-
-.more-dropdown button {
-  display: block;
-  width: 100%;
+/* Novel more menu item sizing override */
+.dd-panel .dd-item {
   padding: 8px 14px;
-  border: none;
-  background: transparent;
-  color: var(--novel-text-color);
   font-size: 0.85rem;
-  text-align: left;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.more-dropdown button:hover:not(:disabled) {
-  background: var(--novel-surface);
-  color: var(--novel-accent);
-}
-
-.more-dropdown button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 .toast-notification {

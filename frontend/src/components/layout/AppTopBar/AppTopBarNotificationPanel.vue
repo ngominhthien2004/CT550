@@ -61,9 +61,9 @@ function computeNotificationLink(item) {
     return '/requests'
   }
   if (type.startsWith('system:')) {
-    if (type === 'system:artwork_report') return '/admin/reports?type=artwork'
-    if (type === 'system:comment_report') return '/admin/reports?type=comment'
-    if (type === 'system:user_report') return '/admin/reports?type=user'
+    if (type === 'system:artwork_report') return '/admin?tab=reports&type=artwork'
+    if (type === 'system:comment_report') return '/admin?tab=reports&type=comment'
+    if (type === 'system:user_report') return '/admin?tab=reports&type=user'
   }
   if (type === 'system' && artworkId) {
     return `/artworks/${artworkId}`

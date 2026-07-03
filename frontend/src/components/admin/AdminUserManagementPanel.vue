@@ -154,19 +154,19 @@ const formattedUsers = computed(() =>
                   {{ row.role }}
                   <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
                 </button>
-                <div v-if="openDropdownId === row._id" class="role-menu">
+                <div v-if="openDropdownId === row._id" class="dd-panel">
                   <button
                     type="button"
-                    class="role-option"
-                    :class="{ active: row.role === 'user' }"
+                    class="dd-item"
+                    :class="{ 'is-active': row.role === 'user' }"
                     @click="selectRole(row, 'user')"
                   >
                     user
                   </button>
                   <button
                     type="button"
-                    class="role-option"
-                    :class="{ active: row.role === 'admin' }"
+                    class="dd-item"
+                    :class="{ 'is-active': row.role === 'admin' }"
                     @click="selectRole(row, 'admin')"
                   >
                     admin
@@ -193,6 +193,8 @@ const formattedUsers = computed(() =>
     />
   </section>
 </template>
+
+<style scoped src="../../assets/styles/dropdown.css"></style>
 
 <style scoped>
 .user-link {
@@ -260,42 +262,12 @@ const formattedUsers = computed(() =>
   border-color: var(--line);
 }
 
-.role-menu {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: calc(100% + 4px);
-  min-width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: var(--shadow-lg);
-  z-index: 50;
-  padding: 0.25rem 0;
-  overflow: hidden;
-}
-
-.role-option {
-  display: block;
-  width: 100%;
-  text-align: center;
+/* Role menu item sizing override */
+.dd-panel .dd-item {
   padding: 0.35rem 0.75rem;
-  border: none;
-  background: transparent;
-  color: var(--text);
   font-size: 0.78rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: background 0.12s;
-  white-space: nowrap;
+  text-align: center;
 }
 
-.role-option:hover {
-  background: var(--surface-alt);
-}
-
-.role-option.active {
-  background: var(--accent);
-  color: #fff;
-}
 </style>

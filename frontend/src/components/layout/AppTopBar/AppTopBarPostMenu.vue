@@ -4,49 +4,26 @@
       Post
       <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
     </summary>
-    <div class="post-menu-list" role="menu" aria-label="Post type menu">
-      <router-link to="/upload/illust" class="post-menu-item" role="menuitem" aria-label="Post illustration">Illustration</router-link>
-      <router-link to="/upload/manga" class="post-menu-item" role="menuitem" aria-label="Post manga">Manga</router-link>
-      <router-link to="/upload/gif" class="post-menu-item" role="menuitem" aria-label="Post GIF animation">GIF</router-link>
-      <router-link to="/upload/novel" class="post-menu-item" role="menuitem" aria-label="Post novel">Novel</router-link>
+    <div class="dd-panel" role="menu" aria-label="Post type menu">
+      <router-link to="/upload/illust" class="dd-item" role="menuitem" aria-label="Post illustration">Illustration</router-link>
+      <router-link to="/upload/manga" class="dd-item" role="menuitem" aria-label="Post manga">Manga</router-link>
+      <router-link to="/upload/gif" class="dd-item" role="menuitem" aria-label="Post GIF animation">GIF</router-link>
+      <router-link to="/upload/novel" class="dd-item" role="menuitem" aria-label="Post novel">Novel</router-link>
     </div>
   </details>
 </template>
+
+<style scoped src="../../../assets/styles/dropdown.css"></style>
 
 <style scoped>
 .post-menu {
   position: relative;
 }
 
-.post-menu {
-  position: relative;
-}
-
-.post-menu-list {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 0.4rem);
-  display: flex;
-  flex-direction: column;
-  min-width: 180px;
-  padding: 0.35rem;
-  border: 1px solid var(--line);
-  border-radius: 0.72rem;
-  background: var(--surface);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
-  z-index: 20;
-}
-
-.post-menu-item {
-  text-decoration: none;
-  color: var(--text);
+/* Post menu item sizing override */
+.dd-panel .dd-item {
   padding: 0.45rem 0.6rem;
-  border-radius: 0.5rem;
   font-size: 0.9rem;
-}
-
-.post-menu-item:hover,
-.post-menu-item:focus-visible {
-  background: var(--surface-alt);
+  border-radius: 0.5rem;
 }
 </style>

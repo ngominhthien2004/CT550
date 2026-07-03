@@ -106,11 +106,11 @@ defineExpose({ scrollToBottom })
           <button type="button" class="icon-btn ghost" @click="showMenu = !showMenu" aria-label="More options">
             <i class="fa-solid fa-ellipsis"></i>
           </button>
-          <div v-if="showMenu" class="thread-menu-dropdown">
-            <button type="button" class="thread-menu-item" @click="emit('report'); closeMenu()">
+          <div v-if="showMenu" class="dd-panel">
+            <button type="button" class="dd-item" @click="emit('report'); closeMenu()">
               <i class="fa-solid fa-flag"></i> Report
             </button>
-            <button type="button" class="thread-menu-item danger" @click="emit('block'); closeMenu()">
+            <button type="button" class="dd-item dd-item--danger" @click="emit('block'); closeMenu()">
               <i class="fa-solid fa-ban"></i> Block
             </button>
           </div>
@@ -176,6 +176,7 @@ defineExpose({ scrollToBottom })
   </section>
 </template>
 
+<style scoped src="../../assets/styles/dropdown.css"></style>
 <style scoped>
 .thread-pane {
   display: flex;
@@ -288,43 +289,11 @@ defineExpose({ scrollToBottom })
   position: relative;
 }
 
-.thread-menu-dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: var(--shadow-md);
-  z-index: 30;
-  min-width: 140px;
-  overflow: hidden;
-}
-
-.thread-menu-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
+/* Thread menu item sizing override */
+.dd-panel .dd-item {
   padding: 0.55rem 0.75rem;
-  border: none;
-  background: transparent;
   font-size: 0.82rem;
-  color: var(--text);
-  cursor: pointer;
-  text-align: left;
-}
-
-.thread-menu-item:hover {
-  background: var(--surface-alt);
-}
-
-.thread-menu-item.danger {
-  color: var(--danger);
-}
-
-.thread-menu-item.danger:hover {
-  background: rgba(239, 68, 68, 0.1);
+  gap: 0.5rem;
 }
 
 .presence-indicator {

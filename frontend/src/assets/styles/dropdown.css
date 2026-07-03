@@ -1,0 +1,90 @@
+/* ==========================================================================
+   Shared Dropdown Styles
+   Import via: <style scoped src="../../assets/styles/dropdown.css">
+   ========================================================================== */
+
+/* --- Dropdown Panel (the floating container) --- */
+.dd-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  min-width: 160px;
+  max-width: min(280px, 100%);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  z-index: 50;
+  padding: 0.35rem;
+  display: grid;
+  gap: 0.1rem;
+}
+
+/* --- Dropdown Item (button or link) --- */
+.dd-item {
+  display: flex;
+  align-items: center;
+  gap: 0.46rem;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  padding: 0.4rem 0.5rem;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.12s;
+}
+
+.dd-item:hover,
+.dd-item:focus-visible {
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+/* --- Active / Selected state --- */
+.dd-item.is-active {
+  background: var(--surface-alt);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* --- Danger variant --- */
+.dd-item--danger {
+  color: var(--danger);
+}
+
+.dd-item--danger:hover {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+/* --- Disabled state --- */
+.dd-item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* --- Icon slot inside item --- */
+.dd-item-icon {
+  width: 1rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.dd-item-icon-img {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+/* --- Separator line --- */
+.dd-separator {
+  height: 1px;
+  background: var(--line);
+  margin: 0.2rem 0;
+}

@@ -110,7 +110,7 @@ function showToastMessage(msg) {
 function onClickOutside(event) {
   if (showMoreMenu.value) {
     const target = event.target
-    if (!target.closest('.more-dropdown') && !target.closest('.icon-btn[aria-label="More options"]')) {
+    if (!target.closest('.dd-panel') && !target.closest('.icon-btn[aria-label="More options"]')) {
       showMoreMenu.value = false
     }
   }
@@ -182,10 +182,10 @@ watch(() => artwork.value?._id, resetViewerState, { immediate: true })
           <button type="button" class="icon-btn" aria-label="More options" @click="toggleMoreMenu">
             <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
           </button>
-          <div v-if="showMoreMenu" class="more-dropdown">
-            <button type="button" @click="handleCopyLink">Copy link</button>
-            <button type="button" @click="handleDownload">Download</button>
-            <button type="button" @click="toggleMoreMenu(); showReportModal = true">Report</button>
+          <div v-if="showMoreMenu" class="dd-panel">
+            <button type="button" class="dd-item" @click="handleCopyLink">Copy link</button>
+            <button type="button" class="dd-item" @click="handleDownload">Download</button>
+            <button type="button" class="dd-item" @click="toggleMoreMenu(); showReportModal = true">Report</button>
           </div>
         </div>
       </div>
@@ -234,6 +234,8 @@ watch(() => artwork.value?._id, resetViewerState, { immediate: true })
   />
 </div>
 </template>
+
+<style scoped src="../../../assets/styles/dropdown.css"></style>
 
 <style scoped>
 .viewer-card {
@@ -439,41 +441,10 @@ watch(() => artwork.value?._id, resetViewerState, { immediate: true })
   position: relative;
 }
 
-.more-dropdown {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 4px);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 4px;
-  min-width: 160px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  z-index: 10;
-}
-
-.more-dropdown button {
-  display: block;
-  width: 100%;
+/* Artwork more menu item sizing override */
+.dd-panel .dd-item {
   padding: 8px 14px;
-  border: none;
-  background: transparent;
-  color: var(--text);
   font-size: 0.85rem;
-  text-align: left;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.more-dropdown button:hover:not(:disabled) {
-  background: var(--surface-alt);
-  color: var(--brand);
-}
-
-.more-dropdown button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 .toast-notification {

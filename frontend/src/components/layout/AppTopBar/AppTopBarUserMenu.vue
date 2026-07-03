@@ -68,7 +68,7 @@ defineEmits(['logout', 'toggle'])
       </router-link>
       <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
     </summary>
-    <div class="user-menu-panel" role="menu" aria-label="User menu">
+    <div class="dd-panel user-menu-panel" role="menu" aria-label="User menu">
       <div class="user-hero">
         <router-link to="/account" class="user-hero-link" aria-label="Go to account">
           <img class="avatar avatar--lg user-avatar" :src="avatarSrc" :alt="avatarAlt" @error="handleAvatarError" />
@@ -100,7 +100,7 @@ defineEmits(['logout', 'toggle'])
           v-for="item in props.userMainLinks"
           :key="item.label"
           :to="item.to"
-          class="user-menu-item"
+          class="dd-item"
           role="menuitem"
         >
           {{ item.label }}
@@ -112,7 +112,7 @@ defineEmits(['logout', 'toggle'])
           v-for="item in props.userLibraryLinks"
           :key="item.label"
           :to="item.to"
-          class="user-menu-item"
+          class="dd-item"
           role="menuitem"
         >
           {{ item.label }}
@@ -120,8 +120,8 @@ defineEmits(['logout', 'toggle'])
       </div>
 
       <p class="menu-label" role="presentation">Language</p>
-      <button type="button" class="user-menu-item" role="menuitem">English</button>
-      <button type="button" class="user-menu-item toggle-row" role="menuitem" aria-label="Toggle dark theme" @click="toggle">
+      <button type="button" class="dd-item" role="menuitem">English</button>
+      <button type="button" class="dd-item toggle-row" role="menuitem" aria-label="Toggle dark theme" @click="toggle">
         Dark Theme
         <span class="switch" :class="{ active: isDark }" aria-hidden="true">
           <span class="switch-knob"></span>
@@ -133,17 +133,19 @@ defineEmits(['logout', 'toggle'])
           v-for="item in props.userSettingLinks"
           :key="item.label"
           :to="item.to"
-          class="user-menu-item"
+          class="dd-item"
           role="menuitem"
         >
           {{ item.label }}
         </router-link>
       </div>
 
-      <button type="button" class="user-menu-item danger" role="menuitem" @click="$emit('logout')">Log out</button>
+      <button type="button" class="dd-item dd-item--danger" role="menuitem" @click="$emit('logout')">Log out</button>
     </div>
   </details>
 </template>
+
+<style scoped src="../../../assets/styles/dropdown.css"></style>
 
 <style scoped>
 .user-menu {
@@ -173,26 +175,6 @@ defineEmits(['logout', 'toggle'])
 }
 
 .user-menu-trigger::-webkit-details-marker {
-  display: none;
-}
-
-.user-menu-panel {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 0.4rem);
-  width: 216px;
-  max-height: min(76vh, 498px);
-  overflow-y: auto;
-  scrollbar-width: none;
-  padding: 0 0 1.2rem;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  box-shadow: var(--shadow-lg);
-  z-index: 22;
-}
-
-.user-menu-panel::-webkit-scrollbar {
   display: none;
 }
 
@@ -235,37 +217,34 @@ defineEmits(['logout', 'toggle'])
   margin-top: 0.7rem;
 }
 
-.user-menu-item {
-  text-decoration: none;
-  border: none;
-  background: transparent;
-  color: var(--text);
-  text-align: left;
-  border-radius: 0;
-  padding: 0 1rem;
-  height: 40px;
-  line-height: 40px;
-  font-size: 0.9rem;
-  width: 100%;
-  display: flex;
-  align-items: center;
-}
-
-.user-menu-item:hover,
-.user-menu-item:focus-visible {
-  background: var(--surface-alt);
-}
-
-.user-menu-item.danger {
-  color: var(--danger);
-}
-
 .menu-label {
   margin: 0.7rem 0 0;
   padding: 0.28rem 1rem;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--muted);
+}
+
+/* User menu panel override */
+.user-menu-panel {
+  min-width: 216px;
+  max-height: min(76vh, 498px);
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 0 0 1.2rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.user-menu-panel::-webkit-scrollbar {
+  display: none;
+}
+
+/* User menu item sizing override */
+.user-menu-panel .dd-item {
+  padding: 0.55rem 1rem;
+  border-radius: 0;
+  font-size: 0.9rem;
+  white-space: normal;
 }
 
 .toggle-row {

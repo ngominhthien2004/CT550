@@ -46,12 +46,12 @@ const selectedLabel = (value) => {
       {{ selectedLabel(modelValue) }}
       <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
     </button>
-    <div v-if="open" class="pill-menu">
+    <div v-if="open" class="dd-panel">
       <button
         v-for="opt in options"
         :key="opt.value"
         type="button"
-        class="pill-option"
+        class="dd-item"
         :class="{ active: modelValue === opt.value }"
         @click="select(opt.value)"
       >
@@ -60,6 +60,8 @@ const selectedLabel = (value) => {
     </div>
   </div>
 </template>
+
+<style scoped src="../../assets/styles/dropdown.css"></style>
 
 <style scoped>
 .pill-select {
@@ -98,41 +100,10 @@ const selectedLabel = (value) => {
   border-color: var(--muted);
 }
 
-.pill-menu {
-  position: absolute;
-  left: 0;
-  top: calc(100% + 4px);
-  min-width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: var(--shadow-lg);
-  z-index: 50;
-  padding: 0.25rem 0;
-  overflow: hidden;
-}
-
-.pill-option {
-  display: block;
-  width: 100%;
-  text-align: left;
+/* Pill select item sizing override */
+.dd-panel .dd-item {
   padding: 0.35rem 0.75rem;
-  border: none;
-  background: transparent;
-  color: var(--text);
   font-size: 0.8rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: background 0.12s;
-  white-space: nowrap;
-}
-
-.pill-option:hover {
-  background: var(--surface-alt);
-}
-
-.pill-option.active {
-  background: var(--accent);
-  color: #fff;
 }
 </style>

@@ -425,67 +425,6 @@
   to { opacity: 1; }
 }
 
-/* Advanced Compose Row Styles */
-.compose-row-advanced {
-  padding: 0.75rem 1rem;
-  border-top: 1px solid var(--line);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
-  gap: 0.65rem;
-  background: var(--surface);
-  align-items: flex-end;
-}
-
-.compose-input-wrapper {
-  position: relative;
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  background: var(--surface-alt);
-  display: flex;
-  align-items: flex-end;
-  padding: 0.35rem 0.5rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.compose-input-wrapper:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-  background: var(--surface);
-}
-
-.compose-textarea {
-  flex-grow: 1;
-  border: 0;
-  background: transparent;
-  color: var(--text);
-  outline: none;
-  resize: none;
-  font-size: 0.88rem;
-  line-height: 1.4;
-  padding: 0.25rem 0.5rem;
-  max-height: 140px;
-  min-height: 24px;
-}
-
-.compose-emoji-btn {
-  border: 0;
-  background: transparent;
-  color: var(--muted);
-  font-size: 1.15rem;
-  padding: 0.25rem 0.35rem;
-  cursor: pointer;
-  transition: color 0.15s, transform 0.1s;
-}
-
-.compose-emoji-btn:hover {
-  color: #eab308;
-  transform: scale(1.1);
-}
-
-.compose-emoji-btn:active {
-  transform: scale(0.95);
-}
-
 /* Custom Emoji Drawer */
 .emoji-drawer-panel {
   position: absolute;
@@ -561,19 +500,6 @@
 
 .emoji-item-btn:active {
   transform: scale(0.95);
-}
-
-/* Compose send button - sync with Bootstrap .btn-primary */
-.compose-row-advanced .btn {
-  min-width: 52px;
-  min-height: 52px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-}
-
-.compose-row-advanced .btn:active:not(:disabled) {
-  transform: scale(0.92);
 }
 
 /* Reply Context Top Bar */

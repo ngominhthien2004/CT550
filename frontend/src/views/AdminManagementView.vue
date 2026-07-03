@@ -1,6 +1,6 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import {
   AdminOverviewCards, AdminSectionTabs,
@@ -23,6 +23,7 @@ import { useAdminModals } from '@/composables/useAdminModals'
 
 const isNavCollapsed = ref(true)
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 
 const user = computed(() => authStore.user)
@@ -62,7 +63,7 @@ const {
 } = useAdminModals()
 
 // --- Tab state ---
-const activeTab = ref('users')
+const activeTab = ref(route.query.tab || 'users')
 const adminTabs = [
   { id: 'users', label: 'Users' },
   { id: 'reports', label: 'Reports' },
@@ -70,6 +71,16 @@ const adminTabs = [
   { id: 'ai', label: 'AI Settings' },
   { id: 'banners', label: 'Banners' },
 ]
+
+// Sync URL query params to tab state
+watch(() => route.query, (query) => {
+  if (query.tab && adminTabs.some(t => t.id === query.tab)) {
+    activeTab.value = query.tab
+  }
+  if (query.type && ['artwork', 'comment', 'user', 'request', 'hidden'].includes(query.type)) {
+    activeReportTab.value = query.type
+  }
+}, { immediate: true })
 
 // --- Modal wrapper functions ---
 function handleDeleteTag(tagId) {
