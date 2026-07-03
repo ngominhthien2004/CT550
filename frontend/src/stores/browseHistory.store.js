@@ -9,6 +9,10 @@ export const useBrowseHistoryStore = defineStore('browseHistory', {
     pages: 0,
     loading: false,
     error: null,
+    search: '',
+    filterFrom: '',
+    filterTo: '',
+    filterCreator: '',
   }),
 
   actions: {
@@ -16,7 +20,13 @@ export const useBrowseHistoryStore = defineStore('browseHistory', {
       this.loading = true
       this.error = null
       try {
-        const res = await api.get(`/users/me/history?page=${page}&limit=20`)
+        const params = new URLSearchParams({ page, limit: 20 })
+        if (this.search) params.set('search', this.search)
+        if (this.filterFrom) params.set('from', this.filterFrom)
+        if (this.filterTo) params.set('to', this.filterTo)
+        if (this.filterCreator) params.set('creator', this.filterCreator)
+
+        const res = await api.get(`/users/me/history?${params.toString()}`)
         this.entries = res.data.entries
         this.total = res.data.total
         this.page = res.data.page
@@ -26,6 +36,26 @@ export const useBrowseHistoryStore = defineStore('browseHistory', {
       } finally {
         this.loading = false
       }
+    },
+
+    setSearch(value) {
+      this.search = value
+      this.fetchHistory(1)
+    },
+
+    setFilters({ from, to, creator }) {
+      if (from !== undefined) this.filterFrom = from
+      if (to !== undefined) this.filterTo = to
+      if (creator !== undefined) this.filterCreator = creator
+      this.fetchHistory(1)
+    },
+
+    clearFilters() {
+      this.search = ''
+      this.filterFrom = ''
+      this.filterTo = ''
+      this.filterCreator = ''
+      this.fetchHistory(1)
     },
 
     async clearHistory() {

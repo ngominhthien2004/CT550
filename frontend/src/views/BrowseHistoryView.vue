@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, ref } from 'vue'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import { useBrowseHistoryStore } from '@/stores/browseHistory.store'
 import { useAuthStore } from '@/stores/auth.store'
@@ -17,6 +17,16 @@ const total = computed(() => browseHistoryStore.total)
 const currentPage = computed(() => browseHistoryStore.page)
 const totalPages = computed(() => browseHistoryStore.pages)
 
+const searchQuery = ref('')
+const dateFrom = ref('')
+const dateTo = ref('')
+const showFilters = ref(false)
+let searchDebounce = null
+
+const hasActiveFilters = computed(() =>
+  browseHistoryStore.search || browseHistoryStore.filterFrom || browseHistoryStore.filterTo
+)
+
 const processedHistory = computed(() =>
   historyEntries.value.map(entry => ({
     ...entry,
@@ -27,6 +37,26 @@ const processedHistory = computed(() =>
 onMounted(() => {
   browseHistoryStore.fetchHistory(1)
 })
+
+function onSearchInput(value) {
+  searchQuery.value = value
+  clearTimeout(searchDebounce)
+  searchDebounce = setTimeout(() => {
+    browseHistoryStore.setSearch(value)
+  }, 350)
+}
+
+function applyDateFilter() {
+  browseHistoryStore.setFilters({ from: dateFrom.value, to: dateTo.value })
+}
+
+function clearAllFilters() {
+  searchQuery.value = ''
+  dateFrom.value = ''
+  dateTo.value = ''
+  showFilters.value = false
+  browseHistoryStore.clearFilters()
+}
 
 function goToPage(page) {
   if (page >= 1 && page <= totalPages.value) {
@@ -72,16 +102,77 @@ function getImage(item) {
       <div class="page-header">
         <div class="page-header-top">
           <h1><i class="fa-regular fa-clock me-2"></i>Browsing History</h1>
-          <button
-            v-if="historyEntries.length > 0"
-            type="button"
-            class="btn-clear"
-            @click="handleClearHistory"
-          >
-            <i class="fa-regular fa-trash-can"></i> Clear history
-          </button>
+          <div class="header-actions">
+            <button
+              type="button"
+              class="btn-filter"
+              :class="{ active: showFilters || hasActiveFilters }"
+              @click="showFilters = !showFilters"
+            >
+              <i class="fa-solid fa-sliders"></i> Filter
+            </button>
+            <button
+              v-if="historyEntries.length > 0"
+              type="button"
+              class="btn-clear"
+              @click="handleClearHistory"
+            >
+              <i class="fa-regular fa-trash-can"></i> Clear
+            </button>
+          </div>
         </div>
         <p class="page-subtitle">{{ total }} artwork{{ total !== 1 ? 's' : '' }} viewed</p>
+      </div>
+
+      <!-- Search + Filters -->
+      <div class="toolbar" v-if="historyEntries.length > 0 || hasActiveFilters">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            type="text"
+            :value="searchQuery"
+            placeholder="Search by title..."
+            class="search-input"
+            @input="onSearchInput($event.target.value)"
+          />
+          <button
+            v-if="searchQuery"
+            type="button"
+            class="search-clear"
+            @click="onSearchInput('')"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div v-if="showFilters" class="filter-panel">
+          <div class="filter-row">
+            <label class="filter-label">From</label>
+            <input
+              type="date"
+              v-model="dateFrom"
+              class="filter-input"
+              @change="applyDateFilter"
+            />
+          </div>
+          <div class="filter-row">
+            <label class="filter-label">To</label>
+            <input
+              type="date"
+              v-model="dateTo"
+              class="filter-input"
+              @change="applyDateFilter"
+            />
+          </div>
+          <button
+            v-if="hasActiveFilters"
+            type="button"
+            class="btn-clear-filters"
+            @click="clearAllFilters"
+          >
+            <i class="fa-solid fa-xmark"></i> Clear filters
+          </button>
+        </div>
       </div>
 
       <!-- Loading -->
@@ -239,6 +330,151 @@ function getImage(item) {
 .btn-clear:hover {
   background: var(--surface-alt);
   color: var(--danger);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-filter {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-filter:hover {
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+.btn-filter.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* Toolbar: search + filters */
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+  background: var(--surface);
+  transition: border-color 0.2s;
+}
+
+.search-box:focus-within {
+  border-color: var(--accent);
+}
+
+.search-icon {
+  color: var(--muted);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.85rem;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+}
+
+.search-input::placeholder {
+  color: var(--muted);
+}
+
+.search-clear {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.search-clear:hover {
+  color: var(--text);
+}
+
+.filter-panel {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-alt);
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.filter-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.filter-input {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.78rem;
+  color: var(--text);
+  background: var(--surface);
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.btn-clear-filters {
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.btn-clear-filters:hover {
+  text-decoration: underline;
 }
 
 /* Grid */

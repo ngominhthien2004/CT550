@@ -626,9 +626,28 @@ const getBrowseHistory = async (req, res, next) => {
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 20;
     const skip = (page - 1) * limit;
+    const { search, from, to, creator } = req.query;
+
+    const historyFilter = { user: req.user._id };
+
+    if (from || to) {
+      historyFilter.createdAt = {};
+      if (from) historyFilter.createdAt.$gte = new Date(from);
+      if (to) historyFilter.createdAt.$lte = new Date(to);
+    }
+
+    if (search || creator) {
+      const artworkFilter = {};
+      if (search) artworkFilter.title = { $regex: search, $options: 'i' };
+      if (creator) artworkFilter.user = creator;
+
+      const Artwork = require('../models/Artwork');
+      const matchingArtworks = await Artwork.find(artworkFilter).select('_id').lean();
+      historyFilter.artwork = { $in: matchingArtworks.map(a => a._id) };
+    }
 
     const [entries, total] = await Promise.all([
-      BrowseHistory.find({ user: req.user._id })
+      BrowseHistory.find(historyFilter)
         .populate({
           path: 'artwork',
           populate: [
@@ -640,7 +659,7 @@ const getBrowseHistory = async (req, res, next) => {
         .skip(skip)
         .limit(limit)
         .lean(),
-      BrowseHistory.countDocuments({ user: req.user._id }),
+      BrowseHistory.countDocuments(historyFilter),
     ]);
 
     res.json({ entries, total, page, pages: Math.ceil(total / limit) });
