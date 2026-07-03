@@ -94,7 +94,6 @@ function chooseSearchScope(scopeKey) {
   flex: 1 1 auto;
   min-width: 0;
   max-width: none;
-  overflow: hidden;
 }
 
 /* Removed separator since Media is now part of search */
@@ -165,7 +164,7 @@ function chooseSearchScope(scopeKey) {
   border-radius: 8px;
   background: var(--surface);
   box-shadow: var(--shadow-md);
-  z-index: 24;
+  z-index: 50;
   padding: 0.35rem;
   display: grid;
   gap: 0.1rem;
