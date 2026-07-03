@@ -81,7 +81,7 @@ const illuWrlStyleSections = computed(() => {
       label: 'Content',
       items: [
         { id: 'illust', label: 'Illustrations', to: '/illustrations', icon: 'fa-regular fa-image' },
-        { id: 'manga', label: 'Manga', to: '/manga', icon: 'fa-regular fa-square' },
+        { id: 'manga', label: 'Manga', to: '/manga', icon: '/manga-icon.png' },
         { id: 'gif', label: 'GIF', to: '/gifs', icon: 'fa-solid fa-film' },
         { id: 'novels', label: 'Novels', to: '/novels', icon: 'fa-regular fa-rectangle-list' },
         { id: 'plans', label: 'Plans', to: '/plans', icon: 'fa-regular fa-clipboard' },
@@ -160,7 +160,8 @@ const illuWrlStyleSections = computed(() => {
               class="nav-link-item"
               :title="sidebarCompact ? item.label : undefined"
             >
-              <i :class="item.icon" aria-hidden="true"></i>
+              <img v-if="item.icon.startsWith('/')" :src="item.icon" class="nav-item-icon-img" alt="" aria-hidden="true" />
+              <i v-else :class="item.icon" aria-hidden="true"></i>
               <span class="nav-item-label">{{ item.label }}</span>
             </router-link>
           </div>
@@ -443,6 +444,13 @@ const illuWrlStyleSections = computed(() => {
   text-align: center;
   color: var(--muted);
   transition: color 0.18s ease;
+}
+
+.nav-item-icon-img {
+  width: 1.15rem;
+  height: 1.15rem;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .nav-group-header {

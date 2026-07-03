@@ -48,7 +48,7 @@ const searchOptionsDraft = ref({
 
 const searchScopes = [
   { key: 'illust', label: 'Illustrations', icon: 'fa-regular fa-image', queryType: 'illust' },
-  { key: 'manga', label: 'Manga', icon: 'fa-solid fa-book', queryType: 'manga' },
+  { key: 'manga', label: 'Manga', icon: '/manga-icon.png', queryType: 'manga' },
   { key: 'gif', label: 'GIF', icon: 'fa-solid fa-film', queryType: 'gif' },
   { key: 'novel', label: 'Novels', icon: 'fa-solid fa-book-open', queryType: 'novel' },
   { key: 'user', label: 'User', icon: 'fa-regular fa-user', queryType: 'user' },

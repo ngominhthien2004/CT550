@@ -53,7 +53,8 @@ function chooseSearchScope(scopeKey) {
               :aria-expanded="isSearchScopeOpen"
               @click="toggleSearchScopeMenu"
             >
-              <i :class="['scope-icon', selectedScopeIcon]" aria-hidden="true"></i>
+              <img v-if="selectedScopeIcon.startsWith('/')" :src="selectedScopeIcon" class="scope-icon-img" alt="" aria-hidden="true" />
+              <i v-else :class="['scope-icon', selectedScopeIcon]" aria-hidden="true"></i>
               <span class="scope-text">{{ selectedScopeLabel }}</span>
             </button>
             <div v-if="isSearchScopeOpen" class="inline-menu-panel" role="menu" aria-label="Search scope menu">
@@ -66,7 +67,8 @@ function chooseSearchScope(scopeKey) {
                 role="menuitem"
                 @click="chooseSearchScope(scope.key)"
               >
-                <i :class="['scope-menu-icon', scope.icon]" aria-hidden="true"></i>
+                <img v-if="scope.icon.startsWith('/')" :src="scope.icon" class="scope-icon-img" alt="" aria-hidden="true" />
+                <i v-else :class="['scope-menu-icon', scope.icon]" aria-hidden="true"></i>
                 <span>{{ scope.label }}</span>
               </button>
             </div>
@@ -195,6 +197,13 @@ function chooseSearchScope(scopeKey) {
   width: 1rem;
   text-align: center;
   flex-shrink: 0;
+}
+
+.scope-icon-img {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 
 @media (max-width: 920px) {
