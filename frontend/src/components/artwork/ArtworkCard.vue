@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useLikeStore } from '../../stores/like.store'
 import { useAuthStore } from '../../stores/auth.store'
 import ReportModal from '@/components/common/ReportModal.vue'
+import CardMenuDropdown from '@/components/common/CardMenuDropdown.vue'
 import R18BlurOverlay from '../common/R18BlurOverlay.vue'
 
 const props = defineProps({
@@ -19,6 +20,15 @@ const authStore = useAuthStore()
 
 const showReportModal = ref(false)
 const isLoggedIn = computed(() => !!authStore.user)
+
+function handleShare() {
+  const url = `${window.location.origin}/artworks/${props.item._id}`
+  if (navigator.share) {
+    navigator.share({ title: props.item.title, url }).catch(() => {})
+  } else {
+    navigator.clipboard.writeText(url).catch(() => {})
+  }
+}
 
 const isLiked = computed(() => {
   if (likeStore.statusByArtwork[props.item._id] !== undefined) {
@@ -98,9 +108,11 @@ function getImageCount(item) {
       <button type="button" class="btn-like" :class="{ 'is-active': isLiked }" aria-label="Like" @click.prevent="handleLike" :disabled="isToggling">
         <i :class="isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
       </button>
-      <button type="button" v-if="isLoggedIn" class="btn-report" @click.stop="showReportModal = true" title="Report artwork">
-        <i class="fa-regular fa-flag" aria-hidden="true"></i>
-      </button>
+      <CardMenuDropdown
+        v-if="isLoggedIn"
+        @share="handleShare"
+        @report="showReportModal = true"
+      />
     </div>
 
     <div class="card-meta">
@@ -225,15 +237,6 @@ function getImageCount(item) {
 .btn-like.is-active {
   color: #ef4444;
 }
-
-.btn-report {
-  position: absolute; bottom: 8px; right: 40px;
-  background: rgba(0,0,0,0.4); color: #fff; border: none; border-radius: 50%;
-  width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  opacity: 0; transition: opacity 0.2s;
-}
-.artwork-card:hover .btn-report { opacity: 1; }
-.btn-report:hover { background: rgba(220,53,69,0.7); }
 
 .artwork-hidden-banner {
   position: absolute; inset: 0;

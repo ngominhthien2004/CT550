@@ -1,5 +1,8 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { useAuthStore } from '../../stores/auth.store'
+import CardMenuDropdown from '@/components/common/CardMenuDropdown.vue'
+import ReportModal from '@/components/common/ReportModal.vue'
 
 const props = defineProps({
   item: {
@@ -11,6 +14,19 @@ const props = defineProps({
     default: 0,
   },
 })
+
+const authStore = useAuthStore()
+const showReportModal = ref(false)
+const isLoggedIn = computed(() => !!authStore.user)
+
+function handleShare() {
+  const url = `${window.location.origin}/novels/${props.item._id}`
+  if (navigator.share) {
+    navigator.share({ title: props.item.title, url }).catch(() => {})
+  } else {
+    navigator.clipboard.writeText(url).catch(() => {})
+  }
+}
 
 const snippet = computed(() => {
   const text = String(props.item?.excerpt || props.item?.description || props.item?.novelContent || '').replace(/\s+/g, ' ').trim()
@@ -75,6 +91,11 @@ const authorLink = computed(() => {
 
 <template>
   <article class="novel-compact-card">
+    <CardMenuDropdown
+      v-if="isLoggedIn"
+      @share="handleShare"
+      @report="showReportModal = true"
+    />
     <router-link :to="`/novels/${item._id}`" class="novel-compact-cover">
       <img v-if="item.image" :src="item.image" :alt="item.title" loading="lazy" />
       <div v-else class="novel-compact-fallback">
@@ -119,6 +140,14 @@ const authorLink = computed(() => {
         <span v-if="chapterLabel">{{ chapterLabel }}</span>
       </footer>
     </div>
+
+    <ReportModal
+      :visible="showReportModal"
+      report-type="artwork"
+      :target="item"
+      @close="showReportModal = false"
+      @reported="showReportModal = false"
+    />
   </article>
 </template>
 

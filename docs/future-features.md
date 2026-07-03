@@ -12,4 +12,12 @@ Features stubbed out or documented as planned but not yet implemented.
   - Backend: Add a `Draft` model or `status: 'draft'` field on Artwork model. Add routes for save/list/delete drafts.
   - Frontend: Replace stubs with real API calls. Add a "Load draft" flow. Preview could show a modal with formatted novel text.
 
+## Not interested — Hide feed card
+
+- **Location**: `frontend/src/components/common/CardMenuDropdown.vue`
+- **Status**: ❌ Not implemented — planned as third option in the card menu dropdown.
+- **To implement**:
+  - Frontend: Add "Not interested" option to `CardMenuDropdown`. Store hidden artwork IDs in localStorage (key: `illuwrl.hiddenArtworks`). Filter hidden items from feed before rendering.
+  - Optional backend: Add `hiddenBy` field on Artwork model or a `UserHiddenArtwork` collection for cross-device sync.
+
 ## (Add new future features here)
