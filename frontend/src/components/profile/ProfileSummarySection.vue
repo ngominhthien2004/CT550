@@ -118,7 +118,7 @@ onUnmounted(() => {
 
 const canReportUser = computed(() => {
   if (!authStore.isAuthenticated) return false
-  if (isOwnProfile) return false
+  if (isOwnProfile.value) return false
   return true
 })
 
