@@ -90,14 +90,14 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 }
 
 .bubble.outgoing {
-  background: rgba(99, 102, 241, 0.2);
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
   color: var(--text);
   margin-left: auto;
   border-bottom-right-radius: 4px;
 }
 
 .bubble.has-quote {
-  background: color-mix(in srgb, #818cf8 6%, transparent);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
 }
 
 .msg-avatar {
@@ -117,7 +117,7 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 }
 
 .quote-user {
-  color: #6366f1;
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -164,7 +164,7 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 }
 
 .msg-status.read {
-  color: #6366f1;
+  color: var(--accent);
 }
 
 .msg-time {
@@ -174,7 +174,7 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 }
 
 .outgoing .msg-time {
-  color: rgba(99, 102, 241, 0.7);
+  color: color-mix(in srgb, var(--accent) 70%, transparent);
 }
 
 .bubble-actions-wrapper {
@@ -212,6 +212,7 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
   border-radius: 50%;
   background: var(--surface);
   border: 1px solid var(--line);
+  color: var(--text);
   box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;
@@ -236,7 +237,7 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
 .mark-read {
   border: none;
   background: transparent;
-  color: #6366f1;
+  color: var(--accent);
   font-size: 0.72rem;
   cursor: pointer;
 }
