@@ -84,8 +84,6 @@ function facebookLogin() {
         New here?
         <router-link to="/signup">Create account</router-link>
       </p>
-
-      <router-link to="/signup" class="create-account-link">Create an account</router-link>
     </article>
   </section>
 </template>

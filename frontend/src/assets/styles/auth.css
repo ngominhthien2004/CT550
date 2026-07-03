@@ -123,6 +123,9 @@
 .auth-control {
   min-height: 46px;
   font-size: 1rem;
+  color: #1e293b;
+  background-color: #fff;
+  border-color: #e2e8f0;
 }
 
 .auth-submit {
