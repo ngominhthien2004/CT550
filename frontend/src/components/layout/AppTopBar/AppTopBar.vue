@@ -36,7 +36,7 @@ const route = useRoute()
 const authStore = useAuthStore()
 const messageStore = useMessageStore()
 const followStore = useFollowStore()
-const selectedSearchScope = ref('artworks')
+const selectedSearchScope = ref('illust')
 const isSearchOptionsOpen = ref(false)
 const searchOptionsDraft = ref({
   includeAll: '',
@@ -47,7 +47,9 @@ const searchOptionsDraft = ref({
 })
 
 const searchScopes = [
-  { key: 'artworks', label: 'Illustrations and Manga', icon: 'fa-regular fa-image', queryType: 'illust' },
+  { key: 'illust', label: 'Illustrations', icon: 'fa-regular fa-image', queryType: 'illust' },
+  { key: 'manga', label: 'Manga', icon: 'fa-solid fa-book', queryType: 'manga' },
+  { key: 'gif', label: 'GIF', icon: 'fa-solid fa-film', queryType: 'gif' },
   { key: 'novel', label: 'Novels', icon: 'fa-solid fa-book-open', queryType: 'novel' },
   { key: 'user', label: 'User', icon: 'fa-regular fa-user', queryType: 'user' },
 ]
@@ -144,7 +146,7 @@ function syncSearchScopeFromRoute() {
     return
   }
 
-  selectedSearchScope.value = 'artworks'
+  selectedSearchScope.value = 'illust'
 }
 
 watch(

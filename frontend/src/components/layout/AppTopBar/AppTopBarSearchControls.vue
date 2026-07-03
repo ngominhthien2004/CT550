@@ -13,7 +13,7 @@ const props = defineProps({
   },
   selectedSearchScope: {
     type: String,
-    default: 'artworks',
+    default: 'illust',
   },
 })
 
