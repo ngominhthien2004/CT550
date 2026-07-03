@@ -127,6 +127,14 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
+  const authStore = useAuthStore()
+  const isAuthenticated = authStore.isAuthenticated
+
+  // Redirect logged-in users away from login/signup pages
+  if (isAuthenticated && (to.name === 'login' || to.name === 'signup')) {
+    return { name: 'home' }
+  }
+
   const requiresAuth = Boolean(to.meta.requiresAuth)
   const requiresAdmin = Boolean(to.meta.requiresAdmin)
 
@@ -134,8 +142,7 @@ router.beforeEach((to) => {
     return true
   }
 
-  const authStore = useAuthStore()
-  if (authStore.isAuthenticated) {
+  if (isAuthenticated) {
     if (requiresAdmin && authStore.user?.role !== 'admin') {
       return { name: 'home' }
     }
