@@ -33,7 +33,7 @@ export function useAdminReports({ error, mutating } = {}) {
     }
   }
 
-  async function resolveArtworkReport(reportId) {
+  function resolveArtworkReport(reportId) {
     if (mutating?.value) return
     // Returns the modal config so the parent can show it
     return {
@@ -167,7 +167,7 @@ export function useAdminReports({ error, mutating } = {}) {
     }
   }
 
-  async function resolveCommentReport(reportId, action = 'dismissed') {
+  function resolveCommentReport(reportId, action = 'dismiss') {
     if (mutating?.value) return
     return {
       show: true,
@@ -223,7 +223,7 @@ export function useAdminReports({ error, mutating } = {}) {
     }
   }
 
-  async function resolveUserReport(reportId, action = 'dismiss') {
+  function resolveUserReport(reportId, action = 'dismiss') {
     if (mutating?.value) return
     return {
       show: true,
@@ -277,7 +277,7 @@ export function useAdminReports({ error, mutating } = {}) {
     }
   }
 
-  async function resolveReport(requestId) {
+  function resolveReport(requestId) {
     if (mutating?.value) return
     return {
       show: true,
