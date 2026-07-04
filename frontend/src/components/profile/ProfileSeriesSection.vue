@@ -45,6 +45,16 @@ function truncate(text, max) {
 function goToSeries(id) {
   router.push(`/series/${id}`)
 }
+
+function getSeriesCover(s) {
+  if (s.coverImage) return s.coverImage
+  const artworks = s.artworks
+  if (Array.isArray(artworks) && artworks.length > 0) {
+    const imgs = artworks[0].images
+    if (Array.isArray(imgs) && imgs.length > 0) return imgs[0]
+  }
+  return ''
+}
 </script>
 
 <template>
@@ -85,8 +95,8 @@ function goToSeries(id) {
             <!-- Cover -->
             <div class="series-card-cover">
               <img
-                v-if="s.coverImage"
-                :src="s.coverImage"
+                v-if="getSeriesCover(s)"
+                :src="getSeriesCover(s)"
                 :alt="s.title"
                 loading="lazy"
               />

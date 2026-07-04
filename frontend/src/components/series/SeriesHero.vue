@@ -1,6 +1,19 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   series: { type: Object, required: true },
+})
+
+const coverUrl = computed(() => {
+  const s = props.series
+  if (s.coverImage) return s.coverImage
+  const artworks = s.artworks
+  if (Array.isArray(artworks) && artworks.length > 0) {
+    const imgs = artworks[0].images
+    if (Array.isArray(imgs) && imgs.length > 0) return imgs[0]
+  }
+  return ''
 })
 
 function formatDate(dateStr) {
@@ -23,8 +36,8 @@ function getSeriesIcon(type) {
   <div class="series-hero">
     <div class="series-hero-cover">
       <img
-        v-if="series.coverImage"
-        :src="series.coverImage"
+        v-if="coverUrl"
+        :src="coverUrl"
         :alt="series.title"
       />
       <div v-else class="series-hero-nothumb">
