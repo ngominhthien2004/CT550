@@ -5,7 +5,7 @@ import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import {
   AdminOverviewCards, AdminSectionTabs,
   AdminUserManagementPanel,
-  AdminReportReviewPanel, AdminTagManagementPanel,
+  AdminTagManagementPanel,
   AdminAISettingsPanel,
   AdminReportPanel, AdminHiddenArtworksPanel,
   AdminConfirmModal, AdminPromptModal,
@@ -48,8 +48,6 @@ const {
   loadCommentReports, resolveCommentReport, goToCommentReportPage,
   userReports, loadingUserReports, userReportPagination, userReportStatusFilter,
   loadUserReports, resolveUserReport, goToUserReportPage,
-  reports, loadingReports, reportPagination,
-  loadReports, resolveReport, goToReportPage,
 } = useAdminReports({ error, mutating })
 const {
   tagQuery, tags, tagPanelFiltersOpen, tagPagination, loadingTags,
@@ -77,7 +75,7 @@ watch(() => route.query, (query) => {
   if (query.tab && adminTabs.some(t => t.id === query.tab)) {
     activeTab.value = query.tab
   }
-  if (query.type && ['artwork', 'comment', 'user', 'request', 'hidden'].includes(query.type)) {
+  if (query.type && ['artwork', 'comment', 'user', 'hidden'].includes(query.type)) {
     activeReportTab.value = query.type
   }
 }, { immediate: true })
@@ -111,11 +109,6 @@ function handleResolveCommentReport(reportId, action) {
 function handleResolveUserReport(reportId, action) {
   const config = resolveUserReport(reportId, action)
   if (config) showPrompt(config)
-}
-
-function handleResolveReport(requestId) {
-  const config = resolveReport(requestId)
-  if (config) showConfirm(config)
 }
 
 // --- UI utilities ---
@@ -186,7 +179,6 @@ onMounted(async () => {
         <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'artwork' }" @click="activeReportTab = 'artwork'">Artwork</button>
         <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'comment' }" @click="activeReportTab = 'comment'">Comment</button>
         <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'user' }" @click="activeReportTab = 'user'">User</button>
-        <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'request' }" @click="activeReportTab = 'request'">Request</button>
         <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'hidden' }" @click="activeReportTab = 'hidden'">Hidden</button>
       </div>
 
@@ -264,18 +256,6 @@ onMounted(async () => {
         @resolve-report="handleResolveUserReport"
         @go-page="goToUserReportPage"
         @update:report-status-filter="userReportStatusFilter = $event; loadUserReports(1)"
-      />
-
-      <AdminReportReviewPanel
-        v-if="activeTab === 'reports'"
-        :active-tab="activeReportTab"
-        :loading-reports="loadingReports"
-        :mutating="mutating"
-        :reports="reports"
-        :report-pagination="reportPagination"
-        :format-date="formatDate"
-        @resolve-report="handleResolveReport"
-        @go-page="goToReportPage"
       />
 
       <AdminTagManagementPanel

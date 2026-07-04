@@ -152,7 +152,7 @@ export function useAdminReports({ error, mutating } = {}) {
       const params = { limit: 20, page: nextPage }
       if (commentReportStatusFilter.value) params.status = commentReportStatusFilter.value
       const { data } = await reportApi.getReportedComments(params)
-      commentReports.value = data?.comments || []
+      commentReports.value = data?.reports || []
       commentReportPagination.value = {
         page: data?.page || nextPage,
         pages: data?.pages || 1,
