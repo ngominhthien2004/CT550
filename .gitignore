@@ -47,3 +47,6 @@ frontend/playwright_check.spec.js
 
 # Screenshots (local-only artifacts)
 docs/screenshots/
+
+# MCP config (contains credentials)
+opencode.json

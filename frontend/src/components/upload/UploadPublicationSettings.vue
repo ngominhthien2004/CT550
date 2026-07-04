@@ -20,56 +20,56 @@ const props = defineProps({
     <!-- Visible to Row -->
     <div class="settings-row-card">
       <div class="row-left">
-        <span class="required-badge">Required</span>
-        <span class="row-label required-label">Visible to</span>
+        <span class="required-badge">{{ $t('upload.required') }}</span>
+        <span class="row-label required-label">{{ $t('upload.visibleTo') }}</span>
       </div>
       <div class="row-center">
-        <div class="options-group" role="radiogroup" aria-label="Visible to age setting">
+        <div class="options-group" role="radiogroup" :aria-label="$t('upload.visibleTo')">
           <label class="custom-radio">
-            <input v-model="props.form.ageRating" type="radio" name="ageRating" value="all" aria-label="Age rating: all ages" />
+            <input v-model="props.form.ageRating" type="radio" name="ageRating" value="all" :aria-label="$t('upload.allAges')" />
             <span class="radio-indicator"></span>
-            <span class="radio-label">All ages</span>
+            <span class="radio-label">{{ $t('upload.allAges') }}</span>
           </label>
           <label class="custom-radio">
-            <input v-model="props.form.ageRating" type="radio" name="ageRating" value="r-18" aria-label="Age rating: R-18" />
+            <input v-model="props.form.ageRating" type="radio" name="ageRating" value="r-18" :aria-label="$t('upload.r18')" />
             <span class="radio-indicator"></span>
-            <span class="radio-label">R-18</span>
+            <span class="radio-label">{{ $t('upload.r18') }}</span>
           </label>
         </div>
       </div>
       <div class="row-right">
-        <a href="#" class="row-link" @click.prevent>What are age restrictions?</a>
+        <a href="#" class="row-link" @click.prevent>{{ $t('upload.whatAgeRestrictions') }}</a>
       </div>
     </div>
 
     <!-- AI-generated work Row -->
     <div class="settings-row-card">
       <div class="row-left">
-        <span class="required-badge">Required</span>
-        <span class="row-label required-label">AI-generated work</span>
+        <span class="required-badge">{{ $t('upload.required') }}</span>
+        <span class="row-label required-label">{{ $t('upload.aiGenerated') }}</span>
       </div>
       <div class="row-center">
         <div class="d-flex flex-column gap-1">
-          <div class="options-group" role="radiogroup" aria-label="AI generated setting">
+          <div class="options-group" role="radiogroup" :aria-label="$t('upload.aiGenerated')">
             <label class="custom-radio">
-            <input v-model="props.form.aiGenerated" type="radio" name="aiGenerated" value="yes" aria-label="AI-generated: yes" />
+            <input v-model="props.form.aiGenerated" type="radio" name="aiGenerated" value="yes" :aria-label="$t('upload.yes')" />
             <span class="radio-indicator"></span>
-            <span class="radio-label">Yes</span>
+            <span class="radio-label">{{ $t('upload.yes') }}</span>
           </label>
           <label class="custom-radio">
-            <input v-model="props.form.aiGenerated" type="radio" name="aiGenerated" value="no" aria-label="AI-generated: no" />
+            <input v-model="props.form.aiGenerated" type="radio" name="aiGenerated" value="no" :aria-label="$t('upload.no')" />
               <span class="radio-indicator"></span>
-              <span class="radio-label">No</span>
+              <span class="radio-label">{{ $t('upload.no') }}</span>
             </label>
           </div>
           <!-- Automatically enabled red text below Yes No -->
           <p v-if="props.showAiWarning && props.form.aiGenerated === 'yes'" class="auto-enabled-text mb-0" role="alert">
-            Được bật tự động
+            {{ $t('upload.autoEnabled') }}
           </p>
         </div>
       </div>
       <div class="row-right">
-        <a href="#" class="row-link" @click.prevent>What is AI-generated work?</a>
+        <a href="#" class="row-link" @click.prevent>{{ $t('upload.whatAiGenerated') }}</a>
       </div>
     </div>
 
@@ -78,19 +78,19 @@ const props = defineProps({
     <div class="settings-row-card">
       <div class="row-left">
         <span class="placeholder-badge"></span>
-        <span class="row-label">Comments</span>
+        <span class="row-label">{{ $t('upload.comments') }}</span>
       </div>
       <div class="row-center">
-        <div class="options-group" role="radiogroup" aria-label="Comments setting">
+        <div class="options-group" role="radiogroup" :aria-label="$t('upload.comments')">
           <label class="custom-radio">
-            <input v-model="props.form.comments" type="radio" name="comments" value="on" aria-label="Comments: on" />
+            <input v-model="props.form.comments" type="radio" name="comments" value="on" :aria-label="$t('upload.on')" />
             <span class="radio-indicator"></span>
-            <span class="radio-label">ON</span>
+            <span class="radio-label">{{ $t('upload.on') }}</span>
           </label>
           <label class="custom-radio">
-            <input v-model="props.form.comments" type="radio" name="comments" value="off" aria-label="Comments: off" />
+            <input v-model="props.form.comments" type="radio" name="comments" value="off" :aria-label="$t('upload.off')" />
             <span class="radio-indicator"></span>
-            <span class="radio-label">OFF</span>
+            <span class="radio-label">{{ $t('upload.off') }}</span>
           </label>
         </div>
       </div>
@@ -101,17 +101,17 @@ const props = defineProps({
     <div class="settings-row-card">
       <div class="row-left">
         <span class="placeholder-badge"></span>
-        <span class="row-label">Scheduled post</span>
+        <span class="row-label">{{ $t('upload.scheduledPost') }}</span>
       </div>
       <div class="row-center">
         <div class="d-grid gap-2">
           <label class="custom-checkbox">
-            <input v-model="props.form.scheduleEnabled" type="checkbox" aria-label="Schedule submission" />
+            <input v-model="props.form.scheduleEnabled" type="checkbox" :aria-label="$t('upload.scheduleSubmission')" />
             <span class="checkbox-indicator"></span>
-            <span class="checkbox-label">Schedule submission</span>
+            <span class="checkbox-label">{{ $t('upload.scheduleSubmission') }}</span>
           </label>
           <div class="d-flex flex-column flex-sm-row gap-2" :class="{ 'opacity-50': !props.form.scheduleEnabled }">
-            <input v-model="props.form.scheduleDate" type="date" class="form-control custom-input" :disabled="!props.form.scheduleEnabled" aria-label="Schedule date" />
+            <input v-model="props.form.scheduleDate" type="date" class="form-control custom-input" :disabled="!props.form.scheduleEnabled" :aria-label="$t('upload.scheduledPost')" />
             <input v-model="props.form.scheduleTime" type="time" class="form-control custom-input" :disabled="!props.form.scheduleEnabled" aria-label="Schedule time" />
           </div>
         </div>
@@ -122,7 +122,7 @@ const props = defineProps({
     <div v-if="props.isNovel" class="settings-row-card info-row">
       <div class="row-left"></div>
       <div class="row-center">
-        <p class="small text-secondary mb-0">Advanced settings for novel publication are applied from the same visibility and language options.</p>
+        <p class="small text-secondary mb-0">{{ $t('upload.novelPublicationNote') }}</p>
       </div>
       <div class="row-right"></div>
     </div>

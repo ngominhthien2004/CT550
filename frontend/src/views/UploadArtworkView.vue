@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { UploadTypeHero, UploadTagSelector, UploadContentDetails, UploadPublicationSettings } from '@/components/upload'
@@ -38,6 +39,7 @@ const route = useRoute()
 const router = useRouter()
 const artworkStore = useArtworkStore()
 const seriesStore = useSeriesStore()
+const { t } = useI18n()
 const createdSeries = ref(null)
 const isNavCollapsed = ref(true)
 const localError = ref('')
@@ -102,9 +104,7 @@ const showAiWarning = computed(() => {
   return aiDetection.value?.isAI === true && confidence >= aiThreshold.value
 })
 const aiWarningMessage = computed(() =>
-  showAiWarning.value
-    ? 'Chúng tôi đã bật "Yes" trong mục "AI-generated work" nếu bạn cho là nhầm lẫn có thể tắt thủ công'
-    : '',
+  showAiWarning.value ? t('upload.aiDetectionEnabled') : '',
 )
 
 watch(showAiWarning, (newValue) => {
@@ -149,7 +149,7 @@ function resetForm() {
 function handleFilesChange(targetKey, event) {
   const files = Array.from(event.target.files || [])
   if (files.length > maxArtworkImages) {
-    localError.value = `You can upload up to ${maxArtworkImages} images in one artwork.`
+    localError.value = t('upload.maxImagesError', { max: maxArtworkImages })
     event.target.value = ''
     return
   }
@@ -526,7 +526,7 @@ onBeforeUnmount(() => {
         :media-previews="mediaPreviewItems"
         :cover-previews="coverPreviewItems"
         :preview-url="previewUrl"
-        :preview-alt="form.title ? `Preview for ${form.title}` : 'Artwork preview'"
+        :preview-alt="form.title ? `Preview for ${form.title}` : $t('upload.coverPreview')"
         :ai-warning="aiWarningMessage"
         @media-change="handleFilesChange('images', $event)"
         @cover-change="handleFilesChange('coverImages', $event)"
@@ -573,9 +573,9 @@ onBeforeUnmount(() => {
         <div class="d-flex flex-wrap gap-2">
           <!-- Novel draft/preview buttons removed — see docs/future-features.md -->
           <button type="submit" class="btn btn-primary action-pill action-pill--post" :disabled="artworkStore.createLoading" :aria-busy="artworkStore.createLoading">
-            {{ artworkStore.createLoading ? 'Posting...' : 'Post' }}
+            {{ artworkStore.createLoading ? $t('upload.posting') : $t('upload.post') }}
           </button>
-          <button type="button" class="btn btn-outline-secondary action-pill action-pill--post" :disabled="artworkStore.createLoading" @click="resetForm">Reset</button>
+          <button type="button" class="btn btn-outline-secondary action-pill action-pill--post" :disabled="artworkStore.createLoading" @click="resetForm">{{ $t('upload.reset') }}</button>
         </div>
       </form>
     </section>

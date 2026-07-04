@@ -1,12 +1,14 @@
 <script setup>
 import { reactive, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../stores/auth.store'
 import AppSearchBar from '../components/layout/AppSearchBar.vue'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const form = reactive({
   email: '',
@@ -15,14 +17,14 @@ const form = reactive({
 
 const formError = ref('')
 const suspendedMessage = computed(() => route.query.reason === 'suspended'
-  ? 'Your account has been suspended. Please contact support for more information.'
+  ? t('auth.suspended')
   : '')
 
 async function submitLogin() {
   formError.value = ''
 
   if (!form.email.trim() || !form.password) {
-    formError.value = 'Please enter your email and password.'
+    formError.value = t('auth.missingFields')
     return
   }
 
@@ -34,7 +36,7 @@ async function submitLogin() {
     const redirectPath = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
     await router.push(redirectPath)
   } catch (_error) {
-    formError.value = authStore.error || 'Login failed.'
+    formError.value = authStore.error || t('auth.loginFailed')
   }
 }
 
@@ -57,7 +59,7 @@ function facebookLogin() {
     <article class="auth-card">
       <div class="brand-wrap">
         <router-link to="/" class="brand">IlluWrl</router-link>
-        <h1>Log in with an existing account</h1>
+        <h1>{{ $t('auth.loginTitle') }}</h1>
       </div>
 
       <div class="social-icons">
@@ -67,13 +69,13 @@ function facebookLogin() {
 
       <form class="d-grid gap-2" @submit.prevent="submitLogin">
         <label class="d-grid gap-1">
-          <span class="auth-label">Email</span>
-          <input v-model="form.email" type="email" class="form-control auth-control" placeholder="name@example.com" aria-label="Email" />
+          <span class="auth-label">{{ $t('auth.email') }}</span>
+          <input v-model="form.email" type="email" class="form-control auth-control" :placeholder="$t('auth.emailPlaceholder')" :aria-label="$t('auth.email')" />
         </label>
 
         <label class="d-grid gap-1">
-          <span class="auth-label">Password</span>
-          <input v-model="form.password" type="password" class="form-control auth-control" placeholder="Enter your password" aria-label="Password" />
+          <span class="auth-label">{{ $t('auth.password') }}</span>
+          <input v-model="form.password" type="password" class="form-control auth-control" :placeholder="$t('auth.passwordPlaceholder')" :aria-label="$t('auth.password')" />
         </label>
 
         <p v-if="suspendedMessage" class="text-warning mb-0" style="background: rgba(251, 191, 36, 0.1); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.3);">
@@ -83,13 +85,13 @@ function facebookLogin() {
         <p v-if="formError" class="text-danger mb-0">{{ formError }}</p>
 
         <button type="submit" class="btn btn-primary auth-submit" :disabled="authStore.loading">
-          {{ authStore.loading ? 'Logging in...' : 'Log in' }}
+          {{ authStore.loading ? $t('auth.loggingIn') : $t('auth.loginButton') }}
         </button>
       </form>
 
       <p class="switch-auth mb-0">
-        New here?
-        <router-link to="/signup">Create account</router-link>
+        {{ $t('auth.newHere') }}
+        <router-link to="/signup">{{ $t('auth.createAccount') }}</router-link>
       </p>
     </article>
   </section>

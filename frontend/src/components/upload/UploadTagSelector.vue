@@ -56,8 +56,8 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
     <!-- Top section: Required badge + Tags label | Input -->
     <div class="tag-main-row">
       <div class="row-left">
-        <span class="required-badge">Required</span>
-        <span class="row-label required-label">Tags</span>
+        <span class="required-badge">{{ $t('upload.required') }}</span>
+        <span class="row-label required-label">{{ $t('upload.tags') }}</span>
       </div>
       <div class="row-center">
         <div class="tag-input-wrap">
@@ -67,8 +67,8 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
               v-model="modelTagInput"
               type="text"
               class="tag-input-field"
-              placeholder="Tags"
-              aria-label="Tags input"
+              :placeholder="$t('upload.tags')"
+              :aria-label="$t('upload.tags')"
               :disabled="!modelAllowTagEdit"
               @keydown="emit('input-keydown', $event)"
             />
@@ -77,7 +77,7 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
 
           <!-- Suggestions dropdown -->
           <div v-if="showSuggestionPanel" class="tag-suggestion-panel" role="listbox" aria-label="Tag suggestions">
-            <p v-if="props.suggestionLoading" class="small text-secondary mb-0">Loading suggestions...</p>
+            <p v-if="props.suggestionLoading" class="small text-secondary mb-0">{{ $t('upload.loadingSuggestions') }}</p>
             <template v-else>
               <button
                 v-for="suggestion in props.suggestions"
@@ -87,10 +87,10 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
                 @click="emit('select-suggestion', suggestion.name)"
               >
                 <span class="tag-name">#{{ suggestion.name }}</span>
-                <span class="tag-count">{{ suggestion.usageCount || 0 }} results</span>
+                <span class="tag-count">{{ $t('upload.results', { count: suggestion.usageCount || 0 }) }}</span>
               </button>
               <p v-if="props.suggestions.length === 0" class="small text-secondary mb-0">
-                No matching tag. Press Space/Enter to create new tag.
+                {{ $t('upload.noMatchingTag') }}
               </p>
             </template>
           </div>
@@ -105,7 +105,7 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
       </div>
       <div class="row-center">
         <div class="recommended-tags-inline">
-          <span class="recommended-label">Recommended tags</span>
+          <span class="recommended-label">{{ $t('upload.recommendedTags') }}</span>
           <button type="button" class="recommend-chip" @click="emit('select-suggestion', 'Boy')">#Boy</button>
           <button type="button" class="recommend-chip" @click="emit('select-suggestion', 'Cat')">#Cat</button>
         </div>
@@ -144,9 +144,9 @@ const showSuggestionPanel = computed(() => modelTagInput.value.trim().length > 0
       </div>
       <div class="row-center">
         <label class="custom-checkbox">
-          <input v-model="modelAllowTagEdit" type="checkbox" aria-label="Don't allow other users to edit tags" />
+          <input v-model="modelAllowTagEdit" type="checkbox" :aria-label="$t('upload.noEditTags')" />
           <span class="checkbox-indicator"></span>
-          <span class="checkbox-label">Don't allow other users to edit tags</span>
+          <span class="checkbox-label">{{ $t('upload.noEditTags') }}</span>
         </label>
       </div>
     </div>

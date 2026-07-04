@@ -147,7 +147,7 @@ function insertEmoji(emoji) {
   border-top: 1px solid var(--line);
   background: var(--surface);
   position: relative;
-  z-index: 1060;
+  z-index: 10;
 }
 
 .compose-input-wrapper {

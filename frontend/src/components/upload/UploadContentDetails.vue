@@ -49,7 +49,7 @@ const emit = defineEmits(['create-series'])
           :maxlength="props.titleMax"
           required
           aria-required="true"
-          placeholder="Title"
+          :placeholder="$t('upload.titlePlaceholder')"
           aria-label="Title"
         />
         <span class="counter-badge">{{ props.titleCount }}/{{ props.titleMax }}</span>
@@ -62,7 +62,7 @@ const emit = defineEmits(['create-series'])
           class="caption-textarea-field"
           rows="5"
           maxlength="3000"
-          placeholder="Caption"
+          :placeholder="$t('upload.captionPlaceholder')"
           aria-label="Caption"
         ></textarea>
         <span class="counter-badge bottom-right">{{ props.captionCount }}/3000</span>
@@ -73,12 +73,12 @@ const emit = defineEmits(['create-series'])
     <div v-if="props.isManga" class="additional-settings-card">
       <div class="row-left">
         <span class="placeholder-badge"></span>
-        <span class="row-label">Series</span>
+        <span class="row-label">{{ $t('upload.series') }}</span>
       </div>
       <div class="row-center">
         <div class="row-inline">
-          <input v-model="props.form.mangaSeriesName" type="text" class="form-control custom-input" placeholder="Series name" aria-label="Series name" />
-          <button type="button" class="btn btn-primary action-pill action-pill--post" @click="emit('create-series')">Create series</button>
+          <input v-model="props.form.mangaSeriesName" type="text" class="form-control custom-input" :placeholder="$t('upload.seriesName')" aria-label="Series name" />
+          <button type="button" class="btn btn-primary action-pill action-pill--post" @click="emit('create-series')">{{ $t('upload.createSeries') }}</button>
         </div>
       </div>
     </div>
@@ -87,7 +87,7 @@ const emit = defineEmits(['create-series'])
     <div v-if="props.isNovel" class="additional-settings-card vertical-layout">
       <div class="row-top">
         <span class="placeholder-badge"></span>
-        <label for="upload-novel-text" class="row-label">Main novel text</label>
+        <label for="upload-novel-text" class="row-label">{{ $t('upload.mainNovelText') }}</label>
       </div>
       <div class="row-bottom">
         <div class="input-with-count position-relative">
@@ -97,7 +97,7 @@ const emit = defineEmits(['create-series'])
             class="form-control custom-textarea text-area-large"
             rows="10"
             maxlength="300000"
-            placeholder="Write your novel here."
+            :placeholder="$t('upload.writeNovelHere')"
             aria-label="Novel text"
           ></textarea>
           <span class="counter-badge bottom-right-textarea">{{ props.novelTextCount }}/300000</span>

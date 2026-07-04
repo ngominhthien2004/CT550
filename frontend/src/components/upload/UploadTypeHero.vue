@@ -69,18 +69,18 @@ function handleCoverFilesChange(event) {
 
 <template>
   <header class="upload-hero">
-    <h1 class="upload-title">Post {{ props.currentMeta.title }}</h1>
+    <h1 class="upload-title">{{ $t('upload.pageTitle') }} {{ props.currentMeta.title }}</h1>
     <p class="upload-subtitle mb-0">{{ props.currentMeta.hero }}</p>
 
-    <nav class="type-tabs" aria-label="Upload type tabs">
-      <router-link to="/upload/illust" class="type-tab" :class="{ active: props.currentKind === 'illust' }">Illustrations</router-link>
-      <router-link to="/upload/gif" class="type-tab" :class="{ active: props.currentKind === 'gif' }">GIF (animation)</router-link>
-      <router-link to="/upload/manga" class="type-tab" :class="{ active: props.currentKind === 'manga' }">Manga</router-link>
-      <router-link to="/upload/novel" class="type-tab" :class="{ active: props.currentKind === 'novel' }">Novels</router-link>
+    <nav class="type-tabs" :aria-label="$t('upload.pageTitle')">
+      <router-link to="/upload/illust" class="type-tab" :class="{ active: props.currentKind === 'illust' }">{{ $t('nav.illustrations') }}</router-link>
+      <router-link to="/upload/gif" class="type-tab" :class="{ active: props.currentKind === 'gif' }">{{ $t('nav.gif') }}</router-link>
+      <router-link to="/upload/manga" class="type-tab" :class="{ active: props.currentKind === 'manga' }">{{ $t('nav.manga') }}</router-link>
+      <router-link to="/upload/novel" class="type-tab" :class="{ active: props.currentKind === 'novel' }">{{ $t('nav.novels') }}</router-link>
     </nav>
 
     <div v-if="props.isMediaPage" class="upload-dropzone">
-      <label for="upload-media" class="form-label text-light mb-2">Upload image or GIF files</label>
+      <label for="upload-media" class="form-label text-light mb-2">{{ $t('upload.uploadImagesGif') }}</label>
       <input
         id="upload-media"
         type="file"
@@ -92,13 +92,13 @@ function handleCoverFilesChange(event) {
         aria-label="Upload media files"
       />
       <p id="upload-media-help" class="small text-light-emphasis mt-2 mb-0" aria-live="polite">
-        {{ props.mediaCount }} file(s) selected for one artwork. Up to {{ props.maxMediaFiles }} images.
+        {{ $t('upload.mediaCount', { count: props.mediaCount, max: props.maxMediaFiles }) }}
       </p>
     </div>
 
     <div v-if="props.isMediaPage && props.mediaPreviews.length" class="upload-preview">
       <div class="preview-heading">
-        <span>Artwork pages</span>
+        <span>{{ $t('upload.artworkPages') }}</span>
         <strong>{{ props.mediaPreviews.length }}</strong>
       </div>
       <div class="page-preview-grid" aria-label="Selected artwork pages">
@@ -115,7 +115,7 @@ function handleCoverFilesChange(event) {
 
     <div v-if="props.isNovel" class="cover-upload-row">
       <div class="cover-upload-input">
-        <label for="upload-cover" class="form-label text-light mb-2">Cover image (required)</label>
+        <label for="upload-cover" class="form-label text-light mb-2">{{ $t('upload.uploadCover') }}</label>
         <input
           id="upload-cover"
           type="file"
@@ -126,11 +126,11 @@ function handleCoverFilesChange(event) {
           @change="handleCoverFilesChange"
           aria-label="Upload cover image"
         />
-        <p id="upload-cover-help" class="small text-light-emphasis mt-2 mb-0" aria-live="polite">{{ props.coverCount }} cover file(s) selected</p>
+        <p id="upload-cover-help" class="small text-light-emphasis mt-2 mb-0" aria-live="polite">{{ $t('upload.fileCount', { count: props.coverCount }) }}</p>
       </div>
-      <div class="cover-preview-box" role="img" :aria-label="props.previewUrl ? 'Cover preview' : 'Cover preview placeholder'">
+      <div class="cover-preview-box" role="img" :aria-label="props.previewUrl ? $t('upload.coverPreview') : $t('upload.coverPreviewPlaceholder')">
         <img v-if="props.previewUrl" :src="props.previewUrl" :alt="props.previewAlt" class="cover-preview-image" />
-        <span v-else>Cover Preview</span>
+        <span v-else>{{ $t('upload.coverPreview') }}</span>
       </div>
     </div>
     <p v-if="props.isNovel && props.previewUrl && props.aiWarning" class="ai-warning ai-warning--spaced" role="alert">{{ props.aiWarning }}</p>

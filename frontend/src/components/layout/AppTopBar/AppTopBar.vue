@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import SearchOptionsModal from '../../search/SearchOptionsModal.vue'
 import { useAuthStore } from '../../../stores/auth.store'
 import { useFollowStore } from '../../../stores/follow.store'
@@ -26,9 +27,11 @@ const props = defineProps({
   },
   searchPlaceholder: {
     type: String,
-    default: 'Search by title, tag, or artist',
+    default: '',
   },
 })
+
+const { t } = useI18n()
 
 const emit = defineEmits(['toggle-sidebar'])
 const router = useRouter()
@@ -46,6 +49,14 @@ const searchOptionsDraft = ref({
   type: 'illust',
 })
 
+const searchScopeKeys = {
+  illust: 'nav.illustrations',
+  manga: 'nav.manga',
+  gif: 'nav.gif',
+  novel: 'nav.novels',
+  user: 'search.accounts',
+}
+
 const searchScopes = [
   { key: 'illust', label: 'Illustrations', icon: 'fa-regular fa-image', queryType: 'illust' },
   { key: 'manga', label: 'Manga', icon: '/manga-icon.png', queryType: 'manga' },
@@ -54,12 +65,16 @@ const searchScopes = [
   { key: 'user', label: 'User', icon: 'fa-regular fa-user', queryType: 'user' },
 ]
 
+const translatedSearchScopes = computed(() =>
+  searchScopes.map(s => ({ ...s, label: t(searchScopeKeys[s.key] || 'common.unknown') }))
+)
+
 const serviceLinks = computed(() => {
   return [
     {
       key: 'draw',
-      label: 'Vẽ tranh',
-      description: 'Create digital drawings and sketches',
+      label: t('nav.drawing'),
+      description: t('topbar.createDigitalDrawings'),
       to: '/draw',
       thumbnail: '/service-draw.png',
     },
@@ -68,30 +83,30 @@ const serviceLinks = computed(() => {
 
 const userMainLinks = computed(() => {
   const baseLinks = [
-    { label: 'Dashboard', to: '/dashboard' },
-    { label: 'Manage requests', to: '/requests/manage' },
+    { label: t('nav.dashboard'), to: '/dashboard' },
+    { label: t('nav.requests'), to: '/requests/manage' },
   ]
 
-  const adminLink = currentUser.value?.role === 'admin' ? { label: 'Admin management', to: '/admin' } : null
+  const adminLink = currentUser.value?.role === 'admin' ? { label: t('nav.adminManagement'), to: '/admin' } : null
 
   return adminLink ? [adminLink, ...baseLinks] : baseLinks
 })
 
-const userLibraryLinks = [
-  { label: 'My Favorite', to: '/favorites' },
-  { label: 'Bookmarks', to: '/bookmarks' },
-  { label: 'Browsing history', to: '/history' },
-]
+const userLibraryLinks = computed(() => [
+  { label: t('nav.myFavorite'), to: '/favorites' },
+  { label: t('nav.bookmarks'), to: '/bookmarks' },
+  { label: t('nav.browsingHistory'), to: '/history' },
+])
 
-const userSettingLinks = [
-  { label: 'Settings', to: '/account' },
-]
+const userSettingLinks = computed(() => [
+  { label: t('common.settings'), to: '/account' },
+])
 
 const siteLabel = computed(() => props.siteName || 'IlluWrl')
 const currentUser = computed(() => authStore.user)
 const userId = computed(() => currentUser.value?._id || '')
 const userAvatar = computed(() => currentUser.value?.avatar || '')
-const userDisplayName = computed(() => currentUser.value?.username || 'User')
+const userDisplayName = computed(() => currentUser.value?.username || t('common.unknown'))
 const userStats = computed(() => ({
   following: followStore.followingCount,
   followers: followStore.followersCount,
@@ -244,7 +259,7 @@ async function loadNotificationPreview() {
     notificationUnreadCount.value = Number(data?.unreadCount || 0)
     notificationPreviewHasMore.value = notificationPreviewItems.value.length < (data?.total || 0)
   } catch (error) {
-    notificationPreviewError.value = error?.response?.data?.message || 'Failed to load notifications'
+    notificationPreviewError.value = error?.response?.data?.message || t('notification.loadFailed')
     notificationPreviewItems.value = []
   } finally {
     notificationPreviewLoading.value = false
@@ -267,7 +282,7 @@ async function loadMoreNotificationPreview() {
     notificationPreviewPage.value = nextPage
     notificationPreviewHasMore.value = notificationPreviewItems.value.length < (data?.total || 0)
   } catch (error) {
-    notificationPreviewError.value = error?.response?.data?.message || 'Failed to load more notifications'
+    notificationPreviewError.value = error?.response?.data?.message || t('notification.loadMoreFailed')
   } finally {
     notificationPreviewLoadingMore.value = false
   }
@@ -315,7 +330,7 @@ async function handleMarkAllNotificationsRead() {
     }))
     notificationUnreadCount.value = 0
   } catch (error) {
-    notificationPreviewError.value = error?.response?.data?.message || 'Failed to mark all as read'
+    notificationPreviewError.value = error?.response?.data?.message || t('notification.markAllReadFailed')
   }
 }
 
@@ -365,8 +380,8 @@ async function applySearchOptions(payload) {
       <router-link to="/" class="top-site-name">{{ props.siteName }}</router-link>
 
       <AppTopBarSearchControls
-        :search-placeholder="props.searchPlaceholder"
-        :search-scopes="searchScopes"
+        :search-placeholder="props.searchPlaceholder || $t('topbar.search')"
+        :search-scopes="translatedSearchScopes"
         :selected-search-scope="selectedSearchScope"
         @select-scope="chooseSearchScope"
         @open-search-options="openSearchOptions"
@@ -387,7 +402,7 @@ async function applySearchOptions(payload) {
         @toggle="handleMessageMenuToggle"
         @mark-read="handleMarkMessageRead"
       />
-      <router-link v-else to="/messages" class="icon-round" aria-label="Messages" title="Messages">
+      <router-link v-else to="/messages" class="icon-round" :aria-label="$t('topbar.messages')" :title="$t('topbar.messages')">
         <i class="fa-regular fa-envelope" aria-hidden="true"></i>
       </router-link>
 
@@ -405,7 +420,7 @@ async function applySearchOptions(payload) {
         @mark-all-read="handleMarkAllNotificationsRead"
         @load-more="loadMoreNotificationPreview"
       />
-      <router-link v-else to="/notifications" class="icon-round" aria-label="Notifications" title="Notifications">
+      <router-link v-else to="/notifications" class="icon-round" :aria-label="$t('topbar.notifications')" :title="$t('topbar.notifications')">
         <i class="fa-regular fa-bell" aria-hidden="true"></i>
       </router-link>
 
@@ -423,7 +438,7 @@ async function applySearchOptions(payload) {
         @toggle="handleUserMenuToggle"
       />
 
-      <router-link v-else to="/login" class="action-pill action-pill--auth" aria-label="Go to login" title="Go to login">Log in</router-link>
+      <router-link v-else to="/login" class="action-pill action-pill--auth" :aria-label="$t('topbar.logIn')">{{ $t('topbar.logIn') }}</router-link>
 
       <AppTopBarServicesMenu :site-label="siteLabel" :service-links="serviceLinks" />
     </div>

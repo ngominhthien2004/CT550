@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useTheme } from '../../../composables/useTheme'
+import LanguageSwitcher from '../../common/LanguageSwitcher.vue'
 
 const { isDark, toggle } = useTheme()
 
@@ -82,14 +83,14 @@ defineEmits(['logout', 'toggle'])
               class="user-stat-link"
               aria-label="View following"
             >
-              <strong>{{ props.userStats.following }}</strong> Following
+              <strong>{{ props.userStats.following }}</strong> {{ $t('profile.following') }}
             </router-link>
             <router-link
               :to="{ name: 'followers', params: { id: props.userId } }"
               class="user-stat-link"
               aria-label="View followers"
             >
-              <strong>{{ props.userStats.followers }}</strong> Followers
+              <strong>{{ props.userStats.followers }}</strong> {{ $t('profile.followers') }}
             </router-link>
           </div>
         </div>
@@ -119,10 +120,9 @@ defineEmits(['logout', 'toggle'])
         </router-link>
       </div>
 
-      <p class="menu-label" role="presentation">Language</p>
-      <button type="button" class="dd-item" role="menuitem">English</button>
+      <LanguageSwitcher />
       <button type="button" class="dd-item toggle-row" role="menuitem" aria-label="Toggle dark theme" @click="toggle">
-        Dark Theme
+        {{ $t('topbar.darkTheme') }}
         <span class="switch" :class="{ active: isDark }" aria-hidden="true">
           <span class="switch-knob"></span>
         </span>
@@ -140,7 +140,7 @@ defineEmits(['logout', 'toggle'])
         </router-link>
       </div>
 
-      <button type="button" class="dd-item dd-item--danger" role="menuitem" @click="$emit('logout')">Log out</button>
+      <button type="button" class="dd-item dd-item--danger" role="menuitem" @click="$emit('logout')">{{ $t('topbar.logOut') }}</button>
     </div>
   </details>
 </template>

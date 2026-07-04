@@ -66,41 +66,44 @@ function onAvatarError(e) {
 
 const illuWrlStyleSections = computed(() => {
   const manageGroup = [
-    { id: 'dashboard', label: 'Dashboard', to: '/dashboard', icon: 'fa-solid fa-gauge-high' },
-    { id: 'requests', label: 'Requests', to: '/requests/manage', icon: 'fa-regular fa-comments' },
-    { id: 'history', label: 'Browsing history', to: '/history', icon: 'fa-regular fa-clock' },
-    { id: 'my-reports', label: 'My Reports', to: '/my-reports', icon: 'fa-regular fa-flag' },
+    { id: 'dashboard', label: 'Dashboard', i18nKey: 'nav.dashboard', to: '/dashboard', icon: 'fa-solid fa-gauge-high' },
+    { id: 'requests', label: 'Requests', i18nKey: 'nav.requests', to: '/requests/manage', icon: 'fa-regular fa-comments' },
+    { id: 'history', label: 'Browsing history', i18nKey: 'nav.browsingHistory', to: '/history', icon: 'fa-regular fa-clock' },
+    { id: 'my-reports', label: 'My Reports', i18nKey: 'nav.myReports', to: '/my-reports', icon: 'fa-regular fa-flag' },
     ...(authStore.user?.role === 'admin'
-      ? [{ id: 'admin', label: 'Admin management', to: '/admin', icon: 'fa-solid fa-shield-halved' }]
+      ? [{ id: 'admin', label: 'Admin management', i18nKey: 'nav.adminManagement', to: '/admin', icon: 'fa-solid fa-shield-halved' }]
       : []),
   ]
 
   return [
-    { label: '', items: navItems.slice(0, 1) },
+    { label: '', i18nKey: '', items: navItems.slice(0, 1) },
     {
       label: 'Content',
+      i18nKey: 'nav.groupContent',
       items: [
-        { id: 'illust', label: 'Illustrations', to: '/illustrations', icon: 'fa-regular fa-image' },
-        { id: 'manga', label: 'Manga', to: '/manga', icon: '/manga-icon.png' },
-        { id: 'gif', label: 'GIF', to: '/gifs', icon: 'fa-solid fa-film' },
-        { id: 'novels', label: 'Novels', to: '/novels', icon: 'fa-regular fa-rectangle-list' },
-        { id: 'plans', label: 'Plans', to: '/plans', icon: 'fa-regular fa-clipboard' },
+        { id: 'illust', label: 'Illustrations', i18nKey: 'nav.illustrations', to: '/illustrations', icon: 'fa-regular fa-image' },
+        { id: 'manga', label: 'Manga', i18nKey: 'nav.manga', to: '/manga', icon: '/manga-icon.png' },
+        { id: 'gif', label: 'GIF', i18nKey: 'nav.gif', to: '/gifs', icon: 'fa-solid fa-film' },
+        { id: 'novels', label: 'Novels', i18nKey: 'nav.novels', to: '/novels', icon: 'fa-regular fa-rectangle-list' },
+        { id: 'plans', label: 'Plans', i18nKey: 'nav.plans', to: '/plans', icon: 'fa-regular fa-clipboard' },
       ],
     },
     {
       label: 'Explore',
+      i18nKey: 'nav.groupExplore',
       items: [
-        { id: 'following', label: 'Following', to: '/newest_by_followed', icon: 'fa-solid fa-users' },
-        { id: 'discovery', label: 'Discovery', to: '/discovery', icon: 'fa-regular fa-compass' },
-        { id: 'rankings', label: 'Rankings', to: '/rankings', icon: 'fa-solid fa-chart-line' },
-        { id: 'favorites', label: 'My Favorite', to: '/favorites', icon: 'fa-regular fa-heart' },
-        { id: 'bookmarks', label: 'Bookmarks', to: '/bookmarks', icon: 'fa-regular fa-bookmark' },
+        { id: 'following', label: 'Following', i18nKey: 'nav.following', to: '/newest_by_followed', icon: 'fa-solid fa-users' },
+        { id: 'discovery', label: 'Discovery', i18nKey: 'nav.discovery', to: '/discovery', icon: 'fa-regular fa-compass' },
+        { id: 'rankings', label: 'Rankings', i18nKey: 'nav.rankings', to: '/rankings', icon: 'fa-solid fa-chart-line' },
+        { id: 'favorites', label: 'My Favorite', i18nKey: 'nav.myFavorite', to: '/favorites', icon: 'fa-regular fa-heart' },
+        { id: 'bookmarks', label: 'Bookmarks', i18nKey: 'nav.bookmarks', to: '/bookmarks', icon: 'fa-regular fa-bookmark' },
       ],
     },
     {
       label: 'Utilities',
+      i18nKey: 'nav.groupUtilities',
       items: [
-        { id: 'draw', label: 'Drawing', to: '/draw', icon: 'fa-solid fa-pen-nib' },
+        { id: 'draw', label: 'Drawing', i18nKey: 'nav.drawing', to: '/draw', icon: 'fa-solid fa-pen-nib' },
       ],
     },
   ]
@@ -134,7 +137,7 @@ const illuWrlStyleSections = computed(() => {
             @keydown.enter="toggleGroup(groupIndex)"
             @keydown.space.prevent="toggleGroup(groupIndex)"
           >
-            <span class="nav-group-label">{{ group.label }}</span>
+            <span class="nav-group-label">{{ $t(group.i18nKey) }}</span>
             <i
               class="fa-solid fa-chevron-down nav-group-chevron"
               :class="{ collapsed: !groupExpandedState[groupIndex] }"
@@ -150,18 +153,18 @@ const illuWrlStyleSections = computed(() => {
               :key="item.id"
               :to="item.to"
               class="nav-link-item"
-              :title="sidebarCompact ? item.label : undefined"
+              :title="sidebarCompact ? $t(item.i18nKey) : undefined"
             >
               <img v-if="item.icon.startsWith('/')" :src="item.icon" class="nav-item-icon-img" alt="" aria-hidden="true" />
               <i v-else :class="item.icon" aria-hidden="true"></i>
-              <span class="nav-item-label">{{ item.label }}</span>
+              <span class="nav-item-label">{{ $t(item.i18nKey) }}</span>
             </router-link>
           </div>
         </li>
       </ul>
     </nav>
 
-    <router-link v-if="!authStore.user" to="/login" class="nav-ghost">Log in to explore more</router-link>
+    <router-link v-if="!authStore.user" to="/login" class="nav-ghost">{{ $t('nav.logInToExplore') }}</router-link>
 
     <div v-if="authStore.user" class="sidebar-user">
       <router-link to="/account" class="sidebar-user-link" :title="sidebarCompact ? authStore.user.displayName || authStore.user.username : undefined">
@@ -171,7 +174,7 @@ const illuWrlStyleSections = computed(() => {
           <span class="sidebar-user-id">@{{ authStore.user.username }}</span>
         </div>
       </router-link>
-      <button type="button" class="sidebar-logout-btn" @click="logout" title="Log out">
+      <button type="button" class="sidebar-logout-btn" @click="logout" :title="$t('nav.logOut')">
         <i class="fa-solid fa-right-from-bracket"></i>
       </button>
     </div>
