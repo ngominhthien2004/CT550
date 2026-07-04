@@ -1,6 +1,5 @@
 const Banner = require('../models/Banner');
-const fs = require('fs');
-const path = require('path');
+const cloudinary = require('cloudinary').v2;
 
 // @desc    Get active banners (public)
 // @route   GET /api/banners
@@ -49,7 +48,11 @@ const createBanner = async (req, res, next) => {
 
     // If an image file was uploaded
     if (req.file) {
-      bannerData.image = '/uploads/banners/' + req.file.filename;
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'illuwrl-banners',
+        resource_type: 'image',
+      });
+      bannerData.image = result.secure_url;
     } else {
       res.status(400);
       return next(new Error('Banner image is required'));
@@ -82,16 +85,11 @@ const updateBanner = async (req, res, next) => {
 
     // If a new image was uploaded, replace the old one
     if (req.file) {
-      // Delete old image if it exists and is in our uploads directory
-      if (banner.image && banner.image.startsWith('/uploads/')) {
-        const oldPath = path.join(__dirname, '..', 'public', banner.image.replace('/uploads/', 'uploads/'));
-        try {
-          if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-        } catch (e) {
-          // Ignore deletion errors
-        }
-      }
-      banner.image = '/uploads/banners/' + req.file.filename;
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'illuwrl-banners',
+        resource_type: 'image',
+      });
+      banner.image = result.secure_url;
     }
 
     const updated = await banner.save();
