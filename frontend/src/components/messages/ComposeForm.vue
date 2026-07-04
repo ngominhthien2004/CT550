@@ -102,9 +102,10 @@ function insertEmoji(emoji) {
             type="button"
             class="emoji-tab-btn"
             :class="{ active: activeEmojiTab === index }"
+            :title="cat.name"
             @click="activeEmojiTab = index"
           >
-            {{ cat.name }}
+            <span class="emoji-tab-icon">{{ cat.icon }}</span>
           </button>
         </div>
         <div class="emoji-drawer-list">
@@ -262,24 +263,31 @@ function insertEmoji(emoji) {
 .emoji-tab-btn {
   border: none;
   background: transparent;
-  padding: 0.4rem 0.75rem;
+  padding: 0.4rem 0.65rem;
   border-radius: 8px;
-  font-size: 0.78rem;
+  font-size: 1.1rem;
   cursor: pointer;
   white-space: nowrap;
   color: var(--muted);
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, transform 0.12s;
+  display: grid;
+  place-items: center;
+  min-width: 36px;
+  min-height: 32px;
 }
 
 .emoji-tab-btn:hover {
   background: var(--surface-alt);
-  color: var(--text);
+  transform: scale(1.1);
 }
 
 .emoji-tab-btn.active {
   background: rgba(99, 102, 241, 0.15);
-  color: var(--accent);
-  font-weight: 600;
+  transform: scale(1.1);
+}
+
+.emoji-tab-icon {
+  line-height: 1;
 }
 
 .emoji-drawer-list {
