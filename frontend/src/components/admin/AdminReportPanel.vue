@@ -160,13 +160,13 @@ function onStatusFilterChange(value) {
                 <button type="button"
                   class="btn btn-sm btn-outline-danger"
                   :disabled="mutating"
-                  @click="emit('resolve-report', report._id, 'resolved')"
+                  @click="emit('resolve-report', report._id, 'delete')"
                   title="Delete comment and resolve report"
                 >Resolve</button>
                 <button type="button"
                   class="btn btn-sm btn-outline-secondary"
                   :disabled="mutating"
-                  @click="emit('resolve-report', report._id, 'dismissed')"
+                  @click="emit('resolve-report', report._id, 'dismiss')"
                   title="Dismiss report"
                 >Dismiss</button>
               </template>
@@ -182,7 +182,7 @@ function onStatusFilterChange(value) {
                 <button type="button"
                   class="btn btn-sm btn-outline-danger"
                   :disabled="mutating"
-                  @click="emit('resolve-report', report._id, 'suspend')"
+                  @click="emit('resolve-report', report._id, 'ban')"
                   title="Suspend the reported user"
                 >Suspend</button>
                 <button type="button"
