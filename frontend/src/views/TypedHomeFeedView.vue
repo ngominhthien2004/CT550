@@ -210,7 +210,7 @@ watch(
         </div>
 
         <HomeTagStrip :tags="liveTags" />
-        <HomeHeroBanner :slide="heroSlide" :banner-link="bannerLink" />
+        <HomeHeroBanner :slide="heroSlide" :banner-link="bannerLink" :kicker-text="pageTitle" />
         <p v-if="isLoading" class="type-loading">Loading {{ pageTitle.toLowerCase() }}...</p>
         <HomeArtworkGrid :works="spotlightWorks" />
 
