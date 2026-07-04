@@ -117,15 +117,7 @@ const illuWrlStyleSections = computed(() => {
         <span class="brand-full">{{ siteName }}</span>
         <span class="brand-short">IW</span>
       </router-link>
-      <button
-        type="button"
-        class="compact-toggle"
-        :aria-label="sidebarCompact ? 'Expand sidebar' : 'Collapse to icons'"
-        :title="sidebarCompact ? 'Expand sidebar' : 'Collapse to icons'"
-        @click="$emit('toggle-compact')"
-      >
-        <i :class="sidebarCompact ? 'fa-solid fa-chevron-right' : 'fa-solid fa-chevron-left'" aria-hidden="true"></i>
-      </button>
+
     </div>
 
     <nav>
@@ -282,32 +274,6 @@ const illuWrlStyleSections = computed(() => {
   display: none;
 }
 
-.left-nav.icon-only .compact-toggle {
-  position: absolute;
-  right: -0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--muted);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.6rem;
-  z-index: 1;
-  transition: background 0.18s ease, color 0.18s ease;
-}
-
-.left-nav.icon-only .compact-toggle:hover {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-}
-
 .left-nav.icon-only .sidebar-user-link {
   justify-content: center;
   padding: 0.4rem 0;
@@ -370,28 +336,6 @@ const illuWrlStyleSections = computed(() => {
 
 .menu-toggle:hover {
   background: color-mix(in srgb, var(--accent) 10%, transparent);
-}
-
-.compact-toggle {
-  width: 2.1rem;
-  height: 2.1rem;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--muted);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  margin-left: auto;
-  transition: background 0.18s ease, color 0.18s ease;
-}
-
-.compact-toggle:hover {
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
-  color: var(--accent);
-  border-color: var(--accent);
 }
 
 .left-nav nav {
@@ -628,9 +572,6 @@ const illuWrlStyleSections = computed(() => {
     width: 62px;
   }
 
-  .left-nav.icon-only .compact-toggle {
-    display: none;
-  }
 }
 </style>
 
