@@ -38,10 +38,10 @@ watch(() => props.show, (val) => {
           />
         </div>
         <div class="modal-footer--row">
-          <button type="button" class="modal-btn modal-btn--secondary modal-btn--inline" @click="emit('cancel')">
+          <button type="button" class="action-pill" @click="emit('cancel')">
             {{ cancelLabel }}
           </button>
-          <button type="button" class="modal-btn modal-btn--accent modal-btn--inline" @click="emit('confirm', inputValue)">
+          <button type="button" class="action-pill action-pill--post" @click="emit('confirm', inputValue)">
             {{ confirmLabel }}
           </button>
         </div>
@@ -51,6 +51,8 @@ watch(() => props.show, (val) => {
 </template>
 
 <style scoped>
+@import '@/assets/styles/modal.css';
+
 .admin-prompt-message {
   margin: 0 0 0.75rem;
   color: var(--muted);

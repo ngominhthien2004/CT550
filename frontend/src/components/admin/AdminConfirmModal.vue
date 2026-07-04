@@ -23,10 +23,10 @@ const emit = defineEmits(['confirm', 'cancel'])
           <p class="admin-modal-message">{{ message }}</p>
         </div>
         <div class="modal-footer--row">
-          <button type="button" class="modal-btn modal-btn--secondary modal-btn--inline" @click="emit('cancel')">
+          <button type="button" class="action-pill" @click="emit('cancel')">
             {{ cancelLabel }}
           </button>
-          <button type="button" class="modal-btn modal-btn--inline" :class="confirmClass" @click="emit('confirm')">
+          <button type="button" class="action-pill" :class="confirmClass" @click="emit('confirm')">
             {{ confirmLabel }}
           </button>
         </div>
@@ -36,6 +36,8 @@ const emit = defineEmits(['confirm', 'cancel'])
 </template>
 
 <style scoped>
+@import '@/assets/styles/modal.css';
+
 .admin-modal-message {
   margin: 0;
   color: var(--text);
