@@ -94,8 +94,12 @@ async function saveBanner() {
   successMsg.value = ''
 
   try {
+    const linkValue = formLink.value.trim()
+    const normalizedLink = linkValue && !linkValue.startsWith('http') && !linkValue.startsWith('/')
+      ? 'https://' + linkValue
+      : linkValue
     const formData = new FormData()
-    formData.append('link', formLink.value.trim())
+    formData.append('link', normalizedLink)
     formData.append('title', formTitle.value)
     formData.append('description', formDescription.value)
     formData.append('sortOrder', String(formSortOrder.value))
