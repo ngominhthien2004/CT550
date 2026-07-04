@@ -129,7 +129,7 @@ function onStatusFilterChange(value) {
 
             <!-- User: reported user column -->
             <td v-if="reportType === 'user'">
-              {{ report.targetUser?.displayName || report.targetUser?.username || report.target?.displayName || report.target?.username || '-' }}
+              {{ report.reportedUser?.displayName || report.reportedUser?.username || '-' }}
             </td>
 
             <td><span class="badge bg-warning-subtle text-warning-emphasis">{{ report.reason }}</span></td>
