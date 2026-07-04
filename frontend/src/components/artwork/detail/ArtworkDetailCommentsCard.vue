@@ -462,6 +462,18 @@ const getAvatar = (user) => {
 
 .comment-input-row {
   align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 540px) {
+  .comment-input-row {
+    gap: 0.5rem !important;
+  }
+
+  .send-btn {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
 }
 
 .input-wrapper {
