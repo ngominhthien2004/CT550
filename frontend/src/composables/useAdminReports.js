@@ -169,12 +169,13 @@ export function useAdminReports({ error, mutating } = {}) {
 
   function resolveCommentReport(reportId, action = 'dismiss') {
     if (mutating?.value) return
+    const isDelete = action === 'delete'
     return {
       show: true,
-      title: 'Resolve Comment Report',
-      message: 'Resolution note (optional):',
-      placeholder: 'Enter a note...',
-      confirmLabel: 'Resolve',
+      title: isDelete ? 'Delete Comment' : 'Dismiss Comment Report',
+      message: isDelete ? 'This will permanently delete the comment. Continue?' : 'Dismiss this report without taking action?',
+      placeholder: isDelete ? 'Enter a reason...' : '',
+      confirmLabel: isDelete ? 'Delete' : 'Dismiss',
       onConfirm: async (note) => {
         if (mutating) mutating.value = true
         if (error) error.value = ''
@@ -225,12 +226,16 @@ export function useAdminReports({ error, mutating } = {}) {
 
   function resolveUserReport(reportId, action = 'dismiss') {
     if (mutating?.value) return
+    const configs = {
+      warn: { title: 'Warn User', message: 'Send a warning to this user? They will be notified.', confirmLabel: 'Send Warning' },
+      ban: { title: 'Suspend User', message: 'This will suspend the user\'s account. They will be notified.', confirmLabel: 'Suspend' },
+      dismiss: { title: 'Dismiss Report', message: 'Dismiss this report without taking action?', confirmLabel: 'Dismiss' },
+    }
+    const cfg = configs[action] || configs.dismiss
     return {
       show: true,
-      title: 'Resolve User Report',
-      message: 'Resolution note (optional):',
-      placeholder: 'Enter a note...',
-      confirmLabel: 'Resolve',
+      ...cfg,
+      placeholder: action === 'warn' ? 'Warning message (optional)...' : '',
       onConfirm: async (note) => {
         if (mutating) mutating.value = true
         if (error) error.value = ''
