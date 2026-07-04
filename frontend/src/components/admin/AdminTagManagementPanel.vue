@@ -144,7 +144,7 @@ const formattedTags = computed(() =>
     </div>
 
     <!-- Edit form -->
-    <div v-if="editingTag" class="border rounded p-2 mb-2 bg-light">
+    <div v-if="editingTag" class="tag-edit-form">
       <div class="mb-2">
         <label class="form-label small fw-bold mb-1">Tag Name</label>
         <input v-model="editName" type="text" class="form-control form-control-sm" placeholder="Tag name" />
@@ -212,3 +212,28 @@ const formattedTags = computed(() =>
     </footer>
   </section>
 </template>
+
+<style scoped>
+.tag-edit-form {
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.tag-edit-form .form-label {
+  color: var(--text);
+}
+
+.tag-edit-form .form-control {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--text);
+}
+
+.tag-edit-form .form-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+</style>
