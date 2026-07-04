@@ -251,45 +251,76 @@ function insertEmoji(emoji) {
   padding: 0.5rem;
   border-bottom: 1px solid var(--line);
   overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.emoji-drawer-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .emoji-tab-btn {
   border: none;
   background: transparent;
-  padding: 0.3rem 0.6rem;
-  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
   font-size: 0.78rem;
   cursor: pointer;
   white-space: nowrap;
   color: var(--muted);
+  transition: background 0.15s, color 0.15s;
+}
+
+.emoji-tab-btn:hover {
+  background: var(--surface-alt);
+  color: var(--text);
 }
 
 .emoji-tab-btn.active {
-  background: rgba(99, 102, 241, 0.12);
-  color: #6366f1;
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--accent);
   font-weight: 600;
 }
 
 .emoji-drawer-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+  gap: 2px;
   padding: 0.5rem;
   max-height: 200px;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+.emoji-drawer-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.emoji-drawer-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.emoji-drawer-list::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
 }
 
 .emoji-item-btn {
   border: none;
   background: transparent;
-  font-size: 1.4rem;
-  padding: 0.3rem;
+  font-size: 1.35rem;
+  padding: 0.35rem;
   cursor: pointer;
   border-radius: 6px;
+  display: grid;
+  place-items: center;
+  transition: background 0.12s, transform 0.12s;
 }
 
 .emoji-item-btn:hover {
   background: var(--surface-alt);
+  transform: scale(1.15);
 }
 
 .image-summary {
