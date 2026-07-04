@@ -119,6 +119,20 @@
   color: var(--muted);
 }
 
+/* Modifier for danger/destructive pill */
+.action-pill--danger {
+  background-color: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+}
+
+.action-pill--danger:hover,
+.action-pill--danger:focus {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+}
+
 /* Small helper for compact pill variant if needed */
 .action-pill--small {
   padding: 0.32rem 0.5rem;

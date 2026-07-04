@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 
 export function useAdminModals() {
-  const confirmModal = ref({ show: false, title: '', message: '', confirmLabel: 'Confirm', confirmClass: 'modal-btn--accent', onConfirm: null })
+  const confirmModal = ref({ show: false, title: '', message: '', confirmLabel: 'Confirm', confirmClass: 'action-pill--post', onConfirm: null })
   const promptModal = ref({ show: false, title: '', message: '', placeholder: '', defaultValue: '', confirmLabel: 'OK', onConfirm: null })
 
   function handleConfirm() {

@@ -86,5 +86,8 @@ watch(() => props.show, (val) => {
 
 :deep(.modal-footer--row) {
   border-top-color: var(--line);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 </style>

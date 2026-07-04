@@ -57,14 +57,14 @@ export function useAdminReports({ error, mutating } = {}) {
     }
   }
 
-  async function hideArtworkFromReport(artworkId, reportId) {
+  function hideArtworkFromReport(artworkId, reportId) {
     if (mutating?.value) return
     return {
       show: true,
       title: 'Hide Artwork',
       message: 'Hide this artwork? The owner will be notified.',
       confirmLabel: 'Hide',
-      confirmClass: 'modal-btn--danger',
+      confirmClass: 'action-pill--danger',
       onConfirm: async () => {
         if (mutating) mutating.value = true
         if (error) error.value = ''
@@ -111,7 +111,7 @@ export function useAdminReports({ error, mutating } = {}) {
     }
   }
 
-  async function unhideArtwork(artworkId) {
+  function unhideArtwork(artworkId) {
     if (mutating?.value) return
     return {
       show: true,
