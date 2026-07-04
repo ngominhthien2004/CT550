@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth.store'
 import AppSearchBar from '../components/layout/AppSearchBar.vue'
@@ -14,6 +14,9 @@ const form = reactive({
 })
 
 const formError = ref('')
+const suspendedMessage = computed(() => route.query.reason === 'suspended'
+  ? 'Your account has been suspended. Please contact support for more information.'
+  : '')
 
 async function submitLogin() {
   formError.value = ''
@@ -72,6 +75,10 @@ function facebookLogin() {
           <span class="auth-label">Password</span>
           <input v-model="form.password" type="password" class="form-control auth-control" placeholder="Enter your password" aria-label="Password" />
         </label>
+
+        <p v-if="suspendedMessage" class="text-warning mb-0" style="background: rgba(251, 191, 36, 0.1); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.3);">
+          <i class="fa-solid fa-triangle-exclamation me-1"></i>{{ suspendedMessage }}
+        </p>
 
         <p v-if="formError" class="text-danger mb-0">{{ formError }}</p>
 

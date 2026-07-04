@@ -157,13 +157,27 @@ const resolveUserReport = async (req, res, next) => {
             report.resolutionNote = note
                 ? `WARNING: ${note}`
                 : 'WARNING: User reported for violating platform guidelines';
+
+            // Send warning notification to the reported user
+            await createNotification({
+                userId: report.reportedUser,
+                actorId: req.user._id,
+                type: 'warning',
+                message: note || 'Your account has been flagged for violating platform guidelines. Please review our community rules.',
+            });
         } else {
             report.resolutionNote = note || '';
         }
 
-        // If action is 'ban', suspend the reported user
+        // If action is 'ban', suspend the reported user and notify them
         if (action === 'ban') {
             await User.findByIdAndUpdate(report.reportedUser, { isSuspended: true });
+            await createNotification({
+                userId: report.reportedUser,
+                actorId: req.user._id,
+                type: 'suspended',
+                message: note || 'Your account has been suspended due to a violation of our terms of service.',
+            });
         }
 
         await report.save();

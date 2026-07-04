@@ -59,6 +59,12 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use((response) => {
   response.data = normalizeResponseData(response.data)
   return response
+}, (error) => {
+  if (error.response?.status === 403 && error.response?.data?.message?.includes('suspended')) {
+    localStorage.removeItem('token')
+    window.location.href = '/login?reason=suspended'
+  }
+  return Promise.reject(error)
 })
 
 export const getFeed = (params = {}) => api.get('/feed', { params })

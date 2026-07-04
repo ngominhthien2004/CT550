@@ -20,6 +20,11 @@ const protect = async (req, res, next) => {
             return next(new Error('Not authorized, user no longer exists'));
         }
 
+        if (user.isSuspended) {
+            res.status(403);
+            return next(new Error('Your account has been suspended. Please contact support for more information.'));
+        }
+
         req.user = user;
         return next();
     } catch (error) {
