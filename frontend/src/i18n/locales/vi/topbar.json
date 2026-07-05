@@ -1,0 +1,23 @@
+{
+  "search": "Tìm kiếm tác phẩm",
+  "searchScope": "Phạm vi tìm kiếm: {type}",
+  "post": "Đăng",
+  "illustration": "Minh họa",
+  "manga": "Manga",
+  "gif": "GIF",
+  "novel": "Tiểu thuyết",
+  "messages": "Tin nhắn",
+  "notifications": "Thông báo",
+  "language": "Ngôn ngữ",
+  "darkTheme": "Giao diện tối",
+  "logIn": "Đăng nhập",
+  "logOut": "Đăng xuất",
+  "services": "Dịch vụ liên quan",
+  "servicesLabel": "Dịch vụ {name}",
+  "createDigitalDrawings": "Tạo bản vẽ và phác thảo kỹ thuật số",
+  "more": "Thêm",
+  "backToTop": "Lên đầu trang",
+  "aiChat": "AI Chat",
+  "noNotifications": "Chưa có thông báo nào.",
+  "noMessages": "Chưa có tin nhắn nào."
+}

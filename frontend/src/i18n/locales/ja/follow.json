@@ -1,0 +1,8 @@
+{
+  "following": "フォロー中",
+  "followers": "フォロワー",
+  "noUsers": "ユーザーが見つかりません。",
+  "loadFailed": "フォローユーザーの読み込みに失敗しました",
+  "loadStatusFailed": "フォローステータスの読み込みに失敗しました",
+  "toggleFailed": "フォローステータスの更新に失敗しました"
+}

@@ -1,0 +1,9 @@
+{
+  "title": "My Bookmarks",
+  "add": "Add",
+  "deleteLatest": "Delete latest",
+  "enterArtworkId": "Please enter artworkId",
+  "artworkId": "Artwork ID",
+  "folderDefault": "Folder (default)",
+  "noBookmarks": "No bookmarks found."
+}

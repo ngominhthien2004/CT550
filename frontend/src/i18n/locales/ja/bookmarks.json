@@ -1,0 +1,9 @@
+{
+  "title": "ブックマーク",
+  "add": "追加",
+  "deleteLatest": "最新を削除",
+  "enterArtworkId": "作品IDを入力してください",
+  "artworkId": "作品ID",
+  "folderDefault": "フォルダ（デフォルト）",
+  "noBookmarks": "ブックマークが見つかりません。"
+}

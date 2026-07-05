@@ -1,0 +1,9 @@
+{
+  "title": "Browsing history",
+  "searchByTitle": "Search by title...",
+  "clearHistory": "Clear history",
+  "noHistory": "No browsing history yet",
+  "clearConfirm": "Are you sure you want to clear your browsing history?",
+  "loadFailed": "Failed to load browsing history",
+  "clearFailed": "Failed to clear history"
+}

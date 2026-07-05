@@ -1,0 +1,10 @@
+{
+  "title": "通知",
+  "noNotifications": "通知はまだありません。",
+  "refresh": "更新",
+  "markAllRead": "すべて既読にする",
+  "loadFailed": "通知の読み込みに失敗しました",
+  "loadMoreFailed": "さらに通知を読み込めませんでした",
+  "markReadFailed": "通知を既読にできませんでした",
+  "markAllReadFailed": "すべて既読にできませんでした"
+}

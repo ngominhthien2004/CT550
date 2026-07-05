@@ -1,0 +1,23 @@
+{
+  "search": "作品を検索",
+  "searchScope": "検索範囲: {type}",
+  "post": "投稿",
+  "illustration": "イラスト",
+  "manga": "マンガ",
+  "gif": "GIF",
+  "novel": "小説",
+  "messages": "メッセージ",
+  "notifications": "通知",
+  "language": "言語",
+  "darkTheme": "ダークテーマ",
+  "logIn": "ログイン",
+  "logOut": "ログアウト",
+  "services": "関連サービス",
+  "servicesLabel": "{name} サービス",
+  "createDigitalDrawings": "デジタル描画とスケッチを作成",
+  "more": "もっと",
+  "backToTop": "トップに戻る",
+  "aiChat": "AIチャット",
+  "noNotifications": "通知はまだありません。",
+  "noMessages": "メッセージはまだありません。"
+}

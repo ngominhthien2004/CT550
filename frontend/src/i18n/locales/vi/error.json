@@ -1,0 +1,12 @@
+{
+  "general": "Đã xảy ra lỗi",
+  "loadFailed": "Tải dữ liệu thất bại",
+  "saveFailed": "Lưu dữ liệu thất bại",
+  "deleteFailed": "Xóa dữ liệu thất bại",
+  "updateFailed": "Cập nhật dữ liệu thất bại",
+  "networkError": "Lỗi mạng. Vui lòng kiểm tra kết nối của bạn.",
+  "unauthorized": "Bạn không được phép thực hiện hành động này.",
+  "notFound": "Tài nguyên được yêu cầu không tìm thấy.",
+  "tooManyTags": "Bạn có thể sử dụng tối đa 10 thẻ.",
+  "titleRequired": "Vui lòng nhập tiêu đề."
+}

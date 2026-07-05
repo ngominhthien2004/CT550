@@ -1,0 +1,14 @@
+{
+  "title": "小説",
+  "featured": "注目小説",
+  "series": "シリーズ",
+  "seriesSpotlight": "シリーズスポットライト",
+  "oneShot": "ワンショット",
+  "oneShotSpotlight": "ワンショットスポットライト",
+  "writersToFollow": "フォローすべき作家",
+  "popularOriginal": "人気オリジナル小説",
+  "newestPosts": "アプリで現在入手可能な最新の小説投稿。",
+  "recommendedWorks": "おすすめ作品",
+  "noSeriesAvailable": "シリーズ小説はまだ利用できません。",
+  "loadFailed": "小説トップページの読み込みに失敗しました。"
+}

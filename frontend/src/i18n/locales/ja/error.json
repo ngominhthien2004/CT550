@@ -1,0 +1,12 @@
+{
+  "general": "エラーが発生しました",
+  "loadFailed": "データの読み込みに失敗しました",
+  "saveFailed": "データの保存に失敗しました",
+  "deleteFailed": "データの削除に失敗しました",
+  "updateFailed": "データの更新に失敗しました",
+  "networkError": "ネットワークエラー。接続を確認してください。",
+  "unauthorized": "このアクションを実行する権限がありません。",
+  "notFound": "要求されたリソースが見つかりませんでした。",
+  "tooManyTags": "最大10個のタグを使用できます。",
+  "titleRequired": "タイトルが必要です。"
+}

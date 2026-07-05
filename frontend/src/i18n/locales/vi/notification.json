@@ -1,0 +1,10 @@
+{
+  "title": "Thông báo",
+  "noNotifications": "Chưa có thông báo nào.",
+  "refresh": "Làm mới",
+  "markAllRead": "Đánh dấu đã đọc tất cả",
+  "loadFailed": "Tải thông báo thất bại",
+  "loadMoreFailed": "Tải thêm thông báo thất bại",
+  "markReadFailed": "Đánh dấu thông báo đã đọc thất bại",
+  "markAllReadFailed": "Đánh dấu tất cả đã đọc thất bại"
+}

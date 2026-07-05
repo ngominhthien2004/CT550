@@ -1,0 +1,23 @@
+{
+  "search": "Search artworks",
+  "searchScope": "Search scope: {type}",
+  "post": "Post",
+  "illustration": "Illustration",
+  "manga": "Manga",
+  "gif": "GIF",
+  "novel": "Novel",
+  "messages": "Messages",
+  "notifications": "Notifications",
+  "language": "Language",
+  "darkTheme": "Dark Theme",
+  "logIn": "Log in",
+  "logOut": "Log out",
+  "services": "Related services",
+  "servicesLabel": "{name} services",
+  "createDigitalDrawings": "Create digital drawings and sketches",
+  "more": "More",
+  "backToTop": "Back to top",
+  "aiChat": "AI Chat",
+  "noNotifications": "No notifications yet.",
+  "noMessages": "No messages yet."
+}

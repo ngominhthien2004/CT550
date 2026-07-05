@@ -1,0 +1,12 @@
+{
+  "general": "Something went wrong",
+  "loadFailed": "Failed to load data",
+  "saveFailed": "Failed to save data",
+  "deleteFailed": "Failed to delete data",
+  "updateFailed": "Failed to update data",
+  "networkError": "Network error. Please check your connection.",
+  "unauthorized": "You are not authorized to perform this action.",
+  "notFound": "The requested resource was not found.",
+  "tooManyTags": "You can use up to 10 tags.",
+  "titleRequired": "Title is required."
+}

@@ -1,0 +1,8 @@
+{
+  "following": "Đang theo dõi",
+  "followers": "Người theo dõi",
+  "noUsers": "Không tìm thấy người dùng.",
+  "loadFailed": "Tải danh sách theo dõi thất bại",
+  "loadStatusFailed": "Tải trạng thái theo dõi thất bại",
+  "toggleFailed": "Cập nhật trạng thái theo dõi thất bại"
+}

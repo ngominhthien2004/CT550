@@ -1,0 +1,10 @@
+{
+  "title": "Notifications",
+  "noNotifications": "No notifications yet.",
+  "refresh": "Refresh",
+  "markAllRead": "Mark all as read",
+  "loadFailed": "Failed to load notifications",
+  "loadMoreFailed": "Failed to load more notifications",
+  "markReadFailed": "Failed to mark notification as read",
+  "markAllReadFailed": "Failed to mark all as read"
+}

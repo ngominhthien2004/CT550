@@ -1,0 +1,9 @@
+{
+  "title": "閲覧履歴",
+  "searchByTitle": "タイトルで検索...",
+  "clearHistory": "履歴を消去",
+  "noHistory": "閲覧履歴はまだありません",
+  "clearConfirm": "閲覧履歴を削除してもよろしいですか？",
+  "loadFailed": "閲覧履歴の読み込みに失敗しました",
+  "clearFailed": "履歴の消去に失敗しました"
+}

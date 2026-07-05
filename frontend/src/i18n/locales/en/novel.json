@@ -1,0 +1,14 @@
+{
+  "title": "Novels",
+  "featured": "Featured novel",
+  "series": "Series",
+  "seriesSpotlight": "Series spotlight",
+  "oneShot": "One-shot",
+  "oneShotSpotlight": "One-shot spotlight",
+  "writersToFollow": "Writers to follow",
+  "popularOriginal": "Popular original novels",
+  "newestPosts": "The newest novel posts currently available in the app.",
+  "recommendedWorks": "Recommended works",
+  "noSeriesAvailable": "No series novels are available yet.",
+  "loadFailed": "Failed to load novel top page."
+}

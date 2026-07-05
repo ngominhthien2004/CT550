@@ -1,0 +1,8 @@
+{
+  "following": "Following",
+  "followers": "Followers",
+  "noUsers": "No users found.",
+  "loadFailed": "Failed to load follow users",
+  "loadStatusFailed": "Failed to load follow status",
+  "toggleFailed": "Failed to update follow status"
+}
