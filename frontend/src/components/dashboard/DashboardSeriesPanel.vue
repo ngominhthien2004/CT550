@@ -201,8 +201,8 @@ onMounted(() => {
           </div>
           <div class="series-card-stats">
             <div class="stat-item">
-              <i class="fa-regular fa-face-smile"></i>
-              <span>{{ series.totalReactions || 0 }}</span>
+              <i class="fa-regular fa-bookmark"></i>
+              <span>{{ series.totalBookmarks || 0 }}</span>
             </div>
             <div class="stat-item">
               <i class="fa-solid fa-heart"></i>
@@ -276,15 +276,16 @@ onMounted(() => {
 }
 
 .series-sort-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0.4rem 2rem 0.4rem 0.75rem;
   border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--text);
-  font-size: 0.82rem;
   border-radius: 8px;
-  height: 34px;
-  padding: 0 0.75rem;
+  background-color: var(--surface);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.15s;
 }
 
 .series-sort-select:hover {
