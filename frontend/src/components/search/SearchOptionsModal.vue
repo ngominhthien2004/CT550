@@ -1,5 +1,8 @@
 <script setup>
 import { computed, reactive, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: {
@@ -73,56 +76,56 @@ watch(
 <template>
   <Teleport to="body">
     <div v-if="modelValue" class="search-options-backdrop" @click.self="closeModal" @keydown.enter.prevent="closeModal" @keydown.space.prevent="closeModal" tabindex="0" role="button">
-      <section class="search-options-modal" role="dialog" aria-modal="true" aria-label="Search option">
+      <section class="search-options-modal" role="dialog" aria-modal="true" :aria-label="$t('search.searchOption')">
         <header class="search-options-header">
-          <h2 class="mb-0">Search option</h2>
+          <h2 class="mb-0">{{ $t('search.searchOption') }}</h2>
         </header>
 
         <div class="search-options-body">
           <label class="field-block">
-            <span class="field-label">Include all keywords</span>
-            <input v-model="formState.includeAll" type="text" placeholder="Search artworks" aria-label="Include all keywords" />
+            <span class="field-label">{{ $t('search.includeAllKeywords') }}</span>
+            <input v-model="formState.includeAll" type="text" :placeholder="$t('common.search')" :aria-label="$t('search.includeAllKeywords')" />
           </label>
 
           <label class="field-block">
-            <span class="field-label">Include any keywords</span>
-            <input v-model="formState.includeAny" type="text" placeholder="Search artworks" aria-label="Include any keywords" />
+            <span class="field-label">{{ $t('search.includeAnyKeywords') }}</span>
+            <input v-model="formState.includeAny" type="text" :placeholder="$t('common.search')" :aria-label="$t('search.includeAnyKeywords')" />
           </label>
 
           <label class="field-block">
-            <span class="field-label">Exclude keywords</span>
-            <input v-model="formState.exclude" type="text" placeholder="Search artworks" aria-label="Exclude keywords" />
+            <span class="field-label">{{ $t('search.excludeKeywords') }}</span>
+            <input v-model="formState.exclude" type="text" :placeholder="$t('common.search')" :aria-label="$t('search.excludeKeywords')" />
           </label>
 
           <div class="field-grid">
             <label class="field-block">
-              <span class="field-label">Targets</span>
-              <select v-model="formState.target" aria-label="Search targets">
-                <option value="tag_partial">Tags (partial match)</option>
-                <option value="tag_exact">Tags (perfect match)</option>
-                <option value="title">Title</option>
-                <option value="title_caption">Title, Description</option>
-                <option value="all">Tags, Titles, Descriptions</option>
+              <span class="field-label">{{ $t('search.targets') }}</span>
+              <select v-model="formState.target" :aria-label="$t('search.targets')">
+                <option value="tag_partial">{{ $t('search.tagsPartial') }}</option>
+                <option value="tag_exact">{{ $t('search.tagsPerfect') }}</option>
+                <option value="title">{{ $t('search.targetTitle') }}</option>
+                <option value="title_caption">{{ $t('search.titleDescription') }}</option>
+                <option value="all">{{ $t('search.tagsTitlesDescriptions') }}</option>
               </select>
             </label>
 
             <label class="field-block">
-              <span class="field-label">Work type</span>
-              <select v-model="formState.type" aria-label="Work type filter">
-                <option value="illust">Illustration</option>
-                <option value="manga">Manga</option>
-                <option value="gif">GIF</option>
-                <option value="novel">Novel</option>
+              <span class="field-label">{{ $t('search.workType') }}</span>
+              <select v-model="formState.type" :aria-label="$t('search.workType')">
+                <option value="illust">{{ $t('search.illustrationType') }}</option>
+                <option value="manga">{{ $t('search.mangaType') }}</option>
+                <option value="gif">{{ $t('search.gifType') }}</option>
+                <option value="novel">{{ $t('search.novelType') }}</option>
               </select>
             </label>
           </div>
 
-          <button type="button" class="reset-btn" @click="resetDraft">Reset</button>
+          <button type="button" class="reset-btn" @click="resetDraft">{{ $t('common.reset') }}</button>
         </div>
 
         <footer class="search-options-actions">
-          <button type="button" class="btn btn-primary" :disabled="!hasAnyInput" @click="applySearch">Search</button>
-          <button type="button" class="btn btn-outline-secondary" @click="closeModal">Cancel</button>
+          <button type="button" class="btn btn-primary" :disabled="!hasAnyInput" @click="applySearch">{{ $t('common.search') }}</button>
+          <button type="button" class="btn btn-outline-secondary" @click="closeModal">{{ $t('common.cancel') }}</button>
         </footer>
       </section>
     </div>

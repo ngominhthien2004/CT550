@@ -1,13 +1,14 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { getArtworks, getPopularTagSuggestions } from '../../services/api'
 import AppSearchHistoryPanel from './AppSearchHistoryPanel.vue'
 
 const props = defineProps({
   placeholder: {
     type: String,
-    default: 'Search by title, tag, or artist',
+    default: '',
   },
   variant: {
     type: String,
@@ -38,6 +39,8 @@ const props = defineProps({
 
 const emit = defineEmits(['history-closed'])
 
+const { t } = useI18n()
+const placeholderText = computed(() => props.placeholder || t('search.searchPlaceholder'))
 const router = useRouter()
 const route = useRoute()
 // LocalStorage key constant (not a secret)
@@ -205,8 +208,8 @@ async function loadLatestArtworkCovers() {
     const response = await getArtworks({ limit: 4 })
     featuredArtworks.value = (response.data || []).map((artwork) => ({
       id: artwork._id,
-      title: artwork.title || 'Untitled artwork',
-      author: artwork.user?.displayName || artwork.user?.username || 'Unknown artist',
+      title: artwork.title || t('search.untitledArtwork'),
+      author: artwork.user?.displayName || artwork.user?.username || t('profile.unknownArtist'),
       image: normalizeImagePath(artwork.images?.[0]),
     }))
   } catch (_error) {
@@ -288,17 +291,17 @@ defineExpose({
 
     <form v-if="!props.backgroundOnly" class="search-content" @submit.prevent="submitSearch">
       <div v-if="props.variant === 'compact'" class="search-compact-control">
-        <label class="search-field" aria-label="Search artworks">
+        <label class="search-field" :aria-label="$t('search.search')">
           <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
           <input
             ref="searchInputRef"
             v-model="searchValue"
             type="search"
-            :placeholder="props.placeholder"
+            :placeholder="placeholderText"
             :aria-controls="props.inputAriaControls"
             :aria-expanded="props.inputAriaExpanded"
             :aria-haspopup="props.inputAriaHaspopup"
-            aria-label="Search artworks"
+            :aria-label="$t('search.search')"
             @focus="openHistoryPanel"
             @click="openHistoryPanel"
           />
@@ -308,22 +311,22 @@ defineExpose({
         </div>
       </div>
       <template v-else>
-        <label class="search-field" aria-label="Search artworks">
+        <label class="search-field" :aria-label="$t('search.search')">
           <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
           <input
             ref="searchInputRef"
             v-model="searchValue"
             type="search"
-            :placeholder="props.placeholder"
+            :placeholder="placeholderText"
             :aria-controls="props.inputAriaControls"
             :aria-expanded="props.inputAriaExpanded"
             :aria-haspopup="props.inputAriaHaspopup"
-            aria-label="Search artworks"
+            :aria-label="$t('search.search')"
             @focus="openHistoryPanel"
             @click="openHistoryPanel"
           />
         </label>
-        <button type="submit" class="search-submit">Search</button>
+        <button type="submit" class="search-submit">{{ $t('common.search') }}</button>
       </template>
 
       <AppSearchHistoryPanel
@@ -340,7 +343,7 @@ defineExpose({
 
     <p v-if="!props.backgroundOnly && props.variant === 'showcase' && activeArtwork" class="showcase-caption mb-0">
       <span class="showcase-caption-title">{{ activeArtwork.title }}</span>
-      <span class="showcase-caption-author">by {{ activeArtwork.author }}</span>
+      <span class="showcase-caption-author">{{ $t('search.by') }} {{ activeArtwork.author }}</span>
     </p>
   </div>
 </template>

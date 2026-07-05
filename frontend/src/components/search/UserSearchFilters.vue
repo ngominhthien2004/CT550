@@ -1,4 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps({
   userFilterType: { type: String, required: true },
   userSortMode: { type: String, required: true },
@@ -15,18 +19,18 @@ const emit = defineEmits(['update:userFilterType', 'update:userSortMode', 'reloa
         class="user-filter-chip"
         :class="{ 'is-active': userFilterType === 'creator' }"
         @click="emit('update:userFilterType', 'creator'); emit('reload')"
-      >Creators</button>
+      >{{ $t('search.creators') }}</button>
       <button
         type="button"
         class="user-filter-link"
         :class="{ 'is-active': userFilterType === 'all' }"
         @click="emit('update:userFilterType', 'all'); emit('reload')"
-      >All accounts</button>
+      >{{ $t('search.allAccounts') }}</button>
     </div>
     <label class="order-select">
-      <select :value="userSortMode" aria-label="Sort users" @change="emit('update:userSortMode', $event.target.value); emit('reload')">
-        <option value="newest">Newest</option>
-        <option value="popular">Popular</option>
+      <select :value="userSortMode" :aria-label="$t('search.sortUsers')" @change="emit('update:userSortMode', $event.target.value); emit('reload')">
+        <option value="newest">{{ $t('search.newest') }}</option>
+        <option value="popular">{{ $t('search.popular') }}</option>
       </select>
     </label>
   </div>

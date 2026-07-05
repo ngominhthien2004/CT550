@@ -1,5 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { useFollowStore } from '@/stores/follow.store'
+
+const { t } = useI18n()
 
 const props = defineProps({
   users: { type: Array, required: true },
@@ -18,10 +21,10 @@ const followStore = useFollowStore()
 </script>
 
 <template>
-  <p v-if="loading" class="state-note">Loading users...</p>
+  <p v-if="loading" class="state-note">{{ $t('search.loadingUsers') }}</p>
   <p v-else-if="error" class="state-note error">{{ error }}</p>
   <section v-else-if="users.length" class="user-result-section">
-    <h2>User <span>{{ total.toLocaleString() }}</span></h2>
+    <h2>{{ $t('search.userTab') }} <span>{{ total.toLocaleString() }}</span></h2>
 
     <article v-for="user in users" :key="user._id" class="user-search-row">
       <div class="user-profile-column">
@@ -37,7 +40,7 @@ const followStore = useFollowStore()
               :disabled="followStore.isTogglingFollow(user._id)"
               @click="emit('toggle-follow', user._id)"
             >
-              {{ followStore.isFollowingUser(user._id) ? 'Following' : 'Follow' }}
+              {{ followStore.isFollowingUser(user._id) ? $t('profile.following') : $t('profile.follow') }}
             </button>
             <div class="user-more-wrap">
               <button
@@ -50,13 +53,13 @@ const followStore = useFollowStore()
               <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
               </button>
               <div v-if="activeUserMenuId === user._id" class="user-action-menu" role="menu">
-                <button type="button" role="menuitem" @click="emit('close-menu')">Follow privately</button>
+                <button type="button" role="menuitem" @click="emit('close-menu')">{{ $t('search.followPrivately') }}</button>
                 <span class="menu-separator" aria-hidden="true"></span>
-                <button type="button" role="menuitem" @click="emit('close-menu')">Mute setting</button>
+                <button type="button" role="menuitem" @click="emit('close-menu')">{{ $t('search.muteSetting') }}</button>
                 <button type="button" role="menuitem" :disabled="blockSubmittingId === user._id" @click="emit('block-user', user)">
-                  {{ blockSubmittingId === user._id ? 'Blocking...' : 'Block' }}
+                  {{ blockSubmittingId === user._id ? $t('profile.unblocking') : $t('profile.block') }}
                 </button>
-                <button type="button" role="menuitem" @click="emit('close-menu')">Report a problem</button>
+                <button type="button" role="menuitem" @click="emit('close-menu')">{{ $t('search.reportProblem') }}</button>
               </div>
             </div>
           </div>
@@ -71,16 +74,16 @@ const followStore = useFollowStore()
           class="user-preview-card"
         >
           <div class="user-preview-thumb">
-            <img v-if="item.image" :src="item.image" :alt="item.title || 'Artwork preview'" loading="lazy" />
+            <img v-if="item.image" :src="item.image" :alt="item.title || $t('search.artworkPreview')" loading="lazy" />
             <div v-else class="user-preview-fallback"></div>
             <i class="fa-regular fa-heart preview-heart" aria-hidden="true"></i>
           </div>
-          <strong>{{ item.title || 'Untitled work' }}</strong>
+          <strong>{{ item.title || $t('search.untitledWork') }}</strong>
         </router-link>
 
         <div v-for="idx in Math.max(0, 4 - user.previews.length)" :key="`empty-preview-${user._id}-${idx}`" class="user-preview-card user-preview-card--empty">
           <div class="user-preview-thumb user-preview-fallback"></div>
-          <strong>No public work yet</strong>
+          <strong>{{ $t('search.noPublicWork') }}</strong>
         </div>
       </div>
     </article>
@@ -92,11 +95,11 @@ const followStore = useFollowStore()
         :disabled="loadingMore"
         @click="emit('load-more')"
       >
-        {{ loadingMore ? 'Loading...' : 'Load more' }}
+        {{ loadingMore ? $t('common.loading') : $t('common.loadMore') }}
       </button>
     </div>
   </section>
-  <p v-else class="state-note">No users found for this search.</p>
+  <p v-else class="state-note">{{ $t('search.noUsersSearch') }}</p>
 </template>
 
 <style scoped>

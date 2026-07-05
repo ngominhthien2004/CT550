@@ -1,4 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps({
   items: { type: Array, required: true },
   loading: { type: Boolean, default: false },
@@ -8,10 +12,10 @@ defineProps({
 </script>
 
 <template>
-  <p v-if="loading" class="state-note">Loading results...</p>
+  <p v-if="loading" class="state-note">{{ $t('search.loadingResults') }}</p>
   <p v-else-if="error" class="state-note error">{{ error }}</p>
 
-  <p v-else-if="!items.length" class="state-note">No works found for this filter. Try another tag or switch tab.</p>
+  <p v-else-if="!items.length" class="state-note">{{ $t('search.noWorksFilter') }}</p>
 
   <div v-else class="result-grid-wrap">
     <article v-for="item in items" :key="item._id" class="result-card">
@@ -20,7 +24,7 @@ defineProps({
         <div v-else class="thumb-fallback"></div>
       </router-link>
       <router-link :to="`/artworks/${item._id}`" class="title-link">{{ item.title }}</router-link>
-      <p class="author-name">{{ item.user?.displayName || item.user?.username || 'Unknown artist' }}</p>
+      <p class="author-name">{{ item.user?.displayName || item.user?.username || $t('profile.unknownArtist') }}</p>
     </article>
 
     <article v-for="idx in placeholderCount" :key="`placeholder-${idx}`" class="result-card placeholder-card">

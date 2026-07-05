@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../../stores/auth.store'
 import { getPopularIllustSuggestions, getPopularTagSuggestions, getTags } from '../../services/api'
 import TagStrip from '../shared/TagStrip.vue'
@@ -20,6 +21,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['choose-item', 'delete-item', 'clear-history', 'view-more'])
+
+const { t } = useI18n()
 
 // LocalStorage key constant (not a secret)
 const FAVORITE_TAG_KEY = 'illuwrl.favoriteTags'
@@ -83,17 +86,17 @@ function addFavoriteTag(label) {
 
   const trimmed = (label || '').replace(/^#+/, '').trim()
   if (!trimmed) {
-    addError.value = 'Tag name cannot be empty.'
+    addError.value = t('search.tagNameCannotBeEmpty')
     return false
   }
 
   if (favoriteTagList.value.length >= 10) {
-    addError.value = 'Maximum 10 favorite tags allowed.'
+    addError.value = t('search.maxFavoriteTags')
     return false
   }
 
   if (favoriteTagList.value.some((tag) => tag.label === trimmed)) {
-    addError.value = `"${trimmed}" is already in your favorites.`
+    addError.value = t('search.alreadyInFavorites', { tag: trimmed })
     return false
   }
 
@@ -161,10 +164,10 @@ watch(favoriteTagKey, loadFavoriteTags)
 </script>
 
 <template>
-  <div class="history-panel" role="listbox" aria-label="Search history">
+  <div class="history-panel" role="listbox" :aria-label="$t('search.searchHistory')">
     <div class="history-head">
-      <strong>History</strong>
-      <button v-if="props.searchHistory.length" type="button" @click="emit('clear-history')">Clear history</button>
+      <strong>{{ $t('search.searchHistory') }}</strong>
+      <button v-if="props.searchHistory.length" type="button" @click="emit('clear-history')">{{ $t('search.clearHistory') }}</button>
     </div>
 
     <template v-if="props.searchHistory.length">
@@ -190,8 +193,8 @@ watch(favoriteTagKey, loadFavoriteTags)
     </template>
 
     <div v-else class="history-empty">
-      <p class="mb-0">No recent search yet.</p>
-      <p class="mb-0">Try one of these:</p>
+      <p class="mb-0">{{ $t('search.noRecentSearch') }}</p>
+      <p class="mb-0">{{ $t('search.tryThese') }}</p>
     </div>
 
     <button
@@ -205,12 +208,12 @@ watch(favoriteTagKey, loadFavoriteTags)
       <span>{{ item }}</span>
     </button>
 
-    <button v-if="!props.showMore" type="button" class="history-view-more" @click="emit('view-more')">View more</button>
+    <button v-if="!props.showMore" type="button" class="history-view-more" @click="emit('view-more')">{{ $t('search.viewMore') }}</button>
 
     <section class="panel-block">
       <div class="panel-block-head">
-        <strong>Your favorite tags</strong>
-        <button type="button" @click="openFavoriteEdit">Edit</button>
+        <strong>{{ $t('search.favoriteTags') }}</strong>
+        <button type="button" @click="openFavoriteEdit">{{ $t('common.edit') }}</button>
       </div>
       <TagStrip
         v-if="favoriteTagList.length"
@@ -219,12 +222,12 @@ watch(favoriteTagKey, loadFavoriteTags)
         compact
         @tag-click="(tag) => emit('choose-item', tag)"
       />
-      <p v-else class="favorite-empty">No favorite tags yet.</p>
+      <p v-else class="favorite-empty">{{ $t('search.noFavoriteTags') }}</p>
     </section>
 
     <section class="panel-block">
       <div class="panel-block-head">
-        <strong>Popular illust tags</strong>
+        <strong>{{ $t('search.popularIllustTags') }}</strong>
       </div>
       <div class="popular-grid">
         <button
@@ -242,7 +245,7 @@ watch(favoriteTagKey, loadFavoriteTags)
 
     <section class="panel-block">
       <div class="panel-block-head">
-        <strong>Popular novel tags</strong>
+        <strong>{{ $t('search.popularNovelTags') }}</strong>
       </div>
       <TagStrip
         :tags="popularNovelTags"
@@ -253,12 +256,12 @@ watch(favoriteTagKey, loadFavoriteTags)
     </section>
 
     <Teleport to="body">
-      <div v-if="isFavoriteEditOpen" class="favorite-modal-overlay" role="dialog" aria-modal="true" aria-label="Edit favorite tags" @mousedown.stop>
+      <div v-if="isFavoriteEditOpen" class="favorite-modal-overlay" role="dialog" aria-modal="true" :aria-label="$t('search.editFavoriteTags')" @mousedown.stop>
         <div class="favorite-modal-card">
-          <button type="button" class="favorite-modal-close" aria-label="Close" @click="closeFavoriteEdit">
+          <button type="button" class="favorite-modal-close" :aria-label="$t('common.close')" @click="closeFavoriteEdit">
             <i class="fa-solid fa-xmark" aria-hidden="true"></i>
           </button>
-          <h3>Your favorite tags</h3>
+          <h3>{{ $t('search.favoriteTags') }}</h3>
           <p class="favorite-count">{{ favoriteTagList.length }}/10</p>
 
           <div class="favorite-modal-add">
@@ -267,7 +270,7 @@ watch(favoriteTagKey, loadFavoriteTags)
                 v-model="newTagLabel"
                 type="text"
                 class="favorite-add-input"
-                placeholder="Enter tag name..."
+                :placeholder="$t('search.enterTagName')"
                 maxlength="50"
                 @input="searchTags(newTagLabel)"
                 @keydown.enter.prevent="addFavoriteTag(newTagLabel)"
@@ -278,7 +281,7 @@ watch(favoriteTagKey, loadFavoriteTags)
                 :disabled="!newTagLabel.trim() || favoriteTagList.length >= 10"
                 @click="addFavoriteTag(newTagLabel)"
               >
-                Add
+                {{ $t('search.addTag') }}
               </button>
             </div>
             <p v-if="addError" class="favorite-add-error">{{ addError }}</p>
@@ -297,11 +300,11 @@ watch(favoriteTagKey, loadFavoriteTags)
               <div>
                 <strong>#{{ tag.label }}</strong>
               </div>
-              <button type="button" aria-label="Remove tag" @click="removeFavoriteTag(tag.label)">
+              <button type="button" :aria-label="$t('search.removeTag')" @click="removeFavoriteTag(tag.label)">
                 <i class="fa-solid fa-trash" aria-hidden="true"></i>
               </button>
             </article>
-            <p v-if="!favoriteTagList.length" class="favorite-modal-empty">No favorite tags yet. Add one above!</p>
+            <p v-if="!favoriteTagList.length" class="favorite-modal-empty">{{ $t('search.noFavoriteTagsAdd') }}</p>
           </div>
         </div>
       </div>

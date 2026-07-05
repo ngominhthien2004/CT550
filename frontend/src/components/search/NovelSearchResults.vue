@@ -1,4 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps({
   items: { type: Array, required: true },
   loading: { type: Boolean, default: false },
@@ -10,15 +14,15 @@ const emit = defineEmits(['search-tag'])
 </script>
 
 <template>
-  <p v-if="loading" class="state-note">Loading novels...</p>
+  <p v-if="loading" class="state-note">{{ $t('search.loadingNovels') }}</p>
   <p v-else-if="error" class="state-note error">{{ error }}</p>
 
-  <p v-else-if="!items.length" class="state-note">No novels found for this tag. Try another keyword or search option.</p>
+  <p v-else-if="!items.length" class="state-note">{{ $t('search.noNovelsFound') }}</p>
 
   <div v-else class="novel-result-stack">
     <div class="novel-section-head">
       <h2>{{ sortLabel }}</h2>
-      <span>{{ items.length.toLocaleString() }} entries</span>
+      <span>{{ items.length.toLocaleString() }} {{ $t('search.entries') }}</span>
     </div>
 
     <article v-for="item in items" :key="item._id" class="novel-card" style="position:relative;">
@@ -27,8 +31,8 @@ const emit = defineEmits(['search-tag'])
         <div v-else class="novel-cover-fallback">
           <i class="fa-solid fa-book-open" aria-hidden="true"></i>
         </div>
-        <span v-if="item.series" class="novel-cover-badge">Series</span>
-        <span v-else class="novel-cover-badge">One-shot</span>
+        <span v-if="item.series" class="novel-cover-badge">{{ $t('search.seriesBadge') }}</span>
+        <span v-else class="novel-cover-badge">{{ $t('search.oneShot') }}</span>
         <span v-if="item.wordCount > 0" class="novel-word-badge">
           <i class="fa-regular fa-file-lines" aria-hidden="true"></i>
           {{ (item.wordCount || 0).toLocaleString() }}
@@ -40,7 +44,7 @@ const emit = defineEmits(['search-tag'])
           <router-link :to="`/artworks/${item._id}`" class="novel-title">{{ item.title }}</router-link>
         </div>
         <div class="novel-author-row">
-          <router-link :to="`/account?user=${item.user?._id}`" class="novel-author">{{ item.user?.displayName || item.user?.username || 'Unknown writer' }}</router-link>
+          <router-link :to="`/account?user=${item.user?._id}`" class="novel-author">{{ item.user?.displayName || item.user?.username || $t('search.unknownWriter') }}</router-link>
         </div>
         <p class="novel-excerpt">{{ item._excerpt }}</p>
         <div class="novel-tags" v-if="item.tags?.length">
@@ -68,10 +72,10 @@ const emit = defineEmits(['search-tag'])
           </span>
           <span v-if="item.wordCount > 0" class="novel-meta-stat">
             <i class="fa-regular fa-clock" aria-hidden="true"></i>
-            {{ item._readTime }} min read
+            {{ item._readTime }} {{ $t('search.minRead') }}
           </span>
           <span v-if="item.series" class="novel-meta-stat">
-            {{ item.chapterCount || 1 }} {{ (item.chapterCount || 1) > 1 ? 'chapters' : 'chapter' }}
+            {{ item.chapterCount || 1 }} {{ (item.chapterCount || 1) > 1 ? $t('search.chapters') : $t('search.chapter') }}
           </span>
           <span>{{ item._formattedDate }}</span>
         </footer>

@@ -1,4 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps({
   sortMode: { type: String, required: true },
   ageFilter: { type: String, required: true },
@@ -15,25 +19,25 @@ const emit = defineEmits(['update:sortMode', 'update:ageFilter', 'update:novelSo
 <template>
   <div class="filter-row">
     <label class="order-select">
-      <select :value="sortMode" @change="emit('update:sortMode', $event.target.value)" aria-label="Sort by">
-        <option value="newest">Newest</option>
-        <option value="popular">Sort by popularity</option>
+      <select :value="sortMode" @change="emit('update:sortMode', $event.target.value)" :aria-label="$t('search.sortBy')">
+        <option value="newest">{{ $t('search.newest') }}</option>
+        <option value="popular">{{ $t('search.sortByPopularity') }}</option>
       </select>
     </label>
-    <button type="button" class="filter-chip" :class="{ 'is-active': ageFilter === 'safe' }" @click="emit('update:ageFilter', 'safe')">All-Ages</button>
-    <button type="button" class="filter-chip" :class="{ 'is-active': ageFilter === 'r18' }" @click="emit('update:ageFilter', 'r18')">R-18</button>
-    <button type="button" class="filter-chip" :class="{ 'is-active': ageFilter === 'all' }" @click="emit('update:ageFilter', 'all')">All</button>
-    <span class="include-note">Tag match mode: {{ currentSearchOptions.target === 'all' ? 'all fields' : currentSearchOptions.target }}</span>
+    <button type="button" class="filter-chip" :class="{ 'is-active': ageFilter === 'safe' }" @click="emit('update:ageFilter', 'safe')">{{ $t('search.allAges') }}</button>
+    <button type="button" class="filter-chip" :class="{ 'is-active': ageFilter === 'r18' }" @click="emit('update:ageFilter', 'r18')">{{ $t('search.r18') }}</button>
+    <button type="button" class="filter-chip" :class="{ 'is-active': ageFilter === 'all' }" @click="emit('update:ageFilter', 'all')">{{ $t('search.all') }}</button>
+    <span class="include-note">{{ $t('search.tagMatchMode') }} {{ currentSearchOptions.target === 'all' ? $t('search.allFields') : currentSearchOptions.target }}</span>
 
     <template v-if="isNovelSearch">
       <span class="filter-separator" aria-hidden="true"></span>
       <label class="novel-sort-select">
-        <select :value="novelSortBy" @change="emit('update:novelSortBy', $event.target.value)" aria-label="Novel sort by">
-          <option value="newest">Newest</option>
-          <option value="views">Most viewed</option>
-          <option value="likes">Most liked</option>
-          <option value="longest">Longest</option>
-          <option value="shortest">Shortest</option>
+        <select :value="novelSortBy" @change="emit('update:novelSortBy', $event.target.value)" :aria-label="$t('search.novelSortBy')">
+          <option value="newest">{{ $t('search.newest') }}</option>
+          <option value="views">{{ $t('search.mostViewed') }}</option>
+          <option value="likes">{{ $t('search.mostLiked') }}</option>
+          <option value="longest">{{ $t('search.longest') }}</option>
+          <option value="shortest">{{ $t('search.shortest') }}</option>
         </select>
       </label>
       <label class="word-range-label">
@@ -41,9 +45,9 @@ const emit = defineEmits(['update:sortMode', 'update:ageFilter', 'update:novelSo
           :value="novelMinWords"
           type="number"
           class="word-range-input"
-          placeholder="Min words"
+          :placeholder="$t('search.minWords')"
           min="0"
-          aria-label="Min words"
+          :aria-label="$t('search.minWords')"
           @input="emit('update:novelMinWords', $event.target.value)"
         />
         <span class="word-range-sep">–</span>
@@ -51,9 +55,9 @@ const emit = defineEmits(['update:sortMode', 'update:ageFilter', 'update:novelSo
           :value="novelMaxWords"
           type="number"
           class="word-range-input"
-          placeholder="Max words"
+          :placeholder="$t('search.maxWords')"
           min="0"
-          aria-label="Max words"
+          :aria-label="$t('search.maxWords')"
           @input="emit('update:novelMaxWords', $event.target.value)"
         />
       </label>

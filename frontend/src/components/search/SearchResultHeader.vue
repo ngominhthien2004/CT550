@@ -1,6 +1,9 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import TagStrip from '../shared/TagStrip.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   keyword: { type: String, required: true },
@@ -25,15 +28,15 @@ const hashedDisplayTags = computed(() => props.displayTags.map(tag => `#${tag}`)
       <p class="result-count-head">
         <strong v-if="isUserSearch">{{ resultTotal.toLocaleString() }}</strong>
         <template v-else>{{ resultTotal.toLocaleString() }}</template>
-        {{ isUserSearch ? 'Accounts' : isNovelSearch ? 'novels' : 'works' }}
+        {{ isUserSearch ? $t('search.accounts') : isNovelSearch ? $t('search.novels') : $t('search.works') }}
       </p>
     </div>
     <div v-if="!isUserSearch" class="result-header-actions">
       <button v-if="showFavoriteTag" type="button" class="favorite-tag-btn" :class="{ 'is-favorite': isFavoriteTag }" @click="emit('toggle-favorite')">
-        {{ isFavoriteTag ? '★ Remove favorite' : '☆ Add to favorite tag' }}
+        {{ isFavoriteTag ? $t('search.removeFavorite') : $t('search.addFavorite') }}
       </button>
       <button type="button" class="show-tag-btn" @click="emit('toggle-tags')">
-        {{ showTags ? 'Hide tag' : 'Show tag' }}
+        {{ showTags ? $t('search.hideTag') : $t('search.showTag') }}
       </button>
     </div>
   </header>

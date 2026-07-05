@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import SearchOptionsModal from '../components/search/SearchOptionsModal.vue'
 import SearchResultHeader from '../components/search/SearchResultHeader.vue'
 import SearchFilterBar from '../components/search/SearchFilterBar.vue'
@@ -23,6 +24,7 @@ const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 const followStore = useFollowStore()
+const { t } = useI18n()
 const isNavCollapsed = ref(true)
 const loading = ref(false)
 const error = ref('')
@@ -121,7 +123,7 @@ const searchKeyword = computed(() => {
   return q || nick
 })
 
-const keyword = computed(() => searchKeyword.value || 'discover')
+const keyword = computed(() => searchKeyword.value || t('search.discover'))
 const activeType = computed(() => {
   if (route.path === '/search/users') {
     return 'user'
@@ -132,12 +134,12 @@ const ageFilter = computed(() => (typeof route.query.age === 'string' ? route.qu
 const isUserSearch = computed(() => activeType.value === 'user')
 const isNovelSearch = computed(() => activeType.value === 'novel')
 
-const searchTypeTabs = [
-  { key: 'illust', label: 'Illustrations' },
-  { key: 'manga', label: 'Manga' },
-  { key: 'novel', label: 'Novels' },
-  { key: 'user', label: 'User' },
-]
+const searchTypeTabs = computed(() => [
+  { key: 'illust', label: t('profile.tabIllustrations') },
+  { key: 'manga', label: t('profile.tabManga') },
+  { key: 'novel', label: t('profile.tabNovels') },
+  { key: 'user', label: t('search.userTab') },
+])
 
 const currentSearchOptions = computed(() => ({
   includeAll: typeof route.query.qall === 'string' ? route.query.qall : '',
@@ -220,7 +222,7 @@ const tabCounts = computed(() => ({
 }))
 
 const processedSearchTypeTabs = computed(() =>
-  searchTypeTabs.map(tab => ({
+  searchTypeTabs.value.map(tab => ({
     ...tab,
     _route: buildTypeRoute(tab.key),
     _count: tabCounts.value[tab.key]?.toLocaleString(),
@@ -246,7 +248,7 @@ const processedVisibleItems = computed(() =>
     ...item,
     _excerpt: item.description
       ? item.description.slice(0, 150) + (item.description.length > 150 ? '...' : '')
-      : 'No synopsis has been added for this novel yet.',
+      : t('search.noSynopsis'),
     _tags: (item.tags || []).slice(0, 6),
     _readTime: Math.ceil((item.wordCount || 0) / 200),
     _formattedDate: formatShortDate(item.createdAt),
@@ -286,7 +288,7 @@ const enrichedUserResults = computed(() =>
     }))
 )
 
-const novelSortLabel = computed(() => (sortMode.value === 'popular' ? 'Popular novels' : 'Newest novels'))
+const novelSortLabel = computed(() => (sortMode.value === 'popular' ? t('search.popularNovels') : t('search.newestNovels')))
 
 const searchResultPageClass = computed(() => ({
   'search-result-page--users': isUserSearch.value,
@@ -393,7 +395,7 @@ async function blockSearchUser(user) {
 }
 
 function getUserDisplayName(user) {
-  return user?.displayName || user?.username || 'Unknown user'
+  return user?.displayName || user?.username || t('profile.unknownUser')
 }
 
 function getUserAvatar(user) {
@@ -402,7 +404,7 @@ function getUserAvatar(user) {
 
 function getShortUserBio(user) {
   const bio = String(user?.bio || '').trim()
-  if (!bio) return 'This creator has not added a short bio yet.'
+  if (!bio) return t('profile.noBioShort')
   return bio.length > 142 ? `${bio.slice(0, 142)}...` : bio
 }
 
@@ -564,7 +566,7 @@ watch(
         @toggle-favorite="toggleFavoriteTag"
       />
 
-      <nav class="result-tabs" aria-label="Result tabs">
+      <nav class="result-tabs" :aria-label="$t('search.resultTabs')">
         <router-link
           v-for="tab in processedSearchTypeTabs"
           :key="tab.key"
@@ -574,7 +576,7 @@ watch(
         >
           {{ tab.label }} <span class="tab-count">{{ tab._count }}</span>
         </router-link>
-        <button v-if="!isUserSearch" type="button" class="search-option-note" @click="openSearchOptions">Search option</button>
+        <button v-if="!isUserSearch" type="button" class="search-option-note" @click="openSearchOptions">{{ $t('search.searchOption') }}</button>
       </nav>
 
       <UserSearchFilters

@@ -1,11 +1,12 @@
 <script setup>
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AppSearchBar from '../AppSearchBar.vue'
 
 const props = defineProps({
   searchPlaceholder: {
     type: String,
-    default: 'Search by title, tag, or artist',
+    default: '',
   },
   searchScopes: {
     type: Array,
@@ -18,9 +19,11 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['select-scope', 'open-search-options'])
+const { t } = useI18n()
 const isSearchScopeOpen = ref(false)
+const placeholderText = computed(() => props.searchPlaceholder || t('search.searchPlaceholder'))
 const selectedScope = computed(() => props.searchScopes.find((scope) => scope.key === props.selectedSearchScope))
-const selectedScopeLabel = computed(() => selectedScope.value?.label || 'Media')
+const selectedScopeLabel = computed(() => selectedScope.value?.label || t('search.scopeLabel'))
 const selectedScopeIcon = computed(() => selectedScope.value?.icon || 'fa-regular fa-image')
 const selectedScopeQueryType = computed(() => selectedScope.value?.queryType || '')
 
@@ -39,7 +42,7 @@ function chooseSearchScope(scopeKey) {
     <div class="search-unit">
       <AppSearchBar
         class="top-search"
-        :placeholder="props.searchPlaceholder"
+        :placeholder="placeholderText"
         variant="compact"
         :search-scope="selectedScopeQueryType"
       >
@@ -48,8 +51,8 @@ function chooseSearchScope(scopeKey) {
             <button
               type="button"
               class="icon-round"
-              :aria-label="`Search scope: ${selectedScopeLabel}`"
-              :title="`Search scope: ${selectedScopeLabel}`"
+              :aria-label="$t('topbar.searchScope', { type: selectedScopeLabel })"
+              :title="$t('topbar.searchScope', { type: selectedScopeLabel })"
               :aria-expanded="isSearchScopeOpen"
               @click="toggleSearchScopeMenu"
             >
@@ -57,7 +60,7 @@ function chooseSearchScope(scopeKey) {
               <i v-else :class="['scope-icon', selectedScopeIcon]" aria-hidden="true"></i>
               <span class="scope-text">{{ selectedScopeLabel }}</span>
             </button>
-            <div v-if="isSearchScopeOpen" class="dd-panel" role="menu" aria-label="Search scope menu">
+            <div v-if="isSearchScopeOpen" class="dd-panel" role="menu" :aria-label="$t('search.scopeLabel')">
               <button
                 v-for="scope in props.searchScopes"
                 :key="scope.key"
@@ -77,7 +80,7 @@ function chooseSearchScope(scopeKey) {
       </AppSearchBar>
     </div>
 
-    <button type="button" class="icon-round" aria-label="More" title="More" @click="emit('open-search-options')">
+    <button type="button" class="icon-round" :aria-label="$t('search.more')" :title="$t('search.more')" @click="emit('open-search-options')">
       <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
     </button>
   </div>
