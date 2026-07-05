@@ -247,11 +247,17 @@ onMounted(async () => {
                 <span class="plan-price">{{ formatCurrency(plan.targetPrice, plan.currency) }}</span>
               </div>
               <h3 class="plan-title">{{ plan.title }}</h3>
+              <p class="plan-strengths">{{ plan.strengths }}</p>
+              <div class="plan-badges">
+                <span class="badge badge-open">Open</span>
+                <span class="badge badge-accepting">Accepting requests</span>
+              </div>
               <div class="plan-tags">
                 <span v-for="t in plan.acceptedWorkTypes" :key="t" class="plan-tag" :class="{ 'tag-active': t === type }">{{ t }}</span>
                 <span class="plan-tag">{{ plan.estimatedDays }} days</span>
                 <span class="plan-tag">{{ plan.maxOpenRequests }} slots</span>
               </div>
+              <p class="plan-rules">{{ plan.rules }}</p>
               <router-link
                 :to="{ path: '/account', query: { user: plan.creator?._id, tab: 'requests' } }"
                 class="plan-cta"
