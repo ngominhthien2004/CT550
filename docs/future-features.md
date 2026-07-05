@@ -20,4 +20,19 @@ Features stubbed out or documented as planned but not yet implemented.
   - Frontend: Add "Not interested" option to `CardMenuDropdown`. Store hidden artwork IDs in localStorage (key: `illuwrl.hiddenArtworks`). Filter hidden items from feed before rendering.
   - Optional backend: Add `hiddenBy` field on Artwork model or a `UserHiddenArtwork` collection for cross-device sync.
 
+## Send request — Anonymous mode
+
+- **Location**: `frontend/src/components/profile/ProfileRequestsSection.vue`
+- **Status**: ❌ Not implemented — checkbox is commented out, `isAnonymous` field is saved to DB but not used in display.
+- **To implement**:
+  - Backend: When `isAnonymous: true`, hide requester's identity in request list/detail views. Show as "Anonymous" or a generic avatar.
+  - Frontend: Re-enable the checkbox. Add anonymous badge/label in request management views.
+
+## Payment / Escrow system
+
+- **Status**: ❌ Not implemented — success message was simplified to remove escrow reference.
+- **To implement**:
+  - Backend: Add payment integration (Stripe, etc.). Add `Payment` model, escrow logic, release/cancel flow.
+  - Frontend: Add payment form, transaction history, refund UI.
+
 ## (Add new future features here)
