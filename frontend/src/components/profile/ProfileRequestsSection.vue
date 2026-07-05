@@ -412,7 +412,7 @@ textarea {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--surface);
+  background-color: var(--surface);
   color: var(--text);
   font: inherit;
   font-weight: 600;
