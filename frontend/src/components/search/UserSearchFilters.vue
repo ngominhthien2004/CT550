@@ -29,20 +29,6 @@ const sortOptions = [
 
 <template>
   <div class="user-search-filter-row">
-    <div class="user-filter-tabs" aria-label="User search filters">
-      <button
-        type="button"
-        class="user-filter-chip"
-        :class="{ 'is-active': userFilterType === 'creator' }"
-        @click="emit('update:userFilterType', 'creator'); emit('reload')"
-      >{{ $t('search.creators') }}</button>
-      <button
-        type="button"
-        class="user-filter-link"
-        :class="{ 'is-active': userFilterType === 'all' }"
-        @click="emit('update:userFilterType', 'all'); emit('reload')"
-      >{{ $t('search.allAccounts') }}</button>
-    </div>
     <div class="pill-select" ref="sortRef">
       <button type="button" class="pill-trigger" @click.stop="sortOpen = !sortOpen" :aria-label="$t('search.sortUsers')">
         {{ $t(sortOptions.find(o => o.value === userSortMode)?.labelKey || 'search.newest') }}
@@ -71,31 +57,6 @@ const sortOptions = [
   display: flex;
   align-items: center;
   gap: 1rem;
-}
-
-.user-filter-tabs {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.user-filter-chip,
-.user-filter-link {
-  border: none;
-  background: transparent;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--muted);
-  cursor: pointer;
-  border-radius: 999px;
-  transition: all 0.15s;
-}
-
-.user-filter-chip.is-active,
-.user-filter-link.is-active {
-  background: var(--accent);
-  color: #fff;
 }
 
 .pill-select {
