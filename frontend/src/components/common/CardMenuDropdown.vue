@@ -37,18 +37,18 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 
 <template>
   <div class="card-menu-wrapper" ref="menuRef">
-    <button type="button" class="card-menu-trigger" @click="toggleMenu" title="More options" aria-label="More options">
+    <button type="button" class="card-menu-trigger" @click="toggleMenu" :title="$t('artwork.moreOptions')" :aria-label="$t('artwork.moreOptions')">
       <i class="fa-solid fa-ellipsis"></i>
     </button>
     <Transition name="menu-fade">
       <div v-if="isOpen" class="card-menu-dropdown">
         <button type="button" class="card-menu-item" @click="handleShare">
           <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
-          <span>Share</span>
+          <span>{{ $t('artwork.share') }}</span>
         </button>
         <button type="button" class="card-menu-item" @click="handleReport">
           <i class="fa-regular fa-flag" aria-hidden="true"></i>
-          <span>Report</span>
+          <span>{{ $t('artwork.report') }}</span>
         </button>
       </div>
     </Transition>

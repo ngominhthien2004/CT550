@@ -276,7 +276,7 @@ const getAvatar = (user) => {
 
 <template>
   <div class="comments-section mt-5">
-    <h3 class="section-title mb-4">Comments</h3>
+    <h3 class="section-title mb-4">{{ $t('artwork.comments') }}</h3>
 
     <!-- Input Area -->
     <div class="comment-input-row d-flex gap-3 mb-5">
@@ -286,7 +286,7 @@ const getAvatar = (user) => {
           v-model="commentContent"
           ref="textareaRef"
           class="comment-textarea"
-          placeholder="Leave a comment"
+          :placeholder="$t('artwork.leaveComment')"
           rows="1"
           aria-label="Write a comment"
           @keydown.enter.ctrl="handleSubmit"
@@ -301,7 +301,7 @@ const getAvatar = (user) => {
         :disabled="(!commentContent.trim() && !emoji.trim()) || isSubmitting"
         @click="handleSubmit"
       >
-        {{ isSubmitting ? '...' : 'Send' }}
+        {{ isSubmitting ? '...' : $t('artwork.send') }}
       </button>
     </div>
 
@@ -335,7 +335,7 @@ const getAvatar = (user) => {
               <div class="comment-meta d-flex align-items-center gap-3">
                 <span class="comment-date text-muted">{{ comment._createdAt }}</span>
                 <button type="button" class="btn-reply p-0 border-0 bg-transparent" @click="toggleReplyInput(comment._id)">
-                  Reply
+                  {{ $t('artwork.reply') }}
                 </button>
                 <button type="button"
                   v-if="comment._canDelete"
@@ -343,14 +343,14 @@ const getAvatar = (user) => {
                   :class="{ 'confirming': confirmDeleteId === comment._id }"
                   @click="handleDelete(comment._id)"
                 >
-                  {{ confirmDeleteId === comment._id ? 'Confirm?' : 'Delete' }}
+                  {{ confirmDeleteId === comment._id ? $t('artwork.confirmDelete') : $t('artwork.delete') }}
                 </button>
                 <button type="button"
                   v-if="comment._canReport"
                   class="btn-report p-0 border-0 bg-transparent"
                   @click="openReportModal(comment)"
                 >
-                  <i class="fa-regular fa-flag me-1"></i>Report
+                  <i class="fa-regular fa-flag me-1"></i>{{ $t('artwork.report') }}
                 </button>
               </div>
             </div>
@@ -360,7 +360,7 @@ const getAvatar = (user) => {
             <textarea
               v-model="replyContentByCommentId[comment._id]"
               class="comment-textarea"
-              placeholder="Write a reply"
+              :placeholder="$t('artwork.writeReply')"
               rows="1"
               aria-label="Write a reply"
             ></textarea>
@@ -378,7 +378,7 @@ const getAvatar = (user) => {
                 :disabled="(!(replyContentByCommentId[comment._id] || '').trim() && !(replyEmojiByCommentId[comment._id] || '').trim()) || submittingReplyByCommentId[comment._id]"
                 @click="handleReplySubmit(comment._id)"
               >
-                {{ submittingReplyByCommentId[comment._id] ? '...' : 'Send Reply' }}
+                {{ submittingReplyByCommentId[comment._id] ? '...' : $t('artwork.sendReply') }}
               </button>
             </div>
 
@@ -387,19 +387,19 @@ const getAvatar = (user) => {
               v-model="replyEmojiByCommentId[comment._id]"
               class="form-control form-control-sm mt-2"
               type="url"
-              placeholder="Sticker image URL (optional)"
-              aria-label="Sticker image URL"
+              :placeholder="$t('artwork.stickerUrl')"
+              :aria-label="$t('artwork.stickerUrl')"
             />
           </div>
 
           <div v-if="comment._hasReplies" class="mt-2 text-start">
             <button type="button" class="btn-display-replies py-1 px-3" @click="toggleReplies(comment)">
-              {{ comment._isExpanded ? 'Hide Replies' : `Display Replies (${comment._replyCountDisplay})` }}
+              {{ comment._isExpanded ? $t('artwork.hideReplies') : $t('artwork.displayReplies', { count: comment._replyCountDisplay }) }}
             </button>
           </div>
 
           <div v-if="comment._isExpanded" class="replies-wrap mt-3 d-grid gap-3">
-            <div v-if="commentStore.loadingRepliesByCommentId[comment._id]" class="text-muted small">Loading replies...</div>
+            <div v-if="commentStore.loadingRepliesByCommentId[comment._id]" class="text-muted small">{{ $t('artwork.loadingReplies') }}</div>
             <template v-else>
               <div
                 v-for="reply in comment._replies"
@@ -420,20 +420,20 @@ const getAvatar = (user) => {
                         :class="{ 'confirming': confirmDeleteId === reply._id }"
                         @click="handleDelete(reply._id)"
                       >
-                        {{ confirmDeleteId === reply._id ? 'Confirm?' : 'Delete' }}
+                        {{ confirmDeleteId === reply._id ? $t('artwork.confirmDelete') : $t('artwork.delete') }}
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
-              <div v-if="comment._replies.length === 0" class="small text-muted">No replies yet.</div>
+              <div v-if="comment._replies.length === 0" class="small text-muted">{{ $t('artwork.noReplies') }}</div>
             </template>
           </div>
         </div>
       </div>
       
       <div v-if="commentStore.items.length === 0" class="text-center py-5 text-muted">
-        No comments yet. Be the first to comment!
+        {{ $t('artwork.noComments') }}
       </div>
     </div>
 

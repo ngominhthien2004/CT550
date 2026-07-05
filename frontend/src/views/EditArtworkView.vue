@@ -2,6 +2,7 @@
 import { computed, onMounted, onBeforeUnmount, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
+import { useI18n } from 'vue-i18n'
 import UploadTagSelector from '../components/upload/UploadTagSelector.vue'
 import api, { getArtworkById, getTags } from '../services/api'
 import { useArtworkStore } from '../stores/artwork.store'
@@ -10,6 +11,7 @@ import { toggleNavCollapsed } from '../utils/viewNavigation'
 const route = useRoute()
 const router = useRouter()
 const artworkStore = useArtworkStore()
+const { t } = useI18n()
 const isNavCollapsed = ref(true)
 
 const loading = ref(true)
@@ -75,7 +77,7 @@ function commitTag(tagValue, clearInput = true) {
     return
   }
   if (form.tags.length >= 10) {
-    submitError.value = 'You can use up to 10 tags.'
+    submitError.value = t('upload.maxTags')
     return
   }
   form.tags.push(normalizedTag)
@@ -130,7 +132,7 @@ async function fetchTagSuggestions(keyword) {
 async function loadArtwork() {
   const artworkId = route.params.id
   if (!artworkId) {
-    error.value = 'No artwork ID provided.'
+    error.value = t('artwork.noData')
     loading.value = false
     return
   }
@@ -149,7 +151,7 @@ async function loadArtwork() {
       .map((t) => (typeof t === 'string' ? t : t.name || ''))
       .filter(Boolean)
   } catch (err) {
-    error.value = err?.response?.data?.message || 'Failed to load artwork.'
+    error.value = err?.response?.data?.message || t('artwork.noData')
   } finally {
     loading.value = false
   }
@@ -205,13 +207,13 @@ onBeforeUnmount(() => {
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="edit-page">
       <div class="edit-wrap">
-        <p v-if="loading" class="state-note">Loading artwork...</p>
+        <p v-if="loading" class="state-note">{{ $t('artwork.loadingDetail') }}</p>
         <p v-else-if="error" class="state-note state-note--error">{{ error }}</p>
 
         <template v-else-if="artwork">
           <div class="edit-hero">
             <div class="edit-hero-inner">
-              <p class="edit-hero-kicker">Edit artwork</p>
+              <p class="edit-hero-kicker">{{ $t('artwork.editArtwork') }}</p>
               <h1 class="edit-hero-title">{{ artwork.title }}</h1>
               <div class="edit-hero-meta">
                 <span class="meta-pill">{{ artwork.type }}</span>
@@ -220,7 +222,7 @@ onBeforeUnmount(() => {
               </div>
             </div>
             <router-link :to="`/artworks/${artwork._id}`" class="back-link">
-              <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> View artwork
+              <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> {{ $t('artwork.viewArtwork') }}
             </router-link>
           </div>
 
@@ -243,7 +245,7 @@ onBeforeUnmount(() => {
               <div class="settings-row">
                 <div class="settings-label">
                   <span class="placeholder-badge"></span>
-                  <span class="label-text">Type of Work</span>
+                  <span class="label-text">{{ $t('artwork.typeOfWork') }}</span>
                 </div>
                 <div class="settings-options">
                   <span class="type-badge">{{ artwork.type }}</span>
@@ -252,19 +254,19 @@ onBeforeUnmount(() => {
               <div class="settings-divider"></div>
               <div class="settings-row">
                 <div class="settings-label">
-                  <span class="required-badge">Required</span>
-                  <span class="label-text label-text--required">Visible to</span>
+                  <span class="required-badge">{{ $t('upload.required') }}</span>
+                  <span class="label-text label-text--required">{{ $t('upload.visibleTo') }}</span>
                 </div>
                 <div class="settings-options">
                   <label class="custom-radio">
                     <input v-model="form.ageRating" type="radio" name="ageRating" value="all" />
                     <span class="radio-dot"></span>
-                    <span>All ages</span>
+                    <span>{{ $t('upload.allAges') }}</span>
                   </label>
                   <label class="custom-radio">
                     <input v-model="form.ageRating" type="radio" name="ageRating" value="r-18" />
                     <span class="radio-dot"></span>
-                    <span>R-18</span>
+                    <span>{{ $t('upload.r18') }}</span>
                   </label>
                 </div>
               </div>
@@ -272,18 +274,18 @@ onBeforeUnmount(() => {
               <div class="settings-row">
                 <div class="settings-label">
                   <span class="placeholder-badge"></span>
-                  <span class="label-text">Comments</span>
+                  <span class="label-text">{{ $t('upload.comments') }}</span>
                 </div>
                 <div class="settings-options">
                   <label class="custom-radio">
                     <input v-model="form.commentsEnabled" type="radio" :value="true" />
                     <span class="radio-dot"></span>
-                    <span>ON</span>
+                    <span>{{ $t('upload.on') }}</span>
                   </label>
                   <label class="custom-radio">
                     <input v-model="form.commentsEnabled" type="radio" :value="false" />
                     <span class="radio-dot"></span>
-                    <span>OFF</span>
+                    <span>{{ $t('upload.off') }}</span>
                   </label>
                 </div>
               </div>
@@ -297,7 +299,7 @@ onBeforeUnmount(() => {
                   class="title-input"
                   :maxlength="TITLE_MAX"
                   required
-                  placeholder="Title"
+                  :placeholder="$t('artwork.title')"
                 />
                 <span class="counter-badge">{{ titleCount }}/{{ TITLE_MAX }}</span>
               </div>
@@ -308,7 +310,7 @@ onBeforeUnmount(() => {
                   class="caption-textarea"
                   :maxlength="DESC_MAX"
                   rows="5"
-                  placeholder="Caption"
+                  :placeholder="$t('artwork.caption')"
                 ></textarea>
                 <span class="counter-badge counter-badge--bottom">{{ descCount }}/{{ DESC_MAX }}</span>
               </div>
@@ -332,33 +334,33 @@ onBeforeUnmount(() => {
             <div class="settings-card">
               <div class="settings-row">
                 <div class="settings-label">
-                  <span class="required-badge">Required</span>
-                  <span class="label-text label-text--required">Visible to</span>
+                  <span class="required-badge">{{ $t('upload.required') }}</span>
+                  <span class="label-text label-text--required">{{ $t('upload.visibleTo') }}</span>
                 </div>
                 <div class="settings-options">
                   <label class="custom-radio">
                     <input v-model="form.ageRating" type="radio" name="ageRating" value="all" />
                     <span class="radio-dot"></span>
-                    <span>All ages</span>
+                    <span>{{ $t('upload.allAges') }}</span>
                   </label>
                   <label class="custom-radio">
                     <input v-model="form.ageRating" type="radio" name="ageRating" value="r-18" />
                     <span class="radio-dot"></span>
-                    <span>R-18</span>
+                    <span>{{ $t('upload.r18') }}</span>
                   </label>
                 </div>
               </div>
             </div>
 
             <p v-if="submitError" class="error-msg">{{ submitError }}</p>
-            <p v-if="submitSuccess" class="success-msg">Artwork updated successfully.</p>
+            <p v-if="submitSuccess" class="success-msg">{{ $t('artwork.updated') }}</p>
 
             <div class="form-actions">
               <button type="button" class="btn btn--delete" @click="showDeleteConfirm = true">
-                <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete
+                <i class="fa-solid fa-trash" aria-hidden="true"></i> {{ $t('artwork.delete') }}
               </button>
               <button type="submit" class="btn btn--save" :disabled="!canSubmit">
-                {{ submitting ? 'Saving...' : 'Save' }}
+                {{ submitting ? $t('artwork.saving') : $t('artwork.save') }}
               </button>
             </div>
           </form>
@@ -367,12 +369,12 @@ onBeforeUnmount(() => {
 
       <div v-if="showDeleteConfirm" class="modal-backdrop" @click.self="showDeleteConfirm = false">
         <div class="modal-dialog">
-          <h3 class="modal-title">Delete artwork</h3>
-          <p class="modal-text">Are you sure you want to delete "{{ artwork?.title }}"? This action cannot be undone.</p>
+          <h3 class="modal-title">{{ $t('artwork.deleteArtwork') }}</h3>
+          <p class="modal-text">{{ $t('artwork.deleteConfirm', { title: artwork?.title }) }}</p>
           <div class="modal-actions">
-            <button type="button" class="btn btn--cancel" @click="showDeleteConfirm = false">Cancel</button>
+            <button type="button" class="btn btn--cancel" @click="showDeleteConfirm = false">{{ $t('artwork.cancel') }}</button>
             <button type="button" class="btn btn--danger" @click="handleDelete" :disabled="deleting">
-              {{ deleting ? 'Deleting...' : 'Delete' }}
+              {{ deleting ? $t('artwork.deleting') : $t('artwork.delete') }}
             </button>
           </div>
         </div>

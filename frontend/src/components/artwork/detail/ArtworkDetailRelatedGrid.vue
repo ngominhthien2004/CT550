@@ -23,7 +23,7 @@ const gridGroups = computed(() => {
 <template>
   <section class="related-shell">
     <header class="related-head">
-      <h2 class="related-heading">Recommended works</h2>
+      <h2 class="related-heading">{{ $t('artwork.recommendedWorks') }}</h2>
     </header>
 
     <template v-if="!relatedWorks.length">

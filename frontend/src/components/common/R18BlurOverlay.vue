@@ -79,11 +79,11 @@ watch(
         <div class="r18-overlay">
           <div class="r18-overlay-body" :class="{ 'r18-overlay-body-sm': blurSize === 'sm' }">
             <i class="fa-solid fa-triangle-exclamation r18-icon"></i>
-            <p class="r18-message">This artwork contains adult content</p>
-            <button type="button" class="r18-reveal-btn" @click.stop="reveal">Click to view</button>
+            <p class="r18-message">{{ $t('artwork.adultContent') }}</p>
+            <button type="button" class="r18-reveal-btn" @click.stop="reveal">{{ $t('artwork.clickToView') }}</button>
             <label class="r18-remember">
               <input type="checkbox" v-model="alwaysShow" />
-              <span>Always show R-18 content</span>
+              <span>{{ $t('artwork.alwaysShowR18') }}</span>
             </label>
           </div>
         </div>
@@ -92,7 +92,7 @@ watch(
       <!-- Revealed state: slot content + small corner badge -->
       <div v-show="isRevealed" class="r18-revealed">
         <slot />
-        <button type="button" class="r18-corner-badge" @click.stop="reBlur" title="Re-blur R-18 content">
+        <button type="button" class="r18-corner-badge" @click.stop="reBlur" :title="$t('artwork.reBlur')">
           <span class="r18-corner-label">R-18</span>
           <span class="r18-corner-close">&times;</span>
         </button>

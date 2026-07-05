@@ -8,11 +8,13 @@ import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import SeriesHero from '@/components/series/SeriesHero.vue'
 import SeriesArtworksGrid from '@/components/series/SeriesArtworksGrid.vue'
 import SeriesChaptersList from '@/components/series/SeriesChaptersList.vue'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
 const router = useRouter()
 const seriesStore = useSeriesStore()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const isNavCollapsed = ref(true)
 const chapters = ref([])
@@ -98,7 +100,7 @@ onMounted(async () => {
       await loadChapters()
     }
   } catch (err) {
-    seriesLoadError.value = err?.response?.data?.message || 'Failed to load series'
+    seriesLoadError.value = err?.response?.data?.message || t('artwork.noData')
   }
 })
 </script>
@@ -107,18 +109,18 @@ onMounted(async () => {
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="isNavCollapsed = !isNavCollapsed">
     <div class="series-detail-page" v-if="!seriesStore.detailLoading || series">
       <div v-if="!series && seriesStore.detailLoading" class="state-loading">
-        <p>Loading series...</p>
+        <p>{{ $t('artwork.loadingSeries') }}</p>
       </div>
 
       <div v-else-if="!series" class="state-error">
-        <h2>Series not found</h2>
-        <p>The series you're looking for doesn't exist or has been removed.</p>
-        <button type="button" class="back-btn" @click="goBack">Go back</button>
+        <h2>{{ $t('artwork.seriesNotFound') }}</h2>
+        <p>{{ $t('artwork.seriesRemoved') }}</p>
+        <button type="button" class="back-btn" @click="goBack">{{ $t('artwork.goBack') }}</button>
       </div>
 
       <div v-else class="series-content">
         <button type="button" class="back-link" @click="goBack">
-          <i class="fa-solid fa-arrow-left"></i> Back
+          <i class="fa-solid fa-arrow-left"></i> {{ $t('artwork.back') }}
         </button>
 
         <div v-if="successMsg" class="alert alert-success alert-dismissible fade show" role="alert">
@@ -154,7 +156,7 @@ onMounted(async () => {
             :to="'/dashboard?tab=works'"
             class="owner-btn owner-btn--edit"
           >
-            <i class="fa-solid fa-pen"></i> Manage in Dashboard
+            <i class="fa-solid fa-pen"></i> {{ $t('artwork.manageDashboard') }}
           </router-link>
         </div>
       </div>

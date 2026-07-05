@@ -68,7 +68,7 @@ function getImageCount(item) {
     <div class="card-cover-wrapper">
       <div v-if="item.isHidden" class="artwork-hidden-banner">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-        <span>Hidden by administrator</span>
+        <span>{{ $t('artwork.hiddenByAdmin') }}</span>
       </div>
       <R18BlurOverlay :artwork="item" :showBadgeOnly="true">
         <router-link :to="`/artworks/${item._id}`" class="card-cover-link">
@@ -85,10 +85,10 @@ function getImageCount(item) {
         </router-link>
       </R18BlurOverlay>
 
-      <button type="button" class="btn-bookmark" :class="{ 'is-active': isBookmarked }" aria-label="Bookmark" @click.prevent="handleBookmark" :disabled="isToggling">
+      <button type="button" class="btn-bookmark" :class="{ 'is-active': isBookmarked }" :aria-label="$t('artwork.bookmark')" @click.prevent="handleBookmark" :disabled="isToggling">
         <i :class="isBookmarked ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'"></i>
       </button>
-      <button type="button" v-if="isLoggedIn" class="btn-report" @click.stop="showReportModal = true" title="Report artwork">
+      <button type="button" v-if="isLoggedIn" class="btn-report" @click.stop="showReportModal = true" :title="$t('artwork.reportArtwork')">
         <i class="fa-regular fa-flag" aria-hidden="true"></i>
       </button>
     </div>

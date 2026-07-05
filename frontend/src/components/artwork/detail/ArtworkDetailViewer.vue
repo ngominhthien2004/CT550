@@ -1,6 +1,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUpdate, onMounted, onUnmounted, ref, toRefs, watch } from 'vue'
 import ReportModal from '@/components/common/ReportModal.vue'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../../../stores/auth.store'
 import R18BlurOverlay from '../../common/R18BlurOverlay.vue'
 
@@ -16,6 +17,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['toggle-like', 'toggle-bookmark'])
+const { t } = useI18n()
 
 const { artwork, isLiked, isBookmarked, likeLoading, bookmarkLoading } = toRefs(props)
 
@@ -87,7 +89,7 @@ async function handleCopyLink() {
     document.execCommand('copy')
     document.body.removeChild(textarea)
   }
-  showToastMessage('Link copied!')
+  showToastMessage(t('artwork.linkCopied'))
   showMoreMenu.value = false
 }
 
@@ -134,7 +136,7 @@ watch(() => artwork.value?._id, resetViewerState, { immediate: true })
 
 <template>
   <div class="viewer-card">
-    <div v-if="imageList.length > 0" class="image-stack" :class="{ collapsed: !showAllImages && imageList.length > 1 }" :aria-label="`${artwork.title} pages`">
+    <div v-if="imageList.length > 0" class="image-stack" :class="{ collapsed: !showAllImages && imageList.length > 1 }" :aria-label="$t('artwork.pageLabel', { title: artwork.title })">
       <R18BlurOverlay
         v-for="(image, index) in visibleImages"
         :key="`${artwork._id}-page-${index}`"
@@ -160,7 +162,7 @@ watch(() => artwork.value?._id, resetViewerState, { immediate: true })
           class="icon-btn"
           :class="{ active: isLiked }"
           :disabled="likeLoading"
-          aria-label="Like"
+          :aria-label="$t('artwork.like')"
           @click="emit('toggle-like')"
         >
           <i :class="[isLiked ? 'fa-solid' : 'fa-regular', 'fa-heart']" aria-hidden="true"></i>
@@ -170,22 +172,22 @@ watch(() => artwork.value?._id, resetViewerState, { immediate: true })
           class="icon-btn bookmark-btn"
           :class="{ active: isBookmarked }"
           :disabled="bookmarkLoading"
-          aria-label="Bookmark"
+          :aria-label="$t('artwork.bookmark')"
           @click="emit('toggle-bookmark')"
         >
           <i :class="[isBookmarked ? 'fa-solid' : 'fa-regular', 'fa-bookmark']" aria-hidden="true"></i>
         </button>
-        <button type="button" class="icon-btn" aria-label="Share" @click="handleShare">
+        <button type="button" class="icon-btn" :aria-label="$t('artwork.share')" @click="handleShare">
           <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>
         </button>
         <div class="more-btn-wrapper">
-          <button type="button" class="icon-btn" aria-label="More options" @click="toggleMoreMenu">
+          <button type="button" class="icon-btn" :aria-label="$t('artwork.moreOptions')" @click="toggleMoreMenu">
             <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
           </button>
           <div v-if="showMoreMenu" class="dd-panel">
-            <button type="button" class="dd-item" @click="handleCopyLink">Copy link</button>
-            <button type="button" class="dd-item" @click="handleDownload">Download</button>
-            <button type="button" class="dd-item" @click="toggleMoreMenu(); showReportModal = true">Report</button>
+            <button type="button" class="dd-item" @click="handleCopyLink">{{ $t('artwork.copyLink') }}</button>
+            <button type="button" class="dd-item" @click="handleDownload">{{ $t('artwork.download') }}</button>
+            <button type="button" class="dd-item" @click="toggleMoreMenu(); showReportModal = true">{{ $t('artwork.report') }}</button>
           </div>
         </div>
       </div>
@@ -195,18 +197,18 @@ watch(() => artwork.value?._id, resetViewerState, { immediate: true })
         class="show-all-button"
         @click="revealAllImages"
       >
-        Show all
-        <span>{{ imageList.length }} images</span>
+        {{ $t('artwork.showAll') }}
+        <span>{{ $t('artwork.imagesLabel', { count: imageList.length }) }}</span>
       </button>
     </div>
     <div v-else class="empty-viewer">
       <i class="fa-regular fa-image" aria-hidden="true"></i>
-      <span>No image available</span>
+      <span>{{ $t('artwork.noImage') }}</span>
     </div>
 
     <div v-if="imageList.length > 1 && showAllImages" class="d-grid gap-2 mt-3">
       <div class="d-flex align-items-center justify-content-between">
-        <p class="small text-secondary mb-0">Jump to image {{ selectedImageIndex + 1 }} / {{ imageList.length }}</p>
+        <p class="small text-secondary mb-0">{{ $t('artwork.jumpToImage', { current: selectedImageIndex + 1, total: imageList.length }) }}</p>
       </div>
       <div class="thumbnail-strip">
         <button
@@ -215,7 +217,7 @@ watch(() => artwork.value?._id, resetViewerState, { immediate: true })
           type="button"
           class="thumb-button"
           :class="{ active: selectedImageIndex === index }"
-          :aria-label="`Open image ${index + 1}`"
+          :aria-label="$t('artwork.openImage', { index: index + 1 })"
           @click="selectImage(index)"
         >
           <img :src="image" :alt="`${artwork.title} thumbnail ${index + 1}`" loading="lazy" />

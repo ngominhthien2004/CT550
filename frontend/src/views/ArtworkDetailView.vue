@@ -11,6 +11,7 @@ import { useArtworkStore } from '../stores/artwork.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
 import { useLikeStore } from '../stores/like.store'
 import { useFollowStore } from '../stores/follow.store'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
 const router = useRouter()
@@ -19,6 +20,7 @@ const artworkStore = useArtworkStore()
 const bookmarkStore = useBookmarkStore()
 const likeStore = useLikeStore()
 const followStore = useFollowStore()
+const { t } = useI18n()
 const isNavCollapsed = ref(true)
 const relatedWorks = ref([])
 const isBookmarked = ref(false)
@@ -66,8 +68,8 @@ const followLoading = computed(() => {
   return followStore.isTogglingFollow(artistId.value)
 })
 const displayAuthor = computed(() => {
-  if (!artwork.value?.user) return 'Unknown artist'
-  return artwork.value.user.displayName || artwork.value.user.username || 'Unknown artist'
+  if (!artwork.value?.user) return t('artwork.unknownArtist')
+  return artwork.value.user.displayName || artwork.value.user.username || t('artwork.unknownArtist')
 })
 const isOwnArtist = computed(() => {
   if (!artistId.value || !authStore.user?._id) {
@@ -412,7 +414,7 @@ watch(
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="detail-page-content d-grid gap-3">
-      <p v-if="artworkStore.loading" class="text-secondary mb-0">Loading artwork detail...</p>
+      <p v-if="artworkStore.loading" class="text-secondary mb-0">{{ $t('artwork.loadingDetail') }}</p>
       <p v-else-if="artworkStore.error" class="text-danger mb-0">{{ artworkStore.error }}</p>
 
       <!-- Novel Reader -->
@@ -462,7 +464,7 @@ watch(
                       {{ displayAuthor }}
                     </router-link>
                     <p class="author-card-stats">
-                      Followers {{ artistFollowersCount }} · Following {{ artistFollowingCount }}
+                      {{ $t('profile.followers') }} {{ artistFollowersCount }} · {{ $t('profile.following') }} {{ artistFollowingCount }}
                     </p>
                   </div>
                   <button
@@ -473,7 +475,7 @@ watch(
                     :disabled="followLoading"
                     @click="handleFollowToggle"
                   >
-                    {{ isFollowing ? 'Following' : 'Follow' }}
+                    {{ isFollowing ? $t('artwork.following') : $t('artwork.follow') }}
                   </button>
                 </div>
               </div>
@@ -522,7 +524,7 @@ watch(
         @toggle-bookmark="handleBookmarkToggle"
         @toggle-follow="handleFollowToggle"
       />
-      <p v-else class="text-secondary mb-0">No artwork data found.</p>
+      <p v-else class="text-secondary mb-0">{{ $t('artwork.noData') }}</p>
     </section>
   </MainLayoutTemplate>
 </template>
