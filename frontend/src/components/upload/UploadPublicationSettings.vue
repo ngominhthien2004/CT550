@@ -1,6 +1,4 @@
 <script setup>
-import { ref } from 'vue'
-
 const props = defineProps({
   form: {
     type: Object,
@@ -15,9 +13,6 @@ const props = defineProps({
     default: false,
   },
 })
-
-const showAgeBubble = ref(false)
-const showAiBubble = ref(false)
 </script>
 
 <template>
@@ -44,8 +39,8 @@ const showAiBubble = ref(false)
       </div>
       <div class="row-right">
         <div class="bubble-wrap">
-          <a href="#" class="row-link" @click.prevent="showAgeBubble = !showAgeBubble">{{ $t('upload.whatAgeRestrictions') }}</a>
-          <div v-if="showAgeBubble" class="bubble-note">
+          <a href="#" class="row-link" @click.prevent>{{ $t('upload.whatAgeRestrictions') }}</a>
+          <div class="bubble-note">
             <p>{{ $t('upload.ageRestrictionsDesc') }}</p>
           </div>
         </div>
@@ -80,8 +75,8 @@ const showAiBubble = ref(false)
       </div>
       <div class="row-right">
         <div class="bubble-wrap">
-          <a href="#" class="row-link" @click.prevent="showAiBubble = !showAiBubble">{{ $t('upload.whatAiGenerated') }}</a>
-          <div v-if="showAiBubble" class="bubble-note">
+          <a href="#" class="row-link" @click.prevent>{{ $t('upload.whatAiGenerated') }}</a>
+          <div class="bubble-note">
             <p>{{ $t('upload.aiGeneratedDesc') }}</p>
           </div>
         </div>
@@ -212,6 +207,14 @@ const showAiBubble = ref(false)
   font-size: 0.82rem;
   color: var(--text);
   line-height: 1.5;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s, visibility 0.15s;
+}
+
+.bubble-wrap:hover .bubble-note {
+  opacity: 1;
+  visibility: visible;
 }
 
 .bubble-note::after {
