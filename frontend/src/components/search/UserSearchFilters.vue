@@ -1,4 +1,5 @@
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -9,6 +10,21 @@ defineProps({
 })
 
 const emit = defineEmits(['update:userFilterType', 'update:userSortMode', 'reload'])
+
+const sortOpen = ref(false)
+const sortRef = ref(null)
+
+function onClickOutside(e) {
+  if (sortRef.value && !sortRef.value.contains(e.target)) sortOpen.value = false
+}
+
+onMounted(() => document.addEventListener('click', onClickOutside))
+onUnmounted(() => document.removeEventListener('click', onClickOutside))
+
+const sortOptions = [
+  { value: 'newest', labelKey: 'search.newest' },
+  { value: 'popular', labelKey: 'search.popular' },
+]
 </script>
 
 <template>
@@ -27,14 +43,28 @@ const emit = defineEmits(['update:userFilterType', 'update:userSortMode', 'reloa
         @click="emit('update:userFilterType', 'all'); emit('reload')"
       >{{ $t('search.allAccounts') }}</button>
     </div>
-    <label class="order-select">
-      <select :value="userSortMode" :aria-label="$t('search.sortUsers')" @change="emit('update:userSortMode', $event.target.value); emit('reload')">
-        <option value="newest">{{ $t('search.newest') }}</option>
-        <option value="popular">{{ $t('search.popular') }}</option>
-      </select>
-    </label>
+    <div class="pill-select" ref="sortRef">
+      <button type="button" class="pill-trigger" @click.stop="sortOpen = !sortOpen" :aria-label="$t('search.sortUsers')">
+        {{ $t(sortOptions.find(o => o.value === userSortMode)?.labelKey || 'search.newest') }}
+        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+      </button>
+      <div v-if="sortOpen" class="dd-panel">
+        <button
+          v-for="opt in sortOptions"
+          :key="opt.value"
+          type="button"
+          class="dd-item"
+          :class="{ 'is-active': userSortMode === opt.value }"
+          @click="emit('update:userSortMode', opt.value); emit('reload'); sortOpen = false"
+        >
+          {{ $t(opt.labelKey) }}
+        </button>
+      </div>
+    </div>
   </div>
 </template>
+
+<style scoped src="../../assets/styles/dropdown.css"></style>
 
 <style scoped>
 .user-search-filter-row {
@@ -64,16 +94,39 @@ const emit = defineEmits(['update:userFilterType', 'update:userSortMode', 'reloa
 
 .user-filter-chip.is-active,
 .user-filter-link.is-active {
-  background: var(--brand);
+  background: var(--accent);
   color: #fff;
 }
 
-.order-select select {
-  padding: 0.4rem 0.65rem;
+.pill-select {
+  position: relative;
+  display: inline-block;
+}
+
+.pill-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
   border: 1px solid var(--line);
-  border-radius: 6px;
   background: var(--surface);
-  font-size: 0.85rem;
   color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.pill-trigger i {
+  font-size: 0.55rem;
+  opacity: 0.6;
+  transition: transform 0.15s;
+}
+
+.pill-trigger:hover {
+  background: var(--surface-alt);
+  border-color: var(--muted);
 }
 </style>
