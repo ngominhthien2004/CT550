@@ -1,4 +1,6 @@
 <script setup>
+import { ref } from 'vue'
+
 const props = defineProps({
   form: {
     type: Object,
@@ -13,6 +15,9 @@ const props = defineProps({
     default: false,
   },
 })
+
+const showAgeBubble = ref(false)
+const showAiBubble = ref(false)
 </script>
 
 <template>
@@ -38,7 +43,12 @@ const props = defineProps({
         </div>
       </div>
       <div class="row-right">
-        <a href="#" class="row-link" @click.prevent>{{ $t('upload.whatAgeRestrictions') }}</a>
+        <div class="bubble-wrap">
+          <a href="#" class="row-link" @click.prevent="showAgeBubble = !showAgeBubble">{{ $t('upload.whatAgeRestrictions') }}</a>
+          <div v-if="showAgeBubble" class="bubble-note">
+            <p>{{ $t('upload.ageRestrictionsDesc') }}</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -69,7 +79,12 @@ const props = defineProps({
         </div>
       </div>
       <div class="row-right">
-        <a href="#" class="row-link" @click.prevent>{{ $t('upload.whatAiGenerated') }}</a>
+        <div class="bubble-wrap">
+          <a href="#" class="row-link" @click.prevent="showAiBubble = !showAiBubble">{{ $t('upload.whatAiGenerated') }}</a>
+          <div v-if="showAiBubble" class="bubble-note">
+            <p>{{ $t('upload.aiGeneratedDesc') }}</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -176,6 +191,40 @@ const props = defineProps({
 
 .row-link:hover {
   text-decoration: underline;
+}
+
+.bubble-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.bubble-note {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.75rem;
+  box-shadow: var(--shadow-md);
+  z-index: 20;
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.bubble-note::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 20px;
+  border: 6px solid transparent;
+  border-top-color: var(--surface);
+}
+
+.bubble-note p {
+  margin: 0;
 }
 
 .custom-select {
