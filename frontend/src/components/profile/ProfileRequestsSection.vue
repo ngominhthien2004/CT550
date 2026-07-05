@@ -233,17 +233,20 @@ watch(
         </label>
         <label>
           {{ $t('request.workType') }}
-          <div class="pill-select" ref="workTypeSelectRef">
-            <button type="button" class="pill-trigger" @click.stop="workTypeSelectOpen = !workTypeSelectOpen">
-              {{ form.workType }}
-              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
-            </button>
-            <div v-if="workTypeSelectOpen" class="dd-panel">
-              <button v-for="type in selectedTerm?.acceptedWorkTypes || []" :key="type" type="button" class="dd-item" :class="{ 'is-active': form.workType === type }" @click="form.workType = type; workTypeSelectOpen = false">
-                {{ type }}
+          <template v-if="(selectedTerm?.acceptedWorkTypes || []).length > 1">
+            <div class="pill-select" ref="workTypeSelectRef">
+              <button type="button" class="pill-trigger" @click.stop="workTypeSelectOpen = !workTypeSelectOpen">
+                {{ form.workType }}
+                <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
               </button>
+              <div v-if="workTypeSelectOpen" class="dd-panel">
+                <button v-for="type in selectedTerm?.acceptedWorkTypes || []" :key="type" type="button" class="dd-item" :class="{ 'is-active': form.workType === type }" @click="form.workType = type; workTypeSelectOpen = false">
+                  {{ type }}
+                </button>
+              </div>
             </div>
-          </div>
+          </template>
+          <span v-else class="work-type-static">{{ form.workType }}</span>
         </label>
         <label>
           {{ $t('request.visibility') }}
@@ -575,6 +578,17 @@ textarea {
 
 .pill-trigger:hover {
   border-color: var(--muted);
+}
+
+.work-type-static {
+  display: block;
+  padding: 0.68rem 0.72rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background-color: var(--surface-alt);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .pill-select .dd-panel {
