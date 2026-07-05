@@ -53,13 +53,10 @@ const followStore = useFollowStore()
               <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
               </button>
               <div v-if="activeUserMenuId === user._id" class="user-action-menu" role="menu">
-                <button type="button" role="menuitem" @click="emit('close-menu')">{{ $t('search.followPrivately') }}</button>
-                <span class="menu-separator" aria-hidden="true"></span>
-                <button type="button" role="menuitem" @click="emit('close-menu')">{{ $t('search.muteSetting') }}</button>
                 <button type="button" role="menuitem" :disabled="blockSubmittingId === user._id" @click="emit('block-user', user)">
                   {{ blockSubmittingId === user._id ? $t('profile.unblocking') : $t('profile.block') }}
                 </button>
-                <button type="button" role="menuitem" @click="emit('close-menu')">{{ $t('search.reportProblem') }}</button>
+                <button type="button" role="menuitem" @click="emit('close-menu')">{{ $t('profile.reportUser') }}</button>
               </div>
             </div>
           </div>
