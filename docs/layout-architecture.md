@@ -14,23 +14,22 @@
    - 4.1. [HomePage (`/`)](#41-homepage-)
    - 4.2. [TypedHomeFeedView (`/illustrations`, `/manga`, `/novels`)](#42-typedhomefeedview-illustrations-manga-novels)
    - 4.3. [DiscoveryView (`/discovery`)](#43-discoveryview-discovery)
-   - 4.4. [NewestByAllView (`/newest_by_all`)](#44-newestbyallview-newest_by_all)
-   - 4.5. [FollowingNewestView (`/newest_by_followed`)](#45-followingnewestview-newest_by_followed)
-   - 4.6. [SearchResultsView (`/search`, `/search/users`)](#46-searchresultsview-search-searchusers)
-   - 4.7. [RankingsView (`/rankings`)](#47-rankingsview-rankings)
-   - 4.8. [ArtworkDetailView (`/artworks/:id`, `/novels/:id`)](#48-artworkdetailview-artworksid-novelsid)
-   - 4.9. [TagDetailView (`/tags/:tagName`)](#49-tagdetailview-tagstagname)
-   - 4.10. [AccountView (`/account`)](#410-accountview-account)
-   - 4.11. [DashboardView (`/dashboard`)](#411-dashboardview-dashboard)
-   - 4.12. [AdminManagementView (`/admin`)](#412-adminmanagementview-admin)
-   - 4.13. [UploadArtworkView (`/upload/:kind`)](#413-uploadartworkview-uploadkind)
-   - 4.14. [MessagesView (`/messages`)](#414-messagesview-messages)
-   - 4.15. [NotificationsView (`/notifications`)](#415-notificationsview-notifications)
-   - 4.16. [FavoritesView (`/favorites`)](#416-favoritesview-favorites)
-   - 4.17. [FollowUsersView (`/users/:id/following`, `/users/:id/followers`)](#417-followusersview-usersidfollowing-usersidfollowers)
-   - 4.18. [RequestManagementView (`/requests/manage`)](#418-requestmanagementview-requestsmanage)
-   - 4.19. [PaymentSandboxView (`/payments/sandbox`)](#419-paymentsandboxview-paymentssandbox)
-   - 4.20. [NotFoundView (`/*`)](#420-notfoundview-)
+   - 4.4. [FollowingNewestView (`/newest_by_followed`)](#44-followingnewestview-newest_by_followed)
+   - 4.5. [SearchResultsView (`/search`, `/search/users`)](#45-searchresultsview-search-searchusers)
+   - 4.6. [RankingsView (`/rankings`)](#46-rankingsview-rankings)
+   - 4.7. [ArtworkDetailView (`/artworks/:id`, `/novels/:id`)](#47-artworkdetailview-artworksid-novelsid)
+   - 4.8. [TagDetailView (`/tags/:tagName`)](#48-tagdetailview-tagstagname)
+   - 4.9. [AccountView (`/account`)](#49-accountview-account)
+   - 4.10. [DashboardView (`/dashboard`)](#410-dashboardview-dashboard)
+   - 4.11. [AdminManagementView (`/admin`)](#411-adminmanagementview-admin)
+   - 4.12. [UploadArtworkView (`/upload/:kind`)](#412-uploadartworkview-uploadkind)
+   - 4.13. [MessagesView (`/messages`)](#413-messagesview-messages)
+   - 4.14. [NotificationsView (`/notifications`)](#414-notificationsview-notifications)
+   - 4.15. [FavoritesView (`/favorites`)](#415-favoritesview-favorites)
+   - 4.16. [FollowUsersView (`/users/:id/following`, `/users/:id/followers`)](#416-followusersview-usersidfollowing-usersidfollowers)
+   - 4.17. [RequestManagementView (`/requests/manage`)](#417-requestmanagementview-requestsmanage)
+   - 4.18. [PaymentSandboxView (`/payments/sandbox`)](#418-paymentsandboxview-paymentssandbox)
+   - 4.19. [NotFoundView (`/*`)](#419-notfoundview-)
 5. [Standalone Pages (Không Dùng MainLayoutTemplate)](#5-standalone-pages-không-dùng-mainlayouttemplate)
    - 5.1. [FeedView (`/feed`)](#51-feedview-feed)
    - 5.2. [LoginView (`/login`) & SignUpView (`/signup`)](#52-loginview-login--signupview-signup)
@@ -236,43 +235,7 @@ Hệ thống biến CSS toàn cục, đảm bảo theme nhất quán giữa các
 
 ---
 
-### 4.4. NewestByAllView (`/newest_by_all`)
-
-```text
-┌──────────────────────────────────────────────────────────┐
-│ MainLayoutTemplate                                        │
-│  ┌──────────────────────────────────────────────────────┐ │
-│  │ .newest-all-page (padding: 0 72px 48px)              │ │
-│  │  ├── .page-title                                     │ │
-│  │  ├── .navigation-bar (flex, space-between)           │ │
-│  │  │    ├── .sub-tabs (flex, gap: 28px)                │ │
-│  │  │    └── .r18-pills (flex, gap: 6px)                │ │
-│  │  ├── .artwork-grid (6 columns, gap: 20px 14px)       │ │
-│  │  │    └── <ArtworkCard /> × N                        │ │
-│  │  └── .pagination-footer (flex, center)               │ │
-│  └──────────────────────────────────────────────────────┘ │
-└──────────────────────────────────────────────────────────┘
-```
-
-**Đặc điểm:**
-
-- Grid artwork cố định 6 cột với `gap: 20px 14px`.
-- Navigation bar chứa sub-tabs và bộ lọc R18.
-- Sử dụng phân trang (pagination) thay vì "Load more".
-
-**Responsive breakpoints:**
-
-| Màn hình | Số cột |
-|---|---|
-| ≥ 1400px | 6 cột |
-| ≤ 1400px | 5 cột |
-| ≤ 1100px | 4 cột |
-| ≤ 900px | 3 cột |
-| ≤ 600px | 2 cột |
-
----
-
-### 4.5. FollowingNewestView (`/newest_by_followed`)
+### 4.4. FollowingNewestView (`/newest_by_followed`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -291,11 +254,11 @@ Hệ thống biến CSS toàn cục, đảm bảo theme nhất quán giữa các
 
 - Grid kết quả tương tự Discovery (auto-fill, minmax 180px).
 - Dùng "Load more" thay vì phân trang.
-- Cấu trúc đơn giản hơn NewestByAll.
+- Cấu trúc đơn giản hơn.
 
 ---
 
-### 4.6. SearchResultsView (`/search`, `/search/users`)
+### 4.5. SearchResultsView (`/search`, `/search/users`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -335,7 +298,7 @@ Hệ thống biến CSS toàn cục, đảm bảo theme nhất quán giữa các
 
 ---
 
-### 4.7. RankingsView (`/rankings`)
+### 4.6. RankingsView (`/rankings`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -368,7 +331,7 @@ Hệ thống biến CSS toàn cục, đảm bảo theme nhất quán giữa các
 
 ---
 
-### 4.8. ArtworkDetailView (`/artworks/:id`, `/novels/:id`)
+### 4.7. ArtworkDetailView (`/artworks/:id`, `/novels/:id`)
 
 Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
@@ -446,7 +409,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
 ---
 
-### 4.9. TagDetailView (`/tags/:tagName`)
+### 4.8. TagDetailView (`/tags/:tagName`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -468,7 +431,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
 ---
 
-### 4.10. AccountView (`/account`)
+### 4.9. AccountView (`/account`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -485,7 +448,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
 ---
 
-### 4.11. DashboardView (`/dashboard`)
+### 4.10. DashboardView (`/dashboard`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -524,7 +487,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
 ---
 
-### 4.12. AdminManagementView (`/admin`)
+### 4.11. AdminManagementView (`/admin`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -562,7 +525,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
 ---
 
-### 4.13. UploadArtworkView (`/upload/:kind`)
+### 4.12. UploadArtworkView (`/upload/:kind`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -592,7 +555,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
 ---
 
-### 4.14. MessagesView (`/messages`)
+### 4.13. MessagesView (`/messages`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -634,7 +597,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
 ---
 
-### 4.15. NotificationsView (`/notifications`)
+### 4.14. NotificationsView (`/notifications`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -657,7 +620,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
 ---
 
-### 4.16. FavoritesView (`/favorites`)
+### 4.15. FavoritesView (`/favorites`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -689,7 +652,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
 ---
 
-### 4.17. FollowUsersView (`/users/:id/following`, `/users/:id/followers`)
+### 4.16. FollowUsersView (`/users/:id/following`, `/users/:id/followers`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -719,7 +682,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
 ---
 
-### 4.18. RequestManagementView (`/requests/manage`)
+### 4.17. RequestManagementView (`/requests/manage`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -761,7 +724,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
 ---
 
-### 4.19. PaymentSandboxView (`/payments/sandbox`)
+### 4.18. PaymentSandboxView (`/payments/sandbox`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -805,7 +768,7 @@ Trang này có **2 biến thể layout** tùy theo loại nội dung:
 
 ---
 
-### 4.20. NotFoundView (`/*`)
+### 4.19. NotFoundView (`/*`)
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -1005,14 +968,14 @@ Trang Premium đã được gỡ bỏ khỏi hệ thống. Route `/premium` khô
 
 | Pattern | Các trang sử dụng |
 |---|---|
-| **MainLayoutTemplate + grid slot** | Home, TypedHomeFeed, Discovery, NewestByAll, FollowingNewest, SearchResults, Rankings, ArtworkDetail, TagDetail, Account, Dashboard, Admin, Upload, Messages, Notifications, Favorites, FollowUsers, RequestManagement, PaymentSandbox, NotFound |
+| **MainLayoutTemplate + grid slot** | Home, TypedHomeFeed, Discovery, FollowingNewest, SearchResults, Rankings, ArtworkDetail, TagDetail, Account, Dashboard, Admin, Upload, Messages, Notifications, Favorites, FollowUsers, RequestManagement, PaymentSandbox, NotFound |
 | **Auth shell + auth-card (centered)** | Login, SignUp |
 | **Standalone page-block** | FeedView |
 | **Full-screen standalone** | AI, Drawing, AuthCallback |
 | **2-column (sidebar + main)** | Messages, HomeFeed (trong feed layout), ArtworkDetail (trên 1000px), SearchResults (user), RequestManagement, PaymentSandbox |
 | **3-column dashboard** | Dashboard |
-| **Multi-column CSS Grid** | Discovery, NewestByAll, FollowingNewest, Rankings, SearchResults (illust), Favorites, FollowUsers |
-| **Flex filter/toolbar bars** | Discovery, NewestByAll, FollowingNewest, Rankings, SearchResults |
+| **Multi-column CSS Grid** | Discovery, FollowingNewest, Rankings, SearchResults (illust), Favorites, FollowUsers |
+| **Flex filter/toolbar bars** | Discovery, FollowingNewest, Rankings, SearchResults |
 | **Full-screen canvas app** | Drawing |
 
 ---
@@ -1021,20 +984,18 @@ Trang Premium đã được gỡ bỏ khỏi hệ thống. Route `/premium` khô
 
 | Breakpoint | Ảnh hưởng |
 |---|---|
-| `<=1400px` | NewestByAll grid: 6 → 5 cột |
 | `<=1200px` | MainLayout padding giảm; FollowUsers grid 3 → 2 cột; ArtworkDetail sidebar 290 → 300px |
-| `<=1100px` | NewestByAll grid 5 → 4 cột; Dashboard grid từ `300px 1fr 300px` |
+| `<=1100px` | Dashboard grid từ `300px 1fr 300px` |
 | `<=1080px` | Favorites grid 4 → 3 cột |
 | `<=1000px` | ArtworkDetail 2 cột → 1 cột |
 | `<=960px` | Dashboard grid 3 → 1 cột; RequestManagement grid 2 → 1 cột |
 | `<=920px` | MainLayout margin giảm; HomeFeed 2 → 1 cột; Messages 2 → 1 cột; FeedView grid; Discovery grid |
-| `<=900px` | NewestByAll grid 4 → 3 cột; Drawing toolbar/layers thu hẹp |
+| `<=900px` | Drawing toolbar/layers thu hẹp |
 | `<=860px` | Favorites grid 3 → 2 cột; PaymentSandbox 2 → 1 cột |
 | `<=768px` | Rankings container padding giảm, image 120px |
 | `<=680px` | RequestManagement form-grid 2 → 1 cột |
 | `<=640px` | Auth card padding giảm; Drawing toolbar/layers chuyển fixed |
 | `<=620px` | PaymentSandbox form-grid 2 → 1 cột |
-| `<=600px` | NewestByAll grid 3 → 2 cột |
 | `<=520px` | Favorites grid 2 → 1 cột |
 
 ---

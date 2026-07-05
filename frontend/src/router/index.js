@@ -8,7 +8,6 @@ import SearchResultsView from '../views/SearchResultsView.vue'
 import BookmarksView from '../views/BookmarksView.vue'
 import FavoritesView from '../views/FavoritesView.vue'
 import RankingsView from '../views/RankingsView.vue'
-import ArtworkCommentsView from '../views/ArtworkCommentsView.vue'
 import ArtworkDetailView from '../views/ArtworkDetailView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 import MessagesView from '../views/MessagesView.vue'
@@ -22,7 +21,6 @@ import AuthCallbackView from '../views/AuthCallbackView.vue'
 import UploadArtworkView from '../views/UploadArtworkView.vue'
 import FollowingNewestView from '../views/FollowingNewestView.vue'
 import DiscoveryView from '../views/DiscoveryView.vue'
-import NewestByAllView from '../views/NewestByAllView.vue'
 import FollowUsersView from '../views/FollowUsersView.vue'
 import AIView from '../views/AIView.vue'
 import DrawingView from '../views/DrawingView.vue'
@@ -74,7 +72,6 @@ const routes = [
   { path: '/search', name: 'search-results', component: SearchResultsView },
   { path: '/search/users', name: 'user-search-results', component: SearchResultsView },
   { path: '/discovery', name: 'discovery', component: DiscoveryView },
-  { path: '/newest_by_all', name: 'newest-all', component: NewestByAllView },
   { path: '/newest_by_followed', name: 'following-newest', component: FollowingNewestView, meta: { requiresAuth: true } },
   { path: '/bookmarks', redirect: '/account?tab=bookmarks' },
   { path: '/bookmark', redirect: '/account?tab=bookmarks' },
@@ -108,11 +105,9 @@ const routes = [
   { path: '/users/:id/followers', name: 'followers', component: FollowUsersView },
   { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
   { path: '/my-reports', name: 'my-reports', component: () => import('@/views/MyReportsView.vue'), meta: { requiresAuth: true } },
-  { path: '/admin/reports/:type(artwork|comment|user)/:id', name: 'moderation-case-detail', component: () => import('@/views/ModerationCaseDetailView.vue'), meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/admin', name: 'admin-management', component: AdminManagementView, meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/novels/:id', name: 'novel-detail', component: ArtworkDetailView },
   { path: '/artworks/:id', name: 'artwork-detail', component: ArtworkDetailView },
-  { path: '/artworks/:id/comments', name: 'artwork-comments', component: ArtworkCommentsView },
   { path: '/series/:id', name: 'series-detail', component: SeriesDetailView },
   { path: '/tags/:tagName', redirect: to => {
     const tagName = typeof to.params.tagName === 'string' ? to.params.tagName : ''

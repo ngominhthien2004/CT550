@@ -4,7 +4,7 @@ Mục tiêu: theo dõi danh sách trang frontend đã có và các trang cần x
 
 ## Tổng quan
 
-- Total pages tracked: 26
+- Total pages tracked: 25
 - Last updated: 2026-04-17
 - Owner: gem-designer
 
@@ -15,7 +15,6 @@ Mục tiêu: theo dõi danh sách trang frontend đã có và các trang cần x
 - [x] BookmarksView - `/bookmarks` - danh sách bookmark của user
 - [x] RankingsView - `/rankings` - ranking theo period
 - [x] ArtworkDetailView - `/artworks/:id` - chi tiết artwork + related
-- [x] ArtworkCommentsView - `/artworks/:id/comments` - danh sách comment theo artwork
 - [x] TagDetailView - `/tags/:tagName` - danh sách artwork theo tag
 - [x] NotFoundView - `/:pathMatch(.*)*` - trang lỗi route không tồn tại
 - [x] MessagesView - `/messages` - inbox/sent + compose + mark-read với backend API
@@ -34,7 +33,6 @@ Mục tiêu: theo dõi danh sách trang frontend đã có và các trang cần x
 - [ ] MyReportsView - `/reports` - user theo dõi danh sách report đã gửi
 - [ ] ReportDetailView - `/reports/:id` - xem trạng thái report và timeline xử lý
 - [ ] ModerationQueueView - `/moderation/reports` - hàng đợi report cho moderator
-- [ ] ModerationCaseDetailView - `/moderation/reports/:id` - chi tiết case + hành động xử lý
 
 ### Phase 3: AI Auto-tagging, Captioning, Recommendation (Planned)
 

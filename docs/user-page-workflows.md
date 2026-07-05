@@ -120,17 +120,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Nếu chưa đăng nhập mà bấm like/bookmark/follow thì chuyển về `/login?redirect=<current-page>`.
   - Counter hiển thị (view/like/bookmark/comment) cập nhật theo trạng thái toggle.
 
-## 3.7 ArtworkCommentsView (`/artworks/:id/comments`)
-
-- Mục tiêu: thêm, xem, xóa comment của artwork.
-- Nút/tương tác:
-  - Add comment: gửi comment mới.
-  - Delete trên từng comment (nếu có quyền): xóa comment.
-- Kết quả hiển thị:
-  - Loading/Error hoặc danh sách comment từ API.
-  - Ghi chú: luồng comment nâng cao (reply thread + display replies + sticker) đã được ưu tiên triển khai trong khối comments của `ArtworkDetailView`.
-
-## 3.8 BookmarksView (`/bookmarks`) [cần đăng nhập]
+## 3.7 BookmarksView (`/bookmarks`) [cần đăng nhập]
 
 - Mục tiêu: quản lý bookmark cá nhân.
 - Nút/tương tác:
@@ -139,7 +129,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
 - Kết quả hiển thị:
   - Hiện danh sách bookmarks hoặc thông báo lỗi từ store.
 
-## 3.9 FavoritesView (`/favorites`) [cần đăng nhập]
+## 3.8 FavoritesView (`/favorites`) [cần đăng nhập]
 
 - Mục tiêu: xem các artwork đã like.
 - Nút/tương tác:
@@ -151,7 +141,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Có overview số item và tổng likes theo filter hiện tại.
   - Nếu chưa đăng nhập: hiện nút Go to login.
 
-## 3.10 MessagesView (`/messages`) [cần đăng nhập]
+## 3.9 MessagesView (`/messages`) [cần đăng nhập]
 
 - Mục tiêu: inbox/sent và gửi tin nhắn.
 - Nút/tương tác:
@@ -163,7 +153,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Có loading/error/empty state.
   - Nếu chưa đăng nhập: hiện nút Go to login.
 
-## 3.11 NotificationsView (`/notifications`) [cần đăng nhập]
+## 3.10 NotificationsView (`/notifications`) [cần đăng nhập]
 
 - Mục tiêu: xem timeline thông báo.
 - Nút/tương tác:
@@ -175,7 +165,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Hiển thị unread count, loading/error/empty state.
   - Nếu chưa đăng nhập: hiện nút Go to login.
 
-## 3.12 AccountView (`/account`)
+## 3.11 AccountView (`/account`)
 
 - Mục tiêu: trang profile tổng hợp theo tab.
 - Nút/tương tác:
@@ -187,7 +177,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
 - Kết quả hiển thị:
   - Nếu chưa đăng nhập: hiện thông báo + Go to login.
 
-## 3.13 FollowUsersView (`/users/:id/following`, `/users/:id/followers`)
+## 3.12 FollowUsersView (`/users/:id/following`, `/users/:id/followers`)
 
 - Mục tiêu: xem danh sách Following/Follower của một user.
 - Nút/tương tác:
@@ -197,7 +187,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
 - Kết quả hiển thị:
   - Loading/Error/Empty theo trạng thái store.
 
-## 3.14 DashboardView (`/dashboard`) [cần đăng nhập]
+## 3.13 DashboardView (`/dashboard`) [cần đăng nhập]
 
 - Mục tiêu: dashboard creator.
 - Nút/tương tác:
@@ -208,7 +198,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Loading/Error dashboard data.
   - Nếu chưa đăng nhập: hiện Go to login.
 
-## 3.15 UploadArtworkView (`/upload/:kind`) [cần đăng nhập]
+## 3.14 UploadArtworkView (`/upload/:kind`) [cần đăng nhập]
 
 - Mục tiêu: đăng bài theo 4 loại (illust, manga, gif, novel).
 - Nút/tương tác:
@@ -225,7 +215,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Validation lỗi hiển thị theo rule trong view.
   - Thành công hiển thị “Post created successfully.”
 
-## 3.16 SignUpView (`/signup`)
+## 3.15 SignUpView (`/signup`)
 
 - Mục tiêu: tạo tài khoản mới.
 - Nút/tương tác:
@@ -236,7 +226,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
 - Kết quả hiển thị:
   - Lỗi validate hoặc lỗi từ auth store hiển thị ngay trên form.
 
-## 3.17 LoginView (`/login`)
+## 3.16 LoginView (`/login`)
 
 - Mục tiêu: đăng nhập tài khoản.
 - Nút/tương tác:
@@ -247,7 +237,7 @@ Phạm vi: frontend hiện tại trong `frontend/src/views` và layout dùng chu
   - Nếu có `?redirect=...` thì login thành công sẽ quay về URL đó.
   - Nếu không có redirect thì về `/account`.
 
-## 3.18 NotFoundView (`/:pathMatch(.*)*`)
+## 3.17 NotFoundView (`/:pathMatch(.*)*`)
 
 - Mục tiêu: xử lý route không tồn tại.
 - Nút/tương tác:
