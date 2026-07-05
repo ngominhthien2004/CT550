@@ -172,7 +172,7 @@ onMounted(async () => {
                   class="plan-creator-link"
                 >
                   <img :src="plan.creator?.avatar || DEFAULT_AVATAR" :alt="plan.creator?.displayName" class="plan-creator-avatar" />
-                  <span>{{ plan.creator?.displayName || 'Unknown creator' }}</span>
+                  <span>{{ plan.creator?.displayName || plan.creator?.username || 'Unknown creator' }}</span>
                 </router-link>
                 <span class="plan-price">{{ formatCurrency(plan.targetPrice, plan.currency) }}</span>
               </div>
@@ -208,7 +208,7 @@ onMounted(async () => {
                   class="plan-creator-link"
                 >
                   <img :src="plan.creator?.avatar || DEFAULT_AVATAR" :alt="plan.creator?.displayName" class="plan-creator-avatar" />
-                  <span>{{ plan.creator?.displayName || 'Unknown creator' }}</span>
+                  <span>{{ plan.creator?.displayName || plan.creator?.username || 'Unknown creator' }}</span>
                 </router-link>
                 <span class="plan-price">{{ formatCurrency(plan.targetPrice, plan.currency) }}</span>
               </div>
@@ -242,7 +242,7 @@ onMounted(async () => {
                   class="plan-creator-link"
                 >
                   <img :src="plan.creator?.avatar || DEFAULT_AVATAR" :alt="plan.creator?.displayName" class="plan-creator-avatar" />
-                  <span>{{ plan.creator?.displayName || 'Unknown creator' }}</span>
+                  <span>{{ plan.creator?.displayName || plan.creator?.username || 'Unknown creator' }}</span>
                 </router-link>
                 <span class="plan-price">{{ formatCurrency(plan.targetPrice, plan.currency) }}</span>
               </div>
