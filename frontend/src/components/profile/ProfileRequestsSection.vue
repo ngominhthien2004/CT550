@@ -72,7 +72,6 @@ const openTerms = computed(() => props.terms.filter((term) => term.isOpen))
 const visibleTerms = computed(() => (isOwnProfile.value ? props.terms : openTerms.value))
 const selectedTerm = computed(() => openTerms.value.find((term) => term._id === selectedTermId.value) || openTerms.value[0] || null)
 const canSubmit = computed(() => Boolean(selectedTerm.value && authStore.isAuthenticated && !isOwnProfile.value))
-const workTypeOptions = ['illust', 'manga', 'gif', 'novel']
 
 function syncTermDefaults(term) {
   if (!term) return
@@ -240,7 +239,7 @@ watch(
               <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
             </button>
             <div v-if="workTypeSelectOpen" class="dd-panel">
-              <button v-for="type in workTypeOptions" :key="type" type="button" class="dd-item" :class="{ 'is-active': form.workType === type }" @click="form.workType = type; workTypeSelectOpen = false">
+              <button v-for="type in selectedTerm?.acceptedWorkTypes || []" :key="type" type="button" class="dd-item" :class="{ 'is-active': form.workType === type }" @click="form.workType = type; workTypeSelectOpen = false">
                 {{ type }}
               </button>
             </div>
