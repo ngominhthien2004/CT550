@@ -182,9 +182,12 @@ watch(
           <p class="eyebrow">Send Request</p>
           <h3>{{ selectedTerm?.title || 'Select a plan' }}</h3>
         </div>
-        <select v-model="selectedTermId" @change="syncTermDefaults(selectedTerm)" aria-label="Select commission plan">
-          <option v-for="term in openTerms" :key="term._id" :value="term._id">{{ term.title }}</option>
-        </select>
+        <div class="form-title-right">
+          <span class="proposed-price">{{ selectedTerm?.currency || 'USD' }} {{ form.proposedAmount || selectedTerm?.targetPrice || 0 }}</span>
+          <select v-model="selectedTermId" @change="syncTermDefaults(selectedTerm)" aria-label="Select commission plan">
+            <option v-for="term in openTerms" :key="term._id" :value="term._id">{{ term.title }}</option>
+          </select>
+        </div>
       </div>
 
       <div class="form-grid">
@@ -282,6 +285,19 @@ watch(
 .form-title-row h3 {
   color: var(--brand);
   font-size: 1.35rem;
+}
+
+.form-title-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.proposed-price {
+  color: var(--accent);
+  font-weight: 900;
+  font-size: 1.1rem;
+  white-space: nowrap;
 }
 
 .manage-link,
