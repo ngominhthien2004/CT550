@@ -264,6 +264,8 @@ async function executeDeleteChapter() {
   border-radius: 8px;
   font-size: 0.9rem;
   margin-bottom: 0.75rem;
+  background-color: var(--surface);
+  color: var(--text);
 }
 
 .chapter-form-textarea {
@@ -274,6 +276,15 @@ async function executeDeleteChapter() {
   font-size: 0.9rem;
   resize: vertical;
   margin-bottom: 0.75rem;
+  background-color: var(--surface);
+  color: var(--text);
+}
+
+.chapter-form-input:focus,
+.chapter-form-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 .chapter-form-actions {
