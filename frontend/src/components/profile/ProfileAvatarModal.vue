@@ -1,6 +1,9 @@
 <script setup>
 import { computed, watch, inject } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useImageUpload } from '@/composables/useImageUpload'
+
+const { t } = useI18n()
 
 const DEFAULT_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
@@ -58,7 +61,7 @@ function handleSave() {
   <div v-if="show" class="modal-backdrop" @click.self="handleClose">
     <div class="modal-card avatar-card">
       <header class="modal-header">
-        <h2 class="modal-title">Edit profile image</h2>
+        <h2 class="modal-title">{{ $t('profile.editProfileImage') }}</h2>
         <button type="button" class="modal-close" aria-label="Close" @click="handleClose">
           <i class="fa-solid fa-xmark" aria-hidden="true"></i>
         </button>
@@ -75,33 +78,33 @@ function handleSave() {
               </span>
             </label>
           </div>
-          <button type="button" class="avatar-delete-btn" title="Delete avatar" @click="deleteCover">
+          <button type="button" class="avatar-delete-btn" :title="$t('profile.deleteAvatar')" @click="deleteCover">
             <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
           </button>
         </div>
 
         <div class="avatar-specs">
           <div class="spec-row">
-            <span class="spec-label">Supported formats</span>
+            <span class="spec-label">{{ $t('profile.supportedFormats') }}</span>
             <span class="spec-value">JPEG / PNG / GIF</span>
           </div>
           <div class="spec-row">
-            <span class="spec-label">Maximum file size</span>
+            <span class="spec-label">{{ $t('profile.maxFileSize') }}</span>
             <span class="spec-value">5 MB</span>
           </div>
         </div>
 
         <div class="avatar-info-box avatar-info-note">
           <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-          <span>The image you upload will be cropped and displayed as a circle in your profile.</span>
+          <span>{{ $t('profile.avatarCroppedNote') }}</span>
         </div>
 
         <p v-if="upload.error.value" class="avatar-error">{{ upload.error.value }}</p>
       </div>
 
       <footer class="modal-footer avatar-footer">
-        <button type="button" class="action-pill action-pill--post avatar-confirm-btn" @click="handleSave">Confirm</button>
-        <button type="button" class="action-pill avatar-cancel-btn" @click="handleClose">Cancel</button>
+        <button type="button" class="action-pill action-pill--post avatar-confirm-btn" @click="handleSave">{{ $t('profile.confirm') }}</button>
+        <button type="button" class="action-pill avatar-cancel-btn" @click="handleClose">{{ $t('profile.cancel') }}</button>
       </footer>
     </div>
   </div>

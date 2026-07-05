@@ -1,5 +1,8 @@
 <script setup>
 import { inject } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const isOwnProfile = inject('isOwnProfile')
 const activeTab = inject('activeMainTab')
@@ -8,14 +11,14 @@ const selectTab = inject('selectMainTab')
 
 <template>
   <nav class="profile-tabs" aria-label="Profile sections">
-    <button type="button" class="profile-tab" :class="{ active: activeTab === 'home' }" @click="selectTab('home')">Home</button>
-    <button type="button" class="profile-tab" :class="{ active: activeTab === 'illustrations' }" @click="selectTab('illustrations')">Illustrations</button>
-    <button type="button" class="profile-tab" :class="{ active: activeTab === 'manga' }" @click="selectTab('manga')">Manga</button>
-    <button type="button" class="profile-tab" :class="{ active: activeTab === 'novels' }" @click="selectTab('novels')">Novels</button>
-    <button type="button" class="profile-tab" :class="{ active: activeTab === 'requests' }" @click="selectTab('requests')">Requests</button>
-    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'bookmarks' }" @click="selectTab('bookmarks')">Bookmarks</button>
-    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'likes' }" @click="selectTab('likes')">Favorites</button>
-    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'blocked' }" @click="selectTab('blocked')">Blocked</button>
+    <button type="button" class="profile-tab" :class="{ active: activeTab === 'home' }" @click="selectTab('home')">{{ $t('profile.tabHome') }}</button>
+    <button type="button" class="profile-tab" :class="{ active: activeTab === 'illustrations' }" @click="selectTab('illustrations')">{{ $t('profile.tabIllustrations') }}</button>
+    <button type="button" class="profile-tab" :class="{ active: activeTab === 'manga' }" @click="selectTab('manga')">{{ $t('profile.tabManga') }}</button>
+    <button type="button" class="profile-tab" :class="{ active: activeTab === 'novels' }" @click="selectTab('novels')">{{ $t('profile.tabNovels') }}</button>
+    <button type="button" class="profile-tab" :class="{ active: activeTab === 'requests' }" @click="selectTab('requests')">{{ $t('profile.tabRequests') }}</button>
+    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'bookmarks' }" @click="selectTab('bookmarks')">{{ $t('profile.tabBookmarks') }}</button>
+    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'likes' }" @click="selectTab('likes')">{{ $t('profile.tabFavorites') }}</button>
+    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'blocked' }" @click="selectTab('blocked')">{{ $t('profile.tabBlocked') }}</button>
   </nav>
 </template>
 

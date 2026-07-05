@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { userApi } from '../../services/api'
+
+const { t } = useI18n()
 
 const blockedUsers = ref([])
 const loading = ref(true)
@@ -37,10 +40,10 @@ onMounted(loadBlocked)
 
 <template>
   <div class="blocked-list">
-    <h2>Blocked Users</h2>
-    <p v-if="loading" class="state-text">Loading blocked users...</p>
+    <h2>{{ $t('profile.blockedUsers') }}</h2>
+    <p v-if="loading" class="state-text">{{ $t('profile.loadingBlocked') }}</p>
     <p v-else-if="error" class="state-text error">{{ error }}</p>
-    <p v-else-if="blockedUsers.length === 0" class="state-text empty">No blocked users.</p>
+    <p v-else-if="blockedUsers.length === 0" class="state-text empty">{{ $t('profile.noBlockedUsers') }}</p>
     <div v-else class="user-list">
       <div v-for="item in blockedUsers" :key="item._id" class="user-row">
         <div class="user-info">
@@ -50,7 +53,7 @@ onMounted(loadBlocked)
             class="avatar-sm"
           />
           <div>
-            <strong>{{ item.blocked?.displayName || item.blocked?.username || 'Unknown' }}</strong>
+            <strong>{{ item.blocked?.displayName || item.blocked?.username || $t('profile.unknownUser') }}</strong>
             <span v-if="item.blocked?.username" class="username">@{{ item.blocked.username }}</span>
           </div>
         </div>
@@ -59,7 +62,7 @@ onMounted(loadBlocked)
           :disabled="unblockingId === item.blocked?._id"
           @click="handleUnblock(item.blocked?._id)"
         >
-          {{ unblockingId === item.blocked?._id ? 'Unblocking...' : 'Unblock' }}
+          {{ unblockingId === item.blocked?._id ? $t('profile.unblocking') : $t('profile.unblock') }}
         </button>
       </div>
     </div>

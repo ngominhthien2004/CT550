@@ -1,10 +1,12 @@
 <script setup>
 import { computed, ref, watch, onUnmounted, inject } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { userApi } from '../../services/api'
 import { useAuthStore } from '../../stores/auth.store'
 import ReportModal from '@/components/common/ReportModal.vue'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
+const { t } = useI18n()
 
 const user = inject('profileUser')
 const isOwnProfile = inject('isOwnProfile')
@@ -23,13 +25,13 @@ const openRequests = inject('openRequestsTab')
 const toggleFollow = inject('toggleFollow')
 
 const avatarSrc = computed(() => user.value?.avatar || DEFAULT_PROFILE_AVATAR)
-const profileBio = computed(() => user.value?.bio || (isOwnProfile ? 'Curate your cover, avatar, and gallery to give your profile more character.' : 'This creator has not added a bio yet.'))
+const profileBio = computed(() => user.value?.bio || (isOwnProfile ? t('profile.defaultBio') : t('profile.noBio')))
 const socialLinks = computed(() => {
   const links = user.value?.socialLinks || {}
   const rows = [
-    { key: 'twitter', icon: 'fa-brands fa-x-twitter', href: links.twitter, label: 'X (Twitter)' },
-    { key: 'instagram', icon: 'fa-brands fa-instagram', href: links.instagram, label: 'Instagram' },
-    { key: 'portfolio', icon: 'fa-solid fa-globe', href: links.portfolio, label: 'Portfolio' },
+    { key: 'twitter', icon: 'fa-brands fa-x-twitter', href: links.twitter, label: t('profile.xTwitter') },
+    { key: 'instagram', icon: 'fa-brands fa-instagram', href: links.instagram, label: t('profile.instagram') },
+    { key: 'portfolio', icon: 'fa-solid fa-globe', href: links.portfolio, label: t('profile.portfolio') },
   ]
   return rows.filter((item) => typeof item.href === 'string' && item.href.trim())
 })
@@ -41,8 +43,8 @@ const genderIcon = computed(() => {
 })
 
 const genderLabel = computed(() => {
-  if (profileGender.value === 'male') return 'Male'
-  if (profileGender.value === 'female') return 'Female'
+  if (profileGender.value === 'male') return t('profile.male')
+  if (profileGender.value === 'female') return t('profile.female')
   return ''
 })
 
@@ -104,10 +106,10 @@ async function handleShare() {
   const url = window.location.href
   try {
     await navigator.clipboard.writeText(url)
-    shareTooltip.value = 'Link copied!'
+    shareTooltip.value = t('profile.linkCopied')
     shareTimeout = setTimeout(() => { shareTooltip.value = '' }, 2000)
   } catch {
-    shareTooltip.value = 'Copy failed'
+    shareTooltip.value = t('profile.copyFailed')
     shareTimeout = setTimeout(() => { shareTooltip.value = '' }, 2000)
   }
 }
@@ -136,7 +138,7 @@ function closeReportModal() {
     <div class="avatar-shell">
       <div class="avatar-wrap">
         <img :src="avatarSrc" :alt="user.displayName || user.username" @error="handleAvatarError" />
-        <div v-if="isOwnProfile" class="avatar-edit-overlay" @click="editAvatar" @keydown.enter.prevent="editAvatar" @keydown.space.prevent="editAvatar" role="button" aria-label="Edit profile picture">
+        <div v-if="isOwnProfile" class="avatar-edit-overlay" @click="editAvatar" @keydown.enter.prevent="editAvatar" @keydown.space.prevent="editAvatar" role="button" :aria-label="$t('profile.editProfileImage')">
           <i class="fa-solid fa-camera" aria-hidden="true"></i>
         </div>
       </div>
@@ -152,12 +154,12 @@ function closeReportModal() {
         @click="openRequests"
       >
         <i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i>
-        Accepting Requests
+        {{ $t('profile.acceptingRequests') }}
       </button>
 
       <div class="profile-stats">
-        <router-link :to="`/users/${user._id}/followers`" class="stat-link"><strong>{{ followersCount }}</strong> Followers</router-link>
-        <router-link :to="`/users/${user._id}/following`" class="stat-link"><strong>{{ followingCount }}</strong> Following</router-link>
+<router-link :to="`/users/${user._id}/followers`" class="stat-link"><strong>{{ followersCount }}</strong> {{ $t('profile.followers') }}</router-link>
+<router-link :to="`/users/${user._id}/following`" class="stat-link"><strong>{{ followingCount }}</strong> {{ $t('profile.following') }}</router-link>
       </div>
 
       <p class="profile-bio">{{ profileBio }}</p>
@@ -175,7 +177,7 @@ function closeReportModal() {
           <i class="fa-solid fa-cake-candles" aria-hidden="true"></i>
           {{ profileBirthday }}
         </p>
-        <button v-if="isOwnProfile" type="button" class="profile-link profile-link-btn" @click="editProfile">Change</button>
+        <button v-if="isOwnProfile" type="button" class="profile-link profile-link-btn" @click="editProfile">{{ $t('profile.change') }}</button>
         <div v-if="socialLinks.length" class="profile-socials" aria-label="Social media links">
           <a
             v-for="social in socialLinks"
@@ -192,20 +194,20 @@ function closeReportModal() {
         </div>
       </div>
 
-      <p class="profile-status">{{ isOwnProfile ? 'This is your public profile surface.' : isFollowing ? 'You are following this user.' : 'Follow this creator to keep up with new works.' }}</p>
+      <p class="profile-status">{{ isOwnProfile ? $t('profile.publicProfile') : isFollowing ? $t('profile.youFollowUser') : $t('profile.followCreator') }}</p>
       <p v-if="followError" class="profile-error">{{ followError }}</p>
     </div>
 
     <div class="profile-actions">
-      <button v-if="isOwnProfile" type="button" class="edit-profile-btn" @click="editProfile">Edit profile</button>
+      <button v-if="isOwnProfile" type="button" class="edit-profile-btn" @click="editProfile">{{ $t('profile.editProfile') }}</button>
       <button
         v-if="isAcceptingRequests"
         type="button"
         class="request-action-btn"
-        :aria-label="isOwnProfile ? 'Manage requests' : 'Send request'"
+        :aria-label="isOwnProfile ? $t('profile.manageRequests') : $t('profile.sendRequest')"
         @click="openRequests"
       >
-        {{ isOwnProfile ? 'Manage Request' : 'Request' }}
+        {{ isOwnProfile ? $t('profile.manageRequests') : $t('profile.request') }}
       </button>
       <button
         v-else-if="!isOwnProfile"
@@ -213,17 +215,17 @@ function closeReportModal() {
         class="follow-profile-btn"
         :class="isFollowing ? 'is-following' : 'is-not-following'"
         :disabled="followLoading"
-        :aria-label="isFollowing ? 'Unfollow user' : 'Follow user'"
+        :aria-label="isFollowing ? $t('profile.unfollow') : $t('profile.follow')"
         @click="toggleFollow"
       >
-        {{ isFollowing ? 'Following' : 'Follow' }}
+        {{ isFollowing ? $t('profile.following') : $t('profile.follow') }}
       </button>
       <router-link
         v-if="!isOwnProfile"
         :to="`/messages?user=${user._id}`"
         class="message-btn"
-        aria-label="Message this user"
-        title="Message"
+        :aria-label="$t('profile.message')"
+        :title="$t('profile.message')"
       >
         <i class="fa-regular fa-envelope" aria-hidden="true"></i>
       </router-link>
@@ -233,15 +235,15 @@ function closeReportModal() {
         class="block-btn"
         :class="{ 'is-blocked': blockedByMe }"
         :disabled="blockLoading"
-        :aria-label="blockedByMe ? 'Unblock user' : 'Block user'"
-        :title="blockedByMe ? 'Unblock' : 'Block'"
+        :aria-label="blockedByMe ? $t('profile.unblock') : $t('profile.block')"
+        :title="blockedByMe ? $t('profile.unblock') : $t('profile.block')"
         @click="handleBlockToggle"
       >
         <i v-if="blockLoading" class="fa-solid fa-spinner fa-spin"></i>
         <i v-else :class="blockedByMe ? 'fa-solid fa-ban' : 'fa-regular fa-circle-xmark'"></i>
       </button>
       <div class="share-wrap">
-        <button type="button" class="share-btn" aria-label="Share profile" title="Share profile" @click="handleShare">
+        <button type="button" class="share-btn" :aria-label="$t('profile.shareProfile')" :title="$t('profile.shareProfile')" @click="handleShare">
           <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>
         </button>
         <span v-if="shareTooltip" class="share-tooltip">{{ shareTooltip }}</span>
@@ -250,15 +252,15 @@ function closeReportModal() {
         v-if="canReportUser"
         type="button"
         class="report-user-btn"
-        aria-label="Report user"
-        title="Report user"
+        :aria-label="$t('profile.reportUser')"
+        :title="$t('profile.reportUser')"
         @click="openReportModal"
       >
         <i class="fa-regular fa-flag" aria-hidden="true"></i>
       </button>
     </div>
       <div v-if="blockedMe" class="blocked-notice">
-        <i class="fa-solid fa-ban"></i> You have been blocked by this user.
+        <i class="fa-solid fa-ban"></i> {{ $t('profile.blockedByUser') }}
       </div>
 
     <!-- Report User Modal -->

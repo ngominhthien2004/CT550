@@ -1,6 +1,9 @@
 <script setup>
 import { computed, watch, inject } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useImageUpload } from '@/composables/useImageUpload'
+
+const { t } = useI18n()
 
 const DEFAULT_COVER = 'linear-gradient(135deg, #f1f5f9 0%, #dbeafe 52%, #fef3c7 100%)'
 
@@ -65,7 +68,7 @@ function handleUpload() {
   <div v-if="show" class="modal-backdrop modal-backdrop--top" @click.self="handleClose">
     <div class="modal-card cover-card">
       <header class="modal-header">
-        <h2 class="modal-title">Edit cover image</h2>
+        <h2 class="modal-title">{{ $t('profile.editCoverImage') }}</h2>
         <button type="button" class="modal-close" aria-label="Close" @click="handleClose">
           <i class="fa-solid fa-xmark" aria-hidden="true"></i>
         </button>
@@ -76,10 +79,10 @@ function handleUpload() {
         :style="upload.preview.value ? { backgroundImage: `url(${upload.preview.value})` } : { background: DEFAULT_COVER }"
       >
         <label class="upload-overlay">
-          <input type="file" accept="image/jpeg, image/png, image/gif" hidden @change="upload.selectFile" aria-label="Upload cover image">
+          <input type="file" accept="image/jpeg, image/png, image/gif" hidden @change="upload.selectFile" :aria-label="$t('profile.editCoverImage')">
           <div class="upload-overlay-content">
             <i class="fa-solid fa-camera" aria-hidden="true"></i>
-            <span>Drop the file or click to choose cover image here</span>
+            <span>{{ $t('profile.dropCoverHere') }}</span>
           </div>
         </label>
       </div>
@@ -87,38 +90,38 @@ function handleUpload() {
       <div class="modal-body">
         <div class="specs-list">
           <div class="spec-item">
-            <span class="spec-label">Supported formats</span>
+            <span class="spec-label">{{ $t('profile.supportedFormats') }}</span>
             <span class="spec-value">JPEG / PNG / GIF</span>
           </div>
           <div class="spec-item">
-            <span class="spec-label">Maximum file size</span>
+            <span class="spec-label">{{ $t('profile.maxFileSize') }}</span>
             <span class="spec-value">8MB</span>
           </div>
           <div class="spec-item">
-            <span class="spec-label">Maximum resolution</span>
+            <span class="spec-label">{{ $t('profile.maxResolution') }}</span>
             <span class="spec-value">1920 x 960</span>
           </div>
           <div class="spec-item">
-            <span class="spec-label">Recommended aspect ratio</span>
+            <span class="spec-label">{{ $t('profile.recommendedAspectRatio') }}</span>
             <span class="spec-value">2:1</span>
           </div>
         </div>
 
         <div class="modal-info-box">
           <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-          <span>The uploaded image might be cropped depending on its aspect ratio and the device it's displayed on.</span>
+          <span>{{ $t('profile.croppedNote') }}</span>
         </div>
 
         <p class="guidelines-text">
-          Please do not upload R18 images or works that violate the <a href="#">Guidelines</a>. If your cover image falls into any of those categories, the settings will be disabled.
+          {{ $t('profile.coverGuidelines') }}
         </p>
 
         <p v-if="upload.error.value" class="modal-error">{{ upload.error.value }}</p>
 
         <div class="modal-footer--row">
-          <button type="button" class="action-pill" @click="handleClose">Cancel</button>
+          <button type="button" class="action-pill" @click="handleClose">{{ $t('profile.cancel') }}</button>
           <button type="button" class="action-pill action-pill--post" @click="handleUpload">
-            Agree and upload
+            {{ $t('profile.agreeAndUpload') }}
           </button>
         </div>
       </div>

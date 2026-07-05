@@ -1,5 +1,8 @@
 <script setup>
 import { reactive, computed, watch, inject } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
 
 const show = inject('showEditModal')
 const user = inject('profileUser')
@@ -18,18 +21,19 @@ const form = reactive({
   birthdayDay: 1,
 })
 
-const genderOptions = [
-  { value: 'male', label: 'Male' },
-  { value: 'female', label: 'Female' },
-  { value: 'rather_not_say', label: 'Rather not say' },
-]
+const genderOptions = computed(() => [
+  { value: 'male', label: t('profile.male') },
+  { value: 'female', label: t('profile.female') },
+  { value: 'rather_not_say', label: t('profile.ratherNotSay') },
+])
 
-const months = [
-  { value: 1, label: 'Jan' }, { value: 2, label: 'Feb' }, { value: 3, label: 'Mar' },
-  { value: 4, label: 'Apr' }, { value: 5, label: 'May' }, { value: 6, label: 'Jun' },
-  { value: 7, label: 'Jul' }, { value: 8, label: 'Aug' }, { value: 9, label: 'Sep' },
-  { value: 10, label: 'Oct' }, { value: 11, label: 'Nov' }, { value: 12, label: 'Dec' },
-]
+const months = computed(() => {
+  const fmt = new Intl.DateTimeFormat(locale.value, { month: 'short' })
+  return Array.from({ length: 12 }, (_, i) => ({
+    value: i + 1,
+    label: fmt.format(new Date(2024, i, 1))
+  }))
+})
 
 const currentYear = new Date().getFullYear()
 const years = Array.from({ length: 100 }, (_, i) => currentYear - i)
@@ -45,7 +49,12 @@ function getDaySuffix(day) {
   }
 }
 
-const daysWithSuffix = computed(() => days.map(d => ({ value: d, label: `${d}${getDaySuffix(d)}` })))
+const daysWithSuffix = computed(() => {
+  if (locale.value === 'en') {
+    return days.map(d => ({ value: d, label: `${d}${getDaySuffix(d)}` }))
+  }
+  return days.map(d => ({ value: d, label: String(d) }))
+})
 
 watch(user, (u) => {
   if (!u) return
@@ -83,8 +92,8 @@ function handleSave() {
   <div v-if="show" class="modal-backdrop" @click.self="close" @keydown.enter.prevent="close" @keydown.space.prevent="close" tabindex="0" role="button">
     <div class="modal-card edit-card">
       <header class="modal-header">
-        <h2 class="modal-title">Edit profile</h2>
-        <button type="button" class="modal-close" aria-label="Close" @click="close">
+        <h2 class="modal-title">{{ $t('profile.editProfile') }}</h2>
+        <button type="button" class="modal-close" :aria-label="$t('profile.cancel')" @click="close">
           <i class="fa-solid fa-xmark" aria-hidden="true"></i>
         </button>
       </header>
@@ -92,55 +101,55 @@ function handleSave() {
       <div class="modal-body modal-body--scroll form-content">
         <!-- Nickname -->
         <div class="form-group">
-          <label class="field-label">Nickname</label>
+          <label class="field-label">{{ $t('profile.nickname') }}</label>
           <div class="input-with-limit">
-            <input type="text" v-model="form.displayName" maxlength="15" placeholder="Nickname" class="form-input" aria-label="Nickname">
+            <input type="text" v-model="form.displayName" maxlength="15" :placeholder="$t('profile.nickname')" class="form-input" :aria-label="$t('profile.nickname')">
             <span class="char-limit">{{ form.displayName.length }}/15</span>
           </div>
         </div>
 
         <!-- Self Introduction -->
         <div class="form-group">
-          <label class="field-label">Self introduction</label>
-          <textarea v-model="form.bio" placeholder="Tell us about yourself" class="form-textarea" rows="4" aria-label="Self introduction"></textarea>
+          <label class="field-label">{{ $t('profile.selfIntroduction') }}</label>
+          <textarea v-model="form.bio" :placeholder="$t('profile.tellUsAboutYourself')" class="form-textarea" rows="4" :aria-label="$t('profile.selfIntroduction')"></textarea>
         </div>
 
         <!-- Website -->
         <div class="form-group">
-          <label class="field-label">Website</label>
-          <input type="text" v-model="form.website" class="form-input" placeholder="https://..." aria-label="Website">
+          <label class="field-label">{{ $t('profile.website') }}</label>
+          <input type="text" v-model="form.website" class="form-input" :placeholder="$t('profile.urlPlaceholder')" :aria-label="$t('profile.website')">
         </div>
 
         <!-- Social Media -->
         <div class="form-group">
-          <label class="field-label">Social media</label>
+          <label class="field-label">{{ $t('profile.socialMedia') }}</label>
           <div class="social-row">
             <div class="social-input-wrap">
               <i class="fa-brands fa-x-twitter social-icon"></i>
-              <input type="text" v-model="form.socialLinks.x" class="social-input" placeholder="X username" aria-label="X username">
+              <input type="text" v-model="form.socialLinks.x" class="social-input" :placeholder="$t('profile.xUsername')" :aria-label="$t('profile.xUsername')">
             </div>
           </div>
           <div class="social-row">
             <div class="social-input-wrap">
               <i class="fa-brands fa-facebook social-icon"></i>
-              <input type="text" v-model="form.socialLinks.facebook" class="social-input" placeholder="Facebook username" aria-label="Facebook username">
+              <input type="text" v-model="form.socialLinks.facebook" class="social-input" :placeholder="$t('profile.facebookUsername')" :aria-label="$t('profile.facebookUsername')">
             </div>
           </div>
           <div class="social-row">
             <div class="social-input-wrap">
               <i class="fa-brands fa-instagram social-icon"></i>
-              <input type="text" v-model="form.socialLinks.instagram" class="social-input" placeholder="Instagram username" aria-label="Instagram username">
+              <input type="text" v-model="form.socialLinks.instagram" class="social-input" :placeholder="$t('profile.instagramUsername')" :aria-label="$t('profile.instagramUsername')">
             </div>
           </div>
         </div>
 
         <!-- Gender -->
         <div class="form-group">
-          <label class="field-label">Gender</label>
+          <label class="field-label">{{ $t('profile.gender') }}</label>
           <div class="split-row">
             <div class="radio-group">
               <label v-for="opt in genderOptions" :key="opt.value" class="radio-label">
-                <input type="radio" :value="opt.value" v-model="form.gender" :aria-label="'Gender: ' + opt.label">
+                <input type="radio" :value="opt.value" v-model="form.gender" :aria-label="$t('profile.gender') + ': ' + opt.label">
                 <span class="radio-text">{{ opt.label }}</span>
               </label>
             </div>
@@ -149,9 +158,9 @@ function handleSave() {
 
         <!-- Location -->
         <div class="form-group">
-          <label class="field-label">Location</label>
+          <label class="field-label">{{ $t('profile.location') }}</label>
           <div class="split-row">
-            <select v-model="form.location" class="form-select full-width" aria-label="Location">
+            <select v-model="form.location" class="form-select full-width" :aria-label="$t('profile.location')">
               <option value="">----</option>
               <option value="Vietnam">Vietnam</option>
               <option value="Japan">Japan</option>
@@ -162,9 +171,9 @@ function handleSave() {
 
         <!-- Birth year -->
         <div class="form-group">
-          <label class="field-label">Birth year</label>
+          <label class="field-label">{{ $t('profile.birthYear') }}</label>
           <div class="split-row">
-            <select v-model="form.birthYear" class="form-select full-width" aria-label="Birth year">
+            <select v-model="form.birthYear" class="form-select full-width" :aria-label="$t('profile.birthYear')">
               <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
             </select>
           </div>
@@ -172,13 +181,13 @@ function handleSave() {
 
         <!-- Birthday -->
         <div class="form-group">
-          <label class="field-label">Birthday</label>
+          <label class="field-label">{{ $t('profile.birthday') }}</label>
           <div class="split-row">
             <div class="birthday-inputs">
-              <select v-model="form.birthdayMonth" class="form-select" aria-label="Birthday month">
+              <select v-model="form.birthdayMonth" class="form-select" :aria-label="$t('profile.birthday') + ' month'">
                 <option v-for="m in months" :key="m.value" :value="m.value">{{ m.label }}</option>
               </select>
-              <select v-model="form.birthdayDay" class="form-select" aria-label="Birthday day">
+              <select v-model="form.birthdayDay" class="form-select" :aria-label="$t('profile.birthday') + ' day'">
                 <option v-for="d in daysWithSuffix" :key="d.value" :value="d.value">{{ d.label }}</option>
               </select>
             </div>
@@ -187,16 +196,16 @@ function handleSave() {
 
         <!-- Workspace -->
         <div class="workspace-section">
-          <label class="field-label">Workspace</label>
+          <label class="field-label">{{ $t('profile.workspace') }}</label>
           <a href="#" class="workspace-link">
-            Edit your workspace <i class="fas fa-external-link-alt"></i>
+            {{ $t('profile.editWorkspace') }} <i class="fas fa-external-link-alt"></i>
           </a>
         </div>
       </div>
 
       <footer class="edit-footer">
-        <button type="button" class="modal-btn modal-btn--primary" @click="handleSave">Save Changes</button>
-        <button type="button" class="modal-btn modal-btn--secondary" @click="close">Cancel</button>
+        <button type="button" class="modal-btn modal-btn--primary" @click="handleSave">{{ $t('profile.saveChanges') }}</button>
+        <button type="button" class="modal-btn modal-btn--secondary" @click="close">{{ $t('profile.cancel') }}</button>
       </footer>
     </div>
   </div>
