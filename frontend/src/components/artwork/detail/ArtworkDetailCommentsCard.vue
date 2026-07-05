@@ -24,6 +24,7 @@ const showStickerInput = ref(false)
 const reportModalComment = ref(null)
 const showReportModal = ref(false)
 const stickerPresets = ['❤️', '😊', '👍', '🔥', '🎉', '💛', '💜', '✨', '💪', '🙌', '🌈', '⭐']
+const showReplyStickerPickerByCommentId = ref({})
 const isSubmitting = ref(false)
 const expandedRepliesByCommentId = ref({})
 const showReplyInputByCommentId = ref({})
@@ -121,6 +122,25 @@ const toggleReplyStickerInput = (commentId) => {
     ...showReplyStickerInputByCommentId.value,
     [commentId]: !showReplyStickerInputByCommentId.value[commentId],
   }
+}
+
+const toggleReplyStickerPicker = (commentId) => {
+  showReplyStickerPickerByCommentId.value = {
+    ...showReplyStickerPickerByCommentId.value,
+    [commentId]: !showReplyStickerPickerByCommentId.value[commentId],
+  }
+}
+
+function selectReplySticker(commentId, sticker) {
+  replyEmojiByCommentId.value = {
+    ...replyEmojiByCommentId.value,
+    [commentId]: sticker,
+  }
+  showReplyStickerPickerByCommentId.value = {
+    ...showReplyStickerPickerByCommentId.value,
+    [commentId]: false,
+  }
+  handleReplySubmit(commentId)
 }
 
 const repliesFor = (commentId) => commentStore.repliesByCommentId[commentId] || []
@@ -367,11 +387,11 @@ const getAvatar = (user) => {
             <div class="d-flex align-items-center gap-2 mt-2">
               <button type="button"
                 class="btn-reply-action"
-                aria-label="Toggle reply emoji"
-                title="Toggle reply emoji"
-                @click="toggleReplyStickerInput(comment._id)"
+                aria-label="Toggle reply sticker"
+                title="Toggle reply sticker"
+                @click="toggleReplyStickerPicker(comment._id)"
               >
-          <i class="far fa-image" aria-hidden="true"></i>
+                <i class="far fa-laugh" aria-hidden="true"></i>
               </button>
               <button type="button"
                 class="btn-reply-action btn-reply-send"
@@ -382,14 +402,16 @@ const getAvatar = (user) => {
               </button>
             </div>
 
-            <input
-              v-if="showReplyStickerInputByCommentId[comment._id]"
-              v-model="replyEmojiByCommentId[comment._id]"
-              class="form-control form-control-sm mt-2"
-              type="url"
-              :placeholder="$t('artwork.stickerUrl')"
-              :aria-label="$t('artwork.stickerUrl')"
-            />
+            <div v-if="showReplyStickerPickerByCommentId[comment._id]" class="sticker-grid mt-2">
+              <button type="button"
+                v-for="sticker in stickerPresets"
+                :key="sticker"
+                class="sticker-option"
+                @click="selectReplySticker(comment._id, sticker)"
+              >
+                <span class="sticker-emoji">{{ sticker }}</span>
+              </button>
+            </div>
           </div>
 
           <div v-if="comment._hasReplies" class="mt-2 text-start">
@@ -515,7 +537,7 @@ const getAvatar = (user) => {
 
 .send-btn {
   background-color: var(--accent);
-  color: var(--surface);
+  color: #fff;
   border: none;
   border-radius: 24px;
   padding: 8px 24px;
@@ -645,21 +667,36 @@ const getAvatar = (user) => {
 }
 
 .reply-input-block {
-  background-color: var(--surface-alt);
+  background-color: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 10px;
 }
 
 .btn-reply-action {
   border: 1px solid var(--line);
-  background: var(--surface);
+  background: var(--surface-alt);
+  color: var(--text);
   border-radius: 14px;
   font-size: 0.8rem;
   padding: 4px 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-reply-action:hover {
+  background: var(--line);
 }
 
 .btn-reply-send {
   font-weight: 700;
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.btn-reply-send:hover:not(:disabled) {
+  background: var(--accent-hover);
 }
 
 .btn-reply-send:disabled {
