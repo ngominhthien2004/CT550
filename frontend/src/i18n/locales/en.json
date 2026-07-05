@@ -526,7 +526,7 @@
     "sendAnonymously": "Send anonymously on public surfaces",
     "submitRequest": "Submit Request",
     "submitting": "Submitting...",
-    "requestSubmitted": "Request submitted. Your payment is held in escrow while the creator reviews it."
+    "requestSubmitted": "Request submitted. The creator will review and respond."
   },
   "series": {
     "series": "Series",

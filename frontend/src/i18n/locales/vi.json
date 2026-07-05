@@ -526,7 +526,7 @@
     "sendAnonymously": "Gửi ẩn danh trên các bề mặt công khai",
     "submitRequest": "Gửi yêu cầu",
     "submitting": "Đang gửi...",
-    "requestSubmitted": "Yêu cầu đã gửi. Số tiền của bạn được giữ trong escrow khi người sáng tạo xem xét."
+    "requestSubmitted": "Yêu cầu đã gửi. Người sáng tạo sẽ xem xét và phản hồi."
   },
   "series": {
     "series": "Bộ sưu tập",

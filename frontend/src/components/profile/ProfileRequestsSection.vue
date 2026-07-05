@@ -305,10 +305,12 @@ watch(
         </label>
       </div>
 
+      <!-- Hidden until anonymous display logic is implemented
       <label class="inline-check">
         <input v-model="form.isAnonymous" type="checkbox" :aria-label="$t('request.sendAnonymously')" />
         {{ $t('request.sendAnonymously') }}
       </label>
+      -->
 
       <p v-if="submitMessage" class="state-text success">{{ submitMessage }}</p>
       <p v-if="submitError" class="state-text error">{{ submitError }}</p>

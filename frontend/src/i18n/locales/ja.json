@@ -526,7 +526,7 @@
     "sendAnonymously": "公開面で匿名送信",
     "submitRequest": "リクエストを送信",
     "submitting": "送信中...",
-    "requestSubmitted": "リクエストが送信されました。クリエイターのレビュー中はエスクローとして保持されます。"
+    "requestSubmitted": "リクエストが送信されました。クリエイターが確認して返信します。"
   },
   "series": {
     "series": "シリーズ",
