@@ -22,7 +22,7 @@
 
 /* Badges */
 .required-badge {
-  background-color: #ff3b30;
+  background-color: var(--danger);
   color: #ffffff;
   font-size: 0.68rem;
   font-weight: 700;
