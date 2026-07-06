@@ -1,5 +1,9 @@
 const { Readable } = require('stream');
 
+// ── Provider detection ──
+const AI_PROVIDER = (process.env.AI_PROVIDER || 'ollama').toLowerCase();
+
+// ── Ollama config ──
 function normalizeOllamaHost(raw) {
     if (!raw) return 'http://localhost:11434';
     let host = raw.trim();
@@ -12,30 +16,50 @@ function normalizeOllamaHost(raw) {
     }
     return host.replace(/\/+$/, '');
 }
-
 const ollamaHost = normalizeOllamaHost(process.env.OLLAMA_HOST);
-const defaultModel = process.env.OLLAMA_MODEL || 'qwen2.5-coder:32b';
+const ollamaDefaultModel = process.env.OLLAMA_MODEL || 'qwen2.5-coder:32b';
 
-/**
- * Check if Ollama is running and available.
- */
-async function checkOllamaStatus() {
+// ── OpenAI-compatible config ──
+const openaiBaseUrl = (process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '');
+const openaiApiKey = process.env.OPENAI_API_KEY || '';
+const openaiDefaultModel = process.env.OPENAI_MODEL || 'deepseek-chat';
+
+// ── Status check ──
+async function checkAIStatus() {
+    if (AI_PROVIDER === 'openai') {
+        try {
+            const response = await fetch(`${openaiBaseUrl}/models`, {
+                headers: { 'Authorization': `Bearer ${openaiApiKey}` }
+            });
+            if (!response.ok) {
+                const errText = await response.text();
+                return { status: 'error', message: `API error (${response.status}): ${errText}`, provider: 'openai' };
+            }
+            const data = await response.json();
+            return { status: 'connected', provider: 'openai', models: data.data };
+        } catch (error) {
+            return { status: 'error', message: error.message, provider: 'openai' };
+        }
+    }
+    // Ollama
     try {
         const response = await fetch(`${ollamaHost}/api/tags`);
         const data = await response.json();
-        return { status: 'connected', models: data.models };
+        return { status: 'connected', provider: 'ollama', models: data.models };
     } catch (error) {
-        return { status: 'error', message: error.message };
+        return { status: 'error', message: error.message, provider: 'ollama' };
     }
 }
 
-/**
- * Non-streaming chat with Ollama.
- * @param {Array} messages - Array of { role, content } objects
- * @param {string} model - Model name
- * @returns {Promise<string>} - Response content
- */
-async function chatWithAI(messages, model = defaultModel) {
+// ── Non-streaming chat ──
+async function chatWithAI(messages, model) {
+    if (AI_PROVIDER === 'openai') {
+        return chatWithOpenAI(messages, model || openaiDefaultModel);
+    }
+    return chatWithOllama(messages, model || ollamaDefaultModel);
+}
+
+async function chatWithOllama(messages, model) {
     const response = await fetch(`${ollamaHost}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -49,15 +73,32 @@ async function chatWithAI(messages, model = defaultModel) {
     return data.message.content;
 }
 
-/**
- * Streaming chat with Ollama.
- * Returns a Readable stream that emits SSE-like data chunks.
- * Each chunk is a JSON string: { "token": "...", "done": false }
- * @param {Array} messages - Array of { role, content } objects
- * @param {string} model - Model name
- * @returns {Promise<Readable>} - Readable stream of tokens
- */
-async function chatStreamWithAI(messages, model = defaultModel) {
+async function chatWithOpenAI(messages, model) {
+    const response = await fetch(`${openaiBaseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${openaiApiKey}`
+        },
+        body: JSON.stringify({ model, messages, stream: false })
+    });
+    if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`OpenAI API error (${response.status}): ${errText}`);
+    }
+    const data = await response.json();
+    return data.choices[0].message.content;
+}
+
+// ── Streaming chat ──
+async function chatStreamWithAI(messages, model) {
+    if (AI_PROVIDER === 'openai') {
+        return chatStreamWithOpenAI(messages, model || openaiDefaultModel);
+    }
+    return chatStreamWithOllama(messages, model || ollamaDefaultModel);
+}
+
+async function chatStreamWithOllama(messages, model) {
     const response = await fetch(`${ollamaHost}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -69,7 +110,6 @@ async function chatStreamWithAI(messages, model = defaultModel) {
         throw new Error(`Ollama streaming error (${response.status}): ${errText}`);
     }
 
-    // Create a readable stream that yields parsed tokens
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
@@ -81,7 +121,6 @@ async function chatStreamWithAI(messages, model = defaultModel) {
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) {
-                        // Process remaining buffer
                         if (buffer.trim()) {
                             try {
                                 const parsed = JSON.parse(buffer);
@@ -96,7 +135,7 @@ async function chatStreamWithAI(messages, model = defaultModel) {
 
                     buffer += decoder.decode(value, { stream: true });
                     const lines = buffer.split('\n');
-                    buffer = lines.pop() || ''; // keep incomplete line in buffer
+                    buffer = lines.pop() || '';
 
                     for (const line of lines) {
                         const trimmed = line.trim();
@@ -123,10 +162,72 @@ async function chatStreamWithAI(messages, model = defaultModel) {
     return stream;
 }
 
-/**
- * Generate a response using a simple prompt (non-streaming).
- */
-async function generateWithPrompt(prompt, systemPrompt, model = defaultModel) {
+async function chatStreamWithOpenAI(messages, model) {
+    const response = await fetch(`${openaiBaseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${openaiApiKey}`
+        },
+        body: JSON.stringify({ model, messages, stream: true })
+    });
+
+    if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`OpenAI streaming error (${response.status}): ${errText}`);
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    const stream = new Readable({
+        objectMode: true,
+        async read() {
+            try {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        this.push(null);
+                        return;
+                    }
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || '';
+
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        if (!trimmed) continue;
+                        // SSE format: "data: {...}"
+                        if (trimmed.startsWith('data: ')) {
+                            const jsonStr = trimmed.slice(6).trim();
+                            if (jsonStr === '[DONE]') {
+                                this.push(JSON.stringify({ token: '', done: true }));
+                                this.push(null);
+                                return;
+                            }
+                            try {
+                                const parsed = JSON.parse(jsonStr);
+                                const token = parsed.choices?.[0]?.delta?.content || '';
+                                this.push(JSON.stringify({ token, done: false }));
+                            } catch (e) {
+                                // skip malformed JSON
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                this.destroy(err);
+            }
+        }
+    });
+
+    return stream;
+}
+
+// ── Generate with prompt ──
+async function generateWithPrompt(prompt, systemPrompt, model) {
     const messages = [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: prompt }
@@ -134,44 +235,34 @@ async function generateWithPrompt(prompt, systemPrompt, model = defaultModel) {
     return chatWithAI(messages, model);
 }
 
-/**
- * Build the system prompt for the AI art assistant agent.
- * @param {Object} context - Optional context { userName, artworkContext }
- * @returns {string} - System prompt
- */
+// ── Build system prompt ──
 function buildAgentSystemPrompt(context = {}) {
-    return `Bạn là trợ lý AI của IlluWrl - nền tảng chia sẻ artwork, manga, novel và illustration.
+    return `Bạn là trợ lý AI thân thiện của IlluWrl - nền tảng chia sẻ artwork, manga, novel và illustration.
 
-Bạn có các công cụ sau để hỗ trợ người dùng:
+Nhiệm vụ của bạn:
+- Trả lời câu hỏi về nghệ thuật, illustration, manga, novel
+- Giải thích kết quả tìm kiếm artwork cho người dùng
+- Gợi ý tác phẩm dựa trên sở thích
+- Tóm tắt nội dung tác phẩm nghệ thuật
+- Trò chuyện tự nhiên, thân thiện
 
-1. **search**: Tìm kiếm artwork theo từ khóa. 
-   Cú pháp: [SEARCH]từ khóa[/SEARCH]
-   Kết quả trả về danh sách artwork phù hợp.
+Khi tôi cung cấp cho bạn dữ liệu từ database (kết quả tìm kiếm, gợi ý, tóm tắt), hãy giải thích chúng cho người dùng một cách dễ hiểu và hấp dẫn.
 
-2. **recommend**: Gợi ý artwork dựa trên sở thích.
-   Cú pháp: [RECOMMEND]mô tả sở thích[/RECOMMEND]
-   Kết quả trả về danh sách gợi ý.
-
-3. **summarize**: Tóm tắt nội dung artwork.
-   Cú pháp: [SUMMARIZE]artwork_id[/SUMMARIZE]
-
-4. **analyze**: Phân tích ảnh (phát hiện AI).
-   Cú pháp: [ANALYZE]image_description[/ANALYZE]
-
-Khi người dùng yêu cầu một trong các tác vụ trên, hãy trả lời bằng cách sử dụng cú pháp tương ứng.
-Sau đó, khi nhận được kết quả từ công cụ, hãy giải thích kết quả cho người dùng bằng tiếng Việt.
-
-Luôn trả lời bằng tiếng Việt, thân thiện, và tập trung vào nghệ thuật/hội họa.
-${context.userName ? `Người dùng hiện tại: ${context.userName}` : ''}
-${context.artworkContext ? `Ngữ cảnh artwork: ${context.artworkContext}` : ''}`;
+Luôn trả lời bằng tiếng Việt (trừ khi người dùng hỏi bằng ngôn ngữ khác), thân thiện, và tập trung vào nghệ thuật/hội họa.
+${context.userName ? `\nNgười dùng hiện tại: ${context.userName}` : ''}
+${context.artworkContext ? `\nNgữ cảnh artwork: ${context.artworkContext}` : ''}`;
 }
 
+// ── Keep old name as alias for backward compatibility ──
+const checkOllamaStatus = checkAIStatus;
+
 module.exports = {
-    checkOllamaStatus,
+    checkAIStatus,
+    checkOllamaStatus,  // backward compat
     chatWithAI,
     chatStreamWithAI,
     generateWithPrompt,
     buildAgentSystemPrompt,
-    defaultModel,
-    ollamaHost
+    defaultModel: AI_PROVIDER === 'openai' ? openaiDefaultModel : ollamaDefaultModel,
+    provider: AI_PROVIDER
 };

@@ -5,7 +5,10 @@ const { autoTagImage } = require('../services/autoTag.service.js');
 const User = require('../models/User');
 const Artwork = require('../models/Artwork');
 const Tag = require('../models/Tag');
+const Request = require('../models/Request');
 const Setting = require('../models/Setting');
+const ChatMessage = require('../models/ChatMessage');
+const ChatSession = require('../models/ChatSession');
 
 // ── Existing Chat (backward compatible) ──
 const chat = asyncHandler(async (req, res) => {
@@ -34,78 +37,105 @@ Nhiệm vụ của bạn là:
 
 // ── Agent Chat (with tool calling) ──
 const agentChat = asyncHandler(async (req, res) => {
-    const { message, history } = req.body;
+    const { message, history, sessionId } = req.body;
 
     if (!message) {
         res.status(400);
         throw new Error('Message is required');
     }
 
+    // ----- Lưu tin nhắn user vào session (nếu có sessionId) -----
+    let savedSessionId = sessionId;
+    if (sessionId) {
+        // Lưu message của user
+        await ChatMessage.create({
+            session: sessionId,
+            role: 'user',
+            content: message
+        });
+        // Cập nhật updatedAt
+        await ChatSession.findByIdAndUpdate(sessionId, { updatedAt: new Date() });
+    }
+
     // Get user info for context
     const user = await User.findById(req.user._id).select('username displayName');
     const userName = user.displayName || user.username;
 
-    // Build context
-    const context = { userName };
+    // Detect intent
+    const intent = detectIntent(message);
+    console.log(`Agent intent detected: "${intent}" for message: "${message.substring(0, 50)}..."`);
 
-    // Build messages
-    const messages = history || [];
-    const systemPrompt = buildAgentSystemPrompt(context);
-    messages.push({ role: 'system', content: systemPrompt });
-    messages.push({ role: 'user', content: message });
-
-    // First call to Ollama
-    let reply = await chatWithAI(messages);
-
-    // Check for tool calls in the response
     let toolResult = null;
+    let toolUsed = false;
 
-    // Check for SEARCH tool
-    const searchMatch = reply.match(/\[SEARCH\]([\s\S]*?)\[\/SEARCH\]/);
-    if (searchMatch) {
-        const query = searchMatch[1].trim();
-        console.log(`Agent executing SEARCH tool: "${query}"`);
-        toolResult = await executeSearchTool(query);
-        reply = reply.replace(searchMatch[0], '');
-    }
-
-    // Check for RECOMMEND tool
-    const recommendMatch = reply.match(/\[RECOMMEND\]([\s\S]*?)\[\/RECOMMEND\]/);
-    if (recommendMatch) {
-        const description = recommendMatch[1].trim();
-        console.log(`Agent executing RECOMMEND tool: "${description}"`);
-        toolResult = await executeRecommendTool(description, req.user._id);
-        reply = reply.replace(recommendMatch[0], '');
-    }
-
-    // Check for SUMMARIZE tool
-    const summarizeMatch = reply.match(/\[SUMMARIZE\]([\s\S]*?)\[\/SUMMARIZE\]/);
-    if (summarizeMatch) {
-        const artworkId = summarizeMatch[1].trim();
-        console.log(`Agent executing SUMMARIZE tool: "${artworkId}"`);
+    if (intent === 'search') {
+        const query = extractSearchQuery(message);
+        console.log(`Agent executing SEARCH tool with query: "${query}"`);
+        toolResult = await executeSearchTool(query || message, req.user._id);
+        toolUsed = true;
+    } else if (intent === 'recommend') {
+        const description = extractRecommendQuery(message);
+        console.log(`Agent executing RECOMMEND tool with: "${description}"`);
+        toolResult = await executeRecommendTool(description || message, req.user._id);
+        toolUsed = true;
+    } else if (intent === 'summarize') {
+        // Try to extract artwork ID from message (24-char hex)
+        const idMatch = message.match(/[a-fA-F0-9]{24}/);
+        const artworkId = idMatch ? idMatch[0] : null;
+        console.log(`Agent executing SUMMARIZE tool for ID: "${artworkId || 'unknown'}"`);
         toolResult = await executeSummarizeTool(artworkId);
-        reply = reply.replace(summarizeMatch[0], '');
+        toolUsed = true;
     }
 
-    // If a tool was called, feed its result back to Ollama for final response
-    if (toolResult) {
-        const toolMessages = [...messages];
-        // Add assistant's partial response (tool call removed)
-        if (reply.trim()) {
-            toolMessages.push({ role: 'assistant', content: reply.trim() });
-        }
-        // Add tool result as a user message with context
-        toolMessages.push({
+    // Build messages for AI
+    const context = { userName };
+    const systemPrompt = buildAgentSystemPrompt(context);
+    const aiMessages = history || [];
+
+    let reply;
+    if (toolUsed && toolResult) {
+        // Tool was executed — ask AI to explain the results
+        aiMessages.push({ role: 'system', content: systemPrompt });
+
+        // Add the user's original message for context
+        aiMessages.push({ role: 'user', content: message });
+
+        // Add tool result
+        aiMessages.push({
             role: 'user',
-            content: `Kết quả từ công cụ:\n${JSON.stringify(toolResult, null, 2)}\n\nHãy giải thích kết quả này cho người dùng bằng tiếng Việt.`
+            content: `Kết quả từ database:\n${JSON.stringify(toolResult, null, 2)}\n\nHãy giải thích kết quả này cho người dùng bằng tiếng Việt một cách thân thiện và dễ hiểu. Nếu không có kết quả, hãy nói với người dùng và gợi ý họ thử từ khóa khác.`
         });
 
-        const finalReply = await chatWithAI(toolMessages);
-        res.json({ reply: finalReply, toolUsed: true, toolResult });
+        reply = await chatWithAI(aiMessages);
     } else {
-        // No tool call — return the direct response
-        res.json({ reply: reply.trim(), toolUsed: false });
+        // No tool — direct chat
+        aiMessages.push({ role: 'system', content: systemPrompt });
+        aiMessages.push({ role: 'user', content: message });
+
+        reply = await chatWithAI(aiMessages);
     }
+
+    // ----- Lưu tin nhắn assistant vào session (nếu có sessionId) -----
+    if (savedSessionId) {
+        await ChatMessage.create({
+            session: savedSessionId,
+            role: 'assistant',
+            content: reply,
+            toolUsed
+        });
+
+        // Cập nhật title nếu đây là lần chat đầu tiên
+        const msgCount = await ChatMessage.countDocuments({ session: savedSessionId });
+        // welcome + user + vừa thêm assistant => nếu msgCount <= 3 là chưa có title
+        if (msgCount <= 3) {
+            const title = message.length > 50
+                ? message.substring(0, 47) + '...'
+                : message;
+            await ChatSession.findByIdAndUpdate(savedSessionId, { title });
+        }
+    }
+
+    res.json({ reply, toolUsed, toolResult });
 });
 
 // ── Tool Implementations ──
@@ -113,57 +143,93 @@ const agentChat = asyncHandler(async (req, res) => {
 /**
  * Search artworks by keyword (title, tags, description).
  */
-async function executeSearchTool(query) {
+async function executeSearchTool(query, userId) {
     try {
-        // Search by title (case-insensitive regex)
-        const artworks = await Artwork.find({
-            title: { $regex: query, $options: 'i' }
-        })
-        .populate('tags', 'name')
-        .select('title type ageRating images')
-        .limit(10)
-        .lean();
+        const result = { artworks: [], users: [], plans: [], tags: [] };
+        const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
 
-        if (artworks.length === 0) {
-            // Try searching by tag name
-            const tags = await Tag.find({
-                name: { $regex: query, $options: 'i' }
-            }).select('_id').lean();
+        // 1. Search artworks by title
+        const artworksByTitle = await Artwork.find({ title: regex })
+            .populate('tags', 'name')
+            .select('title type ageRating images')
+            .limit(5)
+            .lean();
+        
+        // 2. Search artworks by tags
+        const tags = await Tag.find({ name: regex }).select('_id name').lean();
+        let artworksByTag = [];
+        if (tags.length > 0) {
+            const tagIds = tags.map(t => t._id);
+            artworksByTag = await Artwork.find({ tags: { $in: tagIds } })
+                .populate('tags', 'name')
+                .select('title type ageRating images')
+                .limit(5)
+                .lean();
+        }
 
-            if (tags.length > 0) {
-                const tagIds = tags.map(t => t._id);
-                const tagArtworks = await Artwork.find({ tags: { $in: tagIds } })
-                    .populate('tags', 'name')
-                    .select('title type ageRating images')
-                    .limit(10)
-                    .lean();
-                
-                return {
-                    found: tagArtworks.length,
-                    artworks: tagArtworks.map(a => ({
-                        title: a.title,
-                        type: a.type,
-                        tags: a.tags?.map(t => t.name) || [],
-                        ageRating: a.ageRating,
-                        hasImage: a.images && a.images.length > 0
-                    }))
-                };
+        // Merge artworks, dedup by _id
+        const seenIds = new Set();
+        const allArtworks = [...artworksByTitle, ...artworksByTag];
+        for (const a of allArtworks) {
+            if (!seenIds.has(a._id.toString())) {
+                seenIds.add(a._id.toString());
+                result.artworks.push({
+                    title: a.title,
+                    type: a.type,
+                    tags: a.tags?.map(t => t.name) || [],
+                    ageRating: a.ageRating,
+                    hasImage: a.images && a.images.length > 0
+                });
             }
         }
 
-        return {
-            found: artworks.length,
-            artworks: artworks.map(a => ({
-                title: a.title,
-                type: a.type,
-                tags: a.tags?.map(t => t.name) || [],
-                ageRating: a.ageRating,
-                hasImage: a.images && a.images.length > 0
-            }))
+        // 3. Search users by username or displayName
+        const users = await User.find({
+            $or: [
+                { username: regex },
+                { displayName: regex }
+            ]
+        })
+        .select('username displayName avatar bio')
+        .limit(5)
+        .lean();
+
+        result.users = users.map(u => ({
+            username: u.username,
+            displayName: u.displayName || u.username,
+            hasAvatar: !!u.avatar,
+            bio: u.bio ? u.bio.substring(0, 100) : ''
+        }));
+
+        // 4. Search plans (commission requests) by title
+        const plans = await Request.find({ title: regex })
+            .populate('creator', 'username displayName')
+            .select('title workType targetPrice currency status')
+            .limit(5)
+            .lean();
+
+        result.plans = plans.map(p => ({
+            title: p.title,
+            workType: p.workType,
+            price: p.targetPrice ? `${p.currency || 'USD'} ${p.targetPrice}` : 'Negotiable',
+            status: p.status,
+            creator: p.creator?.displayName || p.creator?.username || 'Unknown'
+        }));
+
+        // 5. Return matched tags too
+        result.tags = tags.map(t => t.name);
+
+        result.found = {
+            artworks: result.artworks.length,
+            users: result.users.length,
+            plans: result.plans.length,
+            tags: result.tags.length
         };
+
+        return result;
     } catch (error) {
         console.error('Search tool error:', error.message);
-        return { error: error.message, found: 0, artworks: [] };
+        return { error: error.message, found: { artworks: 0, users: 0, plans: 0, tags: 0 }, artworks: [], users: [], plans: [], tags: [] };
     }
 }
 
@@ -266,6 +332,67 @@ async function executeSummarizeTool(artworkId) {
         console.error('Summarize tool error:', error.message);
         return { error: error.message };
     }
+}
+
+// ── Intent Detection Helpers ──
+
+/**
+ * Detect user intent from message using keyword patterns.
+ * @returns {'search'|'recommend'|'summarize'|'chat'}
+ */
+function detectIntent(message) {
+    const lower = message.toLowerCase().trim();
+
+    // Search patterns - ưu tiên kiểm tra trước
+    if (/tìm/i.test(lower) ||
+        /search/i.test(lower) ||
+        /tìm kiếm/i.test(lower) ||
+        /có (artwork|tác phẩm|tranh|ảnh) (nào|về)/i.test(lower) ||
+        /cho xem/i.test(lower)) {
+        return 'search';
+    }
+
+    // Recommend patterns
+    if (/gợi.ý/i.test(lower) ||
+        /đề xuất/i.test(lower) ||
+        /recommend/i.test(lower) ||
+        /suggest/i.test(lower) ||
+        /giới thiệu/i.test(lower) ||
+        /gợi ý cho tôi/i.test(lower)) {
+        return 'recommend';
+    }
+
+    // Summarize patterns
+    if (/tóm tắt/i.test(lower) ||
+        /summarize/i.test(lower) ||
+        /tổng quan/i.test(lower)) {
+        return 'summarize';
+    }
+
+    return 'chat';
+}
+
+/**
+ * Extract search query from user message by removing trigger words.
+ */
+function extractSearchQuery(message) {
+    return message
+        .replace(/^tìm\s+(artwork|tác phẩm|về|kiếm)\s*/i, '')
+        .replace(/tìm kiếm\s*/i, '')
+        .replace(/search\s*/i, '')
+        .replace(/có artwork nào về\s*/i, '')
+        .replace(/cho (tôi )?xem\s*/i, '')
+        .trim() || message.trim();
+}
+
+/**
+ * Extract recommendation description from user message.
+ */
+function extractRecommendQuery(message) {
+    return message
+        .replace(/^(gợi.ý|đề xuất|recommend|suggest|giới thiệu)\s*/i, '')
+        .replace(/gợi ý cho tôi\s*/i, '')
+        .trim() || message.trim();
 }
 
 // ── Existing endpoints (unchanged) ──

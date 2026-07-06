@@ -3,17 +3,100 @@ import api from '../services/api.js'
 
 export const useChatStore = defineStore('chat', {
   state: () => ({
+    sessions: [],
+    currentSessionId: null,
     messages: [],
     isLoading: false,
+    isSessionsLoading: false,
     error: null,
   }),
 
   getters: {
     messageCount: (state) => state.messages.length,
     hasMessages: (state) => state.messages.length > 0,
+    currentSession: (state) => {
+      return state.sessions.find(s => s._id === state.currentSessionId) || null
+    },
+    sortedSessions: (state) => {
+      return [...state.sessions].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+    },
   },
 
   actions: {
+    /**
+     * Load all sessions from backend.
+     */
+    async loadSessions() {
+      this.isSessionsLoading = true
+      try {
+        const { data } = await api.get('/chat-sessions')
+        this.sessions = data
+      } catch (err) {
+        console.error('Failed to load sessions:', err)
+      } finally {
+        this.isSessionsLoading = false
+      }
+    },
+
+    /**
+     * Create a new chat session.
+     * Auto-switches to the new session.
+     */
+    async createSession() {
+      try {
+        const { data } = await api.post('/chat-sessions', {})
+        this.sessions.unshift(data)
+        this.currentSessionId = data._id
+        this.messages = []
+        // Load messages (will include welcome message from backend)
+        await this.loadSessionMessages(data._id)
+        return data
+      } catch (err) {
+        console.error('Failed to create session:', err)
+        return null
+      }
+    },
+
+    /**
+     * Delete a session.
+     */
+    async deleteSession(sessionId) {
+      try {
+        await api.delete(`/chat-sessions/${sessionId}`)
+        this.sessions = this.sessions.filter(s => s._id !== sessionId)
+        if (this.currentSessionId === sessionId) {
+          this.currentSessionId = null
+          this.messages = []
+        }
+      } catch (err) {
+        console.error('Failed to delete session:', err)
+      }
+    },
+
+    /**
+     * Switch to a different session.
+     */
+    async switchSession(sessionId) {
+      if (sessionId === this.currentSessionId) return
+      this.currentSessionId = sessionId
+      this.messages = []
+      this.error = null
+      await this.loadSessionMessages(sessionId)
+    },
+
+    /**
+     * Load messages for a session.
+     */
+    async loadSessionMessages(sessionId) {
+      try {
+        const { data } = await api.get(`/chat-sessions/${sessionId}/messages`)
+        this.messages = data
+      } catch (err) {
+        console.error('Failed to load messages:', err)
+        this.error = 'Không thể tải tin nhắn'
+      }
+    },
+
     /**
      * Send a message to the AI agent chat.
      * @param {string} message - The user's message
@@ -25,7 +108,7 @@ export const useChatStore = defineStore('chat', {
       this.isLoading = true
       this.error = null
 
-      // Add user message
+      // Add user message locally
       this.messages.push({
         role: 'user',
         content: message.trim(),
@@ -33,17 +116,19 @@ export const useChatStore = defineStore('chat', {
       })
 
       try {
-        // Build history from existing messages (excluding the last user message which we'll send)
+        // Build history from existing messages
         const history = this.messages
+          .filter(m => !m.isWelcome) // exclude welcome from history
           .slice(0, -1)
           .map((m) => ({ role: m.role, content: m.content }))
 
         const { data } = await api.post('/ai/agent-chat', {
           message: message.trim(),
           history,
+          sessionId: this.currentSessionId,
         })
 
-        // Add assistant reply
+        // Add assistant reply locally
         if (data.reply) {
           this.messages.push({
             role: 'assistant',
@@ -53,19 +138,21 @@ export const useChatStore = defineStore('chat', {
           })
         }
 
+        // Refresh session list to get updated title
+        await this.loadSessions()
+
         return data
       } catch (err) {
         const errorMsg = err.response?.data?.message || err.message || 'Không thể kết nối đến AI assistant'
         this.error = errorMsg
-        
-        // Add error message
+
         this.messages.push({
           role: 'assistant',
           content: `❌ ${errorMsg}`,
           timestamp: new Date().toISOString(),
           isError: true,
         })
-        
+
         return null
       } finally {
         this.isLoading = false
@@ -81,7 +168,7 @@ export const useChatStore = defineStore('chat', {
     },
 
     /**
-     * Clear conversation.
+     * Clear current conversation and reset.
      */
     clearConversation() {
       this.messages = []
@@ -89,21 +176,15 @@ export const useChatStore = defineStore('chat', {
     },
 
     /**
-     * Add a system welcome message.
+     * Initialize: load sessions, create first if none exist.
      */
-    addWelcomeMessage() {
-      if (this.messages.length === 0) {
-        this.messages.push({
-          role: 'assistant',
-          content: '👋 Chào bạn! Tôi là trợ lý AI của IlluWrl. Tôi có thể:\n\n' +
-            '• 🔍 **Tìm kiếm artwork** theo từ khóa\n' +
-            '• 💡 **Gợi ý tác phẩm** dựa trên sở thích của bạn\n' +
-            '• 📝 **Tóm tắt nội dung** artwork\n' +
-            '• 🎨 **Trả lời câu hỏi** về nghệ thuật và illustration\n\n' +
-            'Bạn muốn hỏi gì?',
-          timestamp: new Date().toISOString(),
-          isWelcome: true,
-        })
+    async initialize() {
+      await this.loadSessions()
+      if (this.sessions.length === 0) {
+        await this.createSession()
+      } else {
+        this.currentSessionId = this.sessions[0]._id
+        await this.loadSessionMessages(this.currentSessionId)
       }
     },
   },
