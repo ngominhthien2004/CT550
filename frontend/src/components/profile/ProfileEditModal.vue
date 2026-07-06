@@ -89,7 +89,7 @@ function handleSave() {
 </script>
 
 <template>
-  <div v-if="show" class="modal-backdrop" @click.self="close" @keydown.enter.prevent="close" @keydown.space.prevent="close" tabindex="0" role="button">
+  <div v-if="show" class="modal-backdrop" @click.self="close" @keydown.esc="close" tabindex="0" role="dialog" aria-modal="true">
     <div class="modal-card edit-card">
       <header class="modal-header">
         <h2 class="modal-title">{{ $t('profile.editProfile') }}</h2>
