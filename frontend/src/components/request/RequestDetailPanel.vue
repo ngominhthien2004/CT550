@@ -477,6 +477,8 @@ defineExpose({ updateChatMessages, setChatLoading })
 .chat-input {
   border-top: 1px solid var(--line);
   padding-top: 0.5rem;
+  position: relative;
+  z-index: 1060;
 }
 .chat-input textarea {
   width: 100%;
