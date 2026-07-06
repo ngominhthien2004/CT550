@@ -109,7 +109,7 @@ async function executeDelete() {
 
     <!-- Add Chapter Modal -->
     <Teleport to="body">
-      <div v-if="showAddForm" class="modal-overlay" @click.self="showAddForm = false" @keydown.enter.prevent="showAddForm = false" @keydown.space.prevent="showAddForm = false" tabindex="0" role="button">
+      <div v-if="showAddForm" class="modal-overlay" @click.self="showAddForm = false" @keydown.esc="showAddForm = false" tabindex="0" role="dialog" aria-modal="true">
         <div class="modal-content">
           <div class="modal-header">
             <h3 class="modal-title">Add New Chapter</h3>
@@ -162,7 +162,7 @@ async function executeDelete() {
 
     <!-- Delete Confirmation -->
     <Teleport to="body">
-      <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null" @keydown.enter.prevent="deleteTarget = null" @keydown.space.prevent="deleteTarget = null" tabindex="0" role="button">
+      <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null" @keydown.esc="deleteTarget = null" tabindex="0" role="dialog" aria-modal="true">
         <div class="modal-content confirm-dialog">
           <div class="modal-header">
             <h3 class="modal-title">Delete Chapter {{ deleteTarget.chapterNumber }}?</h3>

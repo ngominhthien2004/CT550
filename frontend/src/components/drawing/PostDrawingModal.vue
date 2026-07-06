@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <div v-if="store.showPostDialog" class="modal-overlay" @click.self="store.showPostDialog = false" @keydown.enter.prevent="store.showPostDialog = false" @keydown.space.prevent="store.showPostDialog = false" tabindex="0" role="button">
+    <div v-if="store.showPostDialog" class="modal-overlay" @click.self="store.showPostDialog = false" @keydown.esc="store.showPostDialog = false" tabindex="0" role="dialog" aria-modal="true">
       <div class="modal-content">
         <div class="modal-header">
           <h2>Post Drawing</h2>
