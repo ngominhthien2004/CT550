@@ -620,6 +620,13 @@ const hasSession = computed(() => !!chatStore.currentSessionId)
   gap: 0.375rem;
   border-radius: 2rem;
   padding: 0.375rem 1rem;
+  color: var(--accent);
+  border-color: var(--accent);
+  background: transparent;
+}
+.prompt-chip:hover {
+  background: var(--accent);
+  color: #fff;
 }
 
 /* Input area */
