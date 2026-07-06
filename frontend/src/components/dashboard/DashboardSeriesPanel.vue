@@ -2,10 +2,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSeriesStore } from '@/stores/series.store'
+import { useI18n } from 'vue-i18n'
 import CreateSeriesModal from './CreateSeriesModal.vue'
 
 const router = useRouter()
 const seriesStore = useSeriesStore()
+const { t } = useI18n()
 const showCreateModal = ref(false)
 const createType = ref('manga')
 const sortOrder = ref('newest')
@@ -112,9 +114,9 @@ onMounted(() => {
     <!-- Header with sort and create button -->
     <div class="series-header">
       <div class="series-sort">
-        <select class="series-sort-select" :value="sortOrder" @change="changeSort" aria-label="Sort series">
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
+        <select class="series-sort-select" :value="sortOrder" @change="changeSort" :aria-label="$t('dashboard.sortSeries')">
+          <option value="newest">{{ $t('dashboard.newestFirst') }}</option>
+          <option value="oldest">{{ $t('dashboard.oldestFirst') }}</option>
         </select>
       </div>
       <div class="series-actions">
@@ -124,13 +126,13 @@ onMounted(() => {
           </button>
           <div class="create-dropdown-menu">
             <button type="button" class="dropdown-item" @click="openCreateModal('manga')">
-              Create manga series
+              {{ $t('dashboard.createMangaSeries') }}
             </button>
             <button type="button" class="dropdown-item" @click="openCreateModal('novel')">
-              Create novel series
+              {{ $t('dashboard.createNovelSeries') }}
             </button>
             <button type="button" class="dropdown-item" @click="openCreateModal('illust')">
-              Create illustration series
+              {{ $t('dashboard.createIllustSeries') }}
             </button>
           </div>
         </div>
@@ -144,21 +146,21 @@ onMounted(() => {
 
     <!-- Loading -->
     <p v-if="seriesStore.listLoading && seriesStore.seriesList.length === 0" class="state-note">
-      Loading series...
+      {{ $t('dashboard.loadingSeries') }}
     </p>
 
     <!-- Empty state -->
     <div v-else-if="seriesStore.seriesList.length === 0" class="series-empty">
-      <p class="empty-title">Try creating a series and use it to collect your works</p>
+      <p class="empty-title">{{ $t('dashboard.emptySeriesTitle') }}</p>
       <div class="empty-actions">
         <button type="button" class="empty-btn" @click="openCreateModal('manga')">
-          Create manga series
+          {{ $t('dashboard.createMangaSeries') }}
         </button>
         <button type="button" class="empty-btn" @click="openCreateModal('novel')">
-          Create novel series
+          {{ $t('dashboard.createNovelSeries') }}
         </button>
         <button type="button" class="empty-btn" @click="openCreateModal('illust')" @keydown.enter.prevent="openCreateModal('illust')" @keydown.space.prevent="openCreateModal('illust')">
-          Create illustration series
+          {{ $t('dashboard.createIllustSeries') }}
         </button>
       </div>
     </div>
@@ -173,10 +175,10 @@ onMounted(() => {
           </button>
           <div v-if="openMenuId === series._id" class="card-menu-dropdown">
             <button type="button" class="menu-dropdown-item" @click.stop="openEditModal(series)">
-              <i class="fa-solid fa-pen"></i> Edit
+              <i class="fa-solid fa-pen"></i> {{ $t('common.edit') }}
             </button>
             <button type="button" class="menu-dropdown-item menu-dropdown-item--danger" @click.stop="openDeleteConfirm(series)">
-              <i class="fa-solid fa-trash"></i> Delete
+              <i class="fa-solid fa-trash"></i> {{ $t('common.delete') }}
             </button>
           </div>
         </div>
@@ -197,7 +199,7 @@ onMounted(() => {
           <div class="series-card-meta">
             <span class="series-card-date">{{ series._createdAt }}</span>
             <span class="series-card-separator">&middot;</span>
-            <span class="series-card-episodes">{{ series.artworkCount || 0 }} episode(s)</span>
+            <span class="series-card-episodes">{{ $t('dashboard.episodeCount', { count: series.artworkCount || 0 }) }}</span>
           </div>
           <div class="series-card-stats">
             <div class="stat-item">
@@ -244,12 +246,12 @@ onMounted(() => {
     <!-- Delete confirmation -->
     <div v-if="showDeleteConfirm" class="del-backdrop" @click.self="showDeleteConfirm = false" @keydown.enter.prevent="showDeleteConfirm = false" @keydown.space.prevent="showDeleteConfirm = false" tabindex="0" role="button">
       <div class="delete-confirm-dialog">
-        <h3 class="delete-confirm-title">Delete series</h3>
-        <p class="delete-confirm-text">Are you sure you want to delete "{{ deletingSeries?.title }}"? This action cannot be undone.</p>
+        <h3 class="delete-confirm-title">{{ $t('dashboard.deleteSeriesHeading') }}</h3>
+        <p class="delete-confirm-text">{{ $t('dashboard.deleteSeriesConfirm', { name: deletingSeries?.title }) }}</p>
         <div class="delete-confirm-actions">
-          <button type="button" class="del-btn del-btn--cancel" @click="showDeleteConfirm = false">Cancel</button>
+          <button type="button" class="del-btn del-btn--cancel" @click="showDeleteConfirm = false">{{ $t('common.cancel') }}</button>
           <button type="button" class="del-btn del-btn--delete" @click="confirmDelete" :disabled="deleting">
-            {{ deleting ? 'Deleting...' : 'Delete' }}
+            {{ deleting ? $t('common.saving') : $t('common.delete') }}
           </button>
         </div>
       </div>

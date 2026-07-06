@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useArtworkStore } from '@/stores/artwork.store'
 import { getTags } from '@/services/api'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   artwork: { type: Object, required: true },
@@ -10,6 +11,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'updated'])
 
 const artworkStore = useArtworkStore()
+const { t } = useI18n()
 
 const title = ref('')
 const description = ref('')
@@ -61,7 +63,7 @@ function commitTag(tagValue, clearInput = true) {
     return
   }
   if (tagList.value.length >= 10) {
-    errorMsg.value = 'You can use up to 10 tags.'
+    errorMsg.value = t('dashboard.maxTags')
     return
   }
   tagList.value.push(normalizedTag)
@@ -169,9 +171,9 @@ onBeforeUnmount(() => {
 <template>
   <Teleport to="body">
   <div class="ea-backdrop" @click.self="emit('close')">
-    <div class="ea-dialog" role="dialog" aria-modal="true" aria-label="Edit artwork">
+    <div class="ea-dialog" role="dialog" aria-modal="true" :aria-label="$t('dashboard.editArtworkLabel')">
       <div class="ea-header">
-        <h3 class="ea-header-title">Edit artwork</h3>
+        <h3 class="ea-header-title">{{ $t('dashboard.editArtworkLabel') }}</h3>
         <button type="button" class="ea-close" @click="emit('close')">
           <i class="fa-solid fa-xmark"></i>
         </button>
@@ -180,7 +182,7 @@ onBeforeUnmount(() => {
       <form class="ea-body" @submit.prevent="handleSubmit">
         <div class="ea-field">
           <label class="ea-label">
-            Title <span class="ea-required">* Required</span>
+            Title <span class="ea-required">{{ $t('dashboard.required') }}</span>
           </label>
           <div class="ea-input-wrap">
             <input
@@ -188,7 +190,7 @@ onBeforeUnmount(() => {
               type="text"
               class="ea-input"
               :maxlength="TITLE_MAX"
-              placeholder="Artwork title"
+              :placeholder="$t('dashboard.artworkTitle')"
             />
             <span class="ea-counter" :class="{ 'ea-counter--over': titleChars > TITLE_MAX }">
               {{ titleChars }}/{{ TITLE_MAX }}
@@ -197,13 +199,13 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="ea-field">
-          <label class="ea-label">Description</label>
+          <label class="ea-label">{{ $t('dashboard.description') }}</label>
           <div class="ea-input-wrap ea-textarea-wrap">
             <textarea
               v-model="description"
               class="ea-input ea-textarea"
               :maxlength="DESC_MAX"
-              placeholder="Describe your artwork..."
+              :placeholder="$t('dashboard.describeArtwork')"
               rows="4"
             ></textarea>
             <span class="ea-counter ea-counter--textarea" :class="{ 'ea-counter--over': descChars > DESC_MAX }">
@@ -213,15 +215,15 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="ea-field">
-          <label class="ea-label">Age Rating</label>
+          <label class="ea-label">{{ $t('dashboard.ageRating') }}</label>
           <div class="ea-radio-group">
             <label class="ea-radio-label">
               <input type="radio" v-model="ageRating" value="all" class="ea-radio" />
-              <span class="ea-radio-text">All ages</span>
+              <span class="ea-radio-text">{{ $t('upload.allAges') }}</span>
             </label>
             <label class="ea-radio-label">
               <input type="radio" v-model="ageRating" value="r-18" class="ea-radio" />
-              <span class="ea-radio-text">R-18</span>
+              <span class="ea-radio-text">{{ $t('upload.r18') }}</span>
             </label>
           </div>
         </div>
@@ -242,7 +244,7 @@ onBeforeUnmount(() => {
               />
             </div>
             <div v-if="showSuggestionPanel" class="ea-suggestion-panel" role="listbox" aria-label="Tag suggestions">
-              <p v-if="tagSuggestionLoading" class="ea-suggestion-loading">Loading suggestions...</p>
+              <p v-if="tagSuggestionLoading" class="ea-suggestion-loading">{{ $t('upload.loadingSuggestions') }}</p>
               <template v-else>
                 <button
                   v-for="suggestion in tagSuggestions"
@@ -255,7 +257,7 @@ onBeforeUnmount(() => {
                   <span class="ea-suggestion-count">{{ suggestion.usageCount || 0 }} results</span>
                 </button>
                 <p v-if="tagSuggestions.length === 0" class="ea-suggestion-empty">
-                  No matching tag. Press Space/Enter to create new tag.
+                  {{ $t('dashboard.noMatchingTag') }}
                 </p>
               </template>
             </div>
@@ -278,10 +280,10 @@ onBeforeUnmount(() => {
 
         <div class="ea-actions">
           <button type="button" class="ea-btn ea-btn--cancel" @click="emit('close')">
-            Cancel
+            {{ $t('common.cancel') }}
           </button>
           <button type="submit" class="ea-btn ea-btn--save" :disabled="!canSubmit">
-            {{ submitting ? 'Saving...' : 'Save changes' }}
+            {{ submitting ? $t('common.saving') : $t('common.save') }}
           </button>
         </div>
       </form>

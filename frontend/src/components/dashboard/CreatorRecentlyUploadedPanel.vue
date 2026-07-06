@@ -1,6 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { formatShortDate } from '../../utils/date.js'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   recentArtworks: {
@@ -12,6 +13,7 @@ const props = defineProps({
 const emit = defineEmits(['post'])
 
 const router = useRouter()
+const { t } = useI18n()
 
 function goToArtwork(artwork) {
   if (artwork?._id) {
@@ -30,12 +32,12 @@ function formatDate(value) {
 <template>
   <article class="recent-panel">
     <header class="recent-head">
-      <p class="recent-title">Recently uploaded works</p>
-      <button type="button" class="ghost-link">View all</button>
+      <p class="recent-title">{{ $t('dashboard.recentlyUploaded') }}</p>
+      <button type="button" class="ghost-link">{{ $t('dashboard.viewAll') }}</button>
     </header>
 
     <div v-if="recentArtworks.length" class="recent-body">
-      <p class="live-note"><span class="dot"></span> Updated in real time</p>
+      <p class="live-note"><span class="dot"></span> {{ $t('dashboard.updatedInRealTime') }}</p>
       <div class="work-cards">
         <div v-for="artwork in recentArtworks" :key="artwork._id" class="work-card">
           <img v-if="artwork.image" :src="artwork.image" :alt="artwork.title" class="work-thumb" loading="lazy" />
@@ -46,7 +48,7 @@ function formatDate(value) {
             <p class="work-time">{{ formatDate(artwork.createdAt) }}</p>
           </div>
 
-          <button type="button" class="edit-btn" aria-label="Edit artwork" @click="goToArtwork(artwork)">
+          <button type="button" class="edit-btn" :aria-label="$t('dashboard.editArtworkLabel')" @click="goToArtwork(artwork)">
             <i class="fa-solid fa-pen" aria-hidden="true"></i>
           </button>
 
@@ -59,13 +61,13 @@ function formatDate(value) {
         </div>
       </div>
 
-      <p class="updated-at">Views last updated: {{ formatDate(recentArtworks[0]?.updatedAt || recentArtworks[0]?.createdAt) }}</p>
+      <p class="updated-at">{{ $t('dashboard.viewsLastUpdated', { date: formatDate(recentArtworks[0]?.updatedAt || recentArtworks[0]?.createdAt) }) }}</p>
     </div>
 
     <div v-else class="recent-empty">
       <i class="fa-regular fa-images" aria-hidden="true"></i>
-      <p>Try posting your work</p>
-      <button type="button" class="action-pill" @click="emit('post')">Post your work</button>
+      <p>{{ $t('dashboard.tryPosting') }}</p>
+      <button type="button" class="action-pill" @click="emit('post')">{{ $t('dashboard.postYourWork') }}</button>
     </div>
   </article>
 </template>

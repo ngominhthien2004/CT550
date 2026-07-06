@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store'
 import { useArtworkStore } from '@/stores/artwork.store'
@@ -13,6 +14,7 @@ const authStore = useAuthStore()
 const artworkStore = useArtworkStore()
 const seriesStore = useSeriesStore()
 const user = computed(() => authStore.user)
+const { t } = useI18n()
 
 const activeSubTab = ref('works')
 const artworks = ref([])
@@ -106,7 +108,7 @@ function handleArtworkUpdated() {
         :class="{ 'subtab-btn--active': activeSubTab === 'works' }"
         @click="activeSubTab = 'works'"
       >
-        Works
+        {{ $t('dashboard.tabWorks') }}
       </button>
       <button
         type="button"
@@ -114,7 +116,7 @@ function handleArtworkUpdated() {
         :class="{ 'subtab-btn--active': activeSubTab === 'series' }"
         @click="activeSubTab = 'series'"
       >
-        Series
+        {{ $t('dashboard.tabSeries') }}
         <span v-if="seriesStore.seriesList.length" class="subtab-badge">
           {{ seriesStore.seriesList.length }}
         </span>
@@ -123,10 +125,10 @@ function handleArtworkUpdated() {
 
     <!-- Works content -->
     <div v-if="activeSubTab === 'works'" class="works-content">
-      <p v-if="loadingArtworks" class="state-note">Loading works...</p>
+      <p v-if="loadingArtworks" class="state-note">{{ $t('dashboard.loadingWorks') }}</p>
       <div v-else-if="artworks.length === 0" class="empty-state">
         <i class="fa-regular fa-images" aria-hidden="true"></i>
-        <p>You haven't posted any works yet.</p>
+        <p>{{ $t('dashboard.noWorks') }}</p>
       </div>
       <div v-else class="works-grid">
         <div v-for="artwork in artworks" :key="artwork._id" class="work-card" @click="goToArtworkDetail(artwork._id)">
@@ -137,10 +139,10 @@ function handleArtworkUpdated() {
             </button>
             <div v-if="openMenuId === artwork._id" class="card-menu-dropdown">
               <button type="button" class="menu-dropdown-item" @click.stop="openEditModal(artwork)">
-                <i class="fa-solid fa-pen"></i> Edit
+                <i class="fa-solid fa-pen"></i> {{ $t('common.edit') }}
               </button>
               <button type="button" class="menu-dropdown-item menu-dropdown-item--danger" @click.stop="openDeleteConfirm(artwork)">
-                <i class="fa-solid fa-trash"></i> Delete
+                <i class="fa-solid fa-trash"></i> {{ $t('common.delete') }}
               </button>
             </div>
           </div>
@@ -178,12 +180,12 @@ function handleArtworkUpdated() {
     <!-- Delete confirmation -->
     <div v-if="showDeleteConfirm" class="del-backdrop" @click.self="showDeleteConfirm = false">
       <div class="delete-confirm-dialog">
-        <h3 class="delete-confirm-title">Delete artwork</h3>
-        <p class="delete-confirm-text">Are you sure you want to delete "{{ deletingArtwork?.title }}"? This action cannot be undone.</p>
+        <h3 class="delete-confirm-title">{{ $t('dashboard.deleteArtworkHeading') }}</h3>
+        <p class="delete-confirm-text">{{ $t('dashboard.deleteArtworkConfirm', { name: deletingArtwork?.title }) }}</p>
         <div class="delete-confirm-actions">
-          <button type="button" class="del-btn del-btn--cancel" @click="showDeleteConfirm = false">Cancel</button>
+          <button type="button" class="del-btn del-btn--cancel" @click="showDeleteConfirm = false">{{ $t('common.cancel') }}</button>
           <button type="button" class="del-btn del-btn--delete" @click="confirmDelete" :disabled="deleting">
-            {{ deleting ? 'Deleting...' : 'Delete' }}
+            {{ deleting ? $t('common.saving') : $t('common.delete') }}
           </button>
         </div>
       </div>

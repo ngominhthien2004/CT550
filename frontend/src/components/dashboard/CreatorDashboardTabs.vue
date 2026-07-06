@@ -1,14 +1,17 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
 const props = defineProps({
   modelValue: { type: String, default: 'home' }
 })
 
 const emit = defineEmits(['update:modelValue'])
 
+const { t } = useI18n()
 const tabs = [
-  { key: 'home', label: 'Home' },
-  { key: 'works', label: 'Works' },
-  { key: 'reactions', label: 'Reactions' },
+  { key: 'home', label: t('profile.tabHome') },
+  { key: 'works', label: t('dashboard.tabWorks') },
+  { key: 'reactions', label: t('dashboard.tabReactions') },
 ]
 
 function selectTab(key) {
@@ -17,7 +20,7 @@ function selectTab(key) {
 </script>
 
 <template>
-  <nav class="dashboard-tabs" aria-label="Creator dashboard tabs">
+  <nav class="dashboard-tabs" :aria-label="$t('dashboard.title')">
     <button
       v-for="tab in tabs"
       :key="tab.key"

@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { CreatorDashboardTabs, CreatorRecentlyUploadedPanel, CreatorReactionsCard, DashboardReactionsPanel } from '@/components/dashboard'
 import DashboardWorksPanel from '@/components/dashboard/DashboardWorksPanel.vue'
@@ -11,6 +12,7 @@ import { getArtworks } from '../services/api'
 const isNavCollapsed = ref(true)
 const router = useRouter()
 const authStore = useAuthStore()
+const { t } = useI18n()
 const user = computed(() => authStore.user)
 const artworks = ref([])
 const loading = ref(false)
@@ -64,7 +66,7 @@ async function loadDashboard() {
     const { data } = await getArtworks({ user: user.value._id, limit: 120 })
     artworks.value = Array.isArray(data) ? data.map(normalizeArtwork) : []
   } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || 'Failed to load dashboard data'
+    error.value = fetchError?.response?.data?.message || t('dashboard.loadFailed')
     artworks.value = []
   } finally {
     loading.value = false
@@ -121,9 +123,9 @@ function initOnboarding() {
 
 const guideLabel = computed(() => {
   if (onboardingStep.value > 0) {
-    return 'Hide guide'
+    return t('dashboard.hideGuide')
   }
-  return hasSeenGuide.value ? 'Show guide' : 'Start guide'
+  return hasSeenGuide.value ? t('dashboard.showGuide') : t('dashboard.startGuide')
 })
 
 async function goLogin() {
@@ -154,13 +156,13 @@ watch(
       <div class="dashboard-wrap">
         <div class="dashboard-hero">
           <div class="dashboard-hero-inner">
-            <p class="dashboard-hero-kicker">Creator Dashboard</p>
-            <h1 class="dashboard-hero-title">Welcome back, {{ user.displayName || user.username }}</h1>
-            <p class="dashboard-hero-desc">Track your works, reactions, and performance at a glance.</p>
+            <p class="dashboard-hero-kicker">{{ $t('dashboard.title') }}</p>
+            <h1 class="dashboard-hero-title">{{ $t('dashboard.welcomeBack', { name: user.displayName || user.username }) }}</h1>
+            <p class="dashboard-hero-desc">{{ $t('dashboard.heroDescription') }}</p>
             <div class="dashboard-hero-stats">
-              <span class="stat-pill">{{ artworks.length }} work{{ artworks.length !== 1 ? 's' : '' }}</span>
-              <span class="stat-pill">{{ reactionStats.views.toLocaleString() }} views</span>
-              <span class="stat-pill">{{ reactionStats.likes.toLocaleString() }} likes</span>
+              <span class="stat-pill">{{ $t('dashboard.statWorks', { count: artworks.length }) }}</span>
+              <span class="stat-pill">{{ $t('dashboard.statViews', { count: reactionStats.views.toLocaleString() }) }}</span>
+              <span class="stat-pill">{{ $t('dashboard.statLikes', { count: reactionStats.likes.toLocaleString() }) }}</span>
             </div>
           </div>
           <button type="button" class="guide-btn" :class="{ 'is-active': onboardingStep > 0 }" @click="startOnboarding">
@@ -179,7 +181,7 @@ watch(
             <CreatorReactionsCard :stats="reactionStats" @view-details="activeTab = 'reactions'" />
           </div>
 
-          <p v-if="loading" class="state-note">Loading dashboard...</p>
+          <p v-if="loading" class="state-note">{{ $t('dashboard.loadingDashboard') }}</p>
           <p v-else-if="error" class="state-note state-note--error">{{ error }}</p>
 
           <!-- Coachmark modal -->
@@ -187,22 +189,16 @@ watch(
             <div v-if="onboardingStep > 0" class="coachmark-overlay" @click.self="finishOnboarding">
               <div class="coachmark-modal">
                 <div class="coachmark-header">
-                  <h2>{{ onboardingStep === 1 ? 'Welcome to Dashboard' : 'Discover More' }}</h2>
+                  <h2>{{ onboardingStep === 1 ? $t('dashboard.welcome') : $t('dashboard.discoverMore') }}</h2>
                   <button type="button" class="coachmark-close-btn" @click="finishOnboarding">&times;</button>
                 </div>
                 <div class="coachmark-body">
-                  <p v-if="onboardingStep === 1" class="coachmark-text">
-                    Up to three recent posts will be displayed.
-                    The numbers are updated in real-time and the increase since your last visit to the Dashboard is shown in blue text.
-                  </p>
-                  <p v-else class="coachmark-text">
-                    Other content will be displayed, making it easier for you to get feedback on your work,
-                    as well as finding new content recommended for you. This content changes regularly.
-                  </p>
+                  <p v-if="onboardingStep === 1" class="coachmark-text">{{ $t('dashboard.coachmarkStep1Body') }}</p>
+                  <p v-else class="coachmark-text">{{ $t('dashboard.coachmarkStep2Body') }}</p>
                 </div>
                 <div class="coachmark-footer">
                   <button type="button" class="coachmark-btn" @click="onboardingStep === 1 ? nextOnboardingStep() : finishOnboarding()">
-                    {{ onboardingStep === 1 ? 'Next' : 'Try it now' }}
+                    {{ onboardingStep === 1 ? $t('dashboard.next') : $t('dashboard.tryItNow') }}
                   </button>
                 </div>
               </div>
@@ -222,10 +218,10 @@ watch(
       <div class="dashboard-wrap">
         <div class="dashboard-hero">
           <div class="dashboard-hero-inner">
-            <p class="dashboard-hero-kicker">Creator Dashboard</p>
-            <h1 class="dashboard-hero-title">Dashboard</h1>
-            <p class="dashboard-hero-desc">You are not logged in.</p>
-            <button type="button" class="hero-cta" @click="goLogin">Go to login</button>
+            <p class="dashboard-hero-kicker">{{ $t('dashboard.title') }}</p>
+            <h1 class="dashboard-hero-title">{{ $t('dashboard.title') }}</h1>
+            <p class="dashboard-hero-desc">{{ $t('auth.loggedOut') }}</p>
+            <button type="button" class="hero-cta" @click="goLogin">{{ $t('auth.goToLogin') }}</button>
           </div>
         </div>
       </div>

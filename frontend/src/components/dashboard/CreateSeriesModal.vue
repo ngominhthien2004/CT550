@@ -4,6 +4,7 @@ import { useSeriesStore } from '@/stores/series.store'
 import { useAuthStore } from '@/stores/auth.store'
 import { seriesApi } from '@/services/api'
 import ArtworkPickerModal from './ArtworkPickerModal.vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   type: { type: String, default: 'manga' },
@@ -16,6 +17,7 @@ const seriesStore = useSeriesStore()
 const authStore = useAuthStore()
 
 const isEditMode = computed(() => !!props.editSeries)
+const { t } = useI18n()
 
 // Form state
 const title = ref('')
@@ -207,10 +209,10 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="cs-backdrop" @click.self="emit('close')" @keydown.enter.prevent="emit('close')" @keydown.space.prevent="emit('close')" tabindex="0" role="button">
-    <div class="cs-dialog" role="dialog" aria-modal="true" :aria-label="`${isEditMode ? 'Edit' : 'Create'} ${typeLabel} series`">
+    <div class="cs-dialog" role="dialog" aria-modal="true" :aria-label="isEditMode ? $t('series.editSeries', { type: typeLabel }) : $t('series.createSeries', { type: typeLabel })">
       <!-- Header -->
       <div class="cs-header">
-        <h3 class="cs-header-title">{{ isEditMode ? 'Edit' : 'Create' }} {{ typeLabel }} series</h3>
+        <h3 class="cs-header-title">{{ isEditMode ? $t('series.editSeries', { type: typeLabel }) : $t('series.createSeries', { type: typeLabel }) }}</h3>
         <button type="button" class="cs-close" @click="emit('close')">
           <i class="fa-solid fa-xmark"></i>
         </button>
@@ -234,26 +236,24 @@ onBeforeUnmount(() => {
             />
             <template v-else>
               <span class="cs-cover-icon"><i class="fa-solid fa-pen"></i></span>
-              <span class="cs-cover-label">Set a cover</span>
+              <span class="cs-cover-label">{{ $t('dashboard.setCover') }}</span>
             </template>
           </button>
-          <p class="cs-cover-note">
-            If you don't set a cover, a thumbnail of the first episode will be used instead.
-          </p>
+          <p class="cs-cover-note">{{ $t('dashboard.coverHint') }}</p>
           <button
             v-if="coverImagePreview"
             type="button"
             class="cs-cover-remove"
             @click="removeCover"
           >
-            Remove cover
+            {{ $t('dashboard.removeCover') }}
           </button>
         </div>
 
         <!-- Title -->
         <div class="cs-field">
           <label class="cs-label">
-            Title <span class="cs-required">* Required</span>
+            Title <span class="cs-required">{{ $t('dashboard.required') }}</span>
           </label>
           <div class="cs-input-wrap">
             <input
@@ -261,8 +261,8 @@ onBeforeUnmount(() => {
               type="text"
               class="cs-input"
               :maxlength="TITLE_MAX"
-              placeholder="Series name"
-              aria-label="Series title"
+              :placeholder="$t('series.seriesName')"
+              :aria-label="$t('series.seriesName')"
             />
             <span class="cs-counter" :class="{ 'cs-counter--over': titleChars > TITLE_MAX }">
               {{ titleChars }}/{{ TITLE_MAX }}
@@ -272,15 +272,15 @@ onBeforeUnmount(() => {
 
         <!-- Summary -->
         <div class="cs-field">
-          <label class="cs-label">Summary</label>
+          <label class="cs-label">{{ $t('series.summary') }}</label>
           <div class="cs-input-wrap cs-textarea-wrap">
             <textarea
               v-model="description"
               class="cs-input cs-textarea"
               :maxlength="DESC_MAX"
-              placeholder="Series overview"
+              :placeholder="$t('series.seriesOverview')"
               rows="3"
-              aria-label="Series summary"
+              :aria-label="$t('series.summary')"
             ></textarea>
             <span class="cs-counter cs-counter--textarea" :class="{ 'cs-counter--over': descChars > DESC_MAX }">
               {{ descChars }}/{{ DESC_MAX }}
@@ -291,14 +291,14 @@ onBeforeUnmount(() => {
         <!-- Works -->
         <div class="cs-works-section">
           <div class="cs-works-header">
-            <span class="cs-label cs-label--plain">Works</span>
+            <span class="cs-label cs-label--plain">{{ $t('dashboard.tabWorks') }}</span>
             <button
               v-if="selectedArtworks.length > 0"
               type="button"
               class="cs-view-all"
               @click="openArtworkPicker"
             >
-              View all
+              {{ $t('dashboard.viewAll') }}
             </button>
           </div>
 
@@ -342,7 +342,7 @@ onBeforeUnmount(() => {
             >
               <span class="cs-toggle-knob"></span>
             </button>
-            <span class="cs-toggle-label">{{ isCompleted ? 'Completed' : 'Ongoing' }}</span>
+            <span class="cs-toggle-label">{{ isCompleted ? $t('series.completed') : $t('series.ongoing') }}</span>
           </div>
         </div>
 
@@ -352,10 +352,10 @@ onBeforeUnmount(() => {
         <!-- Actions -->
         <div class="cs-actions">
           <button type="button" class="cs-btn cs-btn--cancel" @click="emit('close')">
-            Cancel
+            {{ $t('series.cancel') }}
           </button>
           <button type="submit" class="cs-btn cs-btn--save" :disabled="!canSubmit">
-            {{ submitting ? 'Saving...' : (isEditMode ? 'Save changes' : 'Save changes') }}
+            {{ submitting ? $t('series.saving') : $t('series.saveChanges') }}
           </button>
         </div>
       </form>

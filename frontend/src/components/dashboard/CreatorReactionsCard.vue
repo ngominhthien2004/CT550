@@ -1,4 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 const props = defineProps({
   stats: {
     type: Object,
@@ -17,30 +21,30 @@ defineEmits(['view-details'])
 <template>
   <article class="dash-card">
     <header class="dash-card-head">
-      <span>Total reactions</span>
+      <span>{{ $t('dashboard.totalReactions') }}</span>
       <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
     </header>
 
     <ul class="metric-list">
       <li>
-        <span class="metric-label"><i class="fa-regular fa-eye" aria-hidden="true"></i> Views</span>
+        <span class="metric-label"><i class="fa-regular fa-eye" aria-hidden="true"></i> {{ $t('dashboard.metricViews') }}</span>
         <strong>{{ stats.views.toLocaleString() }}</strong>
       </li>
       <li>
-        <span class="metric-label"><i class="fa-regular fa-heart" aria-hidden="true"></i> Likes</span>
+        <span class="metric-label"><i class="fa-regular fa-heart" aria-hidden="true"></i> {{ $t('dashboard.metricLikes') }}</span>
         <strong>{{ stats.likes.toLocaleString() }}</strong>
       </li>
       <li>
-        <span class="metric-label"><i class="fa-regular fa-bookmark" aria-hidden="true"></i> Bookmarks</span>
+        <span class="metric-label"><i class="fa-regular fa-bookmark" aria-hidden="true"></i> {{ $t('dashboard.metricBookmarks') }}</span>
         <strong>{{ stats.bookmarks.toLocaleString() }}</strong>
       </li>
       <li>
-        <span class="metric-label"><i class="fa-regular fa-comment" aria-hidden="true"></i> Comments</span>
+        <span class="metric-label"><i class="fa-regular fa-comment" aria-hidden="true"></i> {{ $t('dashboard.metricComments') }}</span>
         <strong>{{ stats.comments.toLocaleString() }}</strong>
       </li>
     </ul>
 
-    <button type="button" class="detail-btn" @click="$emit('view-details')">View details</button>
+    <button type="button" class="detail-btn" @click="$emit('view-details')">{{ $t('dashboard.viewDetails') }}</button>
   </article>
 </template>
 

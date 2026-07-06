@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import { getCreatorReactions } from '../../services/api'
 import { useToast } from '../../composables/useToast'
 import { formatShortDate } from '../../utils/date.js'
+import { useI18n } from 'vue-i18n'
 
 const currentTab = ref('comments') // 'comments' | 'likes' | 'bookmarks'
 const reactions = ref([])
@@ -17,6 +18,7 @@ const totalItems = ref(0)
 const limit = 10
 
 const { showError } = useToast()
+const { t } = useI18n()
 
 async function fetchReactions() {
   const id = ++requestId.value
@@ -34,7 +36,7 @@ async function fetchReactions() {
     totalItems.value = data.total || 0
   } catch (err) {
     if (id !== requestId.value) return  // stale error ignored
-    error.value = err?.response?.data?.message || 'Failed to load reactions'
+    error.value = err?.response?.data?.message || t('dashboard.reactionsLoadFailed')
     showError(error.value)
     reactions.value = []
   } finally {
@@ -96,7 +98,7 @@ function getArtworkThumb(artwork) {
         :class="{ 'subtab-btn--active': currentTab === 'comments' }"
         @click="setTab('comments')"
       >
-        Comments
+        {{ $t('dashboard.commentsSubtab') }}
       </button>
       <button
         type="button"
@@ -104,7 +106,7 @@ function getArtworkThumb(artwork) {
         :class="{ 'subtab-btn--active': currentTab === 'likes' }"
         @click="setTab('likes')"
       >
-        Likes
+        {{ $t('dashboard.likesSubtab') }}
       </button>
       <button
         type="button"
@@ -112,7 +114,7 @@ function getArtworkThumb(artwork) {
         :class="{ 'subtab-btn--active': currentTab === 'bookmarks' }"
         @click="setTab('bookmarks')"
       >
-        Bookmarks
+        {{ $t('dashboard.bookmarksSubtab') }}
       </button>
     </div>
 
@@ -120,13 +122,13 @@ function getArtworkThumb(artwork) {
     <div class="reactions-content">
       <div v-if="loading" class="loading-state">
         <div class="spinner"></div>
-        <p>Loading reactions...</p>
+        <p>{{ $t('dashboard.loadingReactions') }}</p>
       </div>
 
       <div v-else-if="error" class="error-state">
         <span>{{ error }}</span>
         <button type="button" class="retry-btn" @click="fetchReactions">
-          <i class="fa-solid fa-rotate" aria-hidden="true"></i> Retry
+          <i class="fa-solid fa-rotate" aria-hidden="true"></i> {{ $t('dashboard.retry') }}
         </button>
       </div>
 
@@ -137,9 +139,9 @@ function getArtworkThumb(artwork) {
           <i v-else class="fa-regular fa-bookmark" aria-hidden="true"></i>
         </div>
         <p class="empty-text">
-          <span v-if="currentTab === 'comments'">You haven't received any comments yet</span>
-          <span v-else-if="currentTab === 'likes'">You haven't received any likes yet</span>
-          <span v-else>You haven't received any bookmarks yet</span>
+          <span v-if="currentTab === 'comments'">{{ $t('dashboard.noComments') }}</span>
+          <span v-else-if="currentTab === 'likes'">{{ $t('dashboard.noLikes') }}</span>
+          <span v-else>{{ $t('dashboard.noBookmarks') }}</span>
         </p>
       </div>
 
@@ -150,7 +152,7 @@ function getArtworkThumb(artwork) {
             <img
               v-if="item.user?.avatar"
               :src="item.user.avatar"
-              alt="User avatar"
+              :alt="$t('dashboard.userAvatarAlt')"
               class="user-avatar"
               loading="lazy"
             />
@@ -162,7 +164,7 @@ function getArtworkThumb(artwork) {
           <div class="reaction-body">
             <div class="reaction-header">
               <router-link :to="`/account?user=${item.user?._id}`" class="user-name">
-                {{ item.user?.displayName || item.user?.username || 'Guest' }}
+                {{ item.user?.displayName || item.user?.username || $t('dashboard.guest') }}
               </router-link>
               <span class="reaction-time">{{ formatTime(item.createdAt) }}</span>
             </div>
@@ -178,13 +180,13 @@ function getArtworkThumb(artwork) {
               <template v-else-if="currentTab === 'likes'">
                 <span class="action-text">
                   <i class="fa-solid fa-heart" aria-hidden="true"></i>
-                  liked your work
+                  {{ $t('dashboard.likedYourWork') }}
                 </span>
               </template>
               <template v-else>
                 <span class="action-text">
                   <i class="fa-solid fa-bookmark" aria-hidden="true"></i>
-                  bookmarked your work
+                  {{ $t('dashboard.bookmarkedYourWork') }}
                 </span>
               </template>
             </div>
@@ -214,31 +216,31 @@ function getArtworkThumb(artwork) {
                 <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
               </div>
             </div>
-            <span class="artwork-title">Deleted work</span>
+            <span class="artwork-title">{{ $t('dashboard.deletedWork') }}</span>
           </span>
         </div>
       </div>
 
       <!-- Pagination -->
-      <nav v-if="totalPages > 1 && !loading" class="pagination-container" aria-label="Reactions pagination">
+      <nav v-if="totalPages > 1 && !loading" class="pagination-container" :aria-label="$t('dashboard.reactionsPagination')">
         <button
           type="button"
           class="pag-btn"
           :disabled="page === 1"
           @click="page--"
-          aria-label="Previous page"
+          :aria-label="$t('dashboard.previousPage')"
         >
-          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i> Prev
+          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i> {{ $t('dashboard.prev') }}
         </button>
-        <span class="page-indicator">Page {{ page }} of {{ totalPages }}</span>
+        <span class="page-indicator">{{ $t('dashboard.pageOf', { current: page, total: totalPages }) }}</span>
         <button
           type="button"
           class="pag-btn"
           :disabled="page === totalPages"
           @click="page++"
-          aria-label="Next page"
+          :aria-label="$t('dashboard.nextPage')"
         >
-          Next <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+          {{ $t('common.next') }} <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
         </button>
       </nav>
     </div>

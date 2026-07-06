@@ -2,6 +2,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useAuthStore } from '@/stores/auth.store'
 import { getArtworks } from '@/services/api'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   selectedIds: { type: Array, default: () => [] },
@@ -13,6 +14,7 @@ const authStore = useAuthStore()
 const artworks = ref([])
 const loading = ref(false)
 const selected = ref(new Set(props.selectedIds))
+const { t } = useI18n()
 
 async function loadArtworks() {
   if (!authStore.user?._id) return
@@ -62,10 +64,10 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="picker-backdrop" @click.self="emit('close')" @keydown.enter.prevent="emit('close')" @keydown.space.prevent="emit('close')" tabindex="0" role="button">
-    <div class="picker-dialog" role="dialog" aria-modal="true" aria-label="Select artworks">
+    <div class="picker-dialog" role="dialog" aria-modal="true" :aria-label="$t('dashboard.selectArtworks')">
       <!-- Header -->
       <div class="picker-header">
-        <h3 class="picker-title">Select artworks</h3>
+        <h3 class="picker-title">{{ $t('dashboard.selectArtworks') }}</h3>
         <button type="button" class="picker-close" @click="emit('close')">
           <i class="fa-solid fa-xmark"></i>
         </button>
@@ -76,13 +78,13 @@ onBeforeUnmount(() => {
         <!-- Loading -->
         <div v-if="loading" class="picker-loading">
           <div class="spinner"></div>
-          <span>Loading artworks...</span>
+          <span>{{ $t('dashboard.loadingArtworks') }}</span>
         </div>
 
         <!-- Empty -->
         <div v-else-if="artworks.length === 0" class="picker-empty">
           <i class="fa-solid fa-image"></i>
-          <p>You have no artworks yet.</p>
+          <p>{{ $t('dashboard.noArtworks') }}</p>
         </div>
 
         <!-- Grid -->
@@ -113,10 +115,10 @@ onBeforeUnmount(() => {
 
       <!-- Footer -->
       <div class="picker-footer">
-        <span class="picker-count">{{ selected.size }} selected</span>
+        <span class="picker-count">{{ $t('dashboard.selectedCount', { count: selected.size }) }}</span>
         <div class="picker-actions">
           <button type="button" class="picker-btn picker-btn--cancel" @click="emit('close')">
-            Cancel
+            {{ $t('common.cancel') }}
           </button>
           <button
             type="button"
@@ -124,7 +126,7 @@ onBeforeUnmount(() => {
             :disabled="selected.size === 0"
             @click="confirmSelection"
           >
-            Select
+            {{ $t('dashboard.select') }}
           </button>
         </div>
       </div>
