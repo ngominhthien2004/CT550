@@ -49,12 +49,26 @@ async function loadAll() {
   ])
 }
 
-async function runAction(requestId, action) {
+async function runAction(requestId, action, payload = {}) {
   actionError.value = ''
   try {
-    await requestStore.transition(requestId, action)
+    await requestStore.transition(requestId, action, payload)
+    if (selectedRequestId.value === requestId) {
+      selectedRequestDetail.value = await requestStore.fetchById(requestId)
+    }
   } catch (error) {
     actionError.value = error?.response?.data?.message || `Failed to ${action} request`
+  }
+}
+
+async function handleDraftSubmission(formData) {
+  actionError.value = ''
+  if (!selectedRequestId.value) return
+  try {
+    await requestStore.submitDraft(selectedRequestId.value, formData)
+    selectedRequestDetail.value = await requestStore.fetchById(selectedRequestId.value)
+  } catch (e) {
+    actionError.value = e?.response?.data?.message || 'Failed to submit draft'
   }
 }
 
@@ -134,6 +148,8 @@ onMounted(loadAll)
           :active-role="activeRole"
           @close="selectRequest(null)"
           @send-chat="handleChatMessage"
+          @action="runAction"
+          @submit-draft="handleDraftSubmission"
         />
       </div>
     </section>

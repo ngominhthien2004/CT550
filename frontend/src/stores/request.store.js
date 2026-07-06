@@ -106,6 +106,8 @@ export const useRequestStore = defineStore('requests', {
         reject: () => requestApi.reject(requestId, payload),
         start: () => requestApi.start(requestId),
         cancel: () => requestApi.cancel(requestId, payload),
+        approve: () => requestApi.approve(requestId),
+        createRevision: () => requestApi.createRevision(requestId, payload),
       }
       const run = actionMap[action]
       if (!run) {
@@ -115,6 +117,17 @@ export const useRequestStore = defineStore('requests', {
       const { data } = await run()
       this.requests = this.requests.map((item) => (item._id === data._id ? data : item))
       return data
+    },
+
+    async submitDraft(requestId, formData) {
+      try {
+        const { data } = await requestApi.submitDraft(requestId, formData)
+        this.requests = this.requests.map((item) => (item._id === data._id ? data : item))
+        return data
+      } catch (error) {
+        this.error = error?.response?.data?.message || 'Failed to submit draft'
+        throw error
+      }
     },
   },
 })

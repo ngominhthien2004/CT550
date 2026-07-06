@@ -7,12 +7,16 @@ const props = defineProps({
   activeRole: { type: String, default: 'creator' },
 })
 
-const emit = defineEmits(['close', 'action', 'send-chat'])
+const emit = defineEmits(['close', 'action', 'send-chat', 'submit-draft'])
 
 const activeTab = ref('details')
 const newMessage = ref('')
 const chatFiles = ref([])
 const sendingMessage = ref(false)
+const draftFiles = ref([])
+const submittingDraft = ref(false)
+const revisionNote = ref('')
+const requestingRevision = ref(false)
 const chatMessages = ref([])
 const chatLoading = ref(false)
 
@@ -79,6 +83,36 @@ async function sendMessage() {
     chatFiles.value = []
   } finally {
     sendingMessage.value = false
+  }
+}
+
+function handleDraftFileChange(event) {
+  draftFiles.value = Array.from(event.target.files || [])
+}
+
+async function submitDraft() {
+  if (submittingDraft.value || !draftFiles.value.length) return
+  submittingDraft.value = true
+  try {
+    const fd = new FormData()
+    for (const file of draftFiles.value) {
+      fd.append('draftFiles', file)
+    }
+    emit('submit-draft', fd)
+    draftFiles.value = []
+  } finally {
+    submittingDraft.value = false
+  }
+}
+
+async function requestRevision() {
+  if (requestingRevision.value || !revisionNote.value.trim()) return
+  requestingRevision.value = true
+  try {
+    emit('action', props.request._id, 'createRevision', { note: revisionNote.value.trim() })
+    revisionNote.value = ''
+  } finally {
+    requestingRevision.value = false
   }
 }
 
@@ -161,6 +195,37 @@ defineExpose({ updateChatMessages, setChatLoading })
                 <span v-if="file.size" class="file-size">{{ formatFileSize(file.size) }}</span>
               </a>
             </template>
+          </div>
+        </div>
+      </section>
+
+      <!-- Creator Actions: Submit Draft (when in_progress) -->
+      <section v-if="activeRole === 'creator' && request.status === 'in_progress'" class="info-section">
+        <h3>Submit Draft</h3>
+        <div class="draft-form">
+          <label class="file-btn">
+            <i class="fa-regular fa-paperclip"></i> Choose draft files
+            <input type="file" multiple :accept="'image/*,.pdf,.zip,.psd,.clip'" @change="handleDraftFileChange" hidden />
+          </label>
+          <span v-if="draftFiles.length" class="file-count">{{ draftFiles.length }} file(s) selected</span>
+          <button type="button" class="action-btn primary" :disabled="!draftFiles.length || submittingDraft" @click="submitDraft">
+            {{ submittingDraft ? 'Uploading...' : 'Submit Draft' }}
+          </button>
+        </div>
+      </section>
+
+      <!-- Requester Actions: Approve / Request Revision (when draft_submitted) -->
+      <section v-if="activeRole === 'requester' && request.status === 'draft_submitted'" class="info-section">
+        <h3>Review Draft</h3>
+        <div class="action-buttons">
+          <button type="button" class="action-btn primary" @click="emit('action', request._id, 'approve')">Approve</button>
+          <button type="button" class="action-btn secondary" @click="requestingRevision = true">Request Revision</button>
+        </div>
+        <div v-if="requestingRevision" class="revision-form">
+          <textarea v-model="revisionNote" placeholder="Describe what needs to be changed..." rows="3"></textarea>
+          <div class="revision-actions">
+            <button type="button" class="action-btn primary" :disabled="!revisionNote.trim()" @click="requestRevision">Send Revision Request</button>
+            <button type="button" class="action-btn ghost" @click="requestingRevision = false; revisionNote = ''">Cancel</button>
           </div>
         </div>
       </section>
@@ -526,5 +591,69 @@ defineExpose({ updateChatMessages, setChatLoading })
   font-size: 0.82rem;
   text-align: center;
   padding: 1rem;
+}
+
+/* Draft & Action forms */
+.draft-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.draft-form .file-btn {
+  padding: 0.4rem 0.7rem;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  font-size: 0.82rem;
+}
+.draft-form .file-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.action-btn {
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--line);
+}
+.action-btn:disabled { opacity: 0.5; cursor: default; }
+.action-btn.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.action-btn.secondary {
+  background: var(--surface);
+  color: var(--text);
+}
+.action-btn.ghost {
+  background: none;
+  border: none;
+  color: var(--muted);
+}
+
+.revision-form {
+  margin-top: 0.5rem;
+}
+.revision-form textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.5rem;
+  font: inherit;
+  font-size: 0.85rem;
+  resize: vertical;
+  background: var(--surface);
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.revision-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 </style>
