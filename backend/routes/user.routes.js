@@ -19,6 +19,7 @@ const {
 	getAdminOverview,
 	getAdminUsers,
 	updateAdminUser,
+	deleteAdminUser,
     searchUsers,
     getUserSeries,
     postPresence,
@@ -73,6 +74,7 @@ const upload = multer({
 router.get('/admin/overview', protect, admin, getAdminOverview);
 router.get('/admin/list', protect, admin, getAdminUsers);
 router.patch('/admin/:id', protect, admin, updateAdminUser);
+router.delete('/admin/:id', protect, admin, deleteAdminUser);
 
 router.get('/search', searchUsers);
 router.get('/dashboard/reactions', protect, getCreatorReactions);

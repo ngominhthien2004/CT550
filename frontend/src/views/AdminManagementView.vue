@@ -36,7 +36,7 @@ const mutating = ref(false)
 const { overview, loadingOverview, loadOverview } = useAdminOverview({ error, mutating })
 const {
   userQuery, userRoleFilter, users, userPanelFiltersOpen, userPagination, loadingUsers,
-  loadUsers, setUserRole, toggleUserFilters, goToUserPage,
+  loadUsers, setUserRole, deleteUser, toggleUserFilters, goToUserPage,
 } = useAdminUsers({ error, mutating, authStore, user })
 const {
   activeReportTab,
@@ -109,6 +109,11 @@ function handleResolveCommentReport(reportId, action) {
 function handleResolveUserReport(reportId, action) {
   const config = resolveUserReport(reportId, action)
   if (config) showPrompt(config)
+}
+
+function handleDeleteUser(targetUser) {
+  const config = deleteUser(targetUser)
+  if (config) showConfirm(config)
 }
 
 // --- UI utilities ---
@@ -197,6 +202,7 @@ onMounted(async () => {
         @update:user-role-filter="userRoleFilter = $event"
         @apply-filters="loadUsers(1)"
         @set-user-role="setUserRole"
+        @delete-user="handleDeleteUser"
         @go-page="goToUserPage"
       />
 

@@ -48,6 +48,7 @@ const emit = defineEmits([
   'update:userRoleFilter',
   'apply-filters',
   'set-user-role',
+  'delete-user',
   'go-page',
 ])
 
@@ -134,6 +135,7 @@ const formattedUsers = computed(() =>
             <th>Email</th>
             <th>Role</th>
             <th>Created</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -175,9 +177,17 @@ const formattedUsers = computed(() =>
               </div>
             </td>
             <td>{{ row._createdAt }}</td>
+            <td class="text-end">
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger"
+                :disabled="mutating"
+                @click="emit('delete-user', row)"
+              >Delete</button>
+            </td>
           </tr>
           <tr v-if="users.length === 0">
-            <td colspan="4" class="text-center text-muted py-3">No users found.</td>
+            <td colspan="5" class="text-center text-muted py-3">No users found.</td>
           </tr>
         </tbody>
       </table>

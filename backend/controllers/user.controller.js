@@ -498,6 +498,30 @@ const updateAdminUser = async (req, res, next) => {
     }
 };
 
+// @desc    Delete a user (admin)
+// @route   DELETE /api/users/admin/:id
+// @access  Admin
+const deleteAdminUser = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            res.status(404);
+            return next(new Error('User not found'));
+        }
+
+        if (user._id.toString() === req.user._id.toString()) {
+            res.status(400);
+            return next(new Error('Cannot delete your own account'));
+        }
+
+        await User.findByIdAndDelete(req.params.id);
+
+        res.json({ message: 'User deleted', _id: req.params.id });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // @desc    Get a user's series (public)
 // @route   GET /api/users/:id/series
 // @access  Public
@@ -693,6 +717,7 @@ module.exports = {
     getAdminOverview,
     getAdminUsers,
     updateAdminUser,
+    deleteAdminUser,
     searchUsers,
     getUserSeries,
     postPresence,

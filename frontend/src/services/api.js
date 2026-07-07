@@ -141,6 +141,7 @@ export const adminApi = {
   getOverview: () => api.get('/users/admin/overview'),
   getUsers: (params = {}) => api.get('/users/admin/list', { params }),
   updateUser: (userId, payload) => api.patch(`/users/admin/${userId}`, payload),
+  deleteUser: (userId) => api.delete(`/users/admin/${userId}`),
   getArtworks: (params = {}) => api.get('/artworks/admin/list', { params }),
   deleteArtwork: (artworkId) => api.delete(`/artworks/${artworkId}`),
 

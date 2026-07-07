@@ -57,8 +57,31 @@ export function useAdminUsers({ error, mutating, authStore, user } = {}) {
     await loadUsers(nextPage)
   }
 
+  function deleteUser(targetUser) {
+    return {
+      title: 'Delete user',
+      message: `Permanently delete "${targetUser.displayName || targetUser.username}"? This cannot be undone.`,
+      confirmLabel: 'Delete',
+      confirmClass: 'btn-danger',
+      onConfirm: async () => {
+        if (mutating) mutating.value = true
+        if (error) error.value = ''
+        try {
+          await adminApi.deleteUser(targetUser._id)
+          users.value = users.value.filter((u) => u._id !== targetUser._id)
+          userPagination.value.total = Math.max(0, userPagination.value.total - 1)
+          await loadUsers(userPagination.value.page || 1)
+        } catch (deleteError) {
+          if (error) error.value = deleteError?.response?.data?.message || 'Failed to delete user'
+        } finally {
+          if (mutating) mutating.value = false
+        }
+      },
+    }
+  }
+
   return {
     userQuery, userRoleFilter, users, userPanelFiltersOpen, userPagination, loadingUsers,
-    loadUsers, setUserRole, toggleUserFilters, goToUserPage,
+    loadUsers, setUserRole, deleteUser, toggleUserFilters, goToUserPage,
   }
 }
