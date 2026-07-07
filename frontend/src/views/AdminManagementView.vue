@@ -5,6 +5,7 @@ import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import {
   AdminOverviewCards, AdminSectionTabs,
   AdminUserManagementPanel,
+  AdminArtworkManagementPanel,
   AdminTagManagementPanel,
   AdminAISettingsPanel,
   AdminReportPanel, AdminHiddenArtworksPanel,
@@ -17,6 +18,7 @@ import { useAuthStore } from '../stores/auth.store'
 import { formatShortDate } from '../utils/date.js'
 import { useAdminOverview } from '@/composables/useAdminOverview'
 import { useAdminUsers } from '@/composables/useAdminUsers'
+import { useAdminArtworks } from '@/composables/useAdminArtworks'
 import { useAdminReports } from '@/composables/useAdminReports'
 import { useAdminTags } from '@/composables/useAdminTags'
 import { useAdminModals } from '@/composables/useAdminModals'
@@ -38,6 +40,10 @@ const {
   userQuery, userRoleFilter, users, userPanelFiltersOpen, userPagination, loadingUsers,
   loadUsers, setUserRole, deleteUser, toggleUserFilters, goToUserPage,
 } = useAdminUsers({ error, mutating, authStore, user })
+const {
+  artworkQuery, artworkTypeFilter, artworks, artworkPanelFiltersOpen, artworkPagination, loadingArtworks,
+  loadArtworks, deleteArtwork, toggleArtworkFilters, goToArtworkPage,
+} = useAdminArtworks({ error, mutating })
 const {
   activeReportTab,
   reportStatusFilter, artworkReports, loadingArtworkReports, artworkReportPagination,
@@ -64,6 +70,7 @@ const {
 const activeTab = ref(route.query.tab || 'users')
 const adminTabs = [
   { id: 'users', label: 'Users' },
+  { id: 'artworks', label: 'Artworks' },
   { id: 'reports', label: 'Reports' },
   { id: 'tags', label: 'Tags' },
   { id: 'ai', label: 'AI Settings' },
@@ -116,6 +123,11 @@ function handleDeleteUser(targetUser) {
   if (config) showConfirm(config)
 }
 
+function handleDeleteArtwork(targetArtwork) {
+  const config = deleteArtwork(targetArtwork)
+  if (config) showConfirm(config)
+}
+
 // --- UI utilities ---
 function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
@@ -129,6 +141,7 @@ async function refreshAll() {
   await Promise.all([
     loadOverview(),
     loadUsers(userPagination.value.page || 1),
+    loadArtworks(artworkPagination.value.page || 1),
   ])
 }
 
@@ -140,7 +153,7 @@ function formatDate(dateValue) {
 onMounted(async () => {
   if (!isAdmin.value) return
   await Promise.all([
-    loadOverview(), loadUsers(1),
+    loadOverview(), loadUsers(1), loadArtworks(1),
     loadArtworkReports(1), loadHiddenArtworks(1),
     loadCommentReports(1), loadUserReports(1), loadTags(1),
   ])
@@ -166,7 +179,7 @@ onMounted(async () => {
         <p>Manage users, monitor key metrics, and moderate content.</p>
         <button type="button"
           class="btn btn-sm btn-admin-refresh"
-          :disabled="loadingOverview || loadingUsers || mutating"
+          :disabled="loadingOverview || loadingUsers || loadingArtworks || mutating"
           @click="refreshAll"
         >
           Refresh all
@@ -204,6 +217,24 @@ onMounted(async () => {
         @set-user-role="setUserRole"
         @delete-user="handleDeleteUser"
         @go-page="goToUserPage"
+      />
+
+      <AdminArtworkManagementPanel
+        :active-tab="activeTab"
+        :artwork-panel-filters-open="artworkPanelFiltersOpen"
+        :artwork-query="artworkQuery"
+        :artwork-type-filter="artworkTypeFilter"
+        :loading-artworks="loadingArtworks"
+        :mutating="mutating"
+        :artworks="artworks"
+        :artwork-pagination="artworkPagination"
+        :format-date="formatDate"
+        @toggle-filters="toggleArtworkFilters"
+        @update:artwork-query="artworkQuery = $event"
+        @update:artwork-type-filter="artworkTypeFilter = $event"
+        @apply-filters="loadArtworks(1)"
+        @delete-artwork="handleDeleteArtwork"
+        @go-page="goToArtworkPage"
       />
 
       <AdminReportPanel

@@ -1,6 +1,7 @@
 export { default as AdminOverviewCards } from './AdminOverviewCards.vue'
 export { default as AdminSectionTabs } from './AdminSectionTabs.vue'
 export { default as AdminUserManagementPanel } from './AdminUserManagementPanel.vue'
+export { default as AdminArtworkManagementPanel } from './AdminArtworkManagementPanel.vue'
 export { default as AdminArtworkModerationPanel } from './AdminArtworkModerationPanel.vue'
 export { default as AdminCommentModerationPanel } from './AdminCommentModerationPanel.vue'
 export { default as AdminReportReviewPanel } from './AdminReportReviewPanel.vue'
