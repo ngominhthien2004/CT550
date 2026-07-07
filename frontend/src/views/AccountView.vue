@@ -101,14 +101,14 @@ async function goLogin() {
       <div v-if="state.showDeleteCoverConfirm.value" class="confirm-overlay" @click.self="state.showDeleteCoverConfirm.value = false" @keydown.esc="state.showDeleteCoverConfirm.value = false" tabindex="0" role="dialog" aria-modal="true">
         <div class="confirm-modal">
           <div class="confirm-header">
-            <h3>Xóa ảnh bìa</h3>
+            <h3>{{ $t('profile.deleteCover') }}</h3>
           </div>
           <div class="confirm-body">
-            <p>Bạn có chắc chắn muốn xóa ảnh bìa hồ sơ?</p>
+            <p>{{ $t('profile.deleteCoverConfirm') }}</p>
           </div>
           <div class="confirm-footer">
-            <button type="button" class="confirm-btn cancel" @click="state.showDeleteCoverConfirm.value = false">Hủy</button>
-            <button type="button" class="confirm-btn danger" @click="state.confirmDeleteCoverAction()">Xóa</button>
+            <button type="button" class="confirm-btn cancel" @click="state.showDeleteCoverConfirm.value = false">{{ $t('profile.cancel') }}</button>
+            <button type="button" class="confirm-btn danger" @click="state.confirmDeleteCoverAction()">{{ $t('common.delete') }}</button>
           </div>
         </div>
       </div>

@@ -37,6 +37,8 @@
   "maxResolution": "Maximum resolution",
   "coverGuidelines": "Please do not upload R18 images or works that violate the Guidelines. If your cover image falls into any of those categories, the settings will be disabled.",
   "deleteAvatar": "Delete avatar",
+  "deleteCover": "Delete cover",
+  "deleteCoverConfirm": "Are you sure you want to delete your profile cover?",
   "selectImageFirst": "Please select an image first.",
   "tabHome": "Home",
   "tabIllustrations": "Illustrations",

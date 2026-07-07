@@ -37,6 +37,8 @@
   "maxResolution": "Độ phân giải tối đa",
   "coverGuidelines": "Vui lòng không tải lên hình ảnh R18 hoặc vi phạm Nguyên tắc. Nếu ảnh bìa của bạn thuộc các danh mục đó, cài đặt sẽ bị vô hiệu hóa.",
   "deleteAvatar": "Xóa ảnh đại diện",
+  "deleteCover": "Xóa ảnh bìa",
+  "deleteCoverConfirm": "Bạn có chắc chắn muốn xóa ảnh bìa hồ sơ?",
   "selectImageFirst": "Vui lòng chọn ảnh trước.",
   "tabHome": "Trang chủ",
   "tabIllustrations": "Minh họa",
