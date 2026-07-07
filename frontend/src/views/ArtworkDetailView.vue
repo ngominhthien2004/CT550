@@ -5,7 +5,7 @@ import { ArtworkDetailCard, ArtworkDetailSidebar, ArtworkDetailCommentsCard, Art
 import { NovelReader, ChapterManager } from '@/components/novel'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
-import { getArtworks, getChapters, getChapter, getReadingProgress, saveReadingProgress, getSimilarArtworks } from '../services/api'
+import { getArtworks, getChapters, getChapter, getReadingProgress, saveReadingProgress, getSimilarArtworks, seriesApi } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useArtworkStore } from '../stores/artwork.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
@@ -38,6 +38,10 @@ const currentChapterId = ref(null)
 const readingProgress = ref(0)
 const readingScrollPosition = ref(0)
 const readingLastReadAt = ref('')
+const seriesArtworkIds = ref([])
+const seriesPrevId = ref(null)
+const seriesNextId = ref(null)
+const seriesInfo = ref(null)
 
 const artworkId = computed(() => route.params.id)
 const artwork = computed(() => artworkStore.detail)
@@ -76,6 +80,10 @@ const isOwnArtist = computed(() => {
     return false
   }
   return artistId.value === authStore.user._id
+})
+
+const hasSeriesNavigation = computed(() => {
+  return seriesArtworkIds.value.length > 1
 })
 
 const sameAuthorWorks = computed(() => {
@@ -172,10 +180,15 @@ async function loadFollowStats() {
 
 async function loadArtwork() {
   if (artworkId.value) {
+    seriesPrevId.value = null
+    seriesNextId.value = null
+    seriesArtworkIds.value = []
+    seriesInfo.value = null
     await artworkStore.fetchArtworkDetail(artworkId.value)
     syncBookmarkCountFromArtwork()
     syncLikeCountFromArtwork()
     await loadNovelData()
+    await loadSeriesNavigation()
     await loadBookmarkStatus()
     await loadLikeStatus()
     await loadFollowStatus()
@@ -246,6 +259,22 @@ async function loadNovelData() {
     } catch (_err) {
       // Ignore - not critical
     }
+  }
+}
+
+async function loadSeriesNavigation() {
+  if (!artwork.value?.series || artwork.value?.type === 'novel') return
+  try {
+    const { data } = await seriesApi.getById(artwork.value.series)
+    if (data?.artworks?.length > 1) {
+      seriesArtworkIds.value = data.artworks
+      seriesInfo.value = data
+      const idx = data.artworks.indexOf(artwork.value._id)
+      seriesPrevId.value = idx > 0 ? data.artworks[idx - 1] : null
+      seriesNextId.value = idx >= 0 && idx < data.artworks.length - 1 ? data.artworks[idx + 1] : null
+    }
+  } catch (_err) {
+    seriesArtworkIds.value = []
   }
 }
 
@@ -506,28 +535,52 @@ watch(
       </template>
 
       <!-- Standard Artwork Detail (for illust, manga, gif) -->
-      <ArtworkDetailCard
-        v-else-if="displayArtwork"
-        :artwork="displayArtwork"
-        :display-author="displayAuthor"
-        :artist-id="artistId"
-        :is-own-artist="isOwnArtist"
-        :related-works="relatedWorks"
-        :is-liked="isLiked"
-        :like-loading="likeLoading"
-        :like-error="likeError"
-        :is-bookmarked="isBookmarked"
-        :bookmark-loading="bookmarkLoading"
-        :bookmark-error="bookmarkError"
-        :is-following="isFollowing"
-        :follow-loading="followLoading"
-        :follow-error="followError"
-        :artist-followers-count="artistFollowersCount"
-        :artist-following-count="artistFollowingCount"
-        @toggle-like="handleLikeToggle"
-        @toggle-bookmark="handleBookmarkToggle"
-        @toggle-follow="handleFollowToggle"
-      />
+      <div v-else-if="displayArtwork" class="artwork-detail-wrapper">
+        <div v-if="hasSeriesNavigation" class="series-nav-bar">
+          <router-link
+            v-if="seriesPrevId"
+            :to="`/artworks/${seriesPrevId}`"
+            class="series-nav-btn"
+          >
+            <i class="fa-solid fa-chevron-left"></i>
+            Previous
+          </router-link>
+          <span class="series-nav-info">
+            <i class="fa-regular fa-layer-group"></i>
+            {{ seriesInfo?.title }}
+          </span>
+          <router-link
+            v-if="seriesNextId"
+            :to="`/artworks/${seriesNextId}`"
+            class="series-nav-btn"
+          >
+            Next
+            <i class="fa-solid fa-chevron-right"></i>
+          </router-link>
+        </div>
+
+        <ArtworkDetailCard
+          :artwork="displayArtwork"
+          :display-author="displayAuthor"
+          :artist-id="artistId"
+          :is-own-artist="isOwnArtist"
+          :related-works="relatedWorks"
+          :is-liked="isLiked"
+          :like-loading="likeLoading"
+          :like-error="likeError"
+          :is-bookmarked="isBookmarked"
+          :bookmark-loading="bookmarkLoading"
+          :bookmark-error="bookmarkError"
+          :is-following="isFollowing"
+          :follow-loading="followLoading"
+          :follow-error="followError"
+          :artist-followers-count="artistFollowersCount"
+          :artist-following-count="artistFollowingCount"
+          @toggle-like="handleLikeToggle"
+          @toggle-bookmark="handleBookmarkToggle"
+          @toggle-follow="handleFollowToggle"
+        />
+      </div>
       <p v-else class="text-secondary mb-0">{{ $t('artwork.noData') }}</p>
     </section>
   </MainLayoutTemplate>
@@ -623,6 +676,56 @@ watch(
   padding: 0.4rem 1.5rem;
   font-weight: 600;
   font-size: 0.85rem;
+}
+
+.artwork-detail-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.series-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.series-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.series-nav-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.series-nav-info {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+  flex: 1;
+  justify-content: center;
 }
 
 @media (max-width: 1200px) {
