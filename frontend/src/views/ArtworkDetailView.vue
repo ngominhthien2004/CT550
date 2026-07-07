@@ -547,10 +547,13 @@ watch(
             <i class="fa-solid fa-chevron-left"></i>
             Previous
           </router-link>
-          <span class="series-nav-info">
+          <router-link
+            :to="`/series/${seriesInfo?._id}`"
+            class="series-nav-info"
+          >
             <i class="fa-solid fa-images"></i>
             {{ seriesInfo?.title }}
-          </span>
+          </router-link>
           <router-link
             v-if="seriesNextId"
             :to="`/artworks/${seriesNextId}`"
