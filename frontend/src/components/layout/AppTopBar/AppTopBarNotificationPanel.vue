@@ -58,7 +58,7 @@ function computeNotificationLink(item) {
     return '/messages'
   }
   if (type === 'request') {
-    return '/requests'
+    return '/requests/manage'
   }
   if (type.startsWith('system:')) {
     if (type === 'system:artwork_report') return '/admin?tab=reports&type=artwork'
