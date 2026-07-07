@@ -52,11 +52,11 @@ function formatFileSize(bytes) {
 }
 
 function fileIcon(mimeType) {
-  if (!mimeType) return 'fa-regular fa-file'
-  if (mimeType.startsWith('image/')) return 'fa-regular fa-file-image'
-  if (mimeType === 'application/pdf') return 'fa-regular fa-file-pdf'
-  if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('7z')) return 'fa-regular fa-file-zipper'
-  return 'fa-regular fa-file'
+  if (!mimeType) return 'fa-solid fa-file'
+  if (mimeType.startsWith('image/')) return 'fa-solid fa-file-image'
+  if (mimeType === 'application/pdf') return 'fa-solid fa-file-pdf'
+  if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('7z')) return 'fa-solid fa-file-zipper'
+  return 'fa-solid fa-file'
 }
 
 function isImage(mimeType) {
@@ -204,7 +204,7 @@ defineExpose({ updateChatMessages, setChatLoading })
         <h3>Submit Draft</h3>
         <div class="draft-form">
           <label class="file-btn">
-            <i class="fa-regular fa-paperclip"></i> Choose draft files
+            <i class="fa-solid fa-paperclip"></i> Choose draft files
             <input type="file" multiple :accept="'image/*,.pdf,.zip,.psd,.clip'" @change="handleDraftFileChange" hidden />
           </label>
           <span v-if="draftFiles.length" class="file-count">{{ draftFiles.length }} file(s) selected</span>
@@ -239,7 +239,7 @@ defineExpose({ updateChatMessages, setChatLoading })
         <div v-for="msg in chatMessages" :key="msg._id">
           <!-- System message -->
           <div v-if="msg.isSystem" class="chat-message system-message">
-            <i class="fa-regular fa-info-circle"></i>
+            <i class="fa-solid fa-circle-info"></i>
             <span class="msg-content">{{ msg.content }}</span>
             <span class="msg-time">{{ new Date(msg.createdAt).toLocaleString() }}</span>
           </div>
@@ -276,12 +276,12 @@ defineExpose({ updateChatMessages, setChatLoading })
         ></textarea>
         <div class="chat-input-actions">
           <label class="file-btn" title="Attach file">
-            <i class="fa-regular fa-paperclip"></i>
+            <i class="fa-solid fa-paperclip"></i>
             <input type="file" multiple :accept="'image/*,.pdf,.zip,.psd,.clip'" @change="handleChatFileChange" hidden aria-label="Attach file" />
           </label>
           <span v-if="chatFiles.length" class="file-count">{{ chatFiles.length }} file(s)</span>
           <button type="submit" class="send-btn" :disabled="(!newMessage.trim() && !chatFiles.length) || sendingMessage">
-            <i class="fa-regular fa-paper-plane"></i> Send
+            <i class="fa-solid fa-paper-plane"></i> Send
           </button>
         </div>
       </form>
@@ -565,9 +565,12 @@ defineExpose({ updateChatMessages, setChatLoading })
 .file-btn {
   cursor: pointer;
   color: var(--muted);
-  font-size: 1.1rem;
   display: flex;
   align-items: center;
+  gap: 0.35rem;
+}
+.file-btn i {
+  font-size: 1rem;
 }
 .file-count {
   font-size: 0.75rem;
