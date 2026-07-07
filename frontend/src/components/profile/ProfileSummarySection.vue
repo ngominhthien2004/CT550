@@ -74,15 +74,15 @@ async function handleBlockToggle() {
   blockError.value = ''
   try {
     if (blockedByMe.value) {
-      await userApi.unblock(user._id)
+      await userApi.unblock(user.value?._id)
       blockedByMe.value = false
     } else {
-      const confirmed = window.confirm(`Block ${user.displayName || user.username}? You will no longer follow each other.`)
+      const confirmed = window.confirm(`Block ${user.value?.displayName || user.value?.username}? You will no longer follow each other.`)
       if (!confirmed) {
         blockLoading.value = false
         return
       }
-      await userApi.block(user._id)
+      await userApi.block(user.value?._id)
       blockedByMe.value = true
     }
   } catch (err) {
