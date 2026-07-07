@@ -52,8 +52,9 @@ const emit = defineEmits(['create'])
   border-radius: 999px;
   background: var(--accent);
   color: #fff;
-  font-weight: 900;
-  padding: 0.72rem 1rem;
+  font-weight: 700;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.85rem;
   cursor: pointer;
 }
 
