@@ -449,8 +449,6 @@ async function loadSearchItems() {
       ? route.query.target
       : (sMode === 'tag_tc' ? 'tag_exact' : 'all')
     const apiParams = { limit: 200 }
-    const activeTypeVal = typeof route.query.type === 'string' ? route.query.type : ''
-    if (activeTypeVal) apiParams.type = activeTypeVal
     if (q && q.trim()) apiParams.q = q.trim()
     const { data } = await getArtworks(apiParams)
     const normalizedQuery = q.trim().toLowerCase()
