@@ -83,7 +83,7 @@ export function useProfilePage() {
   const followingCount = computed(() => followStore.followingCount)
   const followersCount = computed(() => followStore.followersCount)
 
-  const profileCoverImage = computed(() => user.value?.coverImage || artworks.value[0]?.image || '')
+  const profileCoverImage = computed(() => user.value?.coverImage || '')
   const isAcceptingRequests = computed(() => requestTerms.value.some((term) => term.isOpen))
 
   const profileLocation = computed(() => user.value?.location || '')
