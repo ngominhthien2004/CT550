@@ -42,8 +42,7 @@ export function useProfilePage() {
   const showEditModal = ref(false)
   const showCoverModal = ref(false)
   const showAvatarModal = ref(false)
-  const confirmDeleteCover = ref(false)
-  const deleteCoverTimeout = ref(null)
+  const showDeleteCoverConfirm = ref(false)
   const profileSeries = ref([])
   const profileSeriesLoading = ref(false)
   const profileSeriesError = ref('')
@@ -417,19 +416,9 @@ export function useProfilePage() {
   const handleUpdateAvatar = (fd) =>
     submitProfileUpdate(fd, { requiredField: 'avatar', modalRef: showAvatarModal, successMsg: 'Avatar updated successfully!' })
 
-  async function handleDeleteCover() {
+  async function confirmDeleteCoverAction() {
     if (!isOwnProfile.value) return
-    if (!confirmDeleteCover.value) {
-      confirmDeleteCover.value = true
-      showInfo('Click delete again to confirm')
-      deleteCoverTimeout.value = setTimeout(() => { confirmDeleteCover.value = false }, 3000)
-      return
-    }
-    if (deleteCoverTimeout.value) {
-      clearTimeout(deleteCoverTimeout.value)
-      deleteCoverTimeout.value = null
-    }
-    confirmDeleteCover.value = false
+    showDeleteCoverConfirm.value = false
     try {
       const { data } = await userApi.deleteCover()
       if (profileUser.value) {
@@ -550,7 +539,9 @@ export function useProfilePage() {
     handleUpdateProfile,
     handleUpdateCover,
     handleUpdateAvatar,
-    handleDeleteCover,
+    handleDeleteCover: () => { showDeleteCoverConfirm.value = true },
+    showDeleteCoverConfirm,
+    confirmDeleteCoverAction,
     bookmarkStore,
     likeStore,
   }

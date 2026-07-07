@@ -79,6 +79,8 @@ provide('saveAvatar', state.handleUpdateAvatar)
 provide('saveCover', state.handleUpdateCover)
 provide('saveProfile', state.handleUpdateProfile)
 provide('deleteCover', state.handleDeleteCover)
+provide('showDeleteCoverConfirm', state.showDeleteCoverConfirm)
+provide('confirmDeleteCoverAction', state.confirmDeleteCoverAction)
 
 function toggleLeftNav() {
   toggleNavCollapsed(isNavCollapsed)
@@ -93,5 +95,74 @@ async function goLogin() {
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <AccountProfileSection v-if="state.user" />
     <AccountLoggedOutPrompt v-else @go-login="goLogin" />
+
+    <!-- Delete Cover Confirmation Modal -->
+    <Teleport to="body">
+      <div v-if="state.showDeleteCoverConfirm.value" class="confirm-overlay" @click.self="state.showDeleteCoverConfirm.value = false" @keydown.esc="state.showDeleteCoverConfirm.value = false" tabindex="0" role="dialog" aria-modal="true">
+        <div class="confirm-modal">
+          <div class="confirm-header">
+            <h3>Xóa ảnh bìa</h3>
+          </div>
+          <div class="confirm-body">
+            <p>Bạn có chắc chắn muốn xóa ảnh bìa hồ sơ?</p>
+          </div>
+          <div class="confirm-footer">
+            <button type="button" class="confirm-btn cancel" @click="state.showDeleteCoverConfirm.value = false">Hủy</button>
+            <button type="button" class="confirm-btn danger" @click="state.confirmDeleteCoverAction()">Xóa</button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </MainLayoutTemplate>
 </template>
+
+<style scoped>
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+.confirm-modal {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+.confirm-header h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+.confirm-body p {
+  margin: 0 0 1.25rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.confirm-footer {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+.confirm-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.confirm-btn.cancel {
+  background: var(--surface-alt);
+  color: var(--text);
+}
+.confirm-btn.danger {
+  background: var(--danger);
+  color: #fff;
+}
+</style>
