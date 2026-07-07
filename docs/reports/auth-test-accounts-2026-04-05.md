@@ -98,11 +98,3 @@ The following accounts were created via automated test runs on the local dev env
 | Role     | `admin`                                     |                            |
 | User ID  | `69e219233bf90aec30555500`                  |                            |
 | Created  | 2026-04-17 (verified working on 2026-06-05) |                            |
-
-Notes:
-
-- This account was originally created for the Admin Management UI smoke test (`admin-management-ui-smoke-2026-04-17.md`).
-- Verified operational on 2026-06-05 — login returned 200 OK with role `admin`.
-- This is the only admin account currently in the system.
-- Used for managing feature toggles (AI detection on/off), user management, and content moderation.
-- Intended for local dev environment only — do NOT use in production.

@@ -138,16 +138,21 @@ const searchTypeTabs = computed(() => [
   { key: 'illust', label: t('profile.tabIllustrations') },
   { key: 'manga', label: t('profile.tabManga') },
   { key: 'novel', label: t('profile.tabNovels') },
+  { key: 'gif', label: 'GIF' },
   { key: 'user', label: t('search.userTab') },
 ])
 
-const currentSearchOptions = computed(() => ({
-  includeAll: typeof route.query.qall === 'string' ? route.query.qall : '',
-  includeAny: typeof route.query.qany === 'string' ? route.query.qany : '',
-  exclude: typeof route.query.qnot === 'string' ? route.query.qnot : '',
-  target: typeof route.query.target === 'string' ? route.query.target : 'tag_partial',
-  type: typeof route.query.type === 'string' ? route.query.type : 'illust',
-}))
+const currentSearchOptions = computed(() => {
+  const sMode = typeof route.query.s_mode === 'string' ? route.query.s_mode : ''
+  const defaultTarget = sMode === 'tag_tc' ? 'tag_exact' : 'all'
+  return {
+    includeAll: typeof route.query.qall === 'string' ? route.query.qall : (typeof route.query.q === 'string' ? route.query.q : ''),
+    includeAny: typeof route.query.qany === 'string' ? route.query.qany : '',
+    exclude: typeof route.query.qnot === 'string' ? route.query.qnot : '',
+    target: typeof route.query.target === 'string' ? route.query.target : defaultTarget,
+    type: typeof route.query.type === 'string' ? route.query.type : 'illust',
+  }
+})
 
 const baseSearchQuery = computed(() => {
   const query = {}
@@ -204,7 +209,7 @@ const displayTags = computed(() => {
 })
 
 const typeCounts = computed(() => {
-  const counts = { illust: 0, manga: 0, novel: 0 }
+  const counts = { illust: 0, manga: 0, novel: 0, gif: 0 }
   for (const item of searchItems.value) {
     const type = String(item.type || '').toLowerCase()
     if (Object.hasOwn(counts, type)) {
@@ -416,10 +421,15 @@ function handleAvatarError(event) {
 
 async function applySearchOptions(payload) {
   const query = {}
-  const currentSimpleQuery = typeof route.query.q === 'string' ? route.query.q.trim() : ''
-  if (currentSimpleQuery) query.q = currentSimpleQuery
+
+  if (payload.includeAll) {
+    query.q = payload.includeAll
+  } else {
+    const currentSimpleQuery = typeof route.query.q === 'string' ? route.query.q.trim() : ''
+    if (currentSimpleQuery) query.q = currentSimpleQuery
+  }
+
   if (payload.type) query.type = payload.type
-  if (payload.includeAll) query.qall = payload.includeAll
   if (payload.includeAny) query.qany = payload.includeAny
   if (payload.exclude) query.qnot = payload.exclude
   if (payload.target && payload.target !== 'all') query.target = payload.target
@@ -434,8 +444,15 @@ async function loadSearchItems() {
     const includeAllRaw = typeof route.query.qall === 'string' ? route.query.qall : ''
     const includeAnyRaw = typeof route.query.qany === 'string' ? route.query.qany : ''
     const excludeRaw = typeof route.query.qnot === 'string' ? route.query.qnot : ''
-    const target = typeof route.query.target === 'string' ? route.query.target : 'all'
-    const { data } = await getArtworks()
+    const sMode = typeof route.query.s_mode === 'string' ? route.query.s_mode : ''
+    const target = typeof route.query.target === 'string'
+      ? route.query.target
+      : (sMode === 'tag_tc' ? 'tag_exact' : 'all')
+    const apiParams = { limit: 200 }
+    const activeTypeVal = typeof route.query.type === 'string' ? route.query.type : ''
+    if (activeTypeVal) apiParams.type = activeTypeVal
+    if (q && q.trim()) apiParams.q = q.trim()
+    const { data } = await getArtworks(apiParams)
     const normalizedQuery = q.trim().toLowerCase()
     const includeAllTokens = [...normalizeKeywords(normalizedQuery), ...normalizeKeywords(includeAllRaw)]
     const includeAnyTokens = normalizeKeywords(includeAnyRaw)

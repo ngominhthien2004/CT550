@@ -223,8 +223,12 @@ async function loadNovelData() {
     }
   }
 
-  // Get novel content
-  novelContent.value = artwork.value?.novelContent || artwork.value?.description || ''
+  // Auto-load first chapter content (for series) or fallback to oneshot content
+  if (chapters.value.length > 0 && chapters.value[0]._id) {
+    await handleSelectChapter(chapters.value[0]._id)
+  } else {
+    novelContent.value = artwork.value?.novelContent || artwork.value?.description || ''
+  }
 
   // Load reading progress (if authenticated)
   if (authStore.isAuthenticated) {

@@ -1,9 +1,15 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
+import { useLikeStore } from '@/stores/like.store.js'
+import { useAuthStore } from '@/stores/auth.store.js'
 
 const { t } = useI18n()
+const router = useRouter()
+const likeStore = useLikeStore()
+const authStore = useAuthStore()
 
-defineProps({
+const props = defineProps({
   items: { type: Array, required: true },
   loading: { type: Boolean, default: false },
   error: { type: String, default: '' },
@@ -11,6 +17,44 @@ defineProps({
 })
 
 const emit = defineEmits(['search-tag'])
+
+function isLiked(item) {
+  if (likeStore.statusByArtwork[item._id] !== undefined) {
+    return likeStore.getLikeStatus(item._id)
+  }
+  return Boolean(item.isLiked)
+}
+
+function isToggling(item) {
+  return likeStore.isTogglingLike(item._id)
+}
+
+async function handleLike(item) {
+  if (!authStore.isAuthenticated) {
+    router.push('/login')
+    return
+  }
+  if (isToggling(item)) return
+
+  const previousStatus = isLiked(item)
+  const previousCount = item.likeCount || 0
+  const nextStatus = !previousStatus
+
+  // Optimistic update
+  if (likeStore.statusByArtwork[item._id] === undefined) {
+    likeStore.statusByArtwork[item._id] = previousStatus
+  }
+  likeStore.statusByArtwork[item._id] = nextStatus
+  item.likeCount = Math.max(0, previousCount + (nextStatus ? 1 : -1))
+
+  try {
+    await likeStore.toggleLikeByArtwork(item._id)
+  } catch (error) {
+    // Rollback on failure
+    likeStore.statusByArtwork[item._id] = previousStatus
+    item.likeCount = previousCount
+  }
+}
 </script>
 
 <template>
@@ -80,8 +124,8 @@ const emit = defineEmits(['search-tag'])
           <span>{{ item._formattedDate }}</span>
         </footer>
       </div>
-      <button type="button" class="novel-bookmark-btn" :aria-label="`bookmark-${item._id}`">
-        <i class="fa-regular fa-bookmark"></i>
+      <button type="button" class="novel-like-btn" :class="{ 'is-active': isLiked(item) }" :aria-label="$t('artwork.like')" @click.prevent="handleLike(item)" :disabled="isToggling(item)">
+        <i :class="isLiked(item) ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
       </button>
     </article>
   </div>
@@ -264,20 +308,38 @@ const emit = defineEmits(['search-tag'])
   gap: 0.25rem;
 }
 
-.novel-bookmark-btn {
+.novel-like-btn {
   position: absolute;
   top: 1rem;
-  right: 0;
+  right: 0.5rem;
+  width: 1.95rem;
+  height: 1.95rem;
+  border-radius: 999px;
   border: none;
-  background: transparent;
-  color: var(--muted);
-  font-size: 1.1rem;
+  background: var(--surface);
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  padding: 0.5rem;
+  transition: transform 0.15s, background 0.15s, color 0.15s;
+  box-shadow: var(--shadow-md);
+  font-size: 0.88rem;
+  z-index: 2;
 }
 
-.novel-bookmark-btn:hover {
-  color: var(--accent);
+.novel-like-btn:hover {
+  transform: scale(1.05);
+  background: var(--surface);
+}
+
+.novel-like-btn.is-active {
+  color: #ef4444;
+}
+
+.novel-like-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .state-note {

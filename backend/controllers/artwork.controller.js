@@ -252,10 +252,16 @@ const getArtworks = async (req, res, next) => {
         if (q) {
             const keyword = q.trim();
             if (keyword) {
-                query.$or = [
+                const matchingTags = await Tag.find({ name: { $regex: keyword, $options: 'i' } }).select('_id');
+                const tagIds = matchingTags.map(t => t._id);
+                const orConditions = [
                     { title: { $regex: keyword, $options: 'i' } },
                     { description: { $regex: keyword, $options: 'i' } },
                 ];
+                if (tagIds.length > 0) {
+                    orConditions.push({ tags: { $in: tagIds } });
+                }
+                query.$or = orConditions;
             }
         }
 

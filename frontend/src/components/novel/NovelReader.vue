@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import NovelControls from './NovelControls.vue'
 import NovelHeader from './NovelHeader.vue'
 import NovelChapterSelector from './NovelChapterSelector.vue'
@@ -45,6 +45,29 @@ function increaseFontSize() {
 
 const canDecrease = computed(() => parseFloat(fontSize.value) > 0.85)
 const canIncrease = computed(() => parseFloat(fontSize.value) < 1.5)
+
+const currentChapterIndex = computed(() => {
+  if (!props.chapters.length || !selectedChapterId.value) return -1
+  return props.chapters.findIndex(ch => ch._id === selectedChapterId.value)
+})
+
+const prevChapterId = computed(() => {
+  const idx = currentChapterIndex.value
+  if (idx <= 0) return null
+  return props.chapters[idx - 1]?._id || null
+})
+
+const nextChapterId = computed(() => {
+  const idx = currentChapterIndex.value
+  if (idx < 0 || idx >= props.chapters.length - 1) return null
+  return props.chapters[idx + 1]?._id || null
+})
+
+function selectChapter(chapterId) {
+  if (!chapterId) return
+  selectedChapterId.value = chapterId
+  emit('select-chapter', chapterId)
+}
 
 const formattedParagraphs = computed(() => {
   if (!props.novelContent) return []
@@ -102,6 +125,12 @@ onMounted(() => {
 onUnmounted(() => {
   if (scrollTimer) clearTimeout(scrollTimer)
 })
+
+watch(() => props.chapters, (newChapters) => {
+  if (newChapters.length > 0 && !selectedChapterId.value && newChapters[0]._id) {
+    selectedChapterId.value = newChapters[0]._id
+  }
+}, { immediate: true })
 </script>
 
 <template>
@@ -137,8 +166,27 @@ onUnmounted(() => {
     <NovelChapterSelector
       :chapters="chapters"
       :selected-chapter-id="selectedChapterId"
-      @select="emit('select-chapter', $event)"
+      @select="selectChapter"
     />
+
+    <div v-if="chapters.length > 1" class="chapter-nav-buttons">
+      <button
+        class="chapter-nav-btn"
+        :disabled="!prevChapterId"
+        @click="selectChapter(prevChapterId)"
+      >
+        <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+        <span>Previous</span>
+      </button>
+      <button
+        class="chapter-nav-btn"
+        :disabled="!nextChapterId"
+        @click="selectChapter(nextChapterId)"
+      >
+        <span>Next</span>
+        <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+      </button>
+    </div>
 
     <div class="novel-divider" />
 
@@ -307,6 +355,39 @@ onUnmounted(() => {
   font-style: italic;
   color: var(--novel-muted);
   white-space: nowrap;
+}
+
+.chapter-nav-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.chapter-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--novel-border);
+  border-radius: 0.72rem;
+  background: var(--novel-surface);
+  color: var(--novel-text-color);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  font-family: inherit;
+}
+
+.chapter-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.chapter-nav-btn:hover:not(:disabled) {
+  border-color: var(--novel-accent);
+  color: var(--novel-accent);
 }
 
 @media (max-width: 640px) {

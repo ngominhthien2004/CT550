@@ -337,7 +337,7 @@ async function handleMarkAllNotificationsRead() {
 function openSearchOptions() {
   const query = router.currentRoute.value.query
   searchOptionsDraft.value = {
-    includeAll: typeof query.qall === 'string' ? query.qall : '',
+    includeAll: typeof query.qall === 'string' ? query.qall : (typeof query.q === 'string' ? query.q : ''),
     includeAny: typeof query.qany === 'string' ? query.qany : '',
     exclude: typeof query.qnot === 'string' ? query.qnot : '',
     target: typeof query.target === 'string' ? query.target : 'tag_partial',
@@ -352,8 +352,12 @@ async function applySearchOptions(payload) {
   }
 
   if (payload.includeAll) {
-    query.qall = payload.includeAll
+    query.q = payload.includeAll
+  } else {
+    const currentQ = typeof router.currentRoute.value.query.q === 'string' ? router.currentRoute.value.query.q.trim() : ''
+    if (currentQ) query.q = currentQ
   }
+
   if (payload.includeAny) {
     query.qany = payload.includeAny
   }

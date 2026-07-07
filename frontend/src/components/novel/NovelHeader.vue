@@ -75,6 +75,10 @@ const uploadedAtLabel = computed(() => {
         </router-link>
       </div>
 
+      <p v-if="artwork.description" class="novel-description">
+        {{ artwork.description }}
+      </p>
+
       <div class="novel-stats">
         <span class="stat-item" title="Views">
           <i class="fa-regular fa-eye" aria-hidden="true"></i>
@@ -242,5 +246,13 @@ const uploadedAtLabel = computed(() => {
   background: var(--novel-accent);
   color: #ffffff;
   text-decoration: none;
+}
+
+.novel-description {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--novel-muted);
+  margin: 0.5rem 0;
+  white-space: pre-line;
 }
 </style>
