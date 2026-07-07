@@ -47,6 +47,7 @@ const userSortMode = ref('newest')
 const userPage = ref(1)
 const userHasMore = ref(false)
 const userLoadingMore = ref(false)
+const userArtworkPreviews = ref({})
 
 const tagStore = useTagStore()
 
@@ -278,6 +279,13 @@ const userPreviewMap = computed(() => {
     if (existing.length >= 4) continue
     previews[userId] = [...existing, item]
   }
+  for (const [userId, items] of Object.entries(userArtworkPreviews.value)) {
+    if (!previews[userId]) previews[userId] = []
+    for (const item of items) {
+      if (previews[userId].length >= 4) break
+      previews[userId].push(item)
+    }
+  }
   return new Map(Object.entries(previews))
 })
 
@@ -481,6 +489,23 @@ async function loadSearchItems() {
   }
 }
 
+async function loadUserArtworkPreviews(users) {
+  const missing = users.filter((u) => !userArtworkPreviews.value[u._id])
+  if (!missing.length) return
+  const results = await Promise.allSettled(
+    missing.map(async (u) => {
+      const { data } = await getArtworks({ user: u._id, limit: 4 })
+      const items = Array.isArray(data) ? data.map((a) => ({ ...a, image: a.images?.[0] || '' })) : []
+      return { userId: u._id, items }
+    })
+  )
+  const merged = { ...userArtworkPreviews.value }
+  for (const r of results) {
+    if (r.status === 'fulfilled') merged[r.value.userId] = r.value.items
+  }
+  userArtworkPreviews.value = merged
+}
+
 async function loadUserResults(loadMore) {
   if (!loadMore) userPage.value = 1
   userLoading.value = !loadMore
@@ -506,6 +531,7 @@ async function loadUserResults(loadMore) {
     if (authStore.isAuthenticated) {
       await Promise.all(users.map((user) => followStore.fetchFollowStatus(user._id).catch(() => null)))
     }
+    await loadUserArtworkPreviews(users)
   } catch (fetchError) {
     userError.value = fetchError?.response?.data?.message || 'Failed to fetch users'
     if (!loadMore) {

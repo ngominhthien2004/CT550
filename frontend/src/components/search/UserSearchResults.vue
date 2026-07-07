@@ -28,9 +28,11 @@ const followStore = useFollowStore()
 
     <article v-for="user in users" :key="user._id" class="user-search-row">
       <div class="user-profile-column">
-        <img :src="user._avatar" :alt="user._displayName" class="avatar avatar--xl user-avatar-large" @error="emit('avatar-error', $event)" />
+        <router-link :to="`/account?user=${user._id}`" class="user-avatar-link">
+          <img :src="user._avatar" :alt="user._displayName" class="avatar avatar--xl user-avatar-large" @error="emit('avatar-error', $event)" />
+        </router-link>
         <div class="user-profile-copy">
-          <h3>{{ user._displayName }}</h3>
+          <h3><router-link :to="`/account?user=${user._id}`" class="user-name-link">{{ user._displayName }}</router-link></h3>
           <p class="user-bio">{{ user._shortBio }}</p>
           <div class="user-actions">
             <button
@@ -125,12 +127,25 @@ const followStore = useFollowStore()
   min-width: 0;
 }
 
+.user-avatar-link {
+  flex-shrink: 0;
+}
+
 .user-avatar-large {
   width: 80px;
   height: 80px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+}
+
+.user-name-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.user-name-link:hover {
+  text-decoration: underline;
 }
 
 .user-profile-copy {
