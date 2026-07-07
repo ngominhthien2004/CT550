@@ -548,7 +548,7 @@ watch(
             Previous
           </router-link>
           <span class="series-nav-info">
-            <i class="fa-regular fa-layer-group"></i>
+            <i class="fa-solid fa-images"></i>
             {{ seriesInfo?.title }}
           </span>
           <router-link
