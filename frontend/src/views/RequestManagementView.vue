@@ -102,7 +102,6 @@ onMounted(loadAll)
     <section class="request-management page-block">
       <header class="request-header">
         <div>
-          <p class="eyebrow">Creator tools</p>
           <h1>Request Management</h1>
         </div>
         <div class="request-header-actions">
@@ -187,15 +186,16 @@ onMounted(loadAll)
   margin: 0;
 }
 
-h1 { font-size: 2rem; margin: 0; }
+h1 { font-size: 1.5rem; margin: 0; }
 
 .profile-link {
   border: none;
   border-radius: 999px;
   background: var(--accent);
   color: #fff;
-  font-weight: 900;
-  padding: 0.72rem 1rem;
+  font-weight: 700;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.85rem;
   text-decoration: none;
 }
 
