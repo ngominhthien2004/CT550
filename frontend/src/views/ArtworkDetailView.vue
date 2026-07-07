@@ -267,11 +267,13 @@ async function loadSeriesNavigation() {
   try {
     const { data } = await seriesApi.getById(artwork.value.series)
     if (data?.artworks?.length > 1) {
-      seriesArtworkIds.value = data.artworks
+      // artworks may be populated objects or plain IDs
+      const ids = data.artworks.map(a => (typeof a === 'string' ? a : a._id))
+      seriesArtworkIds.value = ids
       seriesInfo.value = data
-      const idx = data.artworks.indexOf(artwork.value._id)
-      seriesPrevId.value = idx > 0 ? data.artworks[idx - 1] : null
-      seriesNextId.value = idx >= 0 && idx < data.artworks.length - 1 ? data.artworks[idx + 1] : null
+      const idx = ids.indexOf(artwork.value._id)
+      seriesPrevId.value = idx > 0 ? ids[idx - 1] : null
+      seriesNextId.value = idx >= 0 && idx < ids.length - 1 ? ids[idx + 1] : null
     }
   } catch (_err) {
     seriesArtworkIds.value = []
