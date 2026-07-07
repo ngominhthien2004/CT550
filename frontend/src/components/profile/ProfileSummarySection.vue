@@ -201,16 +201,7 @@ function closeReportModal() {
     <div class="profile-actions">
       <button v-if="isOwnProfile" type="button" class="edit-profile-btn" @click="editProfile">{{ $t('profile.editProfile') }}</button>
       <button
-        v-if="isAcceptingRequests"
-        type="button"
-        class="request-action-btn"
-        :aria-label="isOwnProfile ? $t('profile.manageRequests') : $t('profile.sendRequest')"
-        @click="openRequests"
-      >
-        {{ isOwnProfile ? $t('profile.manageRequests') : $t('profile.request') }}
-      </button>
-      <button
-        v-else-if="!isOwnProfile"
+        v-if="!isOwnProfile"
         type="button"
         class="follow-profile-btn"
         :class="isFollowing ? 'is-following' : 'is-not-following'"
@@ -219,6 +210,15 @@ function closeReportModal() {
         @click="toggleFollow"
       >
         {{ isFollowing ? $t('profile.following') : $t('profile.follow') }}
+      </button>
+      <button
+        v-if="isAcceptingRequests"
+        type="button"
+        class="request-action-btn"
+        :aria-label="isOwnProfile ? $t('profile.manageRequests') : $t('profile.sendRequest')"
+        @click="openRequests"
+      >
+        {{ isOwnProfile ? $t('profile.manageRequests') : $t('profile.request') }}
       </button>
       <router-link
         v-if="!isOwnProfile"
