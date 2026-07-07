@@ -78,6 +78,8 @@ async function selectRequest(requestId) {
   detailLoading.value = true
   try {
     selectedRequestDetail.value = await requestStore.fetchById(requestId)
+    const messages = await requestStore.getChat(requestId)
+    detailPanelRef.value?.updateChatMessages(messages)
   } catch { selectedRequestDetail.value = null } finally { detailLoading.value = false }
 }
 
