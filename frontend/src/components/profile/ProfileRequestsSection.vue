@@ -388,7 +388,15 @@ watch(
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--surface);
-  padding: 1rem;
+  padding: 1.5rem 1rem;
+}
+
+.empty-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
 }
 
 .request-plan {
@@ -531,7 +539,7 @@ textarea {
 }
 
 .empty-text {
-  margin: 0;
+  margin: 0 0 1rem;
 }
 
 .manage-link.outline {
