@@ -148,21 +148,26 @@ async function handleSubmit() {
         type: seriesType.value,
       })
 
-      // Upload cover if selected
+      // Series is created — emit immediately so UI updates
+      emit('created', series)
+
+      // Upload cover if selected (non-critical)
       if (coverImageFile.value && series._id) {
-        const formData = new FormData()
-        formData.append('coverImage', coverImageFile.value)
-        await seriesApi.uploadCover(series._id, formData)
+        try {
+          const formData = new FormData()
+          formData.append('coverImage', coverImageFile.value)
+          await seriesApi.uploadCover(series._id, formData)
+        } catch { /* cover upload failed but series exists */ }
       }
 
-      // Add selected artworks to series
+      // Add selected artworks to series (non-critical)
       if (selectedArtworks.value.length > 0 && series._id) {
         for (const artwork of selectedArtworks.value) {
-          await seriesApi.addArtwork(series._id, artwork._id)
+          try {
+            await seriesApi.addArtwork(series._id, artwork._id)
+          } catch { /* artwork add failed but series exists */ }
         }
       }
-
-      emit('created', series)
     }
   } catch (err) {
     errorMsg.value =
