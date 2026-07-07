@@ -69,7 +69,8 @@ async function loadPlans() {
   try {
     const { data } = await requestApi.getTerms({ openOnly: 'true' })
     plans.value = Array.isArray(data) ? data : []
-  } catch {
+  } catch (e) {
+    console.error('loadPlans error:', e)
     plans.value = []
     loadError.value = 'Failed to load plans.'
   } finally {
@@ -87,11 +88,16 @@ async function handleToggleFollow(userId) {
 }
 
 onMounted(async () => {
-  await loadPlans()
-  if (authStore.isAuthenticated && creators.value.length) {
-    await Promise.all(
-      creators.value.map((c) => followStore.fetchFollowStatus(c._id).catch(() => null)),
-    )
+  try {
+    await loadPlans()
+    if (authStore.isAuthenticated && creators.value.length) {
+      await Promise.all(
+        creators.value.map((c) => followStore.fetchFollowStatus(c._id).catch(() => null)),
+      )
+    }
+  } catch (e) {
+    console.error('PlansTopPageView onMounted error:', e)
+    loadError.value = e?.message || 'Failed to load'
   }
 })
 </script>

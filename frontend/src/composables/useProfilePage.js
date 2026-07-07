@@ -476,7 +476,6 @@ export function useProfilePage() {
   watch(showAvatarModal, syncBodyOverflow)
 
   onUnmounted(() => {
-    if (deleteCoverTimeout.value) clearTimeout(deleteCoverTimeout.value)
     document.body.style.overflow = ''
   })
 

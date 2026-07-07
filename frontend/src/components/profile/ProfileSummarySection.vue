@@ -137,7 +137,7 @@ function closeReportModal() {
   <div class="profile-summary">
     <div class="avatar-shell">
       <div class="avatar-wrap">
-        <img :src="avatarSrc" :alt="user.displayName || user.username" @error="handleAvatarError" />
+        <img :src="avatarSrc" :alt="user?.displayName || user?.username" @error="handleAvatarError" />
         <div v-if="isOwnProfile" class="avatar-edit-overlay" @click="editAvatar" @keydown.enter.prevent="editAvatar" @keydown.space.prevent="editAvatar" role="button" :aria-label="$t('profile.editProfileImage')">
           <i class="fa-solid fa-camera" aria-hidden="true"></i>
         </div>
@@ -145,8 +145,8 @@ function closeReportModal() {
     </div>
 
     <div class="profile-meta">
-      <h1 class="profile-name">{{ user.displayName || user.username }}</h1>
-      <p class="profile-handle">@{{ user.username || 'member' }}</p>
+      <h1 class="profile-name">{{ user?.displayName || user?.username }}</h1>
+      <p class="profile-handle">@{{ user?.username || 'member' }}</p>
       <button
         v-if="isAcceptingRequests"
         type="button"
@@ -158,8 +158,8 @@ function closeReportModal() {
       </button>
 
       <div class="profile-stats">
-<router-link :to="`/users/${user._id}/followers`" class="stat-link"><strong>{{ followersCount }}</strong> {{ $t('profile.followers') }}</router-link>
-<router-link :to="`/users/${user._id}/following`" class="stat-link"><strong>{{ followingCount }}</strong> {{ $t('profile.following') }}</router-link>
+<router-link :to="`/users/${user?._id}/followers`" class="stat-link"><strong>{{ followersCount }}</strong> {{ $t('profile.followers') }}</router-link>
+<router-link :to="`/users/${user?._id}/following`" class="stat-link"><strong>{{ followingCount }}</strong> {{ $t('profile.following') }}</router-link>
       </div>
 
       <p class="profile-bio">{{ profileBio }}</p>
@@ -222,7 +222,7 @@ function closeReportModal() {
       </button>
       <router-link
         v-if="!isOwnProfile"
-        :to="`/messages?user=${user._id}`"
+        :to="`/messages?user=${user?._id}`"
         class="message-btn"
         :aria-label="$t('profile.message')"
         :title="$t('profile.message')"

@@ -27,7 +27,7 @@ const followStore = useFollowStore()
         <button
           class="follow-btn-sm"
           :class="{ following: followStore.isFollowingUser(creator._id) }"
-          :disabled="followStore.isTogglingFollow"
+          :disabled="followStore.isTogglingFollow(creator._id)"
           @click.prevent="emit('toggle-follow', creator._id)"
         >
           {{ followStore.isFollowingUser(creator._id) ? 'Following' : 'Follow' }}
