@@ -22,7 +22,6 @@ const {
     reportRequest,
     requestExtension,
     resolveReport,
-    startRequest,
     submitDraft,
     updateRequestTerm,
 } = require('../controllers/request.controller');
@@ -93,7 +92,6 @@ router.post('/admin/:id/resolve-report', protect, admin, resolveReport);
 router.get('/:id', protect, getRequestById);
 router.post('/:id/accept', protect, acceptRequest);
 router.post('/:id/reject', protect, rejectRequest);
-router.post('/:id/start', protect, startRequest);
 router.post('/:id/cancel', protect, cancelRequest);
 router.post('/:id/extension', protect, requestExtension);
 router.post('/:id/draft', protect, upload.fields([{ name: 'draftFiles', maxCount: 5 }]), submitDraft);
