@@ -368,13 +368,14 @@ watch(
 .proposed-price-locked {
   display: block;
   margin-top: 0.35rem;
-  padding: 0.45rem 0.65rem;
+  padding: 0.43rem 0.65rem;
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--surface-alt);
-  color: var(--text);
-  font-weight: 700;
-  font-size: 0.95rem;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.88rem;
+  line-height: 1.4;
 }
 
 .manage-link,
