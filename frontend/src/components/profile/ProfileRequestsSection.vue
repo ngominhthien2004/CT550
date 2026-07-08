@@ -224,7 +224,7 @@ watch(
 
       <div class="form-grid">
         <label>
-          {{ $t('request.title') }} <span class="required-mark">*</span>
+          <span class="label-row">{{ $t('request.title') }} <span class="required-mark">*</span></span>
           <input v-model="form.title" type="text" maxlength="160" required :placeholder="$t('request.charBirthdayIllus')" :aria-label="$t('request.title')" />
         </label>
         <label>
@@ -268,7 +268,7 @@ watch(
       </div>
 
       <label>
-        {{ $t('request.description') }} <span class="required-mark">*</span>
+        <span class="label-row">{{ $t('request.description') }} <span class="required-mark">*</span></span>
         <textarea v-model="form.description" rows="5" required :placeholder="$t('request.markdownHint')" :aria-label="$t('request.description')"></textarea>
       </label>
 
@@ -366,16 +366,17 @@ watch(
 }
 
 .proposed-price-locked {
-  display: block;
-  margin-top: 0.35rem;
-  padding: 0.43rem 0.65rem;
+  display: flex;
+  align-items: center;
+  padding: 0.68rem 0.72rem;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 8px;
   background: var(--surface-alt);
   color: var(--muted);
   font-weight: 600;
   font-size: 0.88rem;
-  line-height: 1.4;
+  min-height: 0;
+  box-sizing: border-box;
 }
 
 .manage-link,
@@ -569,6 +570,11 @@ textarea {
 .required-mark {
   color: var(--danger);
   font-weight: 700;
+  margin-left: 0.15rem;
+}
+
+.label-row {
+  display: block;
 }
 
 .pill-select {
