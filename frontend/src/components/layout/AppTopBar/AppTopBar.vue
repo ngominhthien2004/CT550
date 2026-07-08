@@ -367,6 +367,9 @@ async function applySearchOptions(payload) {
   if (payload.target && payload.target !== 'all') {
     query.target = payload.target
   }
+  if (payload.series && payload.series !== 'all') {
+    query.series = payload.series
+  }
 
   await router.push({
     path: '/search',
