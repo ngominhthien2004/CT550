@@ -44,11 +44,12 @@ test('rejects request submission below creator target price or when creator has 
 });
 
 test('allows only explicit request status transitions', () => {
-    assert.equal(canTransitionRequest(REQUEST_STATUSES.PENDING, REQUEST_STATUSES.ACCEPTED), true);
-    assert.equal(canTransitionRequest(REQUEST_STATUSES.ACCEPTED, REQUEST_STATUSES.IN_PROGRESS), true);
+    assert.equal(canTransitionRequest(REQUEST_STATUSES.PENDING, REQUEST_STATUSES.IN_PROGRESS), true);
+    assert.equal(canTransitionRequest(REQUEST_STATUSES.PENDING, REQUEST_STATUSES.REJECTED), true);
+    assert.equal(canTransitionRequest(REQUEST_STATUSES.PENDING, REQUEST_STATUSES.CANCELLED), false);
     assert.equal(canTransitionRequest(REQUEST_STATUSES.DRAFT_SUBMITTED, REQUEST_STATUSES.REVISION), true);
     assert.equal(canTransitionRequest(REQUEST_STATUSES.COMPLETED, REQUEST_STATUSES.REVISION), false);
-    assert.equal(canTransitionRequest(REQUEST_STATUSES.REJECTED, REQUEST_STATUSES.ACCEPTED), false);
+    assert.equal(canTransitionRequest(REQUEST_STATUSES.REJECTED, REQUEST_STATUSES.IN_PROGRESS), false);
 });
 
 test('limits requester revision rounds to two minor revisions', () => {
