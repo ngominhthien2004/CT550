@@ -339,7 +339,7 @@ const listPublicRequests = async (req, res, next) => {
     try {
         const filter = {
             visibility: 'public',
-            status: { $in: [REQUEST_STATUSES.ACCEPTED, REQUEST_STATUSES.IN_PROGRESS, REQUEST_STATUSES.DRAFT_SUBMITTED, REQUEST_STATUSES.COMPLETED] },
+            status: { $in: [REQUEST_STATUSES.IN_PROGRESS, REQUEST_STATUSES.DRAFT_SUBMITTED, REQUEST_STATUSES.COMPLETED] },
         };
 
         if (req.query.creator) {
