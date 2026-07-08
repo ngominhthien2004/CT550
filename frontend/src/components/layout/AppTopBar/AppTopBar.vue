@@ -342,6 +342,7 @@ function openSearchOptions() {
     exclude: typeof query.qnot === 'string' ? query.qnot : '',
     target: typeof query.target === 'string' ? query.target : 'tag_partial',
     type: typeof query.type === 'string' ? query.type : 'illust',
+    series: typeof query.series === 'string' ? query.series : 'all',
   }
   isSearchOptionsOpen.value = true
 }

@@ -165,6 +165,7 @@ const currentSearchOptions = computed(() => {
     exclude: typeof route.query.qnot === 'string' ? route.query.qnot : '',
     target: typeof route.query.target === 'string' ? route.query.target : defaultTarget,
     type: typeof route.query.type === 'string' ? route.query.type : 'illust',
+    series: typeof route.query.series === 'string' ? route.query.series : 'all',
   }
 })
 
