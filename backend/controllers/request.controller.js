@@ -400,15 +400,15 @@ const acceptRequest = async (req, res, next) => {
         await transitionRequest({
             request,
             actorId: req.user._id,
-            toStatus: REQUEST_STATUSES.ACCEPTED,
+            toStatus: REQUEST_STATUSES.IN_PROGRESS,
             type: 'request_accepted',
         });
-        await addSystemChat(request._id, req.user._id, 'Private request room opened after creator acceptance.');
+        await addSystemChat(request._id, req.user._id, 'Private request room opened. Work has begun.');
         await createNotification({
             userId: request.requester,
             actorId: req.user._id,
             type: 'request',
-            message: `Your Request "${request.title}" was accepted.`,
+            message: `Your Request "${request.title}" was accepted and is now in progress.`,
         });
 
         const populated = await populateRequest(Request.findById(request._id));
@@ -434,24 +434,6 @@ const rejectRequest = async (req, res, next) => {
             actorId: req.user._id,
             type: 'request',
             message: `Your Request "" was declined.`,
-        });
-
-        res.json(await populateRequest(Request.findById(request._id)));
-    } catch (error) {
-        next(error);
-    }
-};
-
-const startRequest = async (req, res, next) => {
-    try {
-        const request = await findRequestOrFail(req.params.id);
-        authorizeOrFail(ensureCreator(request, req.user._id), 'Only the creator can start this request');
-
-        await transitionRequest({
-            request,
-            actorId: req.user._id,
-            toStatus: REQUEST_STATUSES.IN_PROGRESS,
-            type: 'request_started',
         });
 
         res.json(await populateRequest(Request.findById(request._id)));
@@ -880,7 +862,6 @@ module.exports = {
     reportRequest,
     requestExtension,
     resolveReport,
-    startRequest,
     submitDraft,
     updateRequestTerm,
 };
