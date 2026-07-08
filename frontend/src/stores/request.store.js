@@ -104,7 +104,6 @@ export const useRequestStore = defineStore('requests', {
       const actionMap = {
         accept: () => requestApi.accept(requestId),
         reject: () => requestApi.reject(requestId, payload),
-        start: () => requestApi.start(requestId),
         cancel: () => requestApi.cancel(requestId, payload),
         approve: () => requestApi.approve(requestId),
         createRevision: () => requestApi.createRevision(requestId, payload),

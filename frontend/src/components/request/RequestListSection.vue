@@ -46,6 +46,7 @@ function statusLabel(value) {
           <p :class="['status-pill', 'status-' + item.status]">{{ statusLabel(item.status) }}</p>
           <h3>{{ item.title }}</h3>
           <p class="meta">
+            <span v-if="item.term" class="plan-tag">{{ item.term.title || item.term.tier }}</span>
             {{ item.workType }} · {{ item.currency }} {{ item.proposedAmount }} ·
             {{ activeRole === 'creator' ? item.requester?.displayName || item.requester?.username : item.creator?.displayName || item.creator?.username }}
           </p>
@@ -53,8 +54,7 @@ function statusLabel(value) {
         <div v-if="activeRole === 'creator'" class="row-actions">
           <button v-if="item.status === 'pending'" type="button" @click.stop="emit('action', item._id, 'accept')">Accept</button>
           <button v-if="item.status === 'pending'" type="button" class="ghost-danger" @click.stop="emit('action', item._id, 'reject')">Reject</button>
-          <button v-if="item.status === 'accepted'" type="button" @click.stop="emit('action', item._id, 'start')">Start</button>
-          <button v-if="['accepted', 'in_progress'].includes(item.status)" type="button" class="ghost-danger" @click.stop="emit('action', item._id, 'cancel')">Cancel</button>
+          <button v-if="item.status === 'in_progress'" type="button" class="ghost-danger" @click.stop="emit('action', item._id, 'cancel')">Cancel</button>
         </div>
       </article>
     </TransitionGroup>
@@ -174,6 +174,17 @@ function statusLabel(value) {
 .row-actions button:hover { background: var(--surface-alt); }
 .row-actions button.ghost-danger { color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
 .row-actions button.ghost-danger:hover { background: rgba(239, 68, 68, 0.1); }
+
+.plan-tag {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-right: 0.25rem;
+}
 
 .empty { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.88rem; }
 </style>

@@ -220,7 +220,6 @@ export const requestApi = {
   getById: (requestId) => api.get(`/requests/${requestId}`),
   accept: (requestId) => api.post(`/requests/${requestId}/accept`),
   reject: (requestId, payload = {}) => api.post(`/requests/${requestId}/reject`, payload),
-  start: (requestId) => api.post(`/requests/${requestId}/start`),
   cancel: (requestId, payload = {}) => api.post(`/requests/${requestId}/cancel`, payload),
   submitDraft: (requestId, formData) => api.post(`/requests/${requestId}/draft`, formData),
   createRevision: (requestId, payload) => api.post(`/requests/${requestId}/revisions`, payload),
