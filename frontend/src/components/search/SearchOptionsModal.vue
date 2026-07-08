@@ -31,6 +31,7 @@ const hasAnyInput = computed(() => {
     formState.includeAll.trim().length > 0
     || formState.includeAny.trim().length > 0
     || formState.exclude.trim().length > 0
+    || formState.series !== 'all'
   )
 })
 
