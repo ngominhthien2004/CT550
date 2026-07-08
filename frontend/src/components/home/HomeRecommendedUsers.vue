@@ -69,7 +69,6 @@ function handleAvatarError(event) {
         <h3>Recommended users</h3>
         <span class="head-note">Artists you may want to follow</span>
       </div>
-      <router-link to="/account" class="head-link">Profile</router-link>
     </header>
 
     <p v-if="!users.length" class="empty-state mb-0">No recommended users available yet.</p>
@@ -141,13 +140,6 @@ function handleAvatarError(event) {
 .head-note {
   color: var(--muted);
   font-size: 0.8rem;
-}
-
-.head-link {
-  text-decoration: none;
-  color: var(--accent);
-  font-size: 0.84rem;
-  font-weight: 700;
 }
 
 .empty-state {
