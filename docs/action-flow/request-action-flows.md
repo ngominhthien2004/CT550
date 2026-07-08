@@ -21,12 +21,8 @@ The Request system (never called "commission" in code) allows users to request c
 stateDiagram-v2
     [*] --> pending : Request submitted
     
-    pending --> accepted : Creator accepts
+    pending --> in_progress : Creator accepts
     pending --> rejected : Creator rejects
-    pending --> cancelled : Either party cancels
-    
-    accepted --> in_progress : Creator starts work
-    accepted --> cancelled : Creator cancels
     
     in_progress --> draft_submitted : Creator submits draft
     in_progress --> cancelled : Creator cancels
@@ -51,15 +47,14 @@ stateDiagram-v2
 | Status | Description | Terminal | Active |
 |--------|-------------|----------|--------|
 | `pending` | Request submitted; awaiting creator decision | No | No |
-| `accepted` | Creator accepted; work not yet started; due date set | No | **Yes** |
-| `in_progress` | Creator started work; actively creating | No | **Yes** |
+| `in_progress` | Creator accepted and is actively working | No | **Yes** |
 | `draft_submitted` | Creator submitted draft files; awaiting requester action | No | **Yes** |
 | `revision` | Requester requested changes; creator reworking | No | **Yes** |
 | `completed` | Final files delivered and/or approved; all done | **Yes** | No |
 | `rejected` | Creator declined the request | **Yes** | No |
 | `cancelled` | Either party terminated the request | **Yes** | No |
 
-**Active states** are defined in `ACTIVE_REQUEST_STATUSES` and include `accepted`, `in_progress`, `draft_submitted`, and `revision`. These states count toward a creator's open request capacity.
+**Active states** are defined in `ACTIVE_REQUEST_STATUSES` and include `in_progress`, `draft_submitted`, and `revision`. These states count toward a creator's open request capacity.
 
 ---
 
@@ -67,22 +62,16 @@ stateDiagram-v2
 
 | From | To | Action | Performer | API Endpoint | Notes |
 |------|----|--------|-----------|-------------|-------|
-| `pending` | `accepted` | accept | Creator | `POST /api/requests/:id/accept` | Sets `dueAt` to now + 60 days. Opens private chat room. |
+| `pending` | `in_progress` | accept | Creator | `POST /api/requests/:id/accept` | Sets `dueAt` to now + 60 days. Opens private chat room. Work begins immediately. |
 | `pending` | `rejected` | reject | Creator | `POST /api/requests/:id/reject` | Optional reason in body. |
-| `pending` | `cancelled` | cancel | Either participant | `POST /api/requests/:id/cancel` | Optional reason in body. Closes chat. |
-| `accepted` | `in_progress` | start | Creator | `POST /api/requests/:id/start` | Marks work as actively in progress. |
-| `accepted` | `cancelled` | cancel | Either participant | `POST /api/requests/:id/cancel` | Closes chat. |
 | `in_progress` | `draft_submitted` | submitDraft | Creator | `POST /api/requests/:id/draft` | Multipart. Requires `draftFiles`. Sets `autoCompleteAt` to now + 7 days. |
-| `in_progress` | `cancelled` | cancel | Creator | `POST /api/requests/:id/cancel` | Only creator can cancel from in_progress (requester cannot cancel work in progress). *See caveat in Implementation Notes.* |
+| `in_progress` | `cancelled` | cancel | Creator | `POST /api/requests/:id/cancel` | Only creator can cancel from in_progress. |
 | `draft_submitted` | `revision` | createRevision | Requester | `POST /api/requests/:id/revisions` | Max 2 rounds. Requires `notes` in body. |
 | `draft_submitted` | `completed` | approve | Requester | `POST /api/requests/:id/approve` | Closes chat. |
 | `draft_submitted` | `cancelled` | cancel | Either participant | `POST /api/requests/:id/cancel` | Closes chat. |
 | `revision` | `draft_submitted` | submitDraft | Creator | `POST /api/requests/:id/draft` | Same endpoint; re-enters draft_submitted state. |
 | `revision` | `completed` | approve | Requester | `POST /api/requests/:id/approve` | Closes chat. |
 | `revision` | `cancelled` | cancel | Either participant | `POST /api/requests/:id/cancel` | Closes chat. |
-| `completed` | — | — | — | — | Terminal; no transitions out. |
-| `rejected` | — | — | — | — | Terminal; no transitions out. |
-| `cancelled` | — | — | — | — | Terminal; no transitions out. |
 
 ### Non-transition Actions
 
