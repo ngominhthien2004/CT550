@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import SearchOptionsModal from '../components/search/SearchOptionsModal.vue'
@@ -119,7 +119,7 @@ const searchOptionsDraft = ref({
   series: 'all',
 })
 
-function syncSearchOptionsFromRoute() {
+watchEffect(() => {
   const q = route.query
   searchOptionsDraft.value = {
     includeAll: (typeof q.q === 'string' ? q.q : ''),
@@ -129,7 +129,7 @@ function syncSearchOptionsFromRoute() {
     type: (typeof q.type === 'string' ? q.type : 'illust'),
     series: (typeof q.series === 'string' ? q.series : 'all'),
   }
-}
+})
 
 const searchKeyword = computed(() => {
   const q = typeof route.query.q === 'string' ? route.query.q.trim() : ''
@@ -587,7 +587,6 @@ function reloadUserSearch() {
 }
 
 onMounted(() => {
-  syncSearchOptionsFromRoute()
   loadSearchItems()
   loadUserResults()
   if (searchKeyword.value) {
@@ -599,7 +598,6 @@ onMounted(() => {
 watch(
   () => ({ ...route.query }),
   () => {
-    syncSearchOptionsFromRoute()
     loadSearchItems()
     loadUserResults()
     if (searchKeyword.value) {
