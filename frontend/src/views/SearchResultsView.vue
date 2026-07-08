@@ -119,6 +119,18 @@ const searchOptionsDraft = ref({
   series: 'all',
 })
 
+function syncSearchOptionsFromRoute() {
+  const q = route.query
+  searchOptionsDraft.value = {
+    includeAll: (typeof q.q === 'string' ? q.q : ''),
+    includeAny: (typeof q.qany === 'string' ? q.qany : ''),
+    exclude: (typeof q.qnot === 'string' ? q.qnot : ''),
+    target: (typeof q.target === 'string' ? q.target : 'tag_partial'),
+    type: (typeof q.type === 'string' ? q.type : 'illust'),
+    series: (typeof q.series === 'string' ? q.series : 'all'),
+  }
+}
+
 const searchKeyword = computed(() => {
   const q = typeof route.query.q === 'string' ? route.query.q.trim() : ''
   const nick = typeof route.query.nick === 'string' ? route.query.nick.trim() : ''
@@ -575,6 +587,7 @@ function reloadUserSearch() {
 }
 
 onMounted(() => {
+  syncSearchOptionsFromRoute()
   loadSearchItems()
   loadUserResults()
   if (searchKeyword.value) {
@@ -586,6 +599,7 @@ onMounted(() => {
 watch(
   () => ({ ...route.query }),
   () => {
+    syncSearchOptionsFromRoute()
     loadSearchItems()
     loadUserResults()
     if (searchKeyword.value) {
