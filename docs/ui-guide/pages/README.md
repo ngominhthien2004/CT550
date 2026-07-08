@@ -4,40 +4,40 @@
 
 Phần này mô tả chi tiết từng trang trong hệ thống IlluWrl. Mỗi trang là một view component trong Vue Router, có thể sử dụng `MainLayoutTemplate` hoặc là standalone page.
 
-## Danh sách trang
+## Danh sách trang và tài liệu
 
-| Route | Tên View | Mô tả | Bố cục |
-|-------|----------|-------|--------|
-| `/` | HomePage | Trang chủ với banner, đề xuất và feed cá nhân hoá | MainLayout |
-| `/illustrations` | ArtworkListPage | Danh sách illustration với bộ lọc | MainLayout |
-| `/manga` | ArtworkListPage | Danh sách manga | MainLayout |
-| `/gifs` | ArtworkListPage | Danh sách GIF động | MainLayout |
-| `/novels` | NovelListPage | Danh sách tiểu thuyết | MainLayout |
-| `/search` | SearchResultsView | Kết quả tìm kiếm tác phẩm | MainLayout |
-| `/search/users` | SearchUsersView | Kết quả tìm kiếm người dùng | MainLayout |
-| `/discovery` | DiscoveryView | Khám phá tác phẩm ngẫu nhiên | MainLayout |
-| `/rankings` | RankingsView | Bảng xếp hạng | MainLayout |
-| `/artworks/:id` | ArtworkDetailView | Chi tiết tác phẩm (illust/manga/GIF) | MainLayout |
-| `/novels/:id` | NovelDetailView | Chi tiết tiểu thuyết | MainLayout |
-| `/series/:id` | SeriesDetailView | Chi tiết bộ series | MainLayout |
-| `/bookmarks` | BookmarksView | Tác phẩm đã đánh dấu (redirect → `/account?tab=bookmarks`) | MainLayout |
-| `/favorites` | FavoritesView | Tác phẩm yêu thích | MainLayout |
-| `/history` | BrowseHistoryView | Lịch sử xem | MainLayout |
-| `/upload/:kind` | UploadArtworkView | Đăng tải tác phẩm mới | MainLayout |
-| `/dashboard` | DashboardView | Bảng tổng quan người dùng | MainLayout |
-| `/requests/manage` | RequestManageView | Quản lý yêu cầu commission | MainLayout |
-| `/messages` | MessagesView | Tin nhắn | MainLayout |
-| `/notifications` | NotificationsView | Thông báo | MainLayout |
-| `/account` | AccountSettingsView | Cài đặt tài khoản | MainLayout |
-| `/chat` | ChatView | Chat với AI | Standalone |
-| `/draw` | DrawingView | Công cụ vẽ tranh | Standalone |
-| `/ai` | AIView | Các tính năng AI | Standalone |
-| `/admin` | AdminView | Quản trị hệ thống | MainLayout |
-| `/plans` | PlansView | Gói dịch vụ | MainLayout |
-| `/login` | LoginView | Đăng nhập | Standalone |
-| `/signup` | SignUpView | Đăng ký tài khoản | Standalone |
-| `/following` | FollowingView | Tác phẩm từ người đang theo dõi | MainLayout |
-| `/auth/callback` | AuthCallbackView | Xác thực OAuth | Standalone |
+| Route | Tên View | Bố cục | File mô tả |
+|-------|----------|--------|------------|
+| `/` | HomePage | MainLayout | [home.md](home.md) |
+| `/illustrations` | ArtworkListPage | MainLayout | [upload.md](upload.md) |
+| `/manga` | ArtworkListPage | MainLayout | [upload.md](upload.md) |
+| `/gifs` | ArtworkListPage | MainLayout | [upload.md](upload.md) |
+| `/novels` | NovelListPage | MainLayout | [upload.md](upload.md) |
+| `/search` | SearchResultsView | MainLayout | [search.md](search.md) |
+| `/search/users` | SearchUsersView | MainLayout | [search.md](search.md) |
+| `/discovery` | DiscoveryView | MainLayout | [discovery.md](discovery.md) |
+| `/rankings` | RankingsView | MainLayout | [rankings.md](rankings.md) |
+| `/artworks/:id` | ArtworkDetailView | MainLayout | [artwork-detail.md](artwork-detail.md) |
+| `/novels/:id` | NovelDetailView | MainLayout | [artwork-detail.md](artwork-detail.md) |
+| `/series/:id` | SeriesDetailView | MainLayout | [series-detail.md](series-detail.md) |
+| `/bookmarks` | BookmarksView | MainLayout | [bookmarks.md](bookmarks.md) |
+| `/favorites` | FavoritesView | MainLayout | [bookmarks.md](bookmarks.md) |
+| `/history` | BrowseHistoryView | MainLayout | [history.md](history.md) |
+| `/upload/:kind` | UploadArtworkView | MainLayout | [upload.md](upload.md) |
+| `/dashboard` | DashboardView | MainLayout | [dashboard.md](dashboard.md) |
+| `/requests/manage` | RequestManageView | MainLayout | [request-manage.md](request-manage.md) |
+| `/messages` | MessagesView | MainLayout | [messages.md](messages.md) |
+| `/notifications` | NotificationsView | MainLayout | [notifications.md](notifications.md) |
+| `/account` | AccountView | MainLayout | [account.md](account.md) |
+| `/chat` | ChatView | MainLayout | [chat.md](chat.md) |
+| `/draw` | DrawingView | Standalone | [drawing.md](drawing.md) |
+| `/ai` | AIView | Standalone | [ai.md](ai.md) |
+| `/admin` | AdminManagementView | MainLayout | [admin.md](admin.md) |
+| `/plans` | PlansTopPageView | MainLayout | [plans.md](plans.md) |
+| `/login` | LoginView | Standalone | [login-signup.md](login-signup.md) |
+| `/signup` | SignUpView | Standalone | [login-signup.md](login-signup.md) |
+| `/following` | FollowingNewestView | MainLayout | [following.md](following.md) |
+| `/auth/callback` | AuthCallbackView | Standalone | [auth-callback.md](auth-callback.md) |
 
 ## Trang standalone
 
@@ -45,9 +45,8 @@ Các standalone pages không sử dụng `MainLayoutTemplate`:
 
 - **LoginView** (`/login`): Biểu mẫu đăng nhập, không có sidebar hay topbar.
 - **SignUpView** (`/signup`): Biểu mẫu đăng ký.
-- **FeedView** (`/feed`): Trang feed thuần (trước đây là standalone, nay có thể dùng layout).
 - **DrawingView** (`/draw`): Công cụ vẽ với Konva.js, toàn màn hình.
-- **AIView** (`/ai`): Trang tính năng AI.
-- **AuthCallbackView** (`/auth/callback`): Xử lý callback OAuth (Google).
+- **AIView** (`/ai`): Trang test tính năng AI.
+- **AuthCallbackView** (`/auth/callback`): Xử lý callback OAuth (Google, Facebook).
 
 Hình 1: Sơ đồ các route chính trong hệ thống IlluWrl.

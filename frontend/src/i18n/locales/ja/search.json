@@ -90,5 +90,9 @@
   "untitledWork": "無題の作品",
   "userTab": "ユーザー",
   "viewMore": "もっと見る",
-  "newest": "最新"
+  "newest": "最新",
+  "seriesType": "シリーズ種別",
+  "seriesAll": "すべての作品",
+  "seriesOneshot": "読み切りのみ",
+  "seriesOnly": "シリーズのみ"
 }

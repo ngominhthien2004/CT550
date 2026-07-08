@@ -23,6 +23,7 @@ const formState = reactive({
   exclude: '',
   target: 'tag_partial',
   type: 'illust',
+  series: 'all',
 })
 
 const hasAnyInput = computed(() => {
@@ -39,6 +40,7 @@ function syncFromProps() {
   formState.exclude = typeof props.initialValues?.exclude === 'string' ? props.initialValues.exclude : ''
   formState.target = typeof props.initialValues?.target === 'string' ? props.initialValues.target : 'tag_partial'
   formState.type = typeof props.initialValues?.type === 'string' ? props.initialValues.type : 'illust'
+  formState.series = typeof props.initialValues?.series === 'string' ? props.initialValues.series : 'all'
 }
 
 function closeModal() {
@@ -50,6 +52,7 @@ function resetDraft() {
   formState.includeAny = ''
   formState.exclude = ''
   formState.target = 'tag_partial'
+  formState.series = 'all'
 }
 
 function applySearch() {
@@ -59,6 +62,7 @@ function applySearch() {
     exclude: formState.exclude.trim(),
     target: formState.target,
     type: formState.type,
+    series: formState.series,
   })
   closeModal()
 }
@@ -116,6 +120,15 @@ watch(
                 <option value="manga">{{ $t('search.mangaType') }}</option>
                 <option value="gif">{{ $t('search.gifType') }}</option>
                 <option value="novel">{{ $t('search.novelType') }}</option>
+              </select>
+            </label>
+
+            <label class="field-block">
+              <span class="field-label">{{ $t('search.seriesType') }}</span>
+              <select v-model="formState.series" :aria-label="$t('search.seriesType')">
+                <option value="all">{{ $t('search.seriesAll') }}</option>
+                <option value="oneshot">{{ $t('search.seriesOneshot') }}</option>
+                <option value="series_only">{{ $t('search.seriesOnly') }}</option>
               </select>
             </label>
           </div>

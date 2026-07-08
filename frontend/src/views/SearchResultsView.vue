@@ -116,6 +116,7 @@ const searchOptionsDraft = ref({
   exclude: '',
   target: 'tag_partial',
   type: 'illust',
+  series: 'all',
 })
 
 const searchKeyword = computed(() => {
@@ -441,6 +442,7 @@ async function applySearchOptions(payload) {
   if (payload.includeAny) query.qany = payload.includeAny
   if (payload.exclude) query.qnot = payload.exclude
   if (payload.target && payload.target !== 'all') query.target = payload.target
+  if (payload.series && payload.series !== 'all') query.series = payload.series
   await router.push({ path: '/search', query })
 }
 
@@ -465,6 +467,7 @@ async function loadSearchItems() {
     const excludeTokens = normalizeKeywords(excludeRaw)
     const baseItems = Array.isArray(data) ? data.map((item) => ({ ...item, image: item.images?.[0] || '' })) : []
     const isExactTag = target === 'tag_exact'
+    const seriesFilter = typeof route.query.series === 'string' ? route.query.series : 'all'
     searchItems.value = baseItems.filter((item) => {
       const haystack = buildTargetText(item, target)
       const itemTagNames = (item.tags || []).map(t => t?.name?.toLowerCase()).filter(Boolean)
@@ -479,7 +482,10 @@ async function loadSearchItems() {
       const matchesAll = includeAllTokens.every(tokenMatches)
       const matchesAny = includeAnyTokens.length ? includeAnyTokens.some(tokenMatches) : true
       const matchesExclude = excludeTokens.every((token) => !tokenMatches(token))
-      return matchesAll && matchesAny && matchesExclude
+      const seriesMatch = seriesFilter === 'all'
+        || (seriesFilter === 'oneshot' && !item.series)
+        || (seriesFilter === 'series_only' && !!item.series)
+      return matchesAll && matchesAny && matchesExclude && seriesMatch
     })
   } catch (fetchError) {
     error.value = fetchError?.response?.data?.message || 'Failed to fetch artworks'

@@ -90,5 +90,9 @@
   "untitledWork": "Tác phẩm không tiêu đề",
   "userTab": "Người dùng",
   "viewMore": "Xem thêm",
-  "newest": "Mới nhất"
+  "newest": "Mới nhất",
+  "seriesType": "Loại bộ truyện",
+  "seriesAll": "Tất cả tác phẩm",
+  "seriesOneshot": "Chỉ oneshot",
+  "seriesOnly": "Chỉ bộ truyện"
 }

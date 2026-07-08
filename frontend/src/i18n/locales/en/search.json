@@ -90,5 +90,9 @@
   "untitledWork": "Untitled work",
   "userTab": "User",
   "viewMore": "View more",
-  "newest": "Newest"
+  "newest": "Newest",
+  "seriesType": "Series type",
+  "seriesAll": "All works",
+  "seriesOneshot": "Oneshot only",
+  "seriesOnly": "Series only"
 }
