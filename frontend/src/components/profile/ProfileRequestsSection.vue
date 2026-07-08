@@ -111,7 +111,7 @@ async function submitRequest() {
     fd.append('mood', form.mood)
     fd.append('lighting', form.lighting)
     fd.append('angle', form.angle)
-    fd.append('proposedAmount', form.proposedAmount)
+    fd.append('proposedAmount', selectedTerm.value.targetPrice)
     fd.append('visibility', form.visibility)
     fd.append('isAnonymous', String(form.isAnonymous))
     fd.append('ageRating', form.ageRating)
@@ -207,7 +207,7 @@ watch(
           <h3>{{ selectedTerm?.title || $t('request.selectPlan') }}</h3>
         </div>
         <div class="form-title-right">
-          <span class="proposed-price">{{ selectedTerm?.currency || 'USD' }} {{ form.proposedAmount || selectedTerm?.targetPrice || 0 }}</span>
+          <span class="proposed-price">{{ selectedTerm?.currency || 'USD' }} {{ selectedTerm?.targetPrice || 0 }}</span>
           <div class="pill-select" ref="termSelectRef">
             <button type="button" class="pill-trigger" @click.stop="termSelectOpen = !termSelectOpen">
               {{ selectedTerm?.title || $t('request.selectPlan') }}
@@ -228,8 +228,8 @@ watch(
           <input v-model="form.title" type="text" maxlength="160" required :placeholder="$t('request.charBirthdayIllus')" :aria-label="$t('request.title')" />
         </label>
         <label>
-          {{ $t('request.proposedAmount') }} <span class="required-mark">*</span>
-          <input v-model.number="form.proposedAmount" type="number" min="1" required :aria-label="$t('request.proposedAmount')" />
+          {{ $t('request.proposedAmount') }}
+          <span class="proposed-price-locked">{{ selectedTerm?.currency || 'USD' }} {{ selectedTerm?.targetPrice || 0 }}</span>
         </label>
         <label>
           {{ $t('request.workType') }}
@@ -363,6 +363,18 @@ watch(
   font-weight: 900;
   font-size: 1.1rem;
   white-space: nowrap;
+}
+
+.proposed-price-locked {
+  display: block;
+  margin-top: 0.35rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-alt);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.95rem;
 }
 
 .manage-link,
