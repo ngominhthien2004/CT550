@@ -99,12 +99,10 @@ const aiThreshold = computed(() => {
   return Number.isFinite(value) ? value : defaultAiThreshold
 })
 const showAiWarning = computed(() => {
-  const confidence = Number(aiDetection.value?.confidence)
-  if (!Number.isFinite(confidence)) return false
-  return aiDetection.value?.isAI === true && confidence >= aiThreshold.value
+  return aiDetection.value?.isAI === true
 })
 const aiWarningMessage = computed(() =>
-  showAiWarning.value ? t('upload.aiDetectionEnabled') : '',
+  showAiWarning.value ? 'Ảnh của bạn được nhận diện là AI-generated. Nếu bạn thấy sai, hãy tắt trường này.' : '',
 )
 
 watch(showAiWarning, (newValue) => {
@@ -564,6 +562,7 @@ onBeforeUnmount(() => {
           :form="form"
           :is-novel="isNovel"
           :show-ai-warning="showAiWarning"
+          :ai-warning-message="aiWarningMessage"
         />
 
         <div v-if="localError || artworkStore.createError" class="alert alert-danger mb-0" role="alert" aria-live="assertive">

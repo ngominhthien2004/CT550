@@ -12,6 +12,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  aiWarningMessage: {
+    type: String,
+    default: '',
+  },
 })
 </script>
 
@@ -69,7 +73,7 @@ const props = defineProps({
           </div>
           <!-- Automatically enabled red text below Yes No -->
           <p v-if="props.showAiWarning && props.form.aiGenerated === 'yes'" class="auto-enabled-text mb-0" role="alert">
-            {{ $t('upload.autoEnabled') }}
+            {{ props.aiWarningMessage || $t('upload.autoEnabled') }}
           </p>
         </div>
       </div>
