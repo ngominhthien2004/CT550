@@ -1,9 +1,16 @@
 <script setup>
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import R18BlurOverlay from '../common/R18BlurOverlay.vue'
 import { formatShortDate } from '../../utils/date.js'
+import { useLikeStore } from '../../stores/like.store'
+import { useAuthStore } from '../../stores/auth.store'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
+
+const router = useRouter()
+const likeStore = useLikeStore()
+const authStore = useAuthStore()
 
 const props = defineProps({
   works: {
@@ -76,6 +83,47 @@ function scrollCarousel(workId, direction) {
   if (!el) return
   const width = el.clientWidth
   el.scrollBy({ left: direction * width, behavior: 'smooth' })
+}
+
+function isLiked(workId) {
+  if (likeStore.statusByArtwork[workId] !== undefined) {
+    return likeStore.getLikeStatus(workId)
+  }
+  return false
+}
+
+function isToggling(workId) {
+  return likeStore.isTogglingLike(workId)
+}
+
+async function handleLike(e, work) {
+  e.preventDefault()
+  e.stopPropagation()
+
+  if (!authStore.isAuthenticated) {
+    router.push('/login')
+    return
+  }
+  if (isToggling(work._id)) return
+
+  const previousStatus = isLiked(work._id)
+  const previousCount = work.likeCount || 0
+  const nextStatus = !previousStatus
+
+  // Optimistic: flip immediately
+  if (likeStore.statusByArtwork[work._id] === undefined) {
+    likeStore.statusByArtwork[work._id] = previousStatus
+  }
+  likeStore.statusByArtwork[work._id] = nextStatus
+  work.likeCount = Math.max(0, previousCount + (nextStatus ? 1 : -1))
+
+  try {
+    await likeStore.toggleLikeByArtwork(work._id)
+  } catch (error) {
+    // Rollback on failure
+    likeStore.statusByArtwork[work._id] = previousStatus
+    work.likeCount = previousCount
+  }
 }
 </script>
 
@@ -157,8 +205,15 @@ function scrollCarousel(workId, direction) {
 
         <div class="feed-card-body">
           <router-link :to="`/artworks/${work._id}`" class="feed-title">{{ work.title }}</router-link>
-          <button type="button" class="heart-btn" aria-label="Like artwork">
-            <i class="fa-regular fa-heart" aria-hidden="true"></i>
+          <button
+            type="button"
+            class="heart-btn"
+            :class="{ 'is-active': isLiked(work._id) }"
+            :aria-label="$t('artwork.like')"
+            :disabled="isToggling(work._id)"
+            @click="handleLike($event, work)"
+          >
+            <i :class="isLiked(work._id) ? 'fa-solid fa-heart' : 'fa-regular fa-heart'" aria-hidden="true"></i>
           </button>
         </div>
       </article>
@@ -408,10 +463,23 @@ function scrollCarousel(workId, direction) {
   justify-content: center;
   font-size: 1rem;
   flex-shrink: 0;
+  cursor: pointer;
+  transition: color 0.15s, transform 0.15s;
 }
 
 .heart-btn:hover {
   color: #e74c6f;
+  transform: scale(1.1);
+}
+
+.heart-btn.is-active {
+  color: #ef4444;
+}
+
+.heart-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 @media (max-width: 700px) {
