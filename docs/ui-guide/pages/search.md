@@ -10,12 +10,12 @@ Hình 1: Giao diện trang tìm kiếm với kết quả illustration.
 
 Trang tìm kiếm có bốn tab chính:
 
-| Tab | Route | Mô tả |
-|-----|-------|-------|
+| Tab               | Route                 | Mô tả                 |
+| ----------------- | --------------------- | --------------------- |
 | **Illustrations** | `/search?type=illust` | Tìm kiếm illustration |
-| **Manga** | `/search?type=manga` | Tìm kiếm truyện tranh |
-| **Novels** | `/search?type=novel` | Tìm kiếm tiểu thuyết |
-| **User** | `/search/users` | Tìm kiếm người dùng |
+| **Manga**         | `/search?type=manga`  | Tìm kiếm truyện tranh |
+| **Novels**        | `/search?type=novel`  | Tìm kiếm tiểu thuyết  |
+| **User**          | `/search/users`       | Tìm kiếm người dùng   |
 
 ## Các thành phần
 
@@ -29,11 +29,11 @@ Trang tìm kiếm có bốn tab chính:
 
 Thanh lọc kết quả với các tuỳ chọn:
 
-| Bộ lọc | Giá trị | Mô tả |
-|--------|---------|-------|
-| **Sắp xếp** | Mới nhất (Newest) / Phổ biến (Popular) | Thứ tự hiển thị kết quả |
-| **Độ tuổi** | Tất cả (All) / An toàn (Safe) / R-18 | Lọc theo mức độ nội dung |
-| **Số từ (Novel)** | Bộ lọc đặc thù cho novel | Lọc theo độ dài tiểu thuyết |
+| Bộ lọc            | Giá trị                                | Mô tả                       |
+| ----------------- | -------------------------------------- | --------------------------- |
+| **Sắp xếp**       | Mới nhất (Newest) / Phổ biến (Popular) | Thứ tự hiển thị kết quả     |
+| **Độ tuổi**       | Tất cả (All) / An toàn (Safe) / R-18   | Lọc theo mức độ nội dung    |
+| **Số từ (Novel)** | Bộ lọc đặc thù cho novel               | Lọc theo độ dài tiểu thuyết |
 
 ### UserSearchFilters (dành cho tìm kiếm người dùng)
 
@@ -59,20 +59,20 @@ Thanh lọc kết quả với các tuỳ chọn:
 
 Modal tìm kiếm nâng cao với các tuỳ chọn:
 
-| Tuỳ chọn | Mô tả |
-|-----------|-------|
-| **Include all (AND)** | Tác phẩm chứa tất cả từ khoá |
-| **Include any (OR)** | Tác phẩm chứa bất kỳ từ khoá nào |
-| **Exclude** | Từ khoá loại trừ |
-| **Target field** | Trường tìm kiếm: Tags, Title, Description, Artist |
+| Tuỳ chọn              | Mô tả                                             |
+| --------------------- | ------------------------------------------------- |
+| **Include all (AND)** | Tác phẩm chứa tất cả từ khoá                      |
+| **Include any (OR)**  | Tác phẩm chứa bất kỳ từ khoá nào                  |
+| **Exclude**           | Từ khoá loại trừ                                  |
+| **Target field**      | Trường tìm kiếm: Tags, Title, Description, Artist |
 
 ## Trạng thái giao diện
 
-| Trạng thái | Mô tả |
-|------------|-------|
-| **Loading** | Skeleton cards với hiệu ứng pulse |
-| **Error** | Thông báo lỗi với biểu tượng và nút thử lại |
-| **Empty** | Thông báo "Không tìm thấy kết quả" với gợi ý thay đổi từ khoá |
+| Trạng thái  | Mô tả                                                         |
+| ----------- | ------------------------------------------------------------- |
+| **Loading** | Skeleton cards với hiệu ứng pulse                             |
+| **Error**   | Thông báo lỗi với biểu tượng và nút thử lại                   |
+| **Empty**   | Thông báo "Không tìm thấy kết quả" với gợi ý thay đổi từ khoá |
 
 Hình 2: Modal tìm kiếm nâng cao (SearchOptionsModal).
 

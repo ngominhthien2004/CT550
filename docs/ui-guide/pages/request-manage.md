@@ -8,19 +8,19 @@ Hình 1: Giao diện trang Request Management với danh sách requests và chi 
 
 ## Route
 
-| Route | Yêu cầu | Mô tả |
-|-------|---------|-------|
+| Route              | Yêu cầu            | Mô tả                      |
+| ------------------ | ------------------ | -------------------------- |
 | `/requests/manage` | Bắt buộc đăng nhập | Quản lý yêu cầu commission |
 
 ## Cấu trúc trang
 
 ### Header
 
-| Thành phần | Mô tả |
-|------------|-------|
-| **Title** | "Request Management" |
-| **Dashboard link** | Nút "Dashboard" → `/dashboard` |
-| **Profile plans link** | Nút "View profile plans" → `/account?tab=requests` |
+| Thành phần             | Mô tả                                             |
+| ---------------------- | ------------------------------------------------- |
+| **Title**              | "Request Management"                              |
+| **Dashboard link**     | Nút "Dashboard" →`/dashboard`                     |
+| **Profile plans link** | Nút "View profile plans" →`/account?tab=requests` |
 
 ### 1. RequestListSection — Danh sách requests
 
@@ -28,17 +28,17 @@ Hình 1: Giao diện trang Request Management với danh sách requests và chi 
 
 Chuyển đổi giữa hai vai trò:
 
-| Role | Giá trị | Mô tả |
-|------|---------|-------|
+| Role        | Giá trị   | Mô tả                       |
+| ----------- | --------- | --------------------------- |
 | **Creator** | `creator` | Xem requests mình nhận được |
-| **Client** | `client` | Xem requests mình đã gửi |
+| **Client**  | `client`  | Xem requests mình đã gửi    |
 
 #### Filters
 
-| Filter | Mô tả |
-|--------|-------|
-| **Status filter** | Lọc theo trạng thái request |
-| **Search** | Tìm kiếm theo tiêu đề request |
+| Filter            | Mô tả                         |
+| ----------------- | ----------------------------- |
+| **Status filter** | Lọc theo trạng thái request   |
+| **Search**        | Tìm kiếm theo tiêu đề request |
 
 #### Request List
 
@@ -65,12 +65,12 @@ Các hành động trên request (tùy trạng thái): approve, reject, deliver,
 
 Hiển thị khi chọn một request:
 
-| Thành phần | Mô tả |
-|------------|-------|
-| **Request info** | Thông tin chi tiết request |
-| **Chat** | Khu vực chat trong request (creator ↔ client) |
-| **Actions** | Các nút hành động theo trạng thái |
-| **Draft submission** | Nộp bản nháp (submit draft) |
+| Thành phần           | Mô tả                                         |
+| -------------------- | --------------------------------------------- |
+| **Request info**     | Thông tin chi tiết request                    |
+| **Chat**             | Khu vực chat trong request (creator ↔ client) |
+| **Actions**          | Các nút hành động theo trạng thái             |
+| **Draft submission** | Nộp bản nháp (submit draft)                   |
 
 #### Chat trong request
 
@@ -85,27 +85,27 @@ Hiển thị khi chọn một request:
 
 ## Dữ liệu được tải
 
-| API endpoint | Dữ liệu |
-|--------------|---------|
-| `requestStore.fetchTerms()` | Plans của creator |
-| `requestStore.fetchMine()` | Requests theo role + status |
-| `requestStore.fetchById()` | Chi tiết request |
-| `requestStore.getChat()` | Tin nhắn chat trong request |
+| API endpoint                | Dữ liệu                     |
+| --------------------------- | --------------------------- |
+| `requestStore.fetchTerms()` | Plans của creator           |
+| `requestStore.fetchMine()`  | Requests theo role + status |
+| `requestStore.fetchById()`  | Chi tiết request            |
+| `requestStore.getChat()`    | Tin nhắn chat trong request |
 
 ## Trạng thái
 
-| Trạng thái | Hiển thị |
-|------------|----------|
-| **Loading** | Spinner/loading state |
-| **Error** | `actionError` — thông báo lỗi từ action |
-| **Empty** | Không có request nào |
+| Trạng thái  | Hiển thị                                |
+| ----------- | --------------------------------------- |
+| **Loading** | Spinner/loading state                   |
+| **Error**   | `actionError` — thông báo lỗi từ action |
+| **Empty**   | Không có request nào                    |
 
 ## Responsive
 
-| Kích thước | Hành vi |
-|------------|---------|
-| Desktop | Grid layout đầy đủ |
-| Mobile | Stacked layout |
+| Kích thước | Hành vi            |
+| ---------- | ------------------ |
+| Desktop    | Grid layout đầy đủ |
+| Mobile     | Stacked layout     |
 
 ## Ghi chú
 

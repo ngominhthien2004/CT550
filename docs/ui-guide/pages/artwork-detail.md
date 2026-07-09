@@ -8,20 +8,20 @@ Hình 1: Giao diện trang chi tiết tác phẩm với viewer và sidebar.
 
 ## Route
 
-| Route | Loại |
-|-------|------|
+| Route             | Loại                    |
+| ----------------- | ------------------------ |
 | `/artworks/:id` | Illustration, Manga, GIF |
-| `/novels/:id` | Tiểu thuyết (Novel) |
+| `/novels/:id`   | Tiểu thuyết (Novel)    |
 
 ## Các thành phần chính
 
 ### 1. ArtworkDetailViewer — Trình xem tác phẩm
 
-| Loại | Hành vi |
-|------|---------|
-| **Illustration** | Hiển thị hình ảnh toàn màn hình, hỗ trợ zoom |
-| **Manga** | Trình xem nhiều trang, chuyển trang bằng click hoặc phím mũi tên |
-| **GIF** | Phát tự động, có điều khiển phát/dừng |
+| Loại                  | Hành vi                                                                 |
+| ---------------------- | ------------------------------------------------------------------------ |
+| **Illustration** | Hiển thị hình ảnh toàn màn hình, hỗ trợ zoom                    |
+| **Manga**        | Trình xem nhiều trang, chuyển trang bằng click hoặc phím mũi tên |
+| **GIF**          | Phát tự động, có điều khiển phát/dừng                          |
 
 - **Chế độ toàn màn hình**: Nút expand để xem ở chế độ fullscreen.
 - **Zoom**: Cuộn để phóng to/thu nhỏ, kéo để di chuyển.
@@ -71,11 +71,11 @@ Hiển thị các thông tin và thao tác chính:
 
 ## Thanh công cụ hành động (Action Toolbar)
 
-| Hành động | Biểu tượng | Mô tả |
-|-----------|-----------|-------|
-| **Like (Thích)** | ♥ / ❤ | Thích hoặc bỏ thích tác phẩm |
-| **Bookmark (Đánh dấu)** | 🔖 | Đánh dấu hoặc bỏ đánh dấu |
-| **Report (Báo cáo)** | ⚠ | Báo cáo tác phẩm vi phạm |
+| Hành động                     | Biểu tượng | Mô tả                            |
+| -------------------------------- | ------------- | ---------------------------------- |
+| **Like (Thích)**          | ♥ / ❤       | Thích hoặc bỏ thích tác phẩm |
+| **Bookmark (Đánh dấu)** | 🔖            | Đánh dấu hoặc bỏ đánh dấu  |
+| **Report (Báo cáo)**     | ⚠            | Báo cáo tác phẩm vi phạm      |
 
 ## Tính năng đặc thù cho Novel
 
@@ -84,10 +84,10 @@ Hiển thị các thông tin và thao tác chính:
 
 ## Responsive
 
-| Kích thước | Hành vi |
-|------------|---------|
-| ≥ 1200px | Viewer bên trái, sidebar thông tin bên phải |
-| 920px – 1199px | Sidebar thu hẹp |
-| < 920px | Viewer và thông tin xếp dọc, sidebar xuống dưới |
+| Kích thước   | Hành vi                                               |
+| --------------- | ------------------------------------------------------ |
+| ≥ 1200px       | Viewer bên trái, sidebar thông tin bên phải       |
+| 920px – 1199px | Sidebar thu hẹp                                       |
+| < 920px         | Viewer và thông tin xếp dọc, sidebar xuống dưới |
 
 Hình 2: Trang chi tiết novel với chapter selector và reading progress.

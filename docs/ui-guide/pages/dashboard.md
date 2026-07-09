@@ -8,8 +8,8 @@ Hình 1: Giao diện Dashboard với hero banner và thống kê.
 
 ## Route
 
-| Route | Yêu cầu | Mô tả |
-|-------|---------|-------|
+| Route        | Yêu cầu   | Mô tả                  |
+| ------------ | --------- | ---------------------- |
 | `/dashboard` | Đăng nhập | Bảng tổng quan creator |
 
 ## Cấu trúc trang
@@ -54,25 +54,25 @@ Hình 1: Giao diện Dashboard với hero banner và thống kê.
 
 ## Dữ liệu được tải
 
-| API endpoint | Dữ liệu | Giới hạn |
-|--------------|---------|----------|
-| `getArtworks({ user: userId, limit: 120 })` | Tất cả artwork của user | 120 |
+| API endpoint                                | Dữ liệu                 | Giới hạn |
+| ------------------------------------------- | ----------------------- | -------- |
+| `getArtworks({ user: userId, limit: 120 })` | Tất cả artwork của user | 120      |
 
 ## Trạng thái
 
-| Trạng thái | Hiển thị |
-|------------|----------|
+| Trạng thái        | Hiển thị                        |
+| ----------------- | ------------------------------- |
 | **Not logged in** | Hero banner + nút "Go to login" |
-| **Loading** | "Loading dashboard..." |
-| **Error** | Thông báo lỗi |
+| **Loading**       | "Loading dashboard..."          |
+| **Error**         | Thông báo lỗi                   |
 
 ## Responsive
 
-| Kích thước | Hành vi |
-|------------|---------|
-| ≥ 960px | Grid 3 cột cho reactions |
-| < 960px | Grid 1 cột |
-| < 640px | Hero co lại, title font 1.35rem |
+| Kích thước | Hành vi                         |
+| ---------- | ------------------------------- |
+| ≥ 960px    | Grid 3 cột cho reactions        |
+| < 960px    | Grid 1 cột                      |
+| < 640px    | Hero co lại, title font 1.35rem |
 
 ## Tương tác
 
