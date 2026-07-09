@@ -193,14 +193,6 @@ function handleSave() {
             </div>
           </div>
         </div>
-
-        <!-- Workspace -->
-        <div class="workspace-section">
-          <label class="field-label">{{ $t('profile.workspace') }}</label>
-          <a href="#" class="workspace-link">
-            {{ $t('profile.editWorkspace') }} <i class="fas fa-external-link-alt"></i>
-          </a>
-        </div>
       </div>
 
       <footer class="edit-footer">
@@ -329,18 +321,6 @@ function handleSave() {
   flex: 1;
   display: flex;
   gap: 8px;
-}
-
-.workspace-link {
-  color: var(--accent, #0096fa);
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.workspace-link i {
-  font-size: 0.75rem;
-  margin-left: 4px;
 }
 
 .edit-footer {
