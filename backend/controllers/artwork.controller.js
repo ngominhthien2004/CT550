@@ -152,9 +152,7 @@ const createArtwork = async (req, res, next) => {
                 const confidence = Number.isFinite(detectionResult.confidence)
                     ? detectionResult.confidence
                     : null;
-                const isAI = Boolean(detectionResult.isAI) && typeof confidence === 'number'
-                    ? confidence >= threshold
-                    : false;
+                const isAI = Boolean(detectionResult.isAI);
 
                 aiDetection.confidence = confidence;
                 aiDetection.isAI = isAI;
