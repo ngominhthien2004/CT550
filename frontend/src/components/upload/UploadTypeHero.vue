@@ -48,10 +48,6 @@ const props = defineProps({
     type: String,
     default: 'Image preview',
   },
-  aiWarning: {
-    type: String,
-    default: '',
-  },
 })
 
 const emit = defineEmits(['media-change', 'cover-change'])
@@ -110,7 +106,6 @@ function handleCoverFilesChange(event) {
           </figcaption>
         </figure>
       </div>
-      <p v-if="props.aiWarning" class="ai-warning" role="alert">{{ props.aiWarning }}</p>
     </div>
 
     <div v-if="props.isNovel" class="cover-upload-row">
@@ -133,7 +128,6 @@ function handleCoverFilesChange(event) {
         <span v-else>{{ $t('upload.coverPreview') }}</span>
       </div>
     </div>
-    <p v-if="props.isNovel && props.previewUrl && props.aiWarning" class="ai-warning ai-warning--spaced" role="alert">{{ props.aiWarning }}</p>
   </header>
 </template>
 

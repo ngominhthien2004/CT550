@@ -525,7 +525,6 @@ onBeforeUnmount(() => {
         :cover-previews="coverPreviewItems"
         :preview-url="previewUrl"
         :preview-alt="form.title ? `Preview for ${form.title}` : $t('upload.coverPreview')"
-        :ai-warning="aiWarningMessage"
         @media-change="handleFilesChange('images', $event)"
         @cover-change="handleFilesChange('coverImages', $event)"
       />
