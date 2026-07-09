@@ -20,6 +20,14 @@ export const useBookmarkStore = defineStore('bookmarks', {
       try {
         const { data } = await getMyBookmarks(params)
         this.items = data.bookmarks || []
+
+        // Pre-populate statusByArtwork so BookmarkCard shows filled icons immediately
+        this.items.forEach((item) => {
+          const artworkId = item?.artwork?._id || item?.artwork
+          if (artworkId) {
+            this.statusByArtwork[artworkId] = true
+          }
+        })
       } catch (error) {
         this.error = error?.response?.data?.message || 'Failed to fetch bookmarks'
       } finally {
