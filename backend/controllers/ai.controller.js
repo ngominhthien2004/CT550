@@ -377,7 +377,7 @@ function detectIntent(message) {
  */
 function extractSearchQuery(message) {
     return message
-        .replace(/^tìm\s+(artwork|tác phẩm|về|kiếm)\s*/i, '')
+        .replace(/^tìm\s+(?:artwork|tác phẩm|tranh|ảnh|về|kiếm)?\s*/i, '')
         .replace(/tìm kiếm\s*/i, '')
         .replace(/search\s*/i, '')
         .replace(/có artwork nào về\s*/i, '')
