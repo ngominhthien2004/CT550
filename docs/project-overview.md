@@ -125,25 +125,32 @@ Những chức năng dưới đây đã được code nhưng chưa có trong tà
 
 ## 4. Cấu trúc Cơ sở Dữ liệu (thực tế — 25 models)
 
-> Cơ sở dữ liệu thực tế đã phát triển vượt xa thiết kế ban đầu. Dưới đây là danh sách đầy đủ 18 models Mongoose đã được code:
+> Cơ sở dữ liệu thực tế đã phát triển vượt xa thiết kế ban đầu. Dưới đây là danh sách đầy đủ 26 models Mongoose đã được code:
 
 | Model | Mô tả |
 |-------|-------|
 | **User** | email, password_hash, googleId, facebookId, twitterId, username, displayName, avatar, coverImage, bio, socialLinks, role |
-| **Artwork** | user, title, description, type (illust/manga/gif/novel), images[], tags[], ageRating, viewCount, likeCount, bookmarkCount, commentCount, isDraft, gifNotes, novelContent, novelFormat, novelSeriesName, chapterCount, wordCount |
+| **Artwork** | user, title, description, type (illust/manga/gif/novel), images[], tags[], ageRating, viewCount, likeCount, bookmarkCount, commentCount, reportCount, novelContent, chapterCount, wordCount, series (ref Series), commentsEnabled, isHidden, hiddenBy, hiddenAt, hiddenReason |
 | **Tag** | name (unique), translations (en/vi/ja), usageCount, isLocked |
-| **Comment** | artwork, user, content, parentComment, stickerUrl |
+| **Comment** | artwork, user, content, parentComment, emoji |
 | **Like** | user, artwork (unique compound) |
 | **Bookmark** | user, artwork, folder (unique compound) |
 | **Follow** | follower, following (unique compound) |
 | **Notification** | user, actor, artwork, type, message, isRead |
-| **Message** | sender, recipient, content, images[], deletedFor[] |
+| **Message** | sender, recipient, content, images[], isRead, readAt, deletedFor[] |
 | **UserBlock** | blocker, blocked (unique compound) |
 | **Chapter** | artwork, title, content, chapterNumber, wordCount |
-| **ReadingProgress** | user, artwork, chapter, progressPercent, scrollPosition |
-| **RequestTerm** | creator, title, tier, targetPrice, workTypes[], rules, isOpen |
-| **Request** | term, creator, requester, title, description, status, revisionCount |
-| **RequestChatMessage** | request, sender, content, isSystem |
-| **RequestEvent** | request, actor, type, fromStatus, toStatus |
-| **RequestRevision** | request, requester, round, notes, status |
-| **IlluWrlRequest** | requester, recipient, message, status |
+| **ReadingProgress** | user, artwork, chapter, progressPercent, scrollPosition, lastReadAt |
+| **Series** | user, title, description, type (manga/novel/illust), coverImage, novelArtwork (ref Artwork), artworks[] (ref Artwork), artworkCount, totalViews, totalLikes, isCompleted, tags[] |
+| **BrowseHistory** | user, artwork (unique compound) |
+| **Banner** | image, link, title, type, isActive, sortOrder |
+| **ChatSession** | user, title |
+| **ChatMessage** | session (ref ChatSession), role (user/assistant/system), content, toolUsed, isError, isWelcome |
+| **ArtworkReport** | artwork, reportedBy, reason, description, status, resolvedBy, resolvedAt, resolutionNote |
+| **UserReport** | reportedUser, reportedBy, reason, description, status, resolvedBy, resolvedAt, resolutionNote |
+| **CommentReport** | comment, reportedBy, reason, description, status, resolvedBy, resolvedAt, resolutionNote |
+| **RequestTerm** | creator, title, tier, targetPrice, currency, acceptedWorkTypes[], estimatedDays, maxOpenRequests, acceptedAgeRatings[], rules, forbiddenTopics[], preferredStyles[], strengths, commercialUse, isOpen |
+| **Request** | term, creator, requester, title, description, workType, tags[], specifics, proposedAmount, currency, visibility, isAnonymous, ageRating, status, referenceImages[], draftFiles[], finalFiles[], giftFiles[], revisionCount, autoCompleteAt, dueAt, extensionRequestedAt, extensionDays, chatClosedAt, licenseTier |
+| **RequestChatMessage** | request, sender, content, attachments[], isSystem |
+| **RequestEvent** | request, actor, type, fromStatus, toStatus, metadata |
+| **RequestRevision** | request, requester, round, notes |

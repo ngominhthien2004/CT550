@@ -1,7 +1,7 @@
 # IlluWrl — MongoDB Schema (Tiếng Việt)
 
-> **Ngày tạo:** 2026-06-11
-> **Số collection:** 19
+> **Cập nhật:** 2026-07-09
+> **Số collection:** 26
 > **Mô tả:** Chi tiết các collection trong MongoDB, bao gồm kiểu dữ liệu, khoá chính, khoá ngoại, ràng buộc Not Null và diễn giải.
 
 ---
@@ -107,12 +107,12 @@
 | `commentCount` | number |  |  |  | Số bình luận (duy trì tự động bằng $inc) |
 | `reportCount` | number |  |  |  | Số lần bị báo cáo (duy trì tự động bằng $inc) |
 | `novelContent` | string |  |  |  | Nội dung tiểu thuyết (dạng văn bản) |
-| `novelFormat` | string |  |  |  | Định dạng tiểu thuyết: oneshot (một chương) | series (nhiều chương) |
-| `novelSeriesName` | string |  |  |  | Tên series tiểu thuyết |
-| `chapterCount` | number |  |  |  | Số chương (nếu là series) |
-| `wordCount` | number |  |  |  | Số từ |
+| `chapterCount` | number |  |  |  | Số chương (mặc định 1) |
+| `wordCount` | number |  |  |  | Số từ (tự động tính từ novelContent) |
+| `series` | objectId |  | X |  | Series chứa tác phẩm (tuỳ chọn, ref Series) |
+| `commentsEnabled` | boolean |  |  |  | Cho phép bình luận trên tác phẩm |
 | `isHidden` | boolean |  |  |  | Tác phẩm có bị ẩn (bởi kiểm duyệt) hay không |
-| `hiddenBy` | objectId |  | X | X | Người kiểm duyệt ẩn tác phẩm |
+| `hiddenBy` | objectId |  | X |  | Người kiểm duyệt ẩn tác phẩm |
 | `hiddenAt` | date |  |  |  | Thời điểm bị ẩn |
 | `hiddenReason` | string |  |  |  | Lý do bị ẩn |
 | `createdAt` | date |  |  |  | Thời điểm đăng tác phẩm |
@@ -190,6 +190,73 @@
 | `createdAt` | date |  |  |  | Thời điểm tạo |
 | `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
+## SERIES —.Series tác phẩm
+
+| Tên thuộc tính | Kiểu dữ liệu | Khóa chính | Khóa ngoại | NN | Diễn giải |
+|----------------|-------------|:----------:|:----------:|:--:|-----------|
+| `_id` | objectId | X |  | X | Mã series (tự động sinh) |
+| `user` | objectId |  | X | X | Chủ sở hữu series |
+| `title` | string |  |  |  | Tiêu đề series |
+| `description` | string |  |  |  | Mô tả series |
+| `type` | string |  |  |  | Loại series: manga | novel | illust |
+| `coverImage` | string |  |  |  | Ảnh bìa series |
+| `novelArtwork` | objectId |  | X |  | Tác phẩm chứa chương cho series tiểu thuyết (tuỳ chọn) |
+| `artworks` | array |  | X |  | Danh sách tác phẩm trong series (manga/illust), theo thứ tự |
+| `artworkCount` | number |  |  |  | Số lượng tác phẩm trong series |
+| `totalViews` | number |  |  |  | Tổng lượt xem của series |
+| `totalLikes` | number |  |  |  | Tổng lượt thích của series |
+| `isCompleted` | boolean |  |  |  | Series đã hoàn thành hay chưa |
+| `tags` | array |  | X |  | Danh sách thẻ gắn vào series |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
+
+## BROWSE_HISTORY — Lịch sử duyệt
+
+| Tên thuộc tính | Kiểu dữ liệu | Khóa chính | Khóa ngoại | NN | Diễn giải |
+|----------------|-------------|:----------:|:----------:|:--:|-----------|
+| `_id` | objectId | X |  | X | Mã lịch sử (tự động sinh) |
+| `user` | objectId |  | X | X | Người dùng duyệt |
+| `artwork` | objectId |  | X | X | Tác phẩm đã xem |
+| `createdAt` | date |  |  |  | Thời điểm xem |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
+
+## BANNER — Banner
+
+| Tên thuộc tính | Kiểu dữ liệu | Khóa chính | Khóa ngoại | NN | Diễn giải |
+|----------------|-------------|:----------:|:----------:|:--:|-----------|
+| `_id` | objectId | X |  | X | Mã banner (tự động sinh) |
+| `image` | string |  |  |  | Đường dẫn ảnh banner |
+| `link` | string |  |  |  | Đường dẫn liên kết |
+| `title` | string |  |  |  | Tiêu đề banner |
+| `type` | string |  |  |  | Loại: home | illust | manga | gif | novel |
+| `isActive` | boolean |  |  |  | Banner có đang hiển thị hay không |
+| `sortOrder` | number |  |  |  | Thứ tự hiển thị |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
+
+## CHAT_SESSION — Phiên AI Chat
+
+| Tên thuộc tính | Kiểu dữ liệu | Khóa chính | Khóa ngoại | NN | Diễn giải |
+|----------------|-------------|:----------:|:----------:|:--:|-----------|
+| `_id` | objectId | X |  | X | Mã phiên (tự động sinh) |
+| `user` | objectId |  | X | X | Người dùng sở hữu phiên |
+| `title` | string |  |  |  | Tiêu đề phiên (mặc định: Cuộc trò chuyện mới) |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
+
+## CHAT_MESSAGE — Tin nhắn AI Chat
+
+| Tên thuộc tính | Kiểu dữ liệu | Khóa chính | Khóa ngoại | NN | Diễn giải |
+|----------------|-------------|:----------:|:----------:|:--:|-----------|
+| `_id` | objectId | X |  | X | Mã tin nhắn (tự động sinh) |
+| `session` | objectId |  | X | X | Phiên chứa tin nhắn |
+| `role` | string |  |  |  | Vai trò: user | assistant | system |
+| `content` | string |  |  |  | Nội dung tin nhắn |
+| `toolUsed` | boolean |  |  |  | Có sử dụng tool (search, recommend) hay không |
+| `isError` | boolean |  |  |  | Tin nhắn có phải lỗi hay không |
+| `isWelcome` | boolean |  |  |  | Tin nhắn chào mừng hay không |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+
 ## ARTWORK_REPORT — Báo cáo tác phẩm
 
 | Tên thuộc tính | Kiểu dữ liệu | Khóa chính | Khóa ngoại | NN | Diễn giải |
@@ -198,6 +265,38 @@
 | `artwork` | objectId |  | X | X | Tác phẩm bị báo cáo |
 | `reportedBy` | objectId |  | X | X | Người báo cáo |
 | `reason` | string |  |  |  | spam|inappropriate|copyright|harassment|nsfw|other |
+| `description` | string |  |  |  | Mô tả chi tiết lý do báo cáo |
+| `status` | string |  |  |  | Trạng thái xử lý: pending | resolved | dismissed |
+| `resolvedBy` | objectId |  | X | X | Người xử lý |
+| `resolvedAt` | date |  |  |  | Thời điểm xử lý báo cáo |
+| `resolutionNote` | string |  |  |  | Ghi chú của người xử lý |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
+
+## USER_REPORT — Báo cáo người dùng
+
+| Tên thuộc tính | Kiểu dữ liệu | Khóa chính | Khóa ngoại | NN | Diễn giải |
+|----------------|-------------|:----------:|:----------:|:--:|-----------|
+| `_id` | objectId | X |  | X | Mã báo cáo (tự động sinh) |
+| `reportedUser` | objectId |  | X | X | Người dùng bị báo cáo |
+| `reportedBy` | objectId |  | X | X | Người báo cáo |
+| `reason` | string |  |  |  | spam|inappropriate|harassment|impersonation|other |
+| `description` | string |  |  |  | Mô tả chi tiết lý do báo cáo |
+| `status` | string |  |  |  | Trạng thái xử lý: pending | resolved | dismissed |
+| `resolvedBy` | objectId |  | X | X | Người xử lý |
+| `resolvedAt` | date |  |  |  | Thời điểm xử lý báo cáo |
+| `resolutionNote` | string |  |  |  | Ghi chú của người xử lý |
+| `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
+
+## COMMENT_REPORT — Báo cáo bình luận
+
+| Tên thuộc tính | Kiểu dữ liệu | Khóa chính | Khóa ngoại | NN | Diễn giải |
+|----------------|-------------|:----------:|:----------:|:--:|-----------|
+| `_id` | objectId | X |  | X | Mã báo cáo (tự động sinh) |
+| `comment` | objectId |  | X | X | Bình luận bị báo cáo |
+| `reportedBy` | objectId |  | X | X | Người báo cáo |
+| `reason` | string |  |  |  | spam|inappropriate|harassment|other |
 | `description` | string |  |  |  | Mô tả chi tiết lý do báo cáo |
 | `status` | string |  |  |  | Trạng thái xử lý: pending | resolved | dismissed |
 | `resolvedBy` | objectId |  | X | X | Người xử lý |
@@ -247,7 +346,7 @@
 | `visibility` | string |  |  |  | Chế độ hiển thị (public | private) |
 | `isAnonymous` | boolean |  |  |  | Yêu cầu có ẩn danh hay không |
 | `ageRating` | string |  |  |  | Độ tuổi của yêu cầu |
-| `status` | string |  |  |  | pending|accepted|in_progress|draft_submitted|revision|completed|rejected|cancelled |
+| `status` | string |  |  |  | pending|in_progress|draft_submitted|revision|completed|rejected|cancelled |
 | `referenceImages` | array |  |  |  | Danh sách ảnh tham khảo (mảng object nhúng, không phải ref) |
 | `draftFiles` | array |  |  |  | Danh sách tệp nháp (mảng object nhúng) |
 | `finalFiles` | array |  |  |  | Danh sách tệp hoàn thiện (mảng object nhúng) |
@@ -302,4 +401,5 @@
 | `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ---
-*Được tạo bởi `scripts/generate-data-dictionary.js` vào 2026-06-11 — 19 collection.*
+
+*Cập nhật lần cuối: 2026-07-09 — 26 collection.*
