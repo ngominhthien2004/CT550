@@ -248,6 +248,14 @@ export function useProfilePage() {
         bookmarkPage.value = 2
       }
       bookmarkHasMore.value = items.length >= BOOKMARKS_PER_PAGE
+
+      // Pre-populate statusByArtwork so BookmarkCard shows filled icons immediately
+      items.forEach((item) => {
+        const artworkId = item?.artwork?._id || item?.artwork
+        if (artworkId) {
+          bookmarkStore.statusByArtwork[artworkId] = true
+        }
+      })
     } catch (error) {
       bookmarkStore.error = getApiErrorMessage(error, 'Failed to load bookmarks')
       if (!append) bookmarkStore.items = []
