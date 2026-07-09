@@ -7,10 +7,13 @@ import { useAuthStore } from '../stores/auth.store'
 import { useNotificationStore } from '../stores/notification.store'
 import { formatRelativeTime } from '../utils/date'
 
+const POLL_INTERVAL = 30000
+
 const isNavCollapsed = ref(true)
 const unreadOnly = ref(false)
 const sentinelRef = ref(null)
 let observer = null
+let pollTimer = null
 
 const router = useRouter()
 const authStore = useAuthStore()
