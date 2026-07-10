@@ -375,13 +375,11 @@ async function handleLike(e, work) {
 }
 
 .feed-carousel-item img {
-  width: auto;
-  max-width: 100%;
+  width: 100%;
   max-height: 600px;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
-  background: var(--surface-alt);
+  background: transparent;
 }
 
 .feed-arrow {
