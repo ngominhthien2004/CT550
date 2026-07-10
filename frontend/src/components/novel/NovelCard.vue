@@ -128,7 +128,7 @@ const authorLink = computed(() => {
           :key="tag.label || tag.name"
           :to="tag._link"
         >
-          {{ tag.label }}
+          #{{ tag.label }}
         </router-link>
       </div>
 
