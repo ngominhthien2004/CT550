@@ -701,6 +701,70 @@ const clearBrowseHistory = async (req, res, next) => {
   }
 };
 
+const getRecommendedUsers = async (req, res, next) => {
+    try {
+        const userId = req.user._id;
+
+        // Step 1: Get users that the current user follows
+        const myFollows = await Follow.find({ follower: userId }).select('following');
+        const followingIds = myFollows.map(f => f.following);
+
+        // If the user doesn't follow anyone, return empty
+        if (followingIds.length === 0) {
+            return res.json([]);
+        }
+
+        // Step 2: Find users that "people I follow" also follow (follow graph)
+        // Count how many of my follows follow each candidate, exclude self + already-followed
+        const pipeline = [
+            // Only consider follows by people I follow
+            { $match: { follower: { $in: followingIds } } },
+            // Exclude myself and people I already follow
+            {
+                $match: {
+                    following: {
+                        $nin: [...followingIds.map(id => id._id || id), userId],
+                    },
+                },
+            },
+            // Count how many of my follows follow each candidate
+            {
+                $group: {
+                    _id: '$following',
+                    mutualCount: { $sum: 1 },
+                },
+            },
+            { $sort: { mutualCount: -1 } },
+            { $limit: 9 },
+            // Join user details
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+            { $unwind: '$user' },
+            // Shape the output
+            {
+                $project: {
+                    _id: '$user._id',
+                    username: '$user.username',
+                    displayName: '$user.displayName',
+                    avatar: '$user.avatar',
+                    mutualCount: 1,
+                },
+            },
+        ];
+
+        const recommendations = await Follow.aggregate(pipeline);
+        res.json(recommendations);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getUserProfile,
     updateUserProfile,
@@ -725,4 +789,5 @@ module.exports = {
     getCreatorReactions,
     getBrowseHistory,
     clearBrowseHistory,
+    getRecommendedUsers,
 };

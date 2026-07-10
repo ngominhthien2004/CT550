@@ -27,6 +27,7 @@ const {
     getCreatorReactions,
     getBrowseHistory,
     clearBrowseHistory,
+    getRecommendedUsers,
 } = require('../controllers/user.controller');
 const { protect, admin } = require('../middlewares/auth.middleware');
 
@@ -78,6 +79,7 @@ router.delete('/admin/:id', protect, admin, deleteAdminUser);
 
 router.get('/search', searchUsers);
 router.get('/dashboard/reactions', protect, getCreatorReactions);
+router.get('/recommended', protect, getRecommendedUsers);
 router.get('/:id/series', getUserSeries);
 
 router.get('/:id/profile', getUserProfile);

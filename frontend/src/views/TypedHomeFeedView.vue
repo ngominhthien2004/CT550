@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid, HomeFeedColumn, HomeHeroBanner, HomeRecommendedUsers, HomeTabs, HomeTagStrip } from '@/components/home'
-import { getArtworks, bannerApi } from '../services/api'
+import { getArtworks, bannerApi, userApi } from '../services/api'
 
 import { useFollowStore } from '../stores/follow.store'
 import { useAuthStore } from '../stores/auth.store'
@@ -122,8 +122,24 @@ async function loadTypedArtworks() {
     const normalizedWorks = source.filter((item) => item?.type === props.workType)
 
     liveWorks.value = normalizedWorks
-    normalizeRecommendedUsers(normalizedWorks)
     normalizeTags(normalizedWorks)
+
+    // Try follow-graph recommendations for authenticated users
+    if (authStore.isAuthenticated) {
+      try {
+        const recRes = await userApi.getRecommended()
+        if (Array.isArray(recRes.data) && recRes.data.length > 0) {
+          recommendedUsers.value = recRes.data
+          isLoading.value = false
+          return
+        }
+      } catch (_e) {
+        // Fall through to artwork-based recommendations
+      }
+    }
+
+    // Fallback: derive from artwork batch
+    normalizeRecommendedUsers(normalizedWorks)
 
     if (authStore.isAuthenticated) {
       await Promise.all(

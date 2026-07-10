@@ -10,6 +10,7 @@ import { useArtworkStore } from '../stores/artwork.store'
 import { useSeriesStore } from '@/stores/series.store'
 import { getApiErrorMessage } from '../utils/apiErrors'
 import { toggleNavCollapsed } from '../utils/viewNavigation'
+import { useToast } from '@/composables/useToast'
 
 const uploadKinds = ['illust', 'manga', 'gif', 'novel']
 const mediaKinds = ['illust', 'manga', 'gif']
@@ -321,7 +322,10 @@ function addTagFromInput() {
 }
 
 function handleTagInputKeydown(event) {
-  if (event.key === 'Enter' || event.key === ',' || event.key === ' ') {
+  if (event.key === 'Enter' || event.key === ',') {
+    event.preventDefault()
+    addTagFromInput()
+  } else if (event.key === ' ') {
     event.preventDefault()
     commitTag(form.tagInput)
   }
@@ -452,6 +456,8 @@ async function submitArtwork() {
 
     const createdArtworkId = createdArtwork?._id || createdArtwork?.id
     if (createdArtworkId) {
+      const { showSuccess } = useToast()
+      showSuccess('Upload successful!')
       await router.push(`/artworks/${createdArtworkId}`)
       return
     }

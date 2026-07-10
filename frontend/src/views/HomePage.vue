@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid, HomeFeedColumn, HomeHeroBanner, HomeRecommendedUsers, HomeTabs, HomeTagStrip } from '@/components/home'
-import { getArtworks, getTags } from '../services/api'
+import { getArtworks, getTags, userApi } from '../services/api'
 import { bannerApi } from '../services/api'
 import api from '../services/api'
 
@@ -81,6 +81,21 @@ async function loadHomeArtworks() {
       // Filter out novels — novels only show in the Novel tab
       const filtered = data.filter(item => item?.type !== 'novel')
       liveWorks.value = filtered
+
+      // Try follow-graph recommendations for authenticated users
+      if (authStore.isAuthenticated) {
+        try {
+          const recRes = await userApi.getRecommended()
+          if (Array.isArray(recRes.data) && recRes.data.length > 0) {
+            recommendedUsers.value = recRes.data
+            return
+          }
+        } catch (_e) {
+          // Fall through to artwork-based recommendations
+        }
+      }
+
+      // Fallback: derive from artwork batch
       normalizeRecommendedUsers(filtered)
 
       if (authStore.isAuthenticated) {

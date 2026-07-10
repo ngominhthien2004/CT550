@@ -628,6 +628,15 @@ const hasSession = computed(() => !!chatStore.currentSessionId)
   background: var(--accent);
   color: #fff;
 }
+:root.dark-theme .prompt-chip {
+  color: #60a5fa;
+  border-color: #60a5fa;
+  background: rgba(96, 165, 250, 0.08);
+}
+:root.dark-theme .prompt-chip:hover {
+  background: #60a5fa;
+  color: #0f172a;
+}
 
 /* Input area */
 .chat-input-area {

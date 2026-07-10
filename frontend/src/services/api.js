@@ -135,6 +135,7 @@ export const userApi = {
   postPresence: (userId, payload = {}) => api.post(`/users/${userId}/presence`, payload),
   getPresence: (userId) => api.get(`/users/${userId}/presence`),
   getUserSeries: (userId, params = {}) => api.get(`/users/${userId}/series`, { params }),
+  getRecommended: (params = {}) => api.get('/users/recommended', { params }),
 }
 
 export const adminApi = {

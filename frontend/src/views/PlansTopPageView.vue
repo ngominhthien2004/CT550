@@ -42,7 +42,9 @@ const creatorMap = computed(() => {
   return map
 })
 
-const creators = computed(() => Object.values(creatorMap.value))
+const creators = computed(() =>
+  Object.values(creatorMap.value).filter((c) => c._id !== authStore.user?._id),
+)
 
 const topPlans = computed(() =>
   [...plans.value].sort((a, b) => b.targetPrice - a.targetPrice).slice(0, 6),
