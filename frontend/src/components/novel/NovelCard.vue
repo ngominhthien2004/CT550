@@ -45,7 +45,8 @@ const firstTag = computed(() => {
     return ''
   }
 
-  return tags[0].label || ''
+  const t = tags[0]
+  return String(t?.label || t?.name || '').replace(/^#/, '').trim()
 })
 function buildTagLink(tag) {
   const label = String(tag?.label || tag?.name || '').replace(/^#/, '').trim().toLowerCase()
@@ -64,10 +65,14 @@ const visibleTags = computed(() => {
   return tags.slice(0, 4).filter((tag) => {
     const label = String(tag?.label || tag?.name || '').replace(/^#/, '').trim().toLowerCase()
     return label !== ''
-  }).map(tag => ({
-    ...tag,
-    _link: buildTagLink(tag),
-  }))
+  }).map(tag => {
+    const label = String(tag?.label || tag?.name || '').replace(/^#/, '').trim().toLowerCase()
+    return {
+      ...tag,
+      _label: label,
+      _link: buildTagLink(tag),
+    }
+  })
 })
 
 const chapterLabel = computed(() => {
@@ -128,7 +133,7 @@ const authorLink = computed(() => {
           :key="tag.label || tag.name"
           :to="tag._link"
         >
-          #{{ tag.label }}
+          #{{ tag._label }}
         </router-link>
       </div>
 
