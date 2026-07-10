@@ -8,7 +8,7 @@ const Tag = require('../models/Tag');
 const BrowseHistory = require('../models/BrowseHistory');
 const { createNotification } = require('../utils/notification');
 const { detectAIWithHuggingFace } = require('../services/huggingface.service');
-const { getAiDetectionThreshold } = require('../config/env');
+
 const { getSimilarArtworks: getSimilarArtworksService } = require('../services/similarity.service');
 const fs = require('fs');
 const path = require('path');
@@ -135,11 +135,9 @@ const createArtwork = async (req, res, next) => {
             }
         }
 
-        const threshold = getAiDetectionThreshold();
         const aiDetection = {
             confidence: null,
             isAI: false,
-            threshold,
             tagged: false,
         };
 
