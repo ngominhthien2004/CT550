@@ -346,6 +346,7 @@ async function handleLike(e, work) {
   overflow: hidden;
   max-width: 600px;
   margin: 0 auto;
+  height: fit-content;
 }
 
 .feed-carousel {
@@ -369,6 +370,7 @@ async function handleLike(e, work) {
   flex: 0 0 100%;
   scroll-snap-align: start;
   text-decoration: none;
+  line-height: 0;
 }
 
 .feed-carousel-item img {
