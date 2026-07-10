@@ -151,10 +151,7 @@ async function handleLike(e, work) {
                 @error="handleAvatarError"
               />
             </span>
-            <span class="author-meta">
-              <strong>{{ work.user?.displayName || work.user?.username || 'Unknown artist' }}</strong>
-              <small>{{ work._createdAt }}</small>
-            </span>
+            <span class="author-name">{{ work.user?.displayName || work.user?.username || 'Unknown artist' }}</span>
           </router-link>
           <button type="button" class="feed-more" aria-label="Artwork menu">
             <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
@@ -267,7 +264,8 @@ async function handleLike(e, work) {
 
 .feed-card {
   display: grid;
-  gap: 0.6rem;
+  gap: 0.5rem;
+  padding-bottom: 0.75rem;
 }
 
 .feed-card + .feed-card {
@@ -277,10 +275,10 @@ async function handleLike(e, work) {
 .feed-card + .feed-card::before {
   content: '';
   position: absolute;
-  top: -0.5rem;
+  top: -0.35rem;
   left: 0;
   right: 0;
-  border-top: 1px solid #d9dce3;
+  border-top: 1px solid var(--line);
 }
 
 .feed-card-head {
@@ -294,14 +292,14 @@ async function handleLike(e, work) {
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 0.72rem;
+  gap: 0.6rem;
   min-width: 0;
   color: inherit;
 }
 
 .author-avatar {
-  width: 2.35rem;
-  height: 2.35rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 999px;
   overflow: hidden;
   background: var(--surface-alt);
@@ -315,26 +313,17 @@ async function handleLike(e, work) {
   display: block;
 }
 
-.author-meta {
-  display: grid;
-  min-width: 0;
-}
-
-.author-meta strong,
-.author-meta small {
+.author-name {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.author-meta strong {
-  font-size: 0.94rem;
-  color: var(--brand);
-}
-
-.author-meta small {
-  color: var(--muted);
-  font-size: 0.77rem;
+.author-name:hover {
+  color: var(--accent);
 }
 
 .feed-more {
@@ -342,19 +331,22 @@ async function handleLike(e, work) {
   height: 2rem;
   border: none;
   border-radius: 999px;
-  background: var(--surface-alt);
+  background: transparent;
   color: var(--muted);
+  flex-shrink: 0;
 }
 
 .feed-carousel-wrapper {
   position: relative;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .feed-carousel {
   display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  gap: 4px;
+  gap: 0;
   scrollbar-width: none;
   touch-action: pan-x;
 }
@@ -385,48 +377,53 @@ async function handleLike(e, work) {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 999px;
   border: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  color: #fff;
-  font-size: 0.95rem;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 0.8rem;
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.2s;
   z-index: 2;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
 .feed-carousel-wrapper:hover .feed-arrow {
   opacity: 1;
 }
 
+.feed-arrow:hover {
+  background: #fff;
+}
+
 .feed-arrow.left {
-  left: 0.75rem;
+  left: 0.5rem;
 }
 
 .feed-arrow.right {
-  right: 0.75rem;
+  right: 0.5rem;
 }
 
 .feed-page-badge {
   position: absolute;
-  bottom: 0.75rem;
-  left: 0.75rem;
-  min-width: 2rem;
-  height: 1.7rem;
-  padding: 0 0.45rem;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  min-width: 1.8rem;
+  height: 1.5rem;
+  padding: 0 0.4rem;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.6);
   color: #fff;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   pointer-events: none;
   z-index: 2;
@@ -437,18 +434,24 @@ async function handleLike(e, work) {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+  padding: 0 0.25rem;
 }
 
 .feed-title {
   text-decoration: none;
   color: var(--text);
-  font-size: 0.94rem;
+  font-size: 0.95rem;
   font-weight: 700;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
+  line-height: 1.4;
+}
+
+.feed-title:hover {
+  text-decoration: underline;
 }
 
 .heart-btn {
@@ -461,14 +464,14 @@ async function handleLike(e, work) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 1.1rem;
   flex-shrink: 0;
   cursor: pointer;
-  transition: color 0.15s, transform 0.15s;
+  transition: color 0.2s, transform 0.2s;
 }
 
 .heart-btn:hover {
-  color: #e74c6f;
+  color: #ef4444;
   transform: scale(1.1);
 }
 
@@ -477,7 +480,7 @@ async function handleLike(e, work) {
 }
 
 .heart-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
   transform: none;
 }
