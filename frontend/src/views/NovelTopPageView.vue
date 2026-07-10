@@ -182,12 +182,6 @@ const heroPrimaryLink = computed(() => (featuredNovel.value?._id ? `/novels/${fe
 
 const heroSecondaryLink = '/search?type=novel&order=popular'
 
-const heroNovelStats = computed(() => [
-  { label: 'Views', value: Number(featuredNovel.value?.viewCount || 0).toLocaleString() },
-  { label: 'Likes', value: Number(featuredNovel.value?.likeCount || 0).toLocaleString() },
-  { label: 'Bookmarks', value: Number(featuredNovel.value?.bookmarkCount || 0).toLocaleString() },
-])
-
 const sectionTabs = computed(() => [
   { id: 'top', label: 'Top', href: '#top' },
   { id: 'popular-original', label: 'Popular original novels', href: '#popular-original' },
@@ -317,8 +311,6 @@ onMounted(async () => {
         primary-label="Read now"
         :secondary-link="heroSecondaryLink"
         secondary-label="Browse novels"
-        :show-novel-stats="!!featuredNovel"
-        :novel-stats="heroNovelStats"
       />
 
       <p v-if="loadError" class="novel-page-state novel-page-state--error">{{ loadError }}</p>

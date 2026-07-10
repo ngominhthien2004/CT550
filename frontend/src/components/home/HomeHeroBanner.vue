@@ -32,14 +32,6 @@ defineProps({
     type: String,
     default: 'View rankings',
   },
-  showNovelStats: {
-    type: Boolean,
-    default: false,
-  },
-  novelStats: {
-    type: Array,
-    default: () => [],
-  },
 })
 </script>
 
@@ -51,13 +43,6 @@ defineProps({
         <span class="banner-kicker">{{ kickerText }}</span>
         <h1>{{ slide.title }}</h1>
         <p>{{ description }}</p>
-
-        <div v-if="showNovelStats && novelStats.length" class="banner-stats">
-          <div v-for="stat in novelStats" :key="stat.label" class="banner-stat">
-            <span class="banner-stat-label">{{ stat.label }}</span>
-            <span class="banner-stat-value">{{ stat.value }}</span>
-          </div>
-        </div>
 
         <div class="banner-actions">
           <router-link :to="primaryLink" class="primary-link">{{ primaryLabel }}</router-link>
@@ -72,13 +57,6 @@ defineProps({
       <span class="banner-kicker">{{ kickerText }}</span>
       <h1>{{ slide.title }}</h1>
       <p>{{ description }}</p>
-
-      <div v-if="showNovelStats && novelStats.length" class="banner-stats">
-        <div v-for="stat in novelStats" :key="stat.label" class="banner-stat">
-          <span class="banner-stat-label">{{ stat.label }}</span>
-          <span class="banner-stat-value">{{ stat.value }}</span>
-        </div>
-      </div>
 
       <div class="banner-actions">
         <router-link :to="primaryLink" class="primary-link">{{ primaryLabel }}</router-link>
@@ -146,36 +124,6 @@ defineProps({
   gap: 0.38rem;
 }
 
-.banner-stats {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.banner-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 0.08rem;
-  padding: 0.4rem 0.7rem;
-  border-radius: 10px;
-  background: rgba(7, 13, 31, 0.58);
-  backdrop-filter: blur(6px);
-}
-
-.banner-stat-label {
-  font-size: 0.62rem;
-  color: rgba(255, 255, 255, 0.68);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.banner-stat-value {
-  font-size: 0.92rem;
-  font-weight: 800;
-  color: #fff;
-}
-
 .banner-link-wrapper {
   display: block;
   text-decoration: none;
@@ -183,12 +131,6 @@ defineProps({
 }
 .banner-link-wrapper:hover .banner {
   opacity: 0.97;
-}
-
-@media (max-width: 920px) {
-  .banner-stats {
-    display: none;
-  }
 }
 
 .primary-link,
