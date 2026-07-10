@@ -280,6 +280,11 @@ async function handleLike(e, work) {
   display: grid;
   gap: 0.5rem;
   padding-bottom: 0.75rem;
+  position: relative;
+}
+
+.feed-card:hover :deep(.card-menu-trigger) {
+  opacity: 1;
 }
 
 .feed-card + .feed-card {
