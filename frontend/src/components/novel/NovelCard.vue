@@ -303,10 +303,8 @@ const authorLink = computed(() => {
 
 .novel-compact-tags a {
   text-decoration: none;
-  color: var(--brand);
-  background: rgba(22, 149, 240, 0.08);
-  border: 1px solid rgba(22, 149, 240, 0.08);
-  border-radius: 999px;
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.08);
   padding: 0.28rem 0.5rem;
   font-size: 0.72rem;
   font-weight: 700;
