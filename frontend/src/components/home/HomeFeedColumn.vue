@@ -356,6 +356,7 @@ async function handleLike(e, work) {
   gap: 0;
   scrollbar-width: none;
   touch-action: pan-x;
+  align-items: center;
 }
 
 .feed-carousel::-webkit-scrollbar {
