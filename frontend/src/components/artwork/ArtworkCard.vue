@@ -3,8 +3,6 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLikeStore } from '../../stores/like.store'
 import { useAuthStore } from '../../stores/auth.store'
-import ReportModal from '@/components/common/ReportModal.vue'
-import CardMenuDropdown from '@/components/common/CardMenuDropdown.vue'
 import R18BlurOverlay from '../common/R18BlurOverlay.vue'
 
 const props = defineProps({
@@ -17,18 +15,6 @@ const props = defineProps({
 const router = useRouter()
 const likeStore = useLikeStore()
 const authStore = useAuthStore()
-
-const showReportModal = ref(false)
-const isLoggedIn = computed(() => !!authStore.user)
-
-function handleShare() {
-  const url = `${window.location.origin}/artworks/${props.item._id}`
-  if (navigator.share) {
-    navigator.share({ title: props.item.title, url }).catch(() => {})
-  } else {
-    navigator.clipboard.writeText(url).catch(() => {})
-  }
-}
 
 const isLiked = computed(() => {
   if (likeStore.statusByArtwork[props.item._id] !== undefined) {
@@ -108,11 +94,6 @@ function getImageCount(item) {
       <button type="button" class="btn-like" :class="{ 'is-active': isLiked }" :aria-label="$t('artwork.like')" @click.prevent="handleLike" :disabled="isToggling">
         <i :class="isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
       </button>
-      <CardMenuDropdown
-        v-if="isLoggedIn"
-        @share="handleShare"
-        @report="showReportModal = true"
-      />
     </div>
 
     <div class="card-meta">
@@ -133,14 +114,6 @@ function getImageCount(item) {
         <span>{{ item.user?.displayName || item.user?.username }}</span>
       </router-link>
     </div>
-
-    <ReportModal
-      :visible="showReportModal"
-      report-type="artwork"
-      :target="item"
-      @close="showReportModal = false"
-      @reported="showReportModal = false"
-    />
   </article>
 </template>
 
