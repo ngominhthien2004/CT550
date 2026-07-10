@@ -56,7 +56,7 @@ const visibleTags = computed(() => {
 
   return tags.slice(0, 4).filter((tag) => {
     const label = String(tag?.label || tag?.name || '').replace(/^#/, '').trim().toLowerCase()
-    return label !== '' && label !== 'ai'
+    return label !== ''
   }).map(tag => {
     const label = String(tag?.label || tag?.name || '').replace(/^#/, '').trim().toLowerCase()
     return {
