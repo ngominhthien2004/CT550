@@ -222,7 +222,9 @@ async function handleLike(e, work) {
 .feed-column {
   display: grid;
   gap: 1rem;
-  margin: 0 52px;
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1rem;
 }
 
 .feed-head {
@@ -261,6 +263,7 @@ async function handleLike(e, work) {
 .feed-list {
   display: grid;
   gap: 1rem;
+  margin: 0 52px;
 }
 
 .feed-card {
