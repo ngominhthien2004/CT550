@@ -39,15 +39,7 @@ const snippet = computed(() => {
 
 const formatLabel = computed(() => (props.item?.series ? 'Series' : 'One-shot'))
 
-const firstTag = computed(() => {
-  const tags = props.item?.tags
-  if (!tags?.length) {
-    return ''
-  }
 
-  const t = tags[0]
-  return String(t?.label || t?.name || '').replace(/^#/, '').trim()
-})
 function buildTagLink(tag) {
   const label = String(tag?.label || tag?.name || '').replace(/^#/, '').trim().toLowerCase()
   if (!label) {
@@ -64,7 +56,7 @@ const visibleTags = computed(() => {
 
   return tags.slice(0, 4).filter((tag) => {
     const label = String(tag?.label || tag?.name || '').replace(/^#/, '').trim().toLowerCase()
-    return label !== ''
+    return label !== '' && label !== 'ai'
   }).map(tag => {
     const label = String(tag?.label || tag?.name || '').replace(/^#/, '').trim().toLowerCase()
     return {
@@ -108,7 +100,6 @@ const authorLink = computed(() => {
       </div>
       <div class="novel-compact-cover-badges">
         <span class="novel-compact-format">{{ formatLabel }}</span>
-        <span v-if="firstTag" class="novel-compact-badge novel-compact-genre">{{ firstTag }}</span>
       </div>
       <span v-if="rank" class="novel-compact-rank">{{ rank }}</span>
       <span v-if="item.wordCount > 0" class="novel-compact-wordcount">{{ Number(item.wordCount).toLocaleString() }}w</span>
@@ -231,10 +222,6 @@ const authorLink = computed(() => {
   font-weight: 700;
   line-height: 1.3;
   pointer-events: none;
-}
-
-.novel-compact-genre {
-  background: rgba(22, 149, 240, 0.78);
 }
 
 .novel-compact-wordcount {
