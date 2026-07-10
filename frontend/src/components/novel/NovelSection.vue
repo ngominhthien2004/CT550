@@ -47,7 +47,6 @@ defineProps({
         v-for="(item, index) in items"
         :key="item._id || index"
         :item="item"
-        :rank="index + 1"
       />
     </div>
   </section>
@@ -74,7 +73,7 @@ defineProps({
 
 .novel-editorial-copy h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.25rem;
   line-height: 1.3;
 }
 

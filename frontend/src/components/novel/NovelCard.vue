@@ -9,10 +9,6 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  rank: {
-    type: Number,
-    default: 0,
-  },
 })
 
 const authStore = useAuthStore()
@@ -101,7 +97,6 @@ const authorLink = computed(() => {
       <div class="novel-compact-cover-badges">
         <span class="novel-compact-format">{{ formatLabel }}</span>
       </div>
-      <span v-if="rank" class="novel-compact-rank">{{ rank }}</span>
       <span v-if="item.wordCount > 0" class="novel-compact-wordcount">{{ Number(item.wordCount).toLocaleString() }}w</span>
     </router-link>
 
@@ -196,20 +191,6 @@ const authorLink = computed(() => {
   gap: 4px;
   flex-wrap: wrap;
   z-index: 1;
-}
-
-.novel-compact-rank {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  padding: 2px 7px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.58);
-  color: #fff;
-  font-size: 0.62rem;
-  font-weight: 700;
-  line-height: 1.3;
-  pointer-events: none;
 }
 
 .novel-compact-format,
