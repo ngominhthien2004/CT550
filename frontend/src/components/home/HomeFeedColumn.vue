@@ -367,7 +367,9 @@ async function handleLike(e, work) {
 
 .feed-carousel-item img {
   width: 100%;
-  aspect-ratio: 16/10;
+  max-width: 450px;
+  max-height: 600px;
+  aspect-ratio: 3 / 4;
   object-fit: cover;
   display: block;
   background: var(--surface-alt);
