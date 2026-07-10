@@ -164,8 +164,6 @@ const creatorRows = computed(() => {
     .slice(0, 6)
 })
 
-const heroKicker = computed(() => (featuredNovel.value ? 'Featured novel' : 'Novels'))
-
 const heroDescription = computed(() => {
   if (!featuredNovel.value) {
     return 'A dedicated editorial landing page for novels, stories, and long-form reading.'
@@ -177,10 +175,6 @@ const heroDescription = computed(() => {
 
   return text.length > 220 ? `${text.slice(0, 220).trimEnd()}...` : text
 })
-
-const heroPrimaryLink = computed(() => (featuredNovel.value?._id ? `/novels/${featuredNovel.value._id}` : '/search?type=novel'))
-
-const heroSecondaryLink = '/search?type=novel&order=popular'
 
 const sectionTabs = computed(() => [
   { id: 'top', label: 'Top', href: '#top' },
@@ -305,12 +299,7 @@ onMounted(async () => {
       <HomeHeroBanner
         :slide="heroSlide"
         :banner-link="bannerLink"
-        :kicker-text="heroKicker"
         :description="heroDescription"
-        :primary-link="heroPrimaryLink"
-        primary-label="Read now"
-        :secondary-link="heroSecondaryLink"
-        secondary-label="Browse novels"
       />
 
       <p v-if="loadError" class="novel-page-state novel-page-state--error">{{ loadError }}</p>
