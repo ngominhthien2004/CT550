@@ -344,11 +344,8 @@ async function handleLike(e, work) {
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  background: var(--surface-alt);
   max-width: 600px;
   margin: 0 auto;
-  display: flex;
-  justify-content: center;
 }
 
 .feed-carousel {
@@ -376,10 +373,10 @@ async function handleLike(e, work) {
 
 .feed-carousel-item img {
   width: 100%;
+  height: auto;
   max-height: 600px;
   object-fit: contain;
   display: block;
-  background: transparent;
 }
 
 .feed-arrow {
