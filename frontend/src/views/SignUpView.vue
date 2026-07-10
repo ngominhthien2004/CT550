@@ -27,6 +27,15 @@ async function submitSignUp() {
     return
   }
 
+  if (form.username.trim().length > 24) {
+    formError.value = 'Username must be at most 24 characters'
+    return
+  }
+  if (form.username.trim().length < 3) {
+    formError.value = 'Username must be at least 3 characters'
+    return
+  }
+
   if (form.password !== form.confirmPassword) {
     formError.value = t('auth.passwordMismatch')
     return
@@ -84,7 +93,7 @@ function facebookLogin() {
       <form v-if="showEmailForm" class="email-form" @submit.prevent="submitSignUp">
         <label class="d-grid gap-1">
           <span class="auth-label">{{ $t('auth.username') }}</span>
-          <input v-model="form.username" class="form-control auth-control" :placeholder="$t('auth.chooseUsername')" :aria-label="$t('auth.username')" />
+          <input v-model="form.username" class="form-control auth-control" maxlength="24" :placeholder="$t('auth.chooseUsername')" :aria-label="$t('auth.username')" />
         </label>
 
         <label class="d-grid gap-1">

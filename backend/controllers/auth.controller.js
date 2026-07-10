@@ -11,6 +11,10 @@ const generateToken = (id) => {
 const registerUser = async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
+        if (!username || username.trim().length < 3 || username.trim().length > 24) {
+            res.status(400);
+            return next(new Error('Username must be between 3 and 24 characters'));
+        }
         const userExists = await User.findOne({ $or: [{ email }, { username }] });
 
         if (userExists) {
