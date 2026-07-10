@@ -31,6 +31,7 @@ test-artifacts/
 scripts/
 be-err.txt
 be-out.txt
+page-state.txt
 tmp-chrome-user-data/
 tmp-chrome-user-date/
 .playwright-mcp/

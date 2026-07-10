@@ -294,7 +294,7 @@ onBeforeUnmount(() => {
         </div>
 
         <!-- Works -->
-        <div class="cs-works-section">
+        <div v-if="seriesType !== 'novel'" class="cs-works-section">
           <div class="cs-works-header">
             <span class="cs-label cs-label--plain">{{ $t('dashboard.tabWorks') }}</span>
             <button
@@ -370,6 +370,7 @@ onBeforeUnmount(() => {
     <ArtworkPickerModal
       v-if="showArtworkPicker"
       :selected-ids="selectedArtworks.map((a) => a._id)"
+      :type="seriesType"
       @close="showArtworkPicker = false"
       @select="onArtworksSelected"
     />
