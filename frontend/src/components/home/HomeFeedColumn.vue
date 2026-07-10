@@ -222,6 +222,7 @@ async function handleLike(e, work) {
 .feed-column {
   display: grid;
   gap: 1rem;
+  margin: 0 52px;
 }
 
 .feed-head {
