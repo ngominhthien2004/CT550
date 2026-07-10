@@ -349,7 +349,6 @@ async function handleLike(e, work) {
   margin: 0 auto;
   display: flex;
   justify-content: center;
-  aspect-ratio: 1;
 }
 
 .feed-carousel {
