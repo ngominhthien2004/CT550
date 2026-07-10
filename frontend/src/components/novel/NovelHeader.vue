@@ -68,7 +68,7 @@ const uploadedAtLabel = computed(() => {
         <router-link
           v-for="tag in artwork.tags"
           :key="tag._id || tag.name"
-          :to="`/tags/${encodeURIComponent(tag.name)}`"
+          :to="{ path: '/search', query: { q: tag.name, tag: '1', type: 'novel' } }"
           class="novel-tag"
         >
           #{{ tag.name }}

@@ -64,7 +64,7 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
       <router-link
         v-for="tag in tagList"
         :key="tag._id || tag.name"
-        :to="`/tags/${encodeURIComponent(tag.name)}`"
+        :to="{ path: '/search', query: { q: tag.name, tag: '1', type: artwork?.type || 'illust' } }"
         class="tag-link"
       >
         #{{ tag.name }}
