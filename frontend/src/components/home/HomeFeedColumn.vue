@@ -344,6 +344,12 @@ async function handleLike(e, work) {
   position: relative;
   border-radius: 8px;
   overflow: hidden;
+  background: var(--surface-alt);
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  aspect-ratio: 1;
 }
 
 .feed-carousel {
@@ -370,8 +376,8 @@ async function handleLike(e, work) {
 }
 
 .feed-carousel-item img {
-  width: 100%;
-  max-width: 450px;
+  width: auto;
+  max-width: 100%;
   max-height: 600px;
   aspect-ratio: 3 / 4;
   object-fit: cover;
