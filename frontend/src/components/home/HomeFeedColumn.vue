@@ -374,8 +374,6 @@ async function handleLike(e, work) {
 .feed-carousel-item img {
   width: 100%;
   height: auto;
-  max-height: 600px;
-  object-fit: contain;
   display: block;
 }
 
