@@ -73,7 +73,7 @@ defineProps({
 
 .novel-editorial-copy h3 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.6rem;
   line-height: 1.3;
 }
 
