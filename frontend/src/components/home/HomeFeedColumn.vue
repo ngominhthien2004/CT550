@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import R18BlurOverlay from '../common/R18BlurOverlay.vue'
+import CardMenuDropdown from '../common/CardMenuDropdown.vue'
 import { formatShortDate } from '../../utils/date.js'
 import { useLikeStore } from '../../stores/like.store'
 import { useAuthStore } from '../../stores/auth.store'
@@ -18,6 +19,17 @@ const props = defineProps({
     default: () => [],
   },
 })
+
+const isLoggedIn = computed(() => !!authStore.user)
+
+function handleShare(work) {
+  const url = `${window.location.origin}/artworks/${work._id}`
+  if (navigator.share) {
+    navigator.share({ title: work.title, url }).catch(() => {})
+  } else {
+    navigator.clipboard.writeText(url).catch(() => {})
+  }
+}
 
 function formatDate(value) {
   return formatShortDate(value)
@@ -153,9 +165,7 @@ async function handleLike(e, work) {
             </span>
             <span class="author-name">{{ work.user?.displayName || work.user?.username || 'Unknown artist' }}</span>
           </router-link>
-          <button type="button" class="feed-more" aria-label="Artwork menu">
-            <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
-          </button>
+          <CardMenuDropdown v-if="isLoggedIn" @share="handleShare(work)" />
         </header>
 
         <R18BlurOverlay :artwork="work" :showBadgeOnly="true">
