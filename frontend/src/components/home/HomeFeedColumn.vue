@@ -369,7 +369,6 @@ async function handleLike(e, work) {
 
 .feed-carousel-item {
   flex: 0 0 100%;
-  align-self: flex-start;
   scroll-snap-align: start;
   text-decoration: none;
   line-height: 0;
