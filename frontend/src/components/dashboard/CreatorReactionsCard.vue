@@ -91,6 +91,11 @@ defineEmits(['view-details'])
   align-items: center;
 }
 
+.metric-label:nth-child(1) i { color: #6366f1; }  /* eye - indigo */
+.metric-label:nth-child(2) i { color: var(--danger); }  /* heart - red */
+.metric-label:nth-child(3) i { color: #f59e0b; }  /* bookmark - amber */
+.metric-label:nth-child(4) i { color: #10b981; }  /* comment - emerald */
+
 .metric-list strong {
   color: var(--text);
   font-size: 1.4rem;

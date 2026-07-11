@@ -24,6 +24,7 @@ import DiscoveryView from '../views/DiscoveryView.vue'
 import FollowUsersView from '../views/FollowUsersView.vue'
 import AIView from '../views/AIView.vue'
 import DrawingView from '../views/DrawingView.vue'
+import SettingsView from '../views/SettingsView.vue'
 import RequestManagementView from '../views/RequestManagementView.vue'
 import SeriesDetailView from '../views/SeriesDetailView.vue'
 import ChatView from '../views/ChatView.vue'
@@ -109,6 +110,8 @@ const routes = [
   { path: '/novels/:id', name: 'novel-detail', component: ArtworkDetailView },
   { path: '/artworks/:id', name: 'artwork-detail', component: ArtworkDetailView },
   { path: '/series/:id', name: 'series-detail', component: SeriesDetailView },
+  { path: '/setting', redirect: '/settings' },
+  { path: '/settings', name: 'settings', component: SettingsView, meta: { requiresAuth: true } },
   { path: '/tags/:tagName', redirect: to => {
     const tagName = typeof to.params.tagName === 'string' ? to.params.tagName : ''
     return { path: '/search', query: { q: tagName, tag: '1' } }

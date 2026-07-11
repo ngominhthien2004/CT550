@@ -44,7 +44,9 @@ function formatDate(value) {
     <div class="plan-tags">
       <span v-for="t in plan.acceptedWorkTypes" :key="t" class="plan-tag" :class="{ 'tag-active': t === highlightType }">{{ t }}</span>
       <span class="plan-tag">{{ plan.estimatedDays }} days</span>
-      <span v-if="showSlots" class="plan-tag">{{ plan.maxOpenRequests }} slots</span>
+      <span v-if="showSlots" class="plan-tag">
+        {{ plan.openRequestCount !== undefined ? (plan.maxOpenRequests - plan.openRequestCount) + ' / ' + plan.maxOpenRequests + ' slots' : plan.maxOpenRequests + ' slots' }}
+      </span>
     </div>
     <p v-if="showMeta" class="plan-meta">Created {{ formatDate(plan.createdAt) }}</p>
     <p v-else class="plan-rules">{{ plan.rules }}</p>

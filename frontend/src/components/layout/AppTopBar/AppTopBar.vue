@@ -99,7 +99,7 @@ const userLibraryLinks = computed(() => [
 ])
 
 const userSettingLinks = computed(() => [
-  { label: t('common.settings'), to: '/account' },
+  { label: t('common.settings'), to: '/settings' },
 ])
 
 const siteLabel = computed(() => props.siteName || 'IlluWrl')

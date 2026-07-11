@@ -15,11 +15,14 @@
   "requests": "Requests",
   "browsingHistory": "Browsing history",
   "myReports": "My Reports",
+  "blocklist": "Blocklist",
   "adminManagement": "Admin management",
   "logInToExplore": "Log in to explore more",
   "logOut": "Log out",
   "groupContent": "Content",
   "groupExplore": "Explore",
+  "groupManage": "Manage",
   "groupUtilities": "Utilities",
-  "aiChat": "AI Chat"
+  "aiChat": "AI Chat",
+  "settings": "Settings"
 }

@@ -187,7 +187,7 @@ watch(
         <div class="plan-tags">
           <span v-for="type in term.acceptedWorkTypes" :key="type">{{ type }}</span>
           <span>{{ term.estimatedDays }} days</span>
-          <span>{{ term.maxOpenRequests }} open slots</span>
+          <span>{{ term.openRequestCount !== undefined ? (term.maxOpenRequests - term.openRequestCount) + ' / ' + term.maxOpenRequests + ' slots' : term.maxOpenRequests + ' open slots' }}</span>
         </div>
         <p class="rules">{{ term.rules }}</p>
       </article>

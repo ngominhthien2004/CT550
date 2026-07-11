@@ -32,8 +32,16 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  seriesList: {
+    type: Array,
+    default: () => [],
+  },
+  selectedSeriesId: {
+    type: String,
+    default: '',
+  },
 })
-const emit = defineEmits(['create-series'])
+const emit = defineEmits(['update:selectedSeriesId'])
 </script>
 
 <template>
@@ -69,16 +77,19 @@ const emit = defineEmits(['create-series'])
       </div>
     </div>
 
-    <!-- Manga Series Card -->
-    <div v-if="props.isManga" class="additional-settings-card">
+    <!-- Series Card -->
+    <div v-if="!props.isNovel" class="additional-settings-card">
       <div class="row-left">
         <span class="placeholder-badge"></span>
         <span class="row-label">{{ $t('upload.series') }}</span>
       </div>
       <div class="row-center">
         <div class="row-inline">
-          <input v-model="props.form.mangaSeriesName" type="text" class="form-control custom-input" :placeholder="$t('upload.seriesName')" aria-label="Series name" />
-          <button type="button" class="btn btn-primary action-pill action-pill--post" @click="emit('create-series')">{{ $t('upload.createSeries') }}</button>
+          <select :value="props.selectedSeriesId" class="form-select custom-select" aria-label="Select series" @change="emit('update:selectedSeriesId', $event.target.value)">
+            <option value="">{{ $t('upload.noSeries') }}</option>
+            <option v-for="s in props.seriesList" :key="s._id" :value="s._id">{{ s.title }}</option>
+          </select>
+          <span class="text-muted small" style="font-size:0.78rem;">{{ $t('upload.orCreateLater') }}</span>
         </div>
       </div>
     </div>
@@ -225,6 +236,11 @@ const emit = defineEmits(['create-series'])
 }
 
 .row-inline .custom-input {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.row-inline .custom-select {
   flex: 1 1 220px;
   min-width: 0;
 }

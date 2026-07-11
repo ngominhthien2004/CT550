@@ -47,7 +47,7 @@ watch(
 )
 
 const currentUserAvatar = computed(() => {
-  return authStore.user?.avatar || 'https://s.pximg.net/common/images/no_profile.png'
+  return authStore.user?.avatar || DEFAULT_AVATAR
 })
 
 const currentUserId = computed(() => authStore.user?._id || '')
@@ -286,11 +286,19 @@ const formatDate = (dateString) => {
   return formatShortDate(dateString)
 }
 
+const DEFAULT_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
+
+function onAvatarError(e) {
+  if (e.target?.src !== DEFAULT_AVATAR) {
+    e.target.src = DEFAULT_AVATAR
+  }
+}
+
 const getAvatar = (user) => {
   if (user?.avatar) {
     return user.avatar
   }
-  return 'https://s.pximg.net/common/images/no_profile.png'
+  return DEFAULT_AVATAR
 }
 </script>
 
@@ -300,7 +308,7 @@ const getAvatar = (user) => {
 
     <!-- Input Area -->
     <div class="comment-input-row d-flex gap-3 mb-5">
-      <img :src="currentUserAvatar" alt="User" class="avatar avatar--sm" />
+      <img :src="currentUserAvatar" alt="User" class="avatar avatar--sm" @error="onAvatarError" />
       <div class="input-wrapper flex-grow-1 position-relative">
         <textarea
           v-model="commentContent"
@@ -345,7 +353,7 @@ const getAvatar = (user) => {
 
     <div v-else class="comment-list d-grid gap-4">
       <div v-for="comment in processedComments" :key="comment._id" class="comment-item d-flex gap-3">
-        <img :src="comment._avatar" alt="Avatar" class="avatar avatar--sm" />
+        <img :src="comment._avatar" alt="Avatar" class="avatar avatar--sm" @error="onAvatarError" />
         <div class="comment-content flex-grow-1">
           <div>
             <div class="author-info">
@@ -428,7 +436,7 @@ const getAvatar = (user) => {
                 :key="reply._id"
                 class="reply-item d-flex gap-2"
               >
-                <img :src="reply._avatar" alt="Reply avatar" class="avatar avatar--xs" />
+                <img :src="reply._avatar" alt="Reply avatar" class="avatar avatar--xs" @error="onAvatarError" />
                 <div class="flex-grow-1">
                   <div class="author-info">
                     <span class="user-name">{{ reply.user?.displayName || reply.user?.username }}</span>
@@ -473,7 +481,7 @@ const getAvatar = (user) => {
 <style scoped>
 .comments-section {
   max-width: 100%;
-  padding-bottom: 50px;
+  padding-bottom: 20px;
 }
 
 .section-title {
@@ -663,6 +671,7 @@ const getAvatar = (user) => {
 
 .comment-item {
   min-width: 0;
+  overflow: hidden;
   animation: fadeIn 0.3s ease-out;
 }
 
@@ -711,6 +720,7 @@ const getAvatar = (user) => {
 
 .reply-item {
   align-items: flex-start;
+  overflow: hidden;
 }
 
 .sticker-picker {

@@ -765,6 +765,43 @@ const getRecommendedUsers = async (req, res, next) => {
     }
 };
 
+const changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      res.status(400);
+      return next(new Error('Current password and new password are required'));
+    }
+
+    if (newPassword.length < 6) {
+      res.status(400);
+      return next(new Error('New password must be at least 6 characters'));
+    }
+
+    const User = require('../models/User');
+    const user = await User.findById(req.user._id).select('+password');
+
+    if (!user) {
+      res.status(404);
+      return next(new Error('User not found'));
+    }
+
+    const isMatch = await user.matchPassword(currentPassword);
+    if (!isMatch) {
+      res.status(401);
+      return next(new Error('Current password is incorrect'));
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ success: true, message: 'Password updated successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
     getUserProfile,
     updateUserProfile,
@@ -790,4 +827,5 @@ module.exports = {
     getBrowseHistory,
     clearBrowseHistory,
     getRecommendedUsers,
+    changePassword,
 };

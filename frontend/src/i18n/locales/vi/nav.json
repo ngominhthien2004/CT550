@@ -20,6 +20,8 @@
   "logOut": "Đăng xuất",
   "groupContent": "Nội dung",
   "groupExplore": "Khám phá",
+  "groupManage": "Quản lý",
   "groupUtilities": "Tiện ích",
-  "aiChat": "AI Chat"
+  "aiChat": "AI Chat",
+  "settings": "Cài đặt"
 }

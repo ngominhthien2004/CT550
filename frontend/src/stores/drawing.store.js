@@ -440,9 +440,8 @@ export const useDrawingStore = defineStore('drawing', () => {
   function moveLayer(index, direction) {
     const newIndex = index + direction
     if (newIndex < 0 || newIndex >= layers.length) return
-    const temp = layers[index]
-    layers[index] = layers[newIndex]
-    layers[newIndex] = temp
+    const removed = layers.splice(index, 1)[0]
+    layers.splice(newIndex, 0, removed)
     activeLayerIndex.value = newIndex
   }
 

@@ -26,7 +26,6 @@ function statusLabel(value) {
         <select :value="statusFilter" @change="emit('update:statusFilter', $event.target.value); emit('loadAll')" aria-label="Filter by status">
           <option value="">All status</option>
           <option value="pending">Pending</option>
-          <option value="accepted">Accepted</option>
           <option value="in_progress">In progress</option>
           <option value="draft_submitted">Draft submitted</option>
           <option value="revision">Revision</option>

@@ -20,6 +20,8 @@
   "logOut": "ログアウト",
   "groupContent": "コンテンツ",
   "groupExplore": "探索",
+  "groupManage": "管理",
   "groupUtilities": "ユーティリティ",
-  "aiChat": "AIチャット"
+  "aiChat": "AIチャット",
+  "settings": "設定"
 }

@@ -35,8 +35,8 @@ function loadExpandedState() {
       return parsed
     }
   } catch { /* ignore corrupt data */ }
-  // Default: all groups expanded (indices 1, 2, 3 — 0 has no label)
-  return { 1: true, 2: true, 3: true }
+  // Default: all groups expanded (indices 1, 2, 3, 4 — 0 has no label)
+  return { 1: true, 2: true, 3: true, 4: true }
 }
 
 function saveExpandedState() {
@@ -100,10 +100,16 @@ const illuWrlStyleSections = computed(() => {
       ],
     },
     {
+      label: 'Manage',
+      i18nKey: 'nav.groupManage',
+      items: manageGroup,
+    },
+    {
       label: 'Utilities',
       i18nKey: 'nav.groupUtilities',
       items: [
         { id: 'draw', label: 'Drawing', i18nKey: 'nav.drawing', to: '/draw', icon: 'fa-solid fa-pen-nib' },
+        { id: 'settings', label: 'Settings', i18nKey: 'nav.settings', to: '/settings', icon: 'fa-solid fa-gear' },
       ],
     },
   ]

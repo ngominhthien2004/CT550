@@ -214,6 +214,11 @@ function formatDate(value) {
   gap: 0.36rem;
 }
 
+.work-metrics span:nth-child(1) i { color: #6366f1; }  /* eye - indigo */
+.work-metrics span:nth-child(2) i { color: var(--danger); }  /* heart - red */
+.work-metrics span:nth-child(3) i { color: #f59e0b; }  /* bookmark - amber */
+.work-metrics span:nth-child(4) i { color: #10b981; }  /* comment - emerald */
+
 .updated-at {
   margin-top: 0.45rem;
   text-align: right;

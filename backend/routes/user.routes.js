@@ -28,6 +28,7 @@ const {
     getBrowseHistory,
     clearBrowseHistory,
     getRecommendedUsers,
+    changePassword,
 } = require('../controllers/user.controller');
 const { protect, admin } = require('../middlewares/auth.middleware');
 
@@ -100,5 +101,7 @@ router.delete('/me/history', protect, clearBrowseHistory);
 
 router.post('/:id/presence', protect, postPresence);
 router.get('/:id/presence', protect, getPresenceHandler);
+
+router.put('/profile/password', protect, changePassword);
 
 module.exports = router;

@@ -449,6 +449,8 @@ export function useProfilePage() {
       activeMainTab.value = 'bookmarks'
     } else if (route.query.tab === 'requests') {
       activeMainTab.value = 'requests'
+    } else if (route.query.tab === 'blocked') {
+      activeMainTab.value = 'blocked'
     }
   }
 
