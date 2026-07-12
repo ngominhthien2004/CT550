@@ -9,6 +9,7 @@ import UserSearchFilters from '../components/search/UserSearchFilters.vue'
 import UserSearchResults from '../components/search/UserSearchResults.vue'
 import NovelSearchResults from '../components/search/NovelSearchResults.vue'
 import ArtworkSearchResults from '../components/search/ArtworkSearchResults.vue'
+import DateRangeFilter from '../components/common/DateRangeFilter.vue'
 import { getArtworks, userApi } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
@@ -110,6 +111,7 @@ async function toggleFavoriteTag() {
 const novelSortBy = ref('newest')
 const novelMinWords = ref('')
 const novelMaxWords = ref('')
+const dateRange = ref({ from: '', to: '' })
 const searchOptionsDraft = ref({
   includeAll: '',
   includeAny: '',
@@ -117,6 +119,7 @@ const searchOptionsDraft = ref({
   target: 'tag_partial',
   type: 'illust',
   series: 'all',
+  dateRange: { from: '', to: '' },
 })
 
 watchEffect(() => {
@@ -128,6 +131,10 @@ watchEffect(() => {
     target: (typeof q.target === 'string' ? q.target : 'tag_partial'),
     type: (typeof q.type === 'string' ? q.type : 'illust'),
     series: (typeof q.series === 'string' ? q.series : 'all'),
+    dateRange: {
+      from: (typeof q.dateFrom === 'string' ? q.dateFrom : ''),
+      to: (typeof q.dateTo === 'string' ? q.dateTo : ''),
+    },
   }
 })
 
@@ -166,6 +173,10 @@ const currentSearchOptions = computed(() => {
     target: typeof route.query.target === 'string' ? route.query.target : defaultTarget,
     type: typeof route.query.type === 'string' ? route.query.type : 'illust',
     series: typeof route.query.series === 'string' ? route.query.series : 'all',
+    dateRange: {
+      from: typeof route.query.dateFrom === 'string' ? route.query.dateFrom : '',
+      to: typeof route.query.dateTo === 'string' ? route.query.dateTo : '',
+    },
   }
 })
 
@@ -456,6 +467,8 @@ async function applySearchOptions(payload) {
   if (payload.exclude) query.qnot = payload.exclude
   if (payload.target && payload.target !== 'all') query.target = payload.target
   if (payload.series && payload.series !== 'all') query.series = payload.series
+  if (payload.dateRange?.from) query.dateFrom = payload.dateRange.from
+  if (payload.dateRange?.to) query.dateTo = payload.dateRange.to
   await router.push({ path: '/search', query })
 }
 
@@ -473,6 +486,8 @@ async function loadSearchItems() {
       : (sMode === 'tag_tc' ? 'tag_exact' : 'all')
     const apiParams = { limit: 200 }
     if (q && q.trim()) apiParams.q = q.trim()
+    if (dateRange.value.from) apiParams.from = dateRange.value.from
+    if (dateRange.value.to) apiParams.to = dateRange.value.to
     const { data } = await getArtworks(apiParams)
     const normalizedQuery = q.trim().toLowerCase()
     const includeAllTokens = [...normalizeKeywords(normalizedQuery), ...normalizeKeywords(includeAllRaw)]
@@ -588,6 +603,10 @@ function reloadUserSearch() {
 }
 
 onMounted(() => {
+  dateRange.value = {
+    from: typeof route.query.dateFrom === 'string' ? route.query.dateFrom : '',
+    to: typeof route.query.dateTo === 'string' ? route.query.dateTo : '',
+  }
   loadSearchItems()
   loadUserResults()
   if (searchKeyword.value) {
@@ -599,6 +618,10 @@ onMounted(() => {
 watch(
   () => ({ ...route.query }),
   () => {
+    dateRange.value = {
+      from: typeof route.query.dateFrom === 'string' ? route.query.dateFrom : '',
+      to: typeof route.query.dateTo === 'string' ? route.query.dateTo : '',
+    }
     loadSearchItems()
     loadUserResults()
     if (searchKeyword.value) {
@@ -607,6 +630,10 @@ watch(
     }
   },
 )
+
+watch(dateRange, () => {
+  loadSearchItems()
+})
 </script>
 
 <template>
@@ -663,6 +690,10 @@ watch(
         @update:novel-min-words="novelMinWords = $event"
         @update:novel-max-words="novelMaxWords = $event"
       />
+
+      <div v-if="!isUserSearch" class="date-range-row">
+        <DateRangeFilter v-model="dateRange" compact />
+      </div>
 
       <UserSearchResults
         v-if="isUserSearch"
@@ -794,6 +825,11 @@ watch(
   background: transparent;
   color: var(--muted);
   font-weight: 700;
+}
+
+.date-range-row {
+  display: flex;
+  align-items: center;
 }
 
 

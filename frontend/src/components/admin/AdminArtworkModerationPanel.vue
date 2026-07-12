@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import AdminActionsDropdown from './AdminActionsDropdown.vue'
+import DateRangeFilter from '@/components/common/DateRangeFilter.vue'
 
 defineProps({
   activeTab: {
@@ -31,6 +32,10 @@ defineProps({
     type: Object,
     required: true,
   },
+  artworkDateRange: {
+    type: Object,
+    default: () => ({ from: '', to: '' }),
+  },
   formatDate: {
     type: Function,
     required: true,
@@ -40,6 +45,7 @@ defineProps({
 const emit = defineEmits([
   'toggle-filters',
   'update:artworkQuery',
+  'update:artworkDateRange',
   'apply-filters',
   'remove-artwork',
   'go-page',
@@ -83,16 +89,25 @@ const formattedArtworks = computed(() => {
     </div>
 
     <div v-show="artworkPanelFiltersOpen" id="admin-artwork-filters" class="filters" role="region" aria-label="Artwork filters">
-      <input
-        :value="artworkQuery"
-        type="text"
-        class="form-control form-control-sm"
-        placeholder="Search by title"
-        aria-label="Search artworks by title"
-        @input="onQueryInput"
-        @keyup.enter="emit('apply-filters')"
-      />
-      <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingArtworks" @click="emit('apply-filters')">Apply</button>
+      <div class="filter-row-main">
+        <input
+          :value="artworkQuery"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="Search by title"
+          aria-label="Search artworks by title"
+          @input="onQueryInput"
+          @keyup.enter="emit('apply-filters')"
+        />
+        <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingArtworks" @click="emit('apply-filters')">Apply</button>
+      </div>
+      <div class="filter-row-dates">
+        <DateRangeFilter
+          :model-value="artworkDateRange"
+          compact
+          @update:model-value="emit('update:artworkDateRange', $event)"
+        />
+      </div>
     </div>
 
     <p v-if="loadingArtworks" class="state-note">Loading artworks...</p>
@@ -145,3 +160,24 @@ const formattedArtworks = computed(() => {
     </footer>
   </section>
 </template>
+
+<style scoped>
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.filter-row-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-row-dates {
+  display: flex;
+  align-items: center;
+  padding-top: 0.4rem;
+}
+</style>

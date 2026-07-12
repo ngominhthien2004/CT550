@@ -9,6 +9,7 @@ const Bookmark = require('../models/Bookmark');
 const BrowseHistory = require('../models/BrowseHistory');
 const { createNotification } = require('../utils/notification');
 const Series = require('../models/Series');
+const { buildDateFilter } = require('../utils/dateFilter');
 
 const getUserProfile = async (req, res, next) => {
     try {
@@ -349,7 +350,7 @@ const getAdminUsers = async (req, res, next) => {
         const page = parseInt(req.query.page, 10) || 1;
         const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
         const skip = (page - 1) * limit;
-        const { q, role } = req.query;
+        const { q, role, from, to } = req.query;
 
         const filter = {};
         if (role && ['user', 'admin'].includes(role)) {
@@ -364,6 +365,9 @@ const getAdminUsers = async (req, res, next) => {
                 { email: { $regex: keyword, $options: 'i' } },
             ];
         }
+
+        // Date range filter
+        Object.assign(filter, buildDateFilter(req.query));
 
         const [users, total] = await Promise.all([
             User.find(filter)
@@ -571,7 +575,7 @@ const getUserSeries = async (req, res, next) => {
 
 const getCreatorReactions = async (req, res, next) => {
     try {
-        const { type } = req.query;
+        const { type, from, to } = req.query;
         const page = parseInt(req.query.page, 10) || 1;
         const limit = parseInt(req.query.limit, 10) || 20;
         const skip = (page - 1) * limit;
@@ -598,6 +602,9 @@ const getCreatorReactions = async (req, res, next) => {
         let total = 0;
 
         const filter = { artwork: { $in: artworkIds }, user: { $ne: req.user._id } };
+
+        // Date range filter
+        Object.assign(filter, buildDateFilter(req.query));
 
         if (type === 'comments') {
             [data, total] = await Promise.all([

@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import AdminPagination from './AdminPagination.vue'
 import AdminPillSelect from './AdminPillSelect.vue'
+import DateRangeFilter from '@/components/common/DateRangeFilter.vue'
 
 const props = defineProps({
   activeTab: { type: String, required: true },
@@ -11,10 +12,11 @@ const props = defineProps({
   mutating: { type: Boolean, default: false },
   reportPagination: { type: Object, default: () => ({ page: 1, pages: 1, total: 0 }) },
   reportStatusFilter: { type: String, default: 'pending' },
+  reportDateRange: { type: Object, default: () => ({ from: '', to: '' }) },
   formatDate: { type: Function, default: (d) => d ? new Date(d).toLocaleDateString() : '-' },
 })
 
-const emit = defineEmits(['resolve-report', 'hide-artwork', 'go-page', 'update:report-status-filter'])
+const emit = defineEmits(['resolve-report', 'hide-artwork', 'go-page', 'update:report-status-filter', 'update:reportDateRange'])
 
 const tabValue = computed(() => props.reportType)
 
@@ -74,6 +76,13 @@ function onStatusFilterChange(value) {
         ]"
         :label="config.filterLabel"
         @update:model-value="onStatusFilterChange"
+      />
+    </div>
+    <div class="filter-row-dates">
+      <DateRangeFilter
+        :model-value="reportDateRange"
+        compact
+        @update:model-value="emit('update:reportDateRange', $event)"
       />
     </div>
 
@@ -221,6 +230,12 @@ function onStatusFilterChange(value) {
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.filter-row-dates {
+  display: flex;
+  align-items: center;
+  padding-top: 0.4rem;
 }
 
 .report-status-select {

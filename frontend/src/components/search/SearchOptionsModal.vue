@@ -1,6 +1,7 @@
 <script setup>
 import { computed, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import DateRangeFilter from '@/components/common/DateRangeFilter.vue'
 
 const { t } = useI18n()
 
@@ -24,6 +25,7 @@ const formState = reactive({
   target: 'tag_partial',
   type: 'illust',
   series: 'all',
+  dateRange: { from: '', to: '' },
 })
 
 const hasAnyInput = computed(() => {
@@ -32,6 +34,8 @@ const hasAnyInput = computed(() => {
     || formState.includeAny.trim().length > 0
     || formState.exclude.trim().length > 0
     || formState.series !== 'all'
+    || formState.dateRange.from
+    || formState.dateRange.to
   )
 })
 
@@ -42,6 +46,9 @@ function syncFromProps() {
   formState.target = typeof props.initialValues?.target === 'string' ? props.initialValues.target : 'tag_partial'
   formState.type = typeof props.initialValues?.type === 'string' ? props.initialValues.type : 'illust'
   formState.series = typeof props.initialValues?.series === 'string' ? props.initialValues.series : 'all'
+  formState.dateRange = props.initialValues?.dateRange
+    ? { from: props.initialValues.dateRange.from || '', to: props.initialValues.dateRange.to || '' }
+    : { from: '', to: '' }
 }
 
 function closeModal() {
@@ -54,6 +61,7 @@ function resetDraft() {
   formState.exclude = ''
   formState.target = 'tag_partial'
   formState.series = 'all'
+  formState.dateRange = { from: '', to: '' }
 }
 
 function applySearch() {
@@ -64,6 +72,7 @@ function applySearch() {
     target: formState.target,
     type: formState.type,
     series: formState.series,
+    dateRange: { ...formState.dateRange },
   })
   closeModal()
 }
@@ -133,6 +142,11 @@ watch(
               </select>
             </label>
           </div>
+
+          <label class="field-block">
+            <span class="field-label">Date Range</span>
+            <DateRangeFilter v-model="formState.dateRange" />
+          </label>
 
           <button type="button" class="reset-btn" @click="resetDraft">{{ $t('common.reset') }}</button>
         </div>

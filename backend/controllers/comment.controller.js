@@ -4,6 +4,7 @@ const Artwork = require('../models/Artwork');
 const User = require('../models/User');
 const UserBlock = require('../models/UserBlock');
 const { createNotification } = require('../utils/notification');
+const { buildDateFilter } = require('../utils/dateFilter');
 
 const createComment = async (req, res, next) => {
     try {
@@ -243,7 +244,7 @@ const getAdminComments = async (req, res, next) => {
         const page = parseInt(req.query.page, 10) || 1;
         const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
         const skip = (page - 1) * limit;
-        const { q, artworkId, userId } = req.query;
+        const { q, artworkId, userId, from, to } = req.query;
 
         const filter = {};
 
@@ -256,6 +257,9 @@ const getAdminComments = async (req, res, next) => {
         if (userId) {
             filter.user = userId;
         }
+
+        // Date range filter
+        Object.assign(filter, buildDateFilter(req.query));
 
         const [comments, total] = await Promise.all([
             Comment.find(filter)
@@ -334,6 +338,9 @@ const getReportedComments = async (req, res, next) => {
 
         const status = req.query.status || '';
         const filter = status ? { status } : {};
+
+        // Date range filter
+        Object.assign(filter, buildDateFilter(req.query));
 
         const [reports, total] = await Promise.all([
             CommentReport.find(filter)

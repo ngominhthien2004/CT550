@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import AdminPagination from './AdminPagination.vue'
 import AdminPillSelect from './AdminPillSelect.vue'
+import DateRangeFilter from '@/components/common/DateRangeFilter.vue'
 
 const props = defineProps({
   activeTab: {
@@ -40,12 +41,17 @@ const props = defineProps({
     type: Function,
     required: true,
   },
+  artworkDateRange: {
+    type: Object,
+    default: () => ({ from: '', to: '' }),
+  },
 })
 
 const emit = defineEmits([
   'toggle-filters',
   'update:artworkQuery',
   'update:artworkTypeFilter',
+  'update:artworkDateRange',
   'apply-filters',
   'delete-artwork',
   'go-page',
@@ -86,28 +92,37 @@ const formattedArtworks = computed(() =>
     </div>
 
     <div v-show="artworkPanelFiltersOpen" id="admin-artwork-filters" class="filters" role="region" aria-label="Artwork filters">
-      <input
-        :value="artworkQuery"
-        type="text"
-        class="form-control form-control-sm"
-        placeholder="Search by title"
-        aria-label="Search artworks by title"
-        @input="onQueryInput"
-        @keyup.enter="emit('apply-filters')"
-      />
-      <AdminPillSelect
-        :model-value="artworkTypeFilter"
-        :options="[
-          { value: 'all', label: 'All types' },
-          { value: 'illust', label: 'Illustration' },
-          { value: 'manga', label: 'Manga' },
-          { value: 'gif', label: 'GIF' },
-          { value: 'novel', label: 'Novel' },
-        ]"
-        label="Filter artworks by type"
-        @update:model-value="onTypeFilterChange"
-      />
-      <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingArtworks" @click="emit('apply-filters')">Apply</button>
+      <div class="filter-row-main">
+        <input
+          :value="artworkQuery"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="Search by title"
+          aria-label="Search artworks by title"
+          @input="onQueryInput"
+          @keyup.enter="emit('apply-filters')"
+        />
+        <AdminPillSelect
+          :model-value="artworkTypeFilter"
+          :options="[
+            { value: 'all', label: 'All types' },
+            { value: 'illust', label: 'Illustration' },
+            { value: 'manga', label: 'Manga' },
+            { value: 'gif', label: 'GIF' },
+            { value: 'novel', label: 'Novel' },
+          ]"
+          label="Filter artworks by type"
+          @update:model-value="onTypeFilterChange"
+        />
+        <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingArtworks" @click="emit('apply-filters')">Apply</button>
+      </div>
+      <div class="filter-row-dates">
+        <DateRangeFilter
+          :model-value="artworkDateRange"
+          compact
+          @update:model-value="emit('update:artworkDateRange', $event)"
+        />
+      </div>
     </div>
 
     <p v-if="loadingArtworks" class="state-note">Loading artworks...</p>
@@ -158,6 +173,25 @@ const formattedArtworks = computed(() =>
 </template>
 
 <style scoped>
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.filter-row-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-row-dates {
+  display: flex;
+  align-items: center;
+  padding-top: 0.4rem;
+}
+
 .artwork-link {
   color: var(--accent);
   text-decoration: none;

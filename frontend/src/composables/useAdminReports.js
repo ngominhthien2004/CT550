@@ -7,6 +7,7 @@ export function useAdminReports({ error, mutating } = {}) {
 
   // --- Artwork reports ---
   const reportStatusFilter = ref('pending')
+  const reportDateRange = ref({ from: '', to: '' })
   const artworkReports = ref([])
   const loadingArtworkReports = ref(false)
   const artworkReportPagination = ref({ page: 1, pages: 1, total: 0 })
@@ -17,6 +18,8 @@ export function useAdminReports({ error, mutating } = {}) {
     try {
       const params = { limit: 20, page: nextPage }
       if (reportStatusFilter.value) params.status = reportStatusFilter.value
+      if (reportDateRange.value.from) params.from = reportDateRange.value.from
+      if (reportDateRange.value.to) params.to = reportDateRange.value.to
       const { data } = await adminApi.getReportedArtworks(params)
       artworkReports.value = data?.reports || []
       artworkReportPagination.value = {
@@ -151,6 +154,8 @@ export function useAdminReports({ error, mutating } = {}) {
     try {
       const params = { limit: 20, page: nextPage }
       if (commentReportStatusFilter.value) params.status = commentReportStatusFilter.value
+      if (reportDateRange.value.from) params.from = reportDateRange.value.from
+      if (reportDateRange.value.to) params.to = reportDateRange.value.to
       const { data } = await reportApi.getReportedComments(params)
       commentReports.value = data?.reports || []
       commentReportPagination.value = {
@@ -208,6 +213,8 @@ export function useAdminReports({ error, mutating } = {}) {
     try {
       const params = { limit: 20, page: nextPage }
       if (userReportStatusFilter.value) params.status = userReportStatusFilter.value
+      if (reportDateRange.value.from) params.from = reportDateRange.value.from
+      if (reportDateRange.value.to) params.to = reportDateRange.value.to
       const { data } = await reportApi.getAdminUserReports(params)
       userReports.value = data?.reports || []
       userReportPagination.value = {
@@ -313,7 +320,7 @@ export function useAdminReports({ error, mutating } = {}) {
   return {
     activeReportTab,
     // Artwork reports
-    reportStatusFilter, artworkReports, loadingArtworkReports, artworkReportPagination,
+    reportStatusFilter, reportDateRange, artworkReports, loadingArtworkReports, artworkReportPagination,
     loadArtworkReports, resolveArtworkReport, hideArtworkFromReport, goToArtworkReportPage,
     // Hidden artworks
     hiddenArtworks, loadingHiddenArtworks, hiddenArtworkPagination,

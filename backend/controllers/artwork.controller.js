@@ -8,6 +8,7 @@ const Tag = require('../models/Tag');
 const BrowseHistory = require('../models/BrowseHistory');
 const { createNotification } = require('../utils/notification');
 const { detectAIWithHuggingFace } = require('../services/huggingface.service');
+const { buildDateFilter } = require('../utils/dateFilter');
 
 const { getSimilarArtworks: getSimilarArtworksService } = require('../services/similarity.service');
 const fs = require('fs');
@@ -231,7 +232,7 @@ const getArtworks = async (req, res, next) => {
     try {
         const {
             type, ageRating, user, tag, q, limit: rawLimit,
-            sortBy, minWords, maxWords, series,
+            sortBy, minWords, maxWords, series, from, to,
         } = req.query;
         const query = { isHidden: { $ne: true } };
         const parsedLimit = Number.parseInt(rawLimit, 10);
@@ -268,6 +269,9 @@ const getArtworks = async (req, res, next) => {
             if (!Number.isNaN(minW)) query.wordCount.$gte = minW;
             if (!Number.isNaN(maxW)) query.wordCount.$lte = maxW;
         }
+
+        // Date range filter
+        Object.assign(query, buildDateFilter(req.query));
 
         // Determine sort order
         let sortOption = { createdAt: -1 };
@@ -363,7 +367,7 @@ const getAdminArtworks = async (req, res, next) => {
         const page = parseInt(req.query.page, 10) || 1;
         const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
         const skip = (page - 1) * limit;
-        const { q, type, ageRating } = req.query;
+        const { q, type, ageRating, from, to } = req.query;
 
         const filter = {};
         if (type) filter.type = type;
@@ -375,6 +379,9 @@ const getAdminArtworks = async (req, res, next) => {
                 { description: { $regex: keyword, $options: 'i' } },
             ];
         }
+
+        // Date range filter
+        Object.assign(filter, buildDateFilter(req.query));
 
         const [artworks, total] = await Promise.all([
             Artwork.find(filter)
@@ -752,6 +759,9 @@ const getReportedArtworks = async (req, res, next) => {
         const status = req.query.status || '';
         const filter = status ? { status } : {};
 
+        // Date range filter
+        Object.assign(filter, buildDateFilter(req.query));
+
         const [reports, total] = await Promise.all([
             ArtworkReport.find(filter)
                 .populate('artwork', 'title type images isHidden')
@@ -876,6 +886,10 @@ const getHiddenArtworks = async (req, res, next) => {
         const skip = (page - 1) * limit;
 
         const filter = { isHidden: true };
+
+        // Date range filter (use createdAt since hiddenAt might not always be set)
+        Object.assign(filter, buildDateFilter(req.query));
+
         const [artworks, total] = await Promise.all([
             Artwork.find(filter)
                 .populate('user', 'username displayName')

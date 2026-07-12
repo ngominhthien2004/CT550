@@ -1,4 +1,6 @@
 <script setup>
+import DateRangeFilter from '@/components/common/DateRangeFilter.vue'
+
 defineProps({
   requests: { type: Array, required: true },
   filteredRequests: { type: Array, required: true },
@@ -7,9 +9,10 @@ defineProps({
   activeRole: { type: String, default: 'creator' },
   statusFilter: { type: String, default: '' },
   searchQuery: { type: String, default: '' },
+  dateRange: { type: Object, default: () => ({ from: '', to: '' }) },
 })
 
-const emit = defineEmits(['select', 'action', 'update:statusFilter', 'update:searchQuery', 'loadAll'])
+const emit = defineEmits(['select', 'action', 'update:statusFilter', 'update:searchQuery', 'update:dateRange', 'loadAll'])
 
 function statusLabel(value) {
   return String(value || '').replace(/_/g, ' ')
@@ -34,6 +37,13 @@ function statusLabel(value) {
           <option value="cancelled">Cancelled</option>
         </select>
       </div>
+    </div>
+    <div class="date-filter-row">
+      <DateRangeFilter
+        :model-value="dateRange"
+        compact
+        @update:model-value="emit('update:dateRange', $event)"
+      />
     </div>
 
     <p v-if="actionError" class="state error">{{ actionError }}</p>
@@ -100,6 +110,12 @@ function statusLabel(value) {
   align-items: center;
   gap: 0.5rem;
   margin-left: auto;
+}
+
+.date-filter-row {
+  display: flex;
+  align-items: center;
+  padding-top: 0.3rem;
 }
 
 .search-input {

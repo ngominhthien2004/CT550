@@ -2,6 +2,7 @@
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import AdminPagination from './AdminPagination.vue'
 import AdminPillSelect from './AdminPillSelect.vue'
+import DateRangeFilter from '@/components/common/DateRangeFilter.vue'
 
 const props = defineProps({
   activeTab: {
@@ -40,12 +41,17 @@ const props = defineProps({
     type: Function,
     required: true,
   },
+  userDateRange: {
+    type: Object,
+    default: () => ({ from: '', to: '' }),
+  },
 })
 
 const emit = defineEmits([
   'toggle-filters',
   'update:userQuery',
   'update:userRoleFilter',
+  'update:userDateRange',
   'apply-filters',
   'set-user-role',
   'delete-user',
@@ -104,26 +110,35 @@ const formattedUsers = computed(() =>
     </div>
 
     <div v-show="userPanelFiltersOpen" id="admin-user-filters" class="filters" role="region" aria-label="User filters">
-      <input
-        :value="userQuery"
-        type="text"
-        class="form-control form-control-sm"
-        placeholder="Search by username/email"
-        aria-label="Search users by username or email"
-        @input="onQueryInput"
-        @keyup.enter="emit('apply-filters')"
-      />
-      <AdminPillSelect
-        :model-value="userRoleFilter"
-        :options="[
-          { value: 'all', label: 'All roles' },
-          { value: 'user', label: 'User' },
-          { value: 'admin', label: 'Admin' },
-        ]"
-        label="Filter users by role"
-        @update:model-value="onRoleFilterChange"
-      />
-      <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingUsers" @click="emit('apply-filters')">Apply</button>
+      <div class="filter-row-main">
+        <input
+          :value="userQuery"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="Search by username/email"
+          aria-label="Search users by username or email"
+          @input="onQueryInput"
+          @keyup.enter="emit('apply-filters')"
+        />
+        <AdminPillSelect
+          :model-value="userRoleFilter"
+          :options="[
+            { value: 'all', label: 'All roles' },
+            { value: 'user', label: 'User' },
+            { value: 'admin', label: 'Admin' },
+          ]"
+          label="Filter users by role"
+          @update:model-value="onRoleFilterChange"
+        />
+        <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingUsers" @click="emit('apply-filters')">Apply</button>
+      </div>
+      <div class="filter-row-dates">
+        <DateRangeFilter
+          :model-value="userDateRange"
+          compact
+          @update:model-value="emit('update:userDateRange', $event)"
+        />
+      </div>
     </div>
 
     <p v-if="loadingUsers" class="state-note">Loading users...</p>
@@ -207,6 +222,25 @@ const formattedUsers = computed(() =>
 <style scoped src="../../assets/styles/dropdown.css"></style>
 
 <style scoped>
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.filter-row-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-row-dates {
+  display: flex;
+  align-items: center;
+  padding-top: 0.4rem;
+}
+
 .user-link {
   color: var(--accent);
   text-decoration: none;

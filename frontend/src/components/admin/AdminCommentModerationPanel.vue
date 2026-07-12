@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import DateRangeFilter from '@/components/common/DateRangeFilter.vue'
 
 const props = defineProps({
   activeTab: { type: String, required: true },
@@ -9,6 +10,7 @@ const props = defineProps({
   mutating: { type: Boolean, default: false },
   comments: { type: Array, required: true },
   commentPagination: { type: Object, required: true },
+  commentDateRange: { type: Object, default: () => ({ from: '', to: '' }) },
   formatDate: { type: Function, required: true },
 })
 
@@ -19,6 +21,7 @@ const formattedComments = computed(() =>
 const emit = defineEmits([
   'toggle-filters',
   'update:commentQuery',
+  'update:commentDateRange',
   'apply-filters',
   'delete-comment',
   'go-page',
@@ -45,16 +48,25 @@ function onQueryInput(event) {
     </div>
 
     <div v-show="commentPanelFiltersOpen" id="admin-comment-filters" class="filters" role="region" aria-label="Comment filters">
-      <input
-        :value="commentQuery"
-        type="text"
-        class="form-control form-control-sm"
-        placeholder="Search by content..."
-        aria-label="Search comments by content"
-        @input="onQueryInput"
-        @keyup.enter="emit('apply-filters')"
-      />
-      <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingComments" @click="emit('apply-filters')">Apply</button>
+      <div class="filter-row-main">
+        <input
+          :value="commentQuery"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="Search by content..."
+          aria-label="Search comments by content"
+          @input="onQueryInput"
+          @keyup.enter="emit('apply-filters')"
+        />
+        <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingComments" @click="emit('apply-filters')">Apply</button>
+      </div>
+      <div class="filter-row-dates">
+        <DateRangeFilter
+          :model-value="commentDateRange"
+          compact
+          @update:model-value="emit('update:commentDateRange', $event)"
+        />
+      </div>
     </div>
 
     <p v-if="loadingComments" class="state-note">Loading comments...</p>
@@ -101,3 +113,24 @@ function onQueryInput(event) {
     </footer>
   </section>
 </template>
+
+<style scoped>
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.filter-row-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-row-dates {
+  display: flex;
+  align-items: center;
+  padding-top: 0.4rem;
+}
+</style>

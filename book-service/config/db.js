@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 const dns = require('dns');
+const { getMongoUri } = require('./env');
 
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 const connectDB = async () => {
     try {
-        const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/ct550-books';
+        const uri = getMongoUri();
         const conn = await mongoose.connect(uri, {
             retryWrites: true,
             maxPoolSize: 10,

@@ -23,6 +23,7 @@ const detailLoading = ref(false)
 const detailPanelRef = ref(null)
 const showCreateForm = ref(false)
 const searchQuery = ref('')
+const dateRange = ref({ from: '', to: '' })
 
 const requests = computed(() => requestStore.requests)
 const terms = computed(() => requestStore.terms)
@@ -121,11 +122,13 @@ onMounted(loadAll)
           :active-role="activeRole"
           :status-filter="statusFilter"
           :search-query="searchQuery"
+          :date-range="dateRange"
           @select="selectRequest"
           @action="runAction"
           @update:active-role="switchRole"
           @update:status-filter="statusFilter = $event"
           @update:search-query="searchQuery = $event"
+          @update:date-range="dateRange = $event"
           @load-all="loadAll"
         />
 

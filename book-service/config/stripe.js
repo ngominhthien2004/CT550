@@ -1,16 +1,7 @@
 const Stripe = require('stripe');
 const { getStripeSecretKey } = require('./env');
 
-let stripe;
+const key = getStripeSecretKey();
+const stripe = key ? new Stripe(key) : null;
 
-function getStripeClient() {
-    if (!stripe) {
-        const key = getStripeSecretKey();
-        if (key) {
-            stripe = new Stripe(key);
-        }
-    }
-    return stripe;
-}
-
-module.exports = { getStripeClient };
+module.exports = stripe;

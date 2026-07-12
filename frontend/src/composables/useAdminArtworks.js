@@ -4,6 +4,7 @@ import { adminApi } from '../services/api'
 export function useAdminArtworks({ error, mutating } = {}) {
   const artworkQuery = ref('')
   const artworkTypeFilter = ref('all')
+  const artworkDateRange = ref({ from: '', to: '' })
   const artworks = ref([])
   const artworkPanelFiltersOpen = ref(true)
   const artworkPagination = ref({ page: 1, pages: 1, total: 0 })
@@ -16,6 +17,8 @@ export function useAdminArtworks({ error, mutating } = {}) {
       const params = { limit: 20, page: nextPage }
       if (artworkQuery.value.trim()) params.q = artworkQuery.value.trim()
       if (artworkTypeFilter.value !== 'all') params.type = artworkTypeFilter.value
+      if (artworkDateRange.value.from) params.from = artworkDateRange.value.from
+      if (artworkDateRange.value.to) params.to = artworkDateRange.value.to
       const { data } = await adminApi.getArtworks(params)
       artworks.value = data?.artworks || []
       artworkPagination.value = {
@@ -63,7 +66,7 @@ export function useAdminArtworks({ error, mutating } = {}) {
   }
 
   return {
-    artworkQuery, artworkTypeFilter, artworks, artworkPanelFiltersOpen, artworkPagination, loadingArtworks,
+    artworkQuery, artworkTypeFilter, artworkDateRange, artworks, artworkPanelFiltersOpen, artworkPagination, loadingArtworks,
     loadArtworks, deleteArtwork, toggleArtworkFilters, goToArtworkPage,
   }
 }

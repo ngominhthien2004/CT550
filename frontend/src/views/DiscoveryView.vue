@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { getDiscovery } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { ArtworkCard } from '@/components/artwork'
+import DateRangeFilter from '../components/common/DateRangeFilter.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -28,6 +29,7 @@ const activeType = computed(() => (typeof route.query.type === 'string' ? route.
 const activePage = computed(() => parseInt(route.query.page, 10) || 1)
 
 const r18Filter = ref('all')
+const dateRange = ref({ from: '', to: '' })
 const LIMIT = 30
 
 function toggleLeftNav() {
@@ -45,7 +47,10 @@ async function loadArtworks() {
   loading.value = true
   error.value = ''
   try {
-    const { data } = await getDiscovery({ type: activeType.value, page: activePage.value, limit: LIMIT })
+    const params = { type: activeType.value, page: activePage.value, limit: LIMIT }
+    if (dateRange.value.from) params.from = dateRange.value.from
+    if (dateRange.value.to) params.to = dateRange.value.to
+    const { data } = await getDiscovery(params)
     const items = Array.isArray(data.artworks)
       ? data.artworks.map((item) => ({
           ...item,
@@ -101,6 +106,10 @@ watch(
   },
 )
 
+watch(dateRange, () => {
+  loadArtworks()
+})
+
 onMounted(() => {
   loadArtworks()
 })
@@ -142,6 +151,7 @@ onMounted(() => {
         >
           R-18
         </button>
+        <DateRangeFilter v-model="dateRange" compact />
       </div>
 
       <!-- Content -->
@@ -230,6 +240,7 @@ onMounted(() => {
 
 .filter-bar {
   display: flex;
+  align-items: center;
   gap: 0.5rem;
   margin-bottom: 1.25rem;
 }

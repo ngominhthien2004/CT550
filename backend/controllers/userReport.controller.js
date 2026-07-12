@@ -3,6 +3,7 @@ const UserReport = require('../models/UserReport');
 const CommentReport = require('../models/CommentReport');
 const ArtworkReport = require('../models/ArtworkReport');
 const { createNotification } = require('../utils/notification');
+const { buildDateFilter } = require('../utils/dateFilter');
 
 // ─── Report User ────────────────────────────────────────────────────────────────
 const reportUser = async (req, res, next) => {
@@ -113,6 +114,9 @@ const getAdminUserReports = async (req, res, next) => {
 
         const status = req.query.status || '';
         const filter = status ? { status } : {};
+
+        // Date range filter
+        Object.assign(filter, buildDateFilter(req.query));
 
         const [reports, total] = await Promise.all([
             UserReport.find(filter)

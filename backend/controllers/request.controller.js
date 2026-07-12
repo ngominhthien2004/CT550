@@ -13,6 +13,7 @@ const {
     validateRequestTermPayload,
 } = require('../utils/requestValidation');
 const { createNotification } = require('../utils/notification');
+const { buildDateFilter } = require('../utils/dateFilter');
 const path = require('path');
 
 const REQUEST_POPULATE = [
@@ -336,6 +337,9 @@ const listMyRequests = async (req, res, next) => {
             filter.status = req.query.status;
         }
 
+        // Date range filter
+        Object.assign(filter, buildDateFilter(req.query));
+
         const requests = await Request.find(filter)
             .populate(REQUEST_POPULATE)
             .sort({ createdAt: -1 })
@@ -357,6 +361,9 @@ const listPublicRequests = async (req, res, next) => {
         if (req.query.creator) {
             filter.creator = req.query.creator;
         }
+
+        // Date range filter
+        Object.assign(filter, buildDateFilter(req.query));
 
         const requests = await Request.find(filter)
             .populate('creator', 'username displayName avatar')

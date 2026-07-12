@@ -5,6 +5,7 @@ const Bookmark = require('../models/Bookmark');
 const Like = require('../models/Like');
 const BrowseHistory = require('../models/BrowseHistory');
 const { getForYouArtworks } = require('../services/recommendation.service');
+const { buildDateFilter } = require('../utils/dateFilter');
 
 const getFeed = async (req, res, next) => {
     try {
@@ -105,6 +106,9 @@ const getDiscovery = async (req, res, next) => {
         if (type && type !== 'all' && type !== 'undefined') {
             filter.type = type;
         }
+
+        // Date range filter
+        Object.assign(filter, buildDateFilter(req.query));
 
         const [artworks, total] = await Promise.all([
             Artwork.find(filter)

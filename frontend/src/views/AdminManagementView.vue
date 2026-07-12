@@ -37,16 +37,16 @@ const mutating = ref(false)
 // --- Composables ---
 const { overview, loadingOverview, loadOverview } = useAdminOverview({ error, mutating })
 const {
-  userQuery, userRoleFilter, users, userPanelFiltersOpen, userPagination, loadingUsers,
+  userQuery, userRoleFilter, userDateRange, users, userPanelFiltersOpen, userPagination, loadingUsers,
   loadUsers, setUserRole, deleteUser, toggleUserFilters, goToUserPage,
 } = useAdminUsers({ error, mutating, authStore, user })
 const {
-  artworkQuery, artworkTypeFilter, artworks, artworkPanelFiltersOpen, artworkPagination, loadingArtworks,
+  artworkQuery, artworkTypeFilter, artworkDateRange, artworks, artworkPanelFiltersOpen, artworkPagination, loadingArtworks,
   loadArtworks, deleteArtwork, toggleArtworkFilters, goToArtworkPage,
 } = useAdminArtworks({ error, mutating })
 const {
   activeReportTab,
-  reportStatusFilter, artworkReports, loadingArtworkReports, artworkReportPagination,
+  reportStatusFilter, reportDateRange, artworkReports, loadingArtworkReports, artworkReportPagination,
   loadArtworkReports, resolveArtworkReport, hideArtworkFromReport, goToArtworkReportPage,
   hiddenArtworks, loadingHiddenArtworks, hiddenArtworkPagination,
   loadHiddenArtworks, unhideArtwork, goToHiddenArtworkPage,
@@ -205,6 +205,7 @@ onMounted(async () => {
         :user-panel-filters-open="userPanelFiltersOpen"
         :user-query="userQuery"
         :user-role-filter="userRoleFilter"
+        :user-date-range="userDateRange"
         :loading-users="loadingUsers"
         :mutating="mutating"
         :users="users"
@@ -213,6 +214,7 @@ onMounted(async () => {
         @toggle-filters="toggleUserFilters"
         @update:user-query="userQuery = $event"
         @update:user-role-filter="userRoleFilter = $event"
+        @update:user-date-range="userDateRange = $event"
         @apply-filters="loadUsers(1)"
         @set-user-role="setUserRole"
         @delete-user="handleDeleteUser"
@@ -224,6 +226,7 @@ onMounted(async () => {
         :artwork-panel-filters-open="artworkPanelFiltersOpen"
         :artwork-query="artworkQuery"
         :artwork-type-filter="artworkTypeFilter"
+        :artwork-date-range="artworkDateRange"
         :loading-artworks="loadingArtworks"
         :mutating="mutating"
         :artworks="artworks"
@@ -232,6 +235,7 @@ onMounted(async () => {
         @toggle-filters="toggleArtworkFilters"
         @update:artwork-query="artworkQuery = $event"
         @update:artwork-type-filter="artworkTypeFilter = $event"
+        @update:artwork-date-range="artworkDateRange = $event"
         @apply-filters="loadArtworks(1)"
         @delete-artwork="handleDeleteArtwork"
         @go-page="goToArtworkPage"
@@ -246,11 +250,13 @@ onMounted(async () => {
         :mutating="mutating"
         :report-pagination="artworkReportPagination"
         :report-status-filter="reportStatusFilter"
+        :report-date-range="reportDateRange"
         :format-date="formatDate"
         @resolve-report="handleResolveArtworkReport"
         @hide-artwork="handleHideArtworkFromReport"
         @go-page="goToArtworkReportPage"
         @update:report-status-filter="reportStatusFilter = $event; loadArtworkReports(1)"
+        @update:report-date-range="reportDateRange = $event; loadArtworkReports(1)"
       />
 
       <AdminHiddenArtworksPanel
@@ -274,10 +280,12 @@ onMounted(async () => {
         :mutating="mutating"
         :report-pagination="commentReportPagination"
         :report-status-filter="commentReportStatusFilter"
+        :report-date-range="reportDateRange"
         :format-date="formatDate"
         @resolve-report="handleResolveCommentReport"
         @go-page="goToCommentReportPage"
         @update:report-status-filter="commentReportStatusFilter = $event; loadCommentReports(1)"
+        @update:report-date-range="reportDateRange = $event; loadCommentReports(1)"
       />
 
       <AdminReportPanel
@@ -289,10 +297,12 @@ onMounted(async () => {
         :mutating="mutating"
         :report-pagination="userReportPagination"
         :report-status-filter="userReportStatusFilter"
+        :report-date-range="reportDateRange"
         :format-date="formatDate"
         @resolve-report="handleResolveUserReport"
         @go-page="goToUserReportPage"
         @update:report-status-filter="userReportStatusFilter = $event; loadUserReports(1)"
+        @update:report-date-range="reportDateRange = $event; loadUserReports(1)"
       />
 
       <AdminTagManagementPanel

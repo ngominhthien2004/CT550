@@ -1,4 +1,6 @@
-require('./server');
 const connectDB = require('./config/db');
 
-connectDB();
+(async () => {
+    await connectDB();
+    require('./server');
+})();

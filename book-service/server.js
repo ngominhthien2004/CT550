@@ -4,7 +4,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
-const { getAllowedOrigins } = require('./config/env');
+const { getAllowedOrigins, getPort } = require('./config/env');
 const { errorHandler, notFound } = require('./middlewares/error.middleware');
 
 // Force IPv4 DNS resolution
@@ -12,7 +12,7 @@ const dns = require('dns');
 dns.setDefaultResultOrder('ipv4first');
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = getPort();
 const allowedOrigins = getAllowedOrigins();
 const isLocalDevOrigin = (origin) => /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
 
@@ -52,7 +52,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Body parser
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Health check
 app.get('/api/books', (req, res) => {

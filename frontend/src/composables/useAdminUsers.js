@@ -4,6 +4,7 @@ import { adminApi } from '../services/api'
 export function useAdminUsers({ error, mutating, authStore, user } = {}) {
   const userQuery = ref('')
   const userRoleFilter = ref('all')
+  const userDateRange = ref({ from: '', to: '' })
   const users = ref([])
   const userPanelFiltersOpen = ref(true)
   const userPagination = ref({ page: 1, pages: 1, total: 0 })
@@ -16,6 +17,8 @@ export function useAdminUsers({ error, mutating, authStore, user } = {}) {
       const params = { limit: 20, page: nextPage }
       if (userQuery.value.trim()) params.q = userQuery.value.trim()
       if (userRoleFilter.value !== 'all') params.role = userRoleFilter.value
+      if (userDateRange.value.from) params.from = userDateRange.value.from
+      if (userDateRange.value.to) params.to = userDateRange.value.to
       const { data } = await adminApi.getUsers(params)
       users.value = data?.users || []
       userPagination.value = {
@@ -81,7 +84,7 @@ export function useAdminUsers({ error, mutating, authStore, user } = {}) {
   }
 
   return {
-    userQuery, userRoleFilter, users, userPanelFiltersOpen, userPagination, loadingUsers,
+    userQuery, userRoleFilter, userDateRange, users, userPanelFiltersOpen, userPagination, loadingUsers,
     loadUsers, setUserRole, deleteUser, toggleUserFilters, goToUserPage,
   }
 }
