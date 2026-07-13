@@ -30,6 +30,7 @@ const seriesRoutes = require('./routes/series.routes');
 const userReportRoutes = require('./routes/userReport.routes');
 const bannerRoutes = require('./routes/banner.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
 
 // Force IPv4 DNS resolution to avoid timeout issues with IPv6 (e.g., HuggingFace API)
@@ -65,6 +66,20 @@ app.use((req, res, next) => {
     return next();
 });
 app.use(express.json());
+
+const bookServiceUrl = process.env.BOOK_SERVICE_URL || 'http://localhost:5001';
+
+app.use('/api/book-service', createProxyMiddleware({
+    target: `${bookServiceUrl}/api/book-service`,
+    changeOrigin: true,
+    onProxyReq: (proxyReq, req) => {
+        // Forward Authorization header if present
+        if (req.headers.authorization) {
+            proxyReq.setHeader('Authorization', req.headers.authorization);
+        }
+    }
+}));
+
 app.use(passport.initialize());
 
 // Connect to MongoDB

@@ -35,6 +35,8 @@ services:
   #   separate env var group `ct550-books` with that URI and reference it below.
   # - FRONTEND_URL must point to the production frontend URL so Stripe redirect URLs and CORS
   #   resolve correctly.
+  # - The main backend proxies `/api/book-service/*` requests to this service via the
+  #   BOOK_SERVICE_URL environment variable.
   - type: web
     name: CT550-BookService
     env: node
