@@ -173,7 +173,10 @@ export const useBookStore = defineStore('book', {
       this.categoriesLoading = true
       try {
         const { data } = await getBookCategories()
-        this.categories = Array.isArray(data) ? data : data?.categories || []
+        // The book-service returns either { data: [...] }, { value: [...] } (Azure-style),
+        // or a bare array. Accept all of them so the store stays forward-compatible.
+        const payload = data?.data ?? data?.value ?? data
+        this.categories = Array.isArray(payload) ? payload : payload?.categories || []
       } catch (error) {
         this.categories = []
       } finally {
@@ -197,7 +200,10 @@ export const useBookStore = defineStore('book', {
         }
 
         const { data } = await getBooks(params)
-        this.books = data?.books || []
+        // The book-service returns { data: [...], pagination: {...} }.
+        // Accept { books: [...] } as a fallback for forward-compat.
+        const list = data?.data ?? data?.books ?? []
+        this.books = Array.isArray(list) ? list : []
         this.pagination = {
           page: Number(data?.page || page),
           limit: Number(data?.limit || this.pagination.limit),
@@ -230,8 +236,14 @@ export const useBookStore = defineStore('book', {
     // Fetch a small batch of published books for a single category.
     // Cached in `categorySections` so the home page can render multiple
     // category sections without refetching the same data.
+    //
+    // `categoryKey` may be the category's `_id`, slug, or name. The
+    // book-service `listBooks` filter expects the category `_id`, so we
+    // resolve slug/name → _id against the loaded `state.categories` first.
     async fetchBooksByCategory(categoryKey, { limit = 8 } = {}) {
       if (!categoryKey) return []
+
+      const resolvedKey = this._resolveCategoryFilterId(categoryKey)
 
       this.categorySections = {
         ...this.categorySections,
@@ -242,10 +254,11 @@ export const useBookStore = defineStore('book', {
         const { data } = await getBooks({
           page: 1,
           limit,
-          category: categoryKey,
+          category: resolvedKey,
           sort: 'newest',
         })
-        const books = data?.books || []
+        const list = data?.data ?? data?.books ?? []
+        const books = Array.isArray(list) ? list : []
         this.categorySections = {
           ...this.categorySections,
           [categoryKey]: { loading: false, books },
@@ -258,6 +271,22 @@ export const useBookStore = defineStore('book', {
         }
         return []
       }
+    },
+
+    // Internal: turn any of {_id, slug, name} into the _id string the
+    // book-service `listBooks` filter actually accepts. Falls back to the
+    // original value when no match is found (and to undefined if blank).
+    _resolveCategoryFilterId(categoryKey) {
+      if (!categoryKey) return undefined
+      const needle = String(categoryKey).toLowerCase()
+      const hit = (this.categories || []).find(
+        (cat) =>
+          cat?._id === categoryKey ||
+          cat?.id === categoryKey ||
+          cat?.slug === categoryKey ||
+          String(cat?.name || '').toLowerCase() === needle,
+      )
+      return hit?._id || hit?.id || categoryKey
     },
 
     resetUploadState() {
@@ -317,7 +346,8 @@ export const useBookStore = defineStore('book', {
 
       try {
         const { data } = await getMyBooks(params)
-        this.myBooks = data?.books || []
+        const list = data?.data ?? data?.books ?? []
+        this.myBooks = Array.isArray(list) ? list : []
       } catch (error) {
         this.myBooksError = getApiErrorMessage(error, 'Failed to load your books')
         this.myBooks = []
@@ -405,7 +435,8 @@ export const useBookStore = defineStore('book', {
 
       try {
         const { data } = await getMyOrders(params)
-        this.orders = data?.orders || []
+        const list = data?.data ?? data?.orders ?? []
+        this.orders = Array.isArray(list) ? list : []
       } catch (error) {
         this.ordersError = getApiErrorMessage(error, 'Failed to load orders')
         this.orders = []
@@ -435,7 +466,8 @@ export const useBookStore = defineStore('book', {
 
       try {
         const { data } = await getSellerOrders(params)
-        this.sellerOrders = data?.orders || []
+        const list = data?.data ?? data?.orders ?? []
+        this.sellerOrders = Array.isArray(list) ? list : []
       } catch (error) {
         this.sellerOrdersError = getApiErrorMessage(error, 'Failed to load seller orders')
         this.sellerOrders = []

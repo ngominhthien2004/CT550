@@ -97,19 +97,24 @@ const topSectionCategories = computed(() =>
 )
 
 function sectionBooks(category) {
-  const key = category?._id || category?.id || category?.slug || category?.name
+  // Always use the category's _id as the cache key — the store's
+  // fetchBooksByCategory is called with the same _id in onMounted, so
+  // the lookup matches even when the category is fetched again.
+  const key = category?._id || category?.id
+  if (!key) return []
   return categorySections.value?.[key]?.books || []
 }
 
 function sectionLoading(category) {
-  const key = category?._id || category?.id || category?.slug || category?.name
+  const key = category?._id || category?.id
+  if (!key) return false
   return Boolean(categorySections.value?.[key]?.loading)
 }
 
 function categoryBookCount(category) {
-  return (bookStore.booksByCategory.get(
-    category?._id || category?.id || category?.slug || category?.name,
-  ) || []).length
+  const key = category?._id || category?.id || category?.slug || category?.name
+  if (!key) return 0
+  return (bookStore.booksByCategory.get(key) || []).length
 }
 
 function toggleLeftNav() {
@@ -188,11 +193,17 @@ watch(
 )
 
 onMounted(async () => {
+  // Make sure categories are loaded BEFORE books so the per-category
+  // sections have something to render and the tag aggregation has books
+  // to count against.
   await bookStore.fetchCategories()
   syncFiltersFromQuery()
   await bookStore.fetchBooks(pagination.value.page)
 
-  // Prefetch a small batch for each top-level category section in parallel
+  // Prefetch a small batch for each top-level category section in parallel.
+  // Pass the category _id (the book-service `listBooks` filter rejects
+  // category names, returning 400). The store will resolve slug/name → _id
+  // automatically, but we prefer the raw _id here for clarity.
   const top = enrichedCategories.value.slice(0, PER_CATEGORY_SECTION_COUNT)
   await Promise.all(
     top.map((cat) => bookStore.fetchBooksByCategory(
