@@ -20,6 +20,6 @@ categorySchema.pre('save', function (next) {
     next();
 });
 
-const Category = mongoose.model('Category', categorySchema);
+const Category = mongoose.model('Category', categorySchema, 'book_categories');
 
 module.exports = Category;

@@ -11,6 +11,6 @@ const sellerProfileSchema = mongoose.Schema({
     timestamps: true
 });
 
-const SellerProfile = mongoose.model('SellerProfile', sellerProfileSchema);
+const SellerProfile = mongoose.model('SellerProfile', sellerProfileSchema, 'book_sellerprofiles');
 
 module.exports = SellerProfile;

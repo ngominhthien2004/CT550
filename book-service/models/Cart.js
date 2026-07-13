@@ -14,6 +14,6 @@ const cartSchema = mongoose.Schema({
     timestamps: { createdAt: false, updatedAt: true }
 });
 
-const Cart = mongoose.model('Cart', cartSchema);
+const Cart = mongoose.model('Cart', cartSchema, 'book_carts');
 
 module.exports = Cart;
