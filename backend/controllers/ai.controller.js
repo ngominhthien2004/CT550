@@ -9,6 +9,7 @@ const Request = require('../models/Request');
 const Setting = require('../models/Setting');
 const ChatMessage = require('../models/ChatMessage');
 const ChatSession = require('../models/ChatSession');
+const { buildAgentActions } = require('../services/agent-tools.js');
 
 // ── Existing Chat (backward compatible) ──
 const chat = asyncHandler(async (req, res) => {
@@ -85,6 +86,20 @@ const agentChatStream = asyncHandler(async (req, res) => {
         toolUsed = true;
     }
 
+    // ─── Build agent actions for frontend ───
+    const actions = buildAgentActions(intent, message, toolResult);
+
+    // ----- Set SSE headers -----
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+    // ─── Emit action frames before text tokens ───
+    for (const action of actions) {
+        res.write(`data: ${JSON.stringify({ type: 'action', action })}\n\n`);
+    }
+
     // Build messages for AI
     const context = { userName };
     const systemPrompt = buildAgentSystemPrompt(context);
@@ -105,13 +120,6 @@ const agentChatStream = asyncHandler(async (req, res) => {
         stream = await chatStreamWithAI(aiMessages);
     }
 
-    // ----- Set SSE headers -----
-    // All pre-checks passed; commit to streaming
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.flushHeaders();
-
     // Stream tokens as SSE events; collect full reply for persistence
     let fullReply = '';
 
@@ -120,7 +128,7 @@ const agentChatStream = asyncHandler(async (req, res) => {
             const parsed = JSON.parse(chunk);
             if (parsed.token) {
                 fullReply += parsed.token;
-                res.write(`data: ${JSON.stringify({ token: parsed.token })}\n\n`);
+                res.write(`data: ${JSON.stringify({ type: 'token', token: parsed.token })}\n\n`);
             }
             if (parsed.done) {
                 // ----- Save assistant reply only after streaming completes -----
@@ -150,7 +158,7 @@ const agentChatStream = asyncHandler(async (req, res) => {
     } catch (err) {
         console.error('Agent streaming error:', err.message);
         if (res.headersSent) {
-            res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+            res.write(`data: ${JSON.stringify({ type: 'error', error: err.message })}\n\n`);
             res.end();
         } else {
             throw err;

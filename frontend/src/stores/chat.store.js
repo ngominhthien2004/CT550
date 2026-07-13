@@ -13,6 +13,7 @@ export const useChatStore = defineStore('chat', {
     isStreaming: false,
     abortController: null,
     bubbleOpen: false,
+    pendingActions: [],
   }),
 
   getters: {
@@ -249,13 +250,24 @@ export const useChatStore = defineStore('chat', {
 
             try {
               const parsed = JSON.parse(data)
+
               if (parsed.error) {
                 throw new Error(parsed.error)
               }
-              const token = parsed.token || ''
-              this.streamingMessage += token
+
+              // Handle action frames
+              if (parsed.type === 'action' && parsed.action) {
+                this.pendingActions.push(parsed.action)
+                continue
+              }
+
+              // Handle token frames (with or without 'type' field for backward compat)
+              const token = parsed.type === 'token' ? parsed.token : (parsed.token || '')
+              if (token) {
+                this.streamingMessage += token
+              }
             } catch (e) {
-              if (e.message.toLowerCase().includes('error')) throw e
+              if (e.message && typeof e.message === 'string' && e.message.toLowerCase().includes('error')) throw e
             }
           }
         }
@@ -333,5 +345,14 @@ export const useChatStore = defineStore('chat', {
     toggleBubble() { this.bubbleOpen = !this.bubbleOpen },
     openBubble() { this.bubbleOpen = true },
     closeBubble() { this.bubbleOpen = false },
+
+    /**
+     * Dequeue and return the next pending action.
+     * Returns null if no actions are pending.
+     */
+    dequeueAction() {
+      if (this.pendingActions.length === 0) return null
+      return this.pendingActions.shift()
+    },
   },
 })

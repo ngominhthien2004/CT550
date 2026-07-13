@@ -2,12 +2,14 @@
 import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useChatStore } from '../../stores/chat.store'
 import { formatShortDate } from '../../utils/date.js'
+import { useAgentExecutor } from '../../composables/useAgentExecutor'
 import ChatPanelHeader from './ChatPanelHeader.vue'
 import ChatSessionSidebar from './ChatSessionSidebar.vue'
 import ChatMessageList from './ChatMessageList.vue'
 import ChatInput from './ChatInput.vue'
 
 const chatStore = useChatStore()
+const { execute } = useAgentExecutor()
 const userInput = ref('')
 const inputRef = ref(null)
 const isSessionsOpen = ref(false)
@@ -291,6 +293,19 @@ watch(() => chatStore.bubbleOpen, async (val) => {
     }
   }
 })
+
+// Watch for agent actions from AI
+watch(
+  () => chatStore.pendingActions.length,
+  (newLen, oldLen) => {
+    if (newLen > 0) {
+      const action = chatStore.dequeueAction()
+      if (action) {
+        execute(action)
+      }
+    }
+  }
+)
 </script>
 
 <template>
