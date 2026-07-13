@@ -67,6 +67,10 @@ apiRouter.get('/health', (req, res) => {
 
 app.use('/api/book-service', apiRouter);
 
+app.get('/', (req, res) => {
+    res.json({ message: 'CT550 Book Service' });
+});
+
 const bookRoutes = require('./routes/book.routes');
 const categoryRoutes = require('./routes/category.routes');
 const cartRoutes = require('./routes/cart.routes');
