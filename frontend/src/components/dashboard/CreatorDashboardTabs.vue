@@ -12,6 +12,7 @@ const tabs = [
   { key: 'home', label: t('profile.tabHome') },
   { key: 'works', label: t('dashboard.tabWorks') },
   { key: 'reactions', label: t('dashboard.tabReactions') },
+  { key: 'analytics', label: t('dashboard.tabAnalytics') || 'Analytics' },
 ]
 
 function selectTab(key) {

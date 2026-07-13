@@ -6,6 +6,7 @@ const Chapter = require('../models/Chapter');
 const ReadingProgress = require('../models/ReadingProgress');
 const Tag = require('../models/Tag');
 const BrowseHistory = require('../models/BrowseHistory');
+const ViewEvent = require('../models/ViewEvent');
 const { createNotification } = require('../utils/notification');
 const { detectAIWithHuggingFace } = require('../services/huggingface.service');
 const { buildDateFilter } = require('../utils/dateFilter');
@@ -318,6 +319,17 @@ const getArtworkById = async (req, res, next) => {
             // Increment view count atomically
             await Artwork.findByIdAndUpdate(req.params.id, { $inc: { viewCount: 1 } });
             artwork.viewCount = (artwork.viewCount || 0) + 1;
+
+            // Track view event for analytics (append-only log)
+            try {
+                await ViewEvent.create({
+                    artwork: req.params.id,
+                    user: req.user?._id || null,
+                });
+            } catch (err) {
+                console.error('Failed to record view event:', err.message);
+                // Non-blocking — don't fail the request
+            }
 
             // Track browse history for authenticated users
             if (req.user) {

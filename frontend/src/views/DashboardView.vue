@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { CreatorDashboardTabs, CreatorRecentlyUploadedPanel, CreatorReactionsCard, DashboardReactionsPanel } from '@/components/dashboard'
 import DashboardWorksPanel from '@/components/dashboard/DashboardWorksPanel.vue'
+import DashboardAnalyticsPanel from '@/components/dashboard/DashboardAnalyticsPanel.vue'
 
 import { useAuthStore } from '../stores/auth.store'
 import { getArtworks } from '../services/api'
@@ -211,6 +212,9 @@ watch(
 
         <!-- Reactions tab content -->
         <DashboardReactionsPanel v-if="activeTab === 'reactions'" />
+
+        <!-- Analytics tab content -->
+        <DashboardAnalyticsPanel v-if="activeTab === 'analytics'" />
       </div>
     </section>
 

@@ -94,6 +94,15 @@ export const deleteComment = (commentId) => api.delete(`/comments/${commentId}`)
 export const reportComment = (commentId, payload) => api.post(`/comments/${commentId}/report`, payload)
 export const getCreatorReactions = (params = {}) => api.get('/users/dashboard/reactions', { params })
 
+// ── Creator Analytics API ──────────────────────────────────────────
+export const analyticsApi = {
+  getOverview: (params = {}) => api.get('/users/dashboard/analytics/overview', { params }),
+  getTrends: (params = {}) => api.get('/users/dashboard/analytics/trends', { params }),
+  getBreakdown: (params = {}) => api.get('/users/dashboard/analytics/breakdown', { params }),
+  getFollowerGrowth: (params = {}) => api.get('/users/dashboard/analytics/followers', { params }),
+  getArtworkAnalytics: (artworkId, params = {}) => api.get(`/users/dashboard/analytics/artwork/${artworkId}`, { params }),
+}
+
 export const bookmarkApi = {
   getMine: (params = {}) => api.get('/bookmarks', { params }),
   create: (payload) => api.post('/bookmarks', payload),
