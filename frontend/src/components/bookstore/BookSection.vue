@@ -47,20 +47,20 @@ function handleShowMore() {
 </script>
 
 <template>
-  <section class="book-section">
-    <header class="section-head">
-      <h2 class="section-title">
-        <i :class="['fa-solid', icon]" class="section-title-icon"></i>
+  <section class="bookstore-section">
+    <header class="bookstore-section-head">
+      <h2 class="bookstore-section-title">
+        <i :class="['fa-solid', icon]" class="bookstore-section-title-icon"></i>
         {{ title }}
       </h2>
       <a
         v-if="showMore"
         :href="moreHref || '#'"
-        class="section-more"
+        class="bookstore-section-more"
         @click.prevent="handleShowMore"
       >
         Show more
-        <i class="fa-solid fa-arrow-right section-more-icon" aria-hidden="true"></i>
+        <i class="fa-solid fa-arrow-right bookstore-section-more-icon" aria-hidden="true"></i>
       </a>
     </header>
 
@@ -69,67 +69,21 @@ function handleShowMore() {
       :loading="loading"
     />
 
-    <div v-if="!loading && (books?.length || 0) === 0" class="section-empty">
+    <div v-if="!loading && (books?.length || 0) === 0" class="bookstore-section-empty">
       No books in this category yet.
     </div>
   </section>
 </template>
 
+<style scoped src="../../assets/styles/bookstore.css"></style>
+
 <style scoped>
-.book-section {
-  display: grid;
-  gap: 1rem;
-}
-
-.section-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--brand);
-  letter-spacing: -0.01em;
-}
-
-.section-title-icon {
-  font-size: 1rem;
-  color: var(--accent);
-}
-
-.section-more {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--accent);
-  text-decoration: none;
-  padding: 0.4rem 0.75rem;
-  border-radius: 999px;
-  transition: background 0.18s ease, transform 0.18s ease;
-}
-
-.section-more:hover {
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
+/* BookSection-specific override: shift "Show more" icon on hover for affordance. */
+.bookstore-section-more:hover {
   transform: translateX(2px);
 }
 
-.section-more-icon {
-  font-size: 0.7rem;
-  transition: transform 0.18s ease;
-}
-
-.section-more:hover .section-more-icon {
+.bookstore-section-more:hover .bookstore-section-more-icon {
   transform: translateX(2px);
-}
-
-.section-empty {
-  padding: 1rem;
-  border: 1px dashed var(--line);
-  border-radius: var(--radius);
-  color: var(--muted);
-  text-align: center;
-  font-size: 0.9rem;
-  background: var(--surface);
 }
 </style>

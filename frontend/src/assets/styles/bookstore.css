@@ -1,0 +1,444 @@
+/* === Shared Bookstore Page Layout === */
+/* Root page wrapper (used by BookstoreHomeView and as a default for other
+   bookstore views which override max-width locally). */
+.bookstore-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 3rem;
+  display: grid;
+  gap: 2.25rem;
+}
+
+/* === Bookstore section wrapper + head/title/more/empty === */
+.bookstore-section {
+  display: grid;
+  gap: 1rem;
+}
+
+.bookstore-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.bookstore-section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--brand);
+  letter-spacing: -0.01em;
+}
+
+.bookstore-section-title-icon {
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+.bookstore-section-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.bookstore-section-more:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.bookstore-section-more-icon {
+  font-size: 0.7rem;
+  transition: transform 0.18s ease;
+}
+
+.bookstore-section-empty {
+  padding: 1rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.9rem;
+  background: var(--surface);
+}
+
+/* === Category card (used by CategoryCard.vue and BookstoreHomeView) === */
+.bookstore-category-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  box-shadow: var(--shadow-sm);
+  font-family: inherit;
+  color: inherit;
+}
+
+.bookstore-category-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--cat-accent, var(--accent));
+  box-shadow: var(--shadow-md);
+}
+
+.bookstore-category-card:focus-visible {
+  outline: none;
+  border-color: var(--cat-accent, var(--accent));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cat-accent, var(--accent)) 22%, transparent);
+}
+
+.bookstore-category-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--cat-accent, var(--accent)) 12%, var(--surface));
+  color: var(--cat-accent, var(--accent));
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.bookstore-category-card:hover .bookstore-category-icon {
+  background: color-mix(in srgb, var(--cat-accent, var(--accent)) 18%, var(--surface));
+}
+
+.bookstore-category-meta {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.bookstore-category-name {
+  font-weight: 700;
+  color: var(--brand);
+  font-size: 0.95rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bookstore-category-count {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* === Categories grid (4-col responsive) === */
+.bookstore-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+}
+
+@media (min-width: 600px) {
+  .bookstore-categories-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .bookstore-categories-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* === Tags cloud wrapper (used around <TagStrip>) === */
+.bookstore-tags-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  padding: 0.35rem 0;
+}
+
+/* Override the colored backgrounds on TagStrip chips inside the bookstore
+   so they match the rest of the bookstore UI (neutral surface, accent on hover). */
+.bookstore-tags-cloud :deep(.tag-chip) {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+.bookstore-tags-cloud :deep(.tag-chip:hover) {
+  background: var(--surface-alt);
+  border-color: var(--accent);
+  color: var(--accent);
+  filter: none;
+}
+
+/* === Hero (top gradient banner) === */
+.bookstore-hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 20%, color-mix(in srgb, var(--accent) 22%, transparent) 0%, transparent 55%),
+    radial-gradient(circle at 90% 90%, color-mix(in srgb, #f59e0b 18%, transparent) 0%, transparent 55%),
+    linear-gradient(135deg, var(--surface) 0%, var(--surface-alt) 100%);
+  padding: 2.25rem 1.75rem;
+  border-radius: 18px;
+}
+
+.bookstore-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .bookstore-hero {
+    padding: 3rem 2.5rem;
+  }
+  .bookstore-hero-grid {
+    grid-template-columns: 1.4fr 1fr;
+    gap: 2.5rem;
+  }
+}
+
+.bookstore-hero-eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  margin-bottom: 0.85rem;
+}
+
+.bookstore-hero-title {
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--brand);
+  margin: 0 0 0.85rem;
+}
+
+.bookstore-hero-subtitle {
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.55;
+  max-width: 38rem;
+  margin: 0 0 1.4rem;
+}
+
+.bookstore-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.bookstore-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.25rem;
+  font-weight: 700;
+  font-size: 0.92rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  border: 1px solid var(--accent);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: var(--shadow-sm);
+  font-family: inherit;
+}
+
+.bookstore-hero-cta:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.bookstore-hero-cta--ghost {
+  background: transparent;
+  color: var(--brand);
+  border-color: var(--line);
+}
+
+.bookstore-hero-cta--ghost:hover {
+  background: var(--surface);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Decorative hero art (no real images) */
+.bookstore-hero-art {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.bookstore-hero-stack {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 5 / 4;
+}
+
+.bookstore-hero-tile {
+  position: absolute;
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.bookstore-hero-tile--1 {
+  inset: 0% 50% 35% 0%;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 75%, #fff) 0%, var(--accent) 100%);
+  transform: rotate(-6deg);
+}
+
+.bookstore-hero-tile--2 {
+  inset: 12% 22% 22% 18%;
+  background: linear-gradient(135deg, #fde68a 0%, #f59e0b 100%);
+  transform: rotate(3deg);
+}
+
+.bookstore-hero-tile--3 {
+  inset: 28% 0% 0% 38%;
+  background: linear-gradient(135deg, #c7d2fe 0%, #6366f1 100%);
+  transform: rotate(7deg);
+}
+
+.bookstore-hero-glyph {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 3rem;
+  color: #fff;
+  text-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+}
+
+/* === Sell-your-work CTA (yellow gradient card) === */
+.bookstore-cta-sell {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.75rem 1.5rem;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 8% 20%, color-mix(in srgb, #f59e0b 25%, transparent) 0%, transparent 55%),
+    linear-gradient(135deg, #fff7e0 0%, #fde68a 100%);
+  border: 1px solid color-mix(in srgb, #f59e0b 35%, var(--line));
+}
+
+@media (min-width: 768px) {
+  .bookstore-cta-sell {
+    grid-template-columns: auto 1fr auto;
+    padding: 2rem 2.25rem;
+    gap: 1.75rem;
+  }
+}
+
+.bookstore-cta-sell-glyph {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #fff;
+  color: #b45309;
+  font-size: 1.4rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.bookstore-cta-sell-copy {
+  /* Slot for sell-cta text — width flows from parent grid. */
+}
+
+.bookstore-cta-sell-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--brand);
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.01em;
+}
+
+.bookstore-cta-sell-sub {
+  color: #6b4f1d;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  max-width: 48rem;
+}
+
+.bookstore-cta-sell-action {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.bookstore-cta-sell-btn {
+  background: #f59e0b;
+  border-color: #f59e0b;
+  color: #1f2937;
+  font-weight: 700;
+  padding: 0.7rem 1.3rem;
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+}
+
+.bookstore-cta-sell-btn:hover {
+  background: #d97706;
+  border-color: #d97706;
+  color: #1f2937;
+  transform: translateY(-1px);
+}
+
+/* === Featured section + filter divider (used in BookstoreHomeView) === */
+.bookstore-filter-divider {
+  margin-top: 0.5rem;
+}
+
+.bookstore-filtered-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.bookstore-pagination-wrap {
+  display: flex;
+  justify-content: center;
+  padding-top: 0.5rem;
+}
+
+.bookstore-pagination .page-link {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--text);
+}
+
+.bookstore-pagination .page-item.active .page-link {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.bookstore-pagination .page-item.disabled .page-link {
+  opacity: 0.5;
+}
