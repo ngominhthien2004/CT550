@@ -20,10 +20,7 @@
       </button>
       <div class="panel-header-info">
         <div class="panel-avatar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
+          <i class="fa-solid fa-robot"></i>
         </div>
         <div class="panel-text">
           <div class="panel-title">AI Assistant</div>
@@ -90,13 +87,13 @@ defineEmits(['new-chat', 'minimize', 'close', 'toggle-sidebar'])
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--accent), #0078d4);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 150, 250, 0.3);
 }
 
 .panel-text {

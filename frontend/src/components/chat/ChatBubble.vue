@@ -2,7 +2,6 @@
 import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useChatStore } from '../../stores/chat.store'
 import { formatShortDate } from '../../utils/date.js'
-import ChatBubbleTrigger from './ChatBubbleTrigger.vue'
 import ChatPanelHeader from './ChatPanelHeader.vue'
 import ChatSessionSidebar from './ChatSessionSidebar.vue'
 import ChatMessageList from './ChatMessageList.vue'
@@ -11,7 +10,6 @@ import ChatInput from './ChatInput.vue'
 const chatStore = useChatStore()
 const userInput = ref('')
 const inputRef = ref(null)
-const isOpen = ref(false)
 const isSessionsOpen = ref(false)
 const sessionSearch = ref('')
 const editingMessageId = ref(null)
@@ -27,7 +25,7 @@ const isStreaming = computed(() => chatStore.isStreaming)
 const hasSession = computed(() => !!chatStore.currentSessionId)
 const showWelcome = computed(() => !chatStore.isLoading && chatStore.messages.length === 0 && !chatStore.streamingMessage)
 const unreadCount = computed(() => {
-  if (!chatStore.messages.length || isOpen.value) return 0
+  if (!chatStore.messages.length || chatStore.bubbleOpen) return 0
   const last = chatStore.messages[chatStore.messages.length - 1]
   return last && last.role === 'assistant' ? 1 : 0
 })
@@ -218,7 +216,7 @@ function copyMessageContent(content) {
 }
 
 async function openChat() {
-  isOpen.value = true
+  chatStore.openBubble()
   if (!initialized.value) {
     await chatStore.initialize()
     initialized.value = true
@@ -234,15 +232,15 @@ async function openChat() {
 }
 
 function closeChat() {
-  isOpen.value = false
+  chatStore.closeBubble()
 }
 
 function minimizeChat() {
-  isOpen.value = false
+  chatStore.closeBubble()
 }
 
 function handleKeyEscape(e) {
-  if (e.key === 'Escape' && isOpen.value) {
+  if (e.key === 'Escape' && chatStore.bubbleOpen) {
     closeChat()
   }
 }
@@ -258,7 +256,7 @@ onBeforeUnmount(() => {
 watch(
   () => chatStore.messages.length,
   async () => {
-    if (!autoScrollEnabled || !isOpen.value) return
+    if (!autoScrollEnabled || !chatStore.bubbleOpen) return
     await nextTick()
     scrollToBottom()
     await nextTick()
@@ -269,7 +267,7 @@ watch(
 watch(
   () => chatStore.streamingMessage,
   async () => {
-    if (!autoScrollEnabled || !isOpen.value) return
+    if (!autoScrollEnabled || !chatStore.bubbleOpen) return
     await nextTick()
     scrollToBottom()
   }
@@ -278,13 +276,13 @@ watch(
 watch(
   () => chatStore.currentSessionId,
   async () => {
-    if (!isOpen.value) return
+    if (!chatStore.bubbleOpen) return
     await nextTick()
     scrollToBottom()
   }
 )
 
-watch(isOpen, async (val) => {
+watch(() => chatStore.bubbleOpen, async (val) => {
   if (val) {
     await nextTick()
     scrollToBottom()
@@ -296,12 +294,9 @@ watch(isOpen, async (val) => {
 </script>
 
 <template>
-  <div class="chat-bubble-root">
-    <ChatBubbleTrigger v-if="!isOpen" @open="openChat" :unread-count="unreadCount" />
-
-    <Teleport to="body">
-      <Transition name="chat-panel">
-        <div v-if="isOpen" class="chat-bubble-overlay">
+  <Teleport to="body">
+    <Transition name="chat-panel">
+      <div v-if="chatStore.bubbleOpen" class="chat-bubble-overlay">
           <div class="chat-bubble-backdrop" @click="closeChat"></div>
 
           <div class="chat-bubble-panel">
@@ -358,21 +353,9 @@ watch(isOpen, async (val) => {
         </div>
       </Transition>
     </Teleport>
-  </div>
 </template>
 
 <style scoped>
-/* ═══════════════════════════════════════
-   ROOT CONTAINER
-   ═══════════════════════════════════════ */
-.chat-bubble-root {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 9998;
-  pointer-events: none;
-}
-
 /* ═══════════════════════════════════════
    PANEL OVERLAY
    ═══════════════════════════════════════ */
@@ -471,11 +454,6 @@ watch(isOpen, async (val) => {
    RESPONSIVE — MOBILE (full screen)
    ═══════════════════════════════════════ */
 @media (max-width: 640px) {
-  .chat-bubble-root {
-    bottom: 16px;
-    right: 16px;
-  }
-
   .chat-bubble-backdrop {
     display: block;
     pointer-events: all;

@@ -1,10 +1,10 @@
 <script setup>
 import { ref, onBeforeUnmount, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import AppSidebarMenu from './AppSidebarMenu.vue'
 import AppTopBar from './AppTopBar.vue'
+import { useChatStore } from '../../stores/chat.store'
 
-const route = useRoute()
+const chatStore = useChatStore()
 
 const SIDEBAR_Z_INDEX = 1040
 
@@ -79,12 +79,13 @@ onBeforeUnmount(() => {
         <i class="fa-solid fa-arrow-up"></i>
       </button>
 
-      <router-link v-if="route.path !== '/messages'" to="/chat"
+      <button type="button"
         class="ai-chat-fab"
+        @click="chatStore.toggleBubble()"
         aria-label="AI Chat"
       >
         <i class="fa-solid fa-robot"></i>
-      </router-link>
+      </button>
     </Teleport>
   </div>
 </template>
@@ -196,7 +197,7 @@ onBeforeUnmount(() => {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--accent), #0078d4);
   color: #fff;
   border: none;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
@@ -213,6 +214,6 @@ onBeforeUnmount(() => {
 .ai-chat-fab:hover {
   transform: translateY(-2px);
   color: #fff;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.5);
+  box-shadow: 0 4px 16px rgba(0, 150, 250, 0.5);
 }
 </style>

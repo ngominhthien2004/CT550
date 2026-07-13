@@ -2,17 +2,6 @@
   <div class="chat-body" ref="chatBodyRef" @scroll="$emit('scroll')">
     <!-- Welcome Screen -->
     <div v-if="showWelcome" class="welcome-screen">
-      <div class="welcome-logo">
-        <div class="welcome-logo-ring"></div>
-        <div class="welcome-logo-inner">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2a4 4 0 0 1 4 4c0 2-2 3-2 3h-4s-2-1-2-3a4 4 0 0 1 4-4z"></path>
-            <path d="M12 10v4"></path>
-            <path d="M8 14h8"></path>
-            <path d="M12 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"></path>
-          </svg>
-        </div>
-      </div>
       <h2 class="welcome-heading">Xin chào!</h2>
       <p class="welcome-desc">Tôi là trợ lý AI của IlluWrl. Hỏi tôi bất cứ điều gì!</p>
 
@@ -50,9 +39,12 @@
         >
           <div v-if="item.role !== 'user'" class="message-avatar">
             <div class="avatar-ai">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="5" width="18" height="13" rx="2"></rect>
+                <circle cx="9" cy="10" r="1.5" fill="currentColor"></circle>
+                <circle cx="15" cy="10" r="1.5" fill="currentColor"></circle>
+                <path d="M9 14.5c0 0.8 1 1.5 3 1.5s3-0.7 3-1.5"></path>
+                <rect x="9" y="2" width="6" height="3" rx="1"></rect>
               </svg>
             </div>
           </div>
@@ -71,7 +63,7 @@
                   title="Sao chép"
                   aria-label="Sao chép nội dung"
                 >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                   </svg>
@@ -87,9 +79,12 @@
     <div v-if="isStreaming && streamingMessage" class="message message-assistant streaming-message">
       <div class="message-avatar">
         <div class="avatar-ai">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="5" width="18" height="13" rx="2"></rect>
+            <circle cx="9" cy="10" r="1.5" fill="currentColor"></circle>
+            <circle cx="15" cy="10" r="1.5" fill="currentColor"></circle>
+            <path d="M9 14.5c0 0.8 1 1.5 3 1.5s3-0.7 3-1.5"></path>
+            <rect x="9" y="2" width="6" height="3" rx="1"></rect>
           </svg>
         </div>
       </div>
@@ -105,9 +100,12 @@
     <div v-if="isSending && !isStreaming" class="message message-assistant">
       <div class="message-avatar">
         <div class="avatar-ai">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="5" width="18" height="13" rx="2"></rect>
+            <circle cx="9" cy="10" r="1.5" fill="currentColor"></circle>
+            <circle cx="15" cy="10" r="1.5" fill="currentColor"></circle>
+            <path d="M9 14.5c0 0.8 1 1.5 3 1.5s3-0.7 3-1.5"></path>
+            <rect x="9" y="2" width="6" height="3" rx="1"></rect>
           </svg>
         </div>
       </div>
@@ -195,7 +193,7 @@ defineExpose({ chatBodyRef })
   padding: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
   scrollbar-width: thin;
   scrollbar-color: var(--line) transparent;
 }
@@ -256,45 +254,6 @@ defineExpose({ chatBodyRef })
   padding: 1rem;
   text-align: center;
   animation: fadeIn 0.5s ease-out;
-}
-
-.welcome-logo {
-  position: relative;
-  width: 56px;
-  height: 56px;
-  margin-bottom: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.welcome-logo-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2, #ec4899);
-  animation: logoPulse 3s ease-in-out infinite;
-  opacity: 0.6;
-  filter: blur(3px);
-}
-
-@keyframes logoPulse {
-  0%, 100% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.15); opacity: 0.8; }
-}
-
-.welcome-logo-inner {
-  position: relative;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
-  z-index: 1;
 }
 
 .welcome-heading {
@@ -432,12 +391,12 @@ defineExpose({ chatBodyRef })
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--accent), #0078d4);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.25);
+  box-shadow: 0 2px 6px rgba(0, 150, 250, 0.25);
 }
 
 .message-content {
@@ -481,7 +440,7 @@ defineExpose({ chatBodyRef })
 }
 
 .is-welcome .message-bubble {
-  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  background: linear-gradient(135deg, var(--accent), #0078d4) !important;
   color: white !important;
   border: none !important;
 }
@@ -650,9 +609,9 @@ defineExpose({ chatBodyRef })
 }
 
 .message-time {
-  font-size: 0.55rem;
+  font-size: 0.7rem;
   color: var(--muted);
-  opacity: 0.6;
+  opacity: 0.8;
 }
 
 .message-user .message-footer .message-time {
@@ -660,8 +619,8 @@ defineExpose({ chatBodyRef })
 }
 
 .message-copy-btn {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   border-radius: 3px;
   border: none;
   background: transparent;
@@ -775,7 +734,7 @@ defineExpose({ chatBodyRef })
 
 .prompt-chip:hover {
   border-color: var(--accent);
-  background: linear-gradient(135deg, rgba(0, 150, 250, 0.08), rgba(124, 58, 237, 0.05));
+  background: linear-gradient(135deg, rgba(0, 150, 250, 0.08), rgba(0, 150, 250, 0.05));
   color: var(--accent);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 150, 250, 0.15);

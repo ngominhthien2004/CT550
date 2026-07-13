@@ -12,6 +12,7 @@ export const useChatStore = defineStore('chat', {
     streamingMessage: '',
     isStreaming: false,
     abortController: null,
+    bubbleOpen: false,
   }),
 
   getters: {
@@ -22,6 +23,11 @@ export const useChatStore = defineStore('chat', {
     },
     sortedSessions: (state) => {
       return [...state.sessions].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+    },
+    unreadCount: (state) => {
+      if (!state.messages.length || state.bubbleOpen) return 0
+      const last = state.messages[state.messages.length - 1]
+      return last && last.role === 'assistant' ? 1 : 0
     },
   },
 
@@ -323,5 +329,9 @@ export const useChatStore = defineStore('chat', {
         await this.loadSessionMessages(this.currentSessionId)
       }
     },
+
+    toggleBubble() { this.bubbleOpen = !this.bubbleOpen },
+    openBubble() { this.bubbleOpen = true },
+    closeBubble() { this.bubbleOpen = false },
   },
 })
