@@ -35,6 +35,129 @@ Nhiệm vụ của bạn là:
     res.json({ reply });
 });
 
+// ── Agent Chat (streaming, SSE) ──
+const agentChatStream = asyncHandler(async (req, res) => {
+    const { message, history, sessionId } = req.body;
+
+    // --- Guard clause ---
+    if (!message) {
+        res.status(400);
+        throw new Error('Message is required');
+    }
+
+    // ----- Save user message immediately (before streaming) -----
+    let savedSessionId = sessionId;
+    if (sessionId) {
+        await ChatMessage.create({
+            session: sessionId,
+            role: 'user',
+            content: message
+        });
+        await ChatSession.findByIdAndUpdate(sessionId, { updatedAt: new Date() });
+    }
+
+    // Get user info for context
+    const user = await User.findById(req.user._id).select('username displayName');
+    const userName = user.displayName || user.username;
+
+    // Detect intent
+    const intent = detectIntent(message);
+    console.log(`Agent intent detected: "${intent}" for message: "${message.substring(0, 50)}..."`);
+
+    let toolResult = null;
+    let toolUsed = false;
+
+    if (intent === 'search') {
+        const query = extractSearchQuery(message);
+        console.log(`Agent executing SEARCH tool with query: "${query}"`);
+        toolResult = await executeSearchTool(query || message, req.user._id);
+        toolUsed = true;
+    } else if (intent === 'recommend') {
+        const description = extractRecommendQuery(message);
+        console.log(`Agent executing RECOMMEND tool with: "${description}"`);
+        toolResult = await executeRecommendTool(description || message, req.user._id);
+        toolUsed = true;
+    } else if (intent === 'summarize') {
+        const idMatch = message.match(/[a-fA-F0-9]{24}/);
+        const artworkId = idMatch ? idMatch[0] : null;
+        console.log(`Agent executing SUMMARIZE tool for ID: "${artworkId || 'unknown'}"`);
+        toolResult = await executeSummarizeTool(artworkId);
+        toolUsed = true;
+    }
+
+    // Build messages for AI
+    const context = { userName };
+    const systemPrompt = buildAgentSystemPrompt(context);
+    const aiMessages = history || [];
+
+    let stream;
+    if (toolUsed && toolResult) {
+        aiMessages.push({ role: 'system', content: systemPrompt });
+        aiMessages.push({ role: 'user', content: message });
+        aiMessages.push({
+            role: 'user',
+            content: `Kết quả từ database:\n${JSON.stringify(toolResult, null, 2)}\n\nHãy giải thích kết quả này cho người dùng bằng tiếng Việt một cách thân thiện và dễ hiểu. Nếu không có kết quả, hãy nói với người dùng và gợi ý họ thử từ khóa khác.`
+        });
+        stream = await chatStreamWithAI(aiMessages);
+    } else {
+        aiMessages.push({ role: 'system', content: systemPrompt });
+        aiMessages.push({ role: 'user', content: message });
+        stream = await chatStreamWithAI(aiMessages);
+    }
+
+    // ----- Set SSE headers -----
+    // All pre-checks passed; commit to streaming
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+    // Stream tokens as SSE events; collect full reply for persistence
+    let fullReply = '';
+
+    try {
+        for await (const chunk of stream) {
+            const parsed = JSON.parse(chunk);
+            if (parsed.token) {
+                fullReply += parsed.token;
+                res.write(`data: ${JSON.stringify({ token: parsed.token })}\n\n`);
+            }
+            if (parsed.done) {
+                // ----- Save assistant reply only after streaming completes -----
+                if (savedSessionId) {
+                    await ChatMessage.create({
+                        session: savedSessionId,
+                        role: 'assistant',
+                        content: fullReply,
+                        toolUsed
+                    });
+
+                    // Update session title if this was the first exchange
+                    const msgCount = await ChatMessage.countDocuments({ session: savedSessionId });
+                    if (msgCount <= 3) {
+                        const title = message.length > 50
+                            ? message.substring(0, 47) + '...'
+                            : message;
+                        await ChatSession.findByIdAndUpdate(savedSessionId, { title });
+                    }
+                }
+
+                res.write('data: [DONE]\n\n');
+                res.end();
+                return;
+            }
+        }
+    } catch (err) {
+        console.error('Agent streaming error:', err.message);
+        if (res.headersSent) {
+            res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+            res.end();
+        } else {
+            throw err;
+        }
+    }
+});
+
 // ── Agent Chat (with tool calling) ──
 const agentChat = asyncHandler(async (req, res) => {
     const { message, history, sessionId } = req.body;
@@ -519,6 +642,7 @@ const autoTagUpload = asyncHandler(async (req, res) => {
 module.exports = {
     chat,
     agentChat,
+    agentChatStream,
     recommendArtworks,
     searchByAI,
     summarizeArtwork,

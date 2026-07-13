@@ -9,6 +9,9 @@ export const useChatStore = defineStore('chat', {
     isLoading: false,
     isSessionsLoading: false,
     error: null,
+    streamingMessage: '',
+    isStreaming: false,
+    abortController: null,
   }),
 
   getters: {
@@ -156,6 +159,139 @@ export const useChatStore = defineStore('chat', {
         return null
       } finally {
         this.isLoading = false
+      }
+    },
+
+    /**
+     * Send a message with streaming response.
+     * Uses fetch() directly for raw ReadableStream access.
+     * @param {string} message - The user's message
+     * @returns {Promise<{reply: string}|null>}
+     */
+    async sendMessageStream(message) {
+      if (!message?.trim()) return
+
+      this.isLoading = true
+      this.isStreaming = true
+      this.error = null
+      this.streamingMessage = ''
+
+      this.abortController = new AbortController()
+
+      this.messages.push({
+        role: 'user',
+        content: message.trim(),
+        timestamp: new Date().toISOString(),
+      })
+
+      try {
+        const history = this.messages
+          .filter(m => !m.isWelcome)
+          .slice(0, -1)
+          .map(m => ({ role: m.role, content: m.content }))
+
+        const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
+        const token = localStorage.getItem('token')
+
+        const response = await fetch(`${API_BASE_URL}/ai/agent-chat/stream`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            message: message.trim(),
+            history,
+            sessionId: this.currentSessionId,
+          }),
+          signal: this.abortController.signal,
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        }
+
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ''
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+          buffer = lines.pop() || ''
+
+          for (const line of lines) {
+            const trimmed = line.trim()
+            if (!trimmed || !trimmed.startsWith('data: ')) continue
+
+            const data = trimmed.slice(6)
+
+            if (data === '[DONE]') {
+              if (this.streamingMessage) {
+                this.messages.push({
+                  role: 'assistant',
+                  content: this.streamingMessage,
+                  timestamp: new Date().toISOString(),
+                  toolUsed: false,
+                })
+              }
+              break
+            }
+
+            try {
+              const parsed = JSON.parse(data)
+              if (parsed.error) {
+                throw new Error(parsed.error)
+              }
+              const token = parsed.token || ''
+              this.streamingMessage += token
+            } catch (e) {
+              if (e.message.toLowerCase().includes('error')) throw e
+            }
+          }
+        }
+
+        await this.loadSessions()
+
+        return { reply: this.streamingMessage }
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          if (this.streamingMessage) {
+            this.messages.push({
+              role: 'assistant',
+              content: this.streamingMessage + '\n\n*(Đã ngừng sinh)*',
+              timestamp: new Date().toISOString(),
+            })
+          }
+          return null
+        }
+
+        const errorMsg = err.response?.data?.message || err.message || 'Không thể kết nối đến AI assistant'
+        this.error = errorMsg
+        this.messages.push({
+          role: 'assistant',
+          content: `❌ ${errorMsg}`,
+          timestamp: new Date().toISOString(),
+          isError: true,
+        })
+        return null
+      } finally {
+        this.isLoading = false
+        this.isStreaming = false
+        this.streamingMessage = ''
+        this.abortController = null
+      }
+    },
+
+    /**
+     * Stop an in-progress streaming generation.
+     */
+    stopGeneration() {
+      if (this.abortController) {
+        this.abortController.abort()
       }
     },
 

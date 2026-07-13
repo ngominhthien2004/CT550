@@ -1,0 +1,6 @@
+f = open(r'C:\Users\Lenovo\.local\share\mimocode\memory\projects\203866c6-336e-40f4-84df-01b980679fb6\MEMORY.md', 'r', encoding='utf-8')
+content = f.read()
+f.close()
+lines = content.splitlines()
+print(f'Lines: {len(lines)}')
+print(f'Size: {len(content.encode("utf-8"))} bytes')

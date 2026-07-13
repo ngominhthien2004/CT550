@@ -3,6 +3,7 @@ const multer = require('multer');
 const {
     chat,
     agentChat,
+    agentChatStream,
     recommendArtworks,
     searchByAI,
     summarizeArtwork,
@@ -16,6 +17,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router.post('/chat', protect, chat);
 router.post('/agent-chat', protect, agentChat);
+router.post('/agent-chat/stream', protect, agentChatStream);
 router.post('/recommend', protect, recommendArtworks);
 router.post('/search', protect, searchByAI);
 router.post('/summarize/:artworkId', protect, summarizeArtwork);
