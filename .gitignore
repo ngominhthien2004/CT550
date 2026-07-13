@@ -39,6 +39,7 @@ tmp-pixiv-check.js
 crawled_images/
 backend/.env
 frontend/.env
+book-service/.env
 backend/public/uploads/
 frontend/temp_*
 frontend/playwright_check.spec.js

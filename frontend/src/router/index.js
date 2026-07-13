@@ -112,6 +112,57 @@ const routes = [
   { path: '/series/:id', name: 'series-detail', component: SeriesDetailView },
   { path: '/setting', redirect: '/settings' },
   { path: '/settings', name: 'settings', component: SettingsView, meta: { requiresAuth: true } },
+  {
+    path: '/bookstore',
+    name: 'bookstore',
+    component: () => import('../views/bookstore/BookstoreHomeView.vue'),
+    meta: { title: 'Book Store' },
+  },
+  {
+    path: '/bookstore/:id',
+    name: 'book-detail',
+    component: () => import('../views/bookstore/BookDetailView.vue'),
+  },
+  {
+    path: '/bookstore/upload',
+    name: 'book-upload',
+    component: () => import('../views/bookstore/BookUploadView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/bookstore/manage',
+    name: 'book-manage',
+    component: () => import('../views/bookstore/BookManageView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/bookstore/cart',
+    name: 'book-cart',
+    component: () => import('../views/bookstore/CartView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/bookstore/orders',
+    name: 'book-orders',
+    component: () => import('../views/bookstore/OrderHistoryView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/bookstore/seller',
+    name: 'book-seller',
+    component: () => import('../views/bookstore/SellerDashboardView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/bookstore/checkout/success',
+    name: 'book-checkout-success',
+    component: () => import('../views/bookstore/CheckoutSuccessView.vue'),
+  },
+  {
+    path: '/bookstore/checkout/cancel',
+    name: 'book-checkout-cancel',
+    component: () => import('../views/bookstore/CheckoutCancelView.vue'),
+  },
   { path: '/tags/:tagName', redirect: to => {
     const tagName = typeof to.params.tagName === 'string' ? to.params.tagName : ''
     return { path: '/search', query: { q: tagName, tag: '1' } }

@@ -78,6 +78,13 @@ const serviceLinks = computed(() => {
       to: '/draw',
       thumbnail: '/service-draw.png',
     },
+    {
+      key: 'bookstore',
+      label: 'Book Store',
+      description: 'Buy and sell digital books',
+      to: '/bookstore',
+      thumbnail: '/service-bookstore.png',
+    },
   ]
 })
 

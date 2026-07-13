@@ -26,3 +26,24 @@ services:
     envVarGroups:
       - name: ct550-frontend
     repo: https://github.com/ngominhthien2004/CT550
+
+  # Book Service deployment notes:
+  # - This service shares JWT_SECRET, CLOUDINARY_*, and STRIPE_* with the main IlluWrl backend
+  #   through the `ct550` env var group. Keep those values identical across services.
+  # - MONGODB_URI should be overridden in the Render dashboard to point to a dedicated book
+  #   database (e.g. .../ct550-books?retryWrites=true&w=majority). Alternatively, create a
+  #   separate env var group `ct550-books` with that URI and reference it below.
+  # - FRONTEND_URL must point to the production frontend URL so Stripe redirect URLs and CORS
+  #   resolve correctly.
+  - type: web
+    name: CT550-BookService
+    env: node
+    region: oregon
+    plan: free
+    rootDir: book-service
+    buildCommand: npm install
+    startCommand: node index.js
+    healthCheckPath: /api/book-service/health
+    envVarGroups:
+      - name: ct550
+    repo: https://github.com/ngominhthien2004/CT550

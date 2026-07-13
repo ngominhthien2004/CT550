@@ -51,13 +51,35 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+// Stripe webhook — must receive raw body before JSON parser
+const { handleStripeWebhook } = require('./controllers/webhook.controller');
+app.post('/api/book-service/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
+
 // Body parser
 app.use(express.json({ limit: '10mb' }));
 
-// Health check
-app.get('/api/books', (req, res) => {
-    res.json({ message: 'Book service is running!' });
+// Book-service API routes
+const apiRouter = express.Router();
+
+apiRouter.get('/health', (req, res) => {
+    res.json({ status: 'ok', service: 'book-service' });
 });
+
+app.use('/api/book-service', apiRouter);
+
+const bookRoutes = require('./routes/book.routes');
+const categoryRoutes = require('./routes/category.routes');
+const cartRoutes = require('./routes/cart.routes');
+const orderRoutes = require('./routes/order.routes');
+const checkoutRoutes = require('./routes/checkout.routes');
+const sellerRoutes = require('./routes/seller.routes');
+
+app.use('/api/book-service/books', bookRoutes);
+app.use('/api/book-service/categories', categoryRoutes);
+app.use('/api/book-service/cart', cartRoutes);
+app.use('/api/book-service/orders', orderRoutes);
+app.use('/api/book-service/checkout', checkoutRoutes);
+app.use('/api/book-service/seller', sellerRoutes);
 
 // 404 + error handling
 app.use(notFound);

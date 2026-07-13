@@ -85,6 +85,7 @@ const illuWrlStyleSections = computed(() => {
         { id: 'manga', label: 'Manga', i18nKey: 'nav.manga', to: '/manga', icon: '/manga-icon.png' },
         { id: 'gif', label: 'GIF', i18nKey: 'nav.gif', to: '/gifs', icon: 'fa-solid fa-film' },
         { id: 'novels', label: 'Novels', i18nKey: 'nav.novels', to: '/novels', icon: 'fa-regular fa-rectangle-list' },
+        { id: 'bookstore', label: 'Book Store', i18nKey: 'nav.bookstore', to: '/bookstore', icon: 'fa-solid fa-book' },
         { id: 'plans', label: 'Plans', i18nKey: 'nav.plans', to: '/plans', icon: 'fa-regular fa-clipboard' },
       ],
     },
