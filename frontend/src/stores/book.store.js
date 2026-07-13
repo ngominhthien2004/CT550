@@ -74,6 +74,9 @@ export const useBookStore = defineStore('book', {
     categories: [],
     categoriesLoading: false,
 
+    // Per-category book caches for Booth-style home sections
+    categorySections: {},
+
     // Book detail
     currentBook: null,
     bookLoading: false,
@@ -124,6 +127,36 @@ export const useBookStore = defineStore('book', {
     cartItemCount: (state) => {
       const items = state.cart?.items || state.cartItems || []
       return items.reduce((sum, item) => sum + Number(item?.quantity || 1), 0)
+    },
+    // Books grouped by category id (or category-name string) for Booth-style home sections
+    booksByCategory: (state) => {
+      const groups = new Map()
+      for (const book of state.books || []) {
+        const cats = Array.isArray(book.categories) ? book.categories : []
+        for (const cat of cats) {
+          const key = cat?._id || cat?.id || cat?.name || cat
+          if (!key) continue
+          if (!groups.has(key)) groups.set(key, [])
+          groups.get(key).push(book)
+        }
+      }
+      return groups
+    },
+    // Most-frequent tags from currently-loaded books (client-side aggregation)
+    popularTags: (state) => {
+      const counts = new Map()
+      for (const book of state.books || []) {
+        const tags = Array.isArray(book.tags) ? book.tags : []
+        for (const tag of tags) {
+          const value = typeof tag === 'string' ? tag : tag?.name || tag?._id
+          if (!value) continue
+          counts.set(value, (counts.get(value) || 0) + 1)
+        }
+      }
+      return Array.from(counts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 24)
+        .map(([name, count]) => ({ name, count }))
     },
   },
 
@@ -191,6 +224,39 @@ export const useBookStore = defineStore('book', {
         this.bookError = getApiErrorMessage(error, 'Failed to load book detail')
       } finally {
         this.bookLoading = false
+      }
+    },
+
+    // Fetch a small batch of published books for a single category.
+    // Cached in `categorySections` so the home page can render multiple
+    // category sections without refetching the same data.
+    async fetchBooksByCategory(categoryKey, { limit = 8 } = {}) {
+      if (!categoryKey) return []
+
+      this.categorySections = {
+        ...this.categorySections,
+        [categoryKey]: { loading: true, books: this.categorySections[categoryKey]?.books || [] },
+      }
+
+      try {
+        const { data } = await getBooks({
+          page: 1,
+          limit,
+          category: categoryKey,
+          sort: 'newest',
+        })
+        const books = data?.books || []
+        this.categorySections = {
+          ...this.categorySections,
+          [categoryKey]: { loading: false, books },
+        }
+        return books
+      } catch (error) {
+        this.categorySections = {
+          ...this.categorySections,
+          [categoryKey]: { loading: false, books: this.categorySections[categoryKey]?.books || [] },
+        }
+        return []
       }
     },
 
