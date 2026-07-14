@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import SellerBookRow from '@/components/bookstore/SellerBookRow.vue'
+import BookStoreTopBar from '@/components/bookstore/BookStoreTopBar.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { toggleNavCollapsed } from '@/utils/viewNavigation.js'
 
@@ -23,6 +24,7 @@ onMounted(() => {
 
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
+    <BookStoreTopBar />
     <section class="bookstore-page page-block p-3 p-md-4">
       <div class="page-header">
         <h1 class="page-title">My Books</h1>

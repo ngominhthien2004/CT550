@@ -5,6 +5,7 @@ import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import BookFilterBar from '@/components/bookstore/BookFilterBar.vue'
 import BookGrid from '@/components/bookstore/BookGrid.vue'
 import BookSection from '@/components/bookstore/BookSection.vue'
+import BookStoreTopBar from '@/components/bookstore/BookStoreTopBar.vue'
 import TagStrip from '@/components/shared/TagStrip.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { toggleNavCollapsed } from '@/utils/viewNavigation.js'
@@ -27,7 +28,7 @@ const pagination = computed(() => bookStore.pagination)
 const categories = computed(() => bookStore.categories)
 const popularTags = computed(() => bookStore.popularTags)
 
-const FEATURED_LIMIT = 8
+const FEATURED_LIMIT = 10
 
 const featuredBooks = computed(() => books.value.slice(0, FEATURED_LIMIT))
 
@@ -111,6 +112,7 @@ onMounted(async () => {
 
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
+    <BookStoreTopBar />
     <div class="bookstore-page">
       <!-- Hero / Banner -->
       <section class="bookstore-hero page-block">

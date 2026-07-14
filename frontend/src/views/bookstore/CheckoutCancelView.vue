@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
+import BookStoreTopBar from '@/components/bookstore/BookStoreTopBar.vue'
 import { toggleNavCollapsed } from '@/utils/viewNavigation.js'
 
 const isNavCollapsed = ref(true)
@@ -12,6 +13,7 @@ function toggleLeftNav() {
 
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
+    <BookStoreTopBar />
     <section class="bookstore-page page-block p-3 p-md-4 text-center">
       <div class="cancel-icon">
         <i class="fa-solid fa-circle-xmark"></i>

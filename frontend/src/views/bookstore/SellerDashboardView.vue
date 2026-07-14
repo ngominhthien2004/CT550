@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import OrderItem from '@/components/bookstore/OrderItem.vue'
+import BookStoreTopBar from '@/components/bookstore/BookStoreTopBar.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
 import { formatShortDate } from '@/utils/date.js'
@@ -94,6 +95,7 @@ onMounted(() => {
 
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
+    <BookStoreTopBar />
     <section class="bookstore-page page-block p-3 p-md-4">
       <h1 class="page-title">Seller Dashboard</h1>
 

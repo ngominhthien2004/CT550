@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import BookUploadForm from '@/components/bookstore/BookUploadForm.vue'
+import BookStoreTopBar from '@/components/bookstore/BookStoreTopBar.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
 import { toggleNavCollapsed } from '@/utils/viewNavigation.js'
@@ -68,6 +69,7 @@ onMounted(() => {
 
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
+    <BookStoreTopBar />
     <section class="bookstore-page page-block p-3 p-md-4">
       <h1 class="page-title">{{ isEdit ? 'Edit Book' : 'Upload E-book' }}</h1>
       <p class="page-subtitle">

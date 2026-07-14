@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import AddToCartButton from '@/components/bookstore/AddToCartButton.vue'
+import BookStoreTopBar from '@/components/bookstore/BookStoreTopBar.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { toggleNavCollapsed } from '@/utils/viewNavigation.js'
 
@@ -45,6 +46,7 @@ onMounted(() => {
 
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
+    <BookStoreTopBar />
     <section class="bookstore-page page-block p-3 p-md-4">
       <div v-if="loading" class="text-center py-5">
         <div class="spinner-border text-primary" role="status"></div>
