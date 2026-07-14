@@ -1,95 +1,129 @@
+import axios from 'axios'
 import api from './api.js'
 
 const multipartHeaders = { 'Content-Type': 'multipart/form-data' }
 
+// Optional direct connection to the book-service. When `VITE_BOOK_SERVICE_URL`
+// is set (production), we bypass the main-backend proxy and call the
+// microservice directly. This avoids the 504 hangs the main-backend proxy
+// can exhibit when forwarding POST /api/book-service/cart and similar
+// protected endpoints.
+const DIRECT_BOOK_SERVICE_URL = import.meta.env.VITE_BOOK_SERVICE_URL || ''
+
+function buildBookServiceClient() {
+  if (!DIRECT_BOOK_SERVICE_URL) {
+    return api
+  }
+
+  const baseURL = `${DIRECT_BOOK_SERVICE_URL.replace(/\/$/, '')}/api/book-service`
+  const client = axios.create({ baseURL })
+
+  client.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers = config.headers || {}
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  })
+
+  return client
+}
+
+const bookServiceApi = buildBookServiceClient()
+const useDirectBookService = Boolean(DIRECT_BOOK_SERVICE_URL)
+
 // ── Public books ───────────────────────────────────────────────────
 export function getBooks(params = {}) {
-  return api.get('/book-service/books', { params })
+  return bookServiceApi.get('/books', { params })
 }
 
 export function getBookById(bookId) {
-  return api.get(`/book-service/books/${bookId}`)
+  return bookServiceApi.get(`/books/${bookId}`)
 }
 
 // ── Protected books ────────────────────────────────────────────────
 export function createBook(formData) {
-  return api.post('/book-service/books', formData, { headers: multipartHeaders })
+  return bookServiceApi.post('/books', formData, { headers: multipartHeaders })
 }
 
 export function updateBook(bookId, formData) {
-  return api.put(`/book-service/books/${bookId}`, formData, { headers: multipartHeaders })
+  return bookServiceApi.put(`/books/${bookId}`, formData, { headers: multipartHeaders })
 }
 
 export function deleteBook(bookId) {
-  return api.delete(`/book-service/books/${bookId}`)
+  return bookServiceApi.delete(`/books/${bookId}`)
 }
 
 export function getMyBooks(params = {}) {
-  return api.get('/book-service/books/my-books', { params })
+  return bookServiceApi.get('/books/my-books', { params })
 }
 
 // ── Cart ───────────────────────────────────────────────────────────
 export function getCart() {
-  return api.get('/book-service/cart')
+  return bookServiceApi.get('/cart')
 }
 
 export function addToCart(payload) {
-  return api.post('/book-service/cart', payload)
+  return bookServiceApi.post('/cart', payload)
 }
 
 export function updateCartItem(itemId, payload) {
-  return api.put(`/book-service/cart/${itemId}`, payload)
+  return bookServiceApi.put(`/cart/${itemId}`, payload)
 }
 
 export function removeCartItem(itemId) {
-  return api.delete(`/book-service/cart/${itemId}`)
+  return bookServiceApi.delete(`/cart/${itemId}`)
 }
 
 export function clearCart() {
-  return api.delete('/book-service/cart')
+  return bookServiceApi.delete('/cart')
 }
 
 // ── Orders ─────────────────────────────────────────────────────────
 export function createOrder(payload) {
-  return api.post('/book-service/orders', payload)
+  return bookServiceApi.post('/orders', payload)
 }
 
 export function getMyOrders(params = {}) {
-  return api.get('/book-service/orders', { params })
+  return bookServiceApi.get('/orders', { params })
 }
 
 export function getOrderById(orderId) {
-  return api.get(`/book-service/orders/${orderId}`)
+  return bookServiceApi.get(`/orders/${orderId}`)
 }
 
 export function getSellerOrders(params = {}) {
-  return api.get('/book-service/orders/seller', { params })
+  return bookServiceApi.get('/orders/seller', { params })
 }
 
 export function updateOrderStatus(orderId, payload) {
-  return api.patch(`/book-service/orders/${orderId}/status`, payload)
+  return bookServiceApi.patch(`/orders/${orderId}/status`, payload)
 }
 
 export function downloadOrderItem(orderId, itemId) {
-  return api.get(`/book-service/orders/${orderId}/download/${itemId}`, {
+  return bookServiceApi.get(`/orders/${orderId}/download/${itemId}`, {
     responseType: 'blob',
   })
 }
 
 // ── Checkout ───────────────────────────────────────────────────────
 export function createCheckoutSession(payload) {
-  return api.post('/book-service/checkout', payload)
+  return bookServiceApi.post('/checkout', payload)
 }
 
 // ── Seller ───────────────────────────────────────────────────────────
 export function becomeSeller() {
-  return api.post('/book-service/seller/become')
+  return bookServiceApi.post('/seller/become')
 }
 
 export function getSellerProfile() {
-  return api.get('/book-service/seller/profile')
+  return bookServiceApi.get('/seller/profile')
 }
 
 export function updateSellerProfile(payload) {
-  return api.put('/book-service/seller/profile', payload)
+  return bookServiceApi.put('/seller/profile', payload)
 }
+
+// Exposed for diagnostics / tests.
+export { useDirectBookService, DIRECT_BOOK_SERVICE_URL }

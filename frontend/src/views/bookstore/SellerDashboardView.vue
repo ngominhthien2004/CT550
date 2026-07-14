@@ -191,6 +191,8 @@ onMounted(() => {
 .bookstore-page {
   max-width: 1000px;
   margin: 0 auto;
+  /* Offset for fixed BookStoreTopBar (top: 72px + 60px height) */
+  padding-top: 132px;
 }
 
 .page-title {

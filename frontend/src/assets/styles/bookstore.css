@@ -1,10 +1,12 @@
 /* === Shared Bookstore Page Layout === */
 /* Root page wrapper (used by BookstoreHomeView and as a default for other
-   bookstore views which override max-width locally). */
+   bookstore views which override max-width locally).
+   The fixed BookStoreTopBar (top: 72px, height: ~60px) sits above this
+   region, so we offset the page content by 132px to clear it. */
 .bookstore-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1.25rem 1rem 3rem;
+  padding: 132px 1rem 3rem;
   display: grid;
   gap: 2.25rem;
 }
@@ -355,11 +357,17 @@
   opacity: 0.5;
 }
 
-/* === BookStoreTopBar (sticky sub-bar on /bookstore/* routes) === */
+/* === BookStoreTopBar (fixed sub-bar on /bookstore/* routes) ===
+   Fixed-position so it ignores the MainLayoutTemplate's sidebar offset
+   and spans the full viewport width. Sits below the main AppTopBar
+   (72px tall) so it always renders in the gap between the top bar and
+   the page content. */
 .bookstore-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: fixed;
+  top: 72px;
+  left: 0;
+  right: 0;
+  z-index: 99;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--surface) 96%, transparent) 0%, var(--surface) 100%);
   border-bottom: 1px solid var(--line);

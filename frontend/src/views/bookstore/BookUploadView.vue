@@ -61,8 +61,21 @@ async function loadBookForEdit() {
 
 watch(editId, loadBookForEdit, { immediate: true })
 
-onMounted(() => {
-  bookStore.fetchSellerProfile()
+onMounted(async () => {
+  // For brand-new users, the seller profile doesn't exist yet — calling
+  // ensureSeller() creates it (idempotent) before the template checks
+  // for it, so the "Seller profile not found" yellow banner doesn't
+  // appear on first visit.
+  if (!isEdit.value) {
+    try {
+      await bookStore.ensureSeller()
+    } catch {
+      // ensureSeller populates sellerError on failure; the template
+      // displays it. Swallow here so onMounted doesn't crash.
+    }
+  } else {
+    await bookStore.fetchSellerProfile()
+  }
 })
 </script>
 
@@ -92,6 +105,8 @@ onMounted(() => {
 .bookstore-page {
   max-width: 900px;
   margin: 0 auto;
+  /* Offset for fixed BookStoreTopBar (top: 72px + 60px height) */
+  padding-top: 132px;
 }
 
 .page-title {

@@ -69,15 +69,30 @@ app.use(express.json());
 
 const bookServiceUrl = process.env.BOOK_SERVICE_URL || 'http://localhost:5001';
 
+// Proxy to the book-service microservice. The 30s timeouts prevent the
+// frontend from hanging indefinitely if the upstream is slow or down —
+// instead we surface a 502 Bad Gateway so the UI can show a proper error.
 app.use('/api/book-service', createProxyMiddleware({
     target: `${bookServiceUrl}/api/book-service`,
     changeOrigin: true,
+    timeout: 30000,
+    proxyTimeout: 30000,
     onProxyReq: (proxyReq, req) => {
         // Forward Authorization header if present
         if (req.headers.authorization) {
             proxyReq.setHeader('Authorization', req.headers.authorization);
         }
-    }
+    },
+    onError: (err, req, res) => {
+        console.error('[book-service proxy] error:', err.message);
+        if (!res.headersSent) {
+            res.status(502).json({ message: 'Book service unavailable, please try again' });
+        }
+    },
+    onProxyRes: (proxyRes) => {
+        // Suppress noisy default proxy logging
+        proxyRes.headers['x-proxied-by'] = 'ct550-main-backend';
+    },
 }));
 
 app.use(passport.initialize());
