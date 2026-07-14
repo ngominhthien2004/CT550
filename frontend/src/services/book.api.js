@@ -1,5 +1,4 @@
 import axios from 'axios'
-import api from './api.js'
 
 const multipartHeaders = { 'Content-Type': 'multipart/form-data' }
 
@@ -10,14 +9,7 @@ const multipartHeaders = { 'Content-Type': 'multipart/form-data' }
 // protected endpoints.
 const DIRECT_BOOK_SERVICE_URL = import.meta.env.VITE_BOOK_SERVICE_URL || ''
 
-function buildBookServiceClient() {
-  if (!DIRECT_BOOK_SERVICE_URL) {
-    return api
-  }
-
-  const baseURL = `${DIRECT_BOOK_SERVICE_URL.replace(/\/$/, '')}/api/book-service`
-  const client = axios.create({ baseURL })
-
+function attachAuthInterceptor(client) {
   client.interceptors.request.use((config) => {
     const token = localStorage.getItem('token')
     if (token) {
@@ -26,12 +18,28 @@ function buildBookServiceClient() {
     }
     return config
   })
-
   return client
 }
 
-const bookServiceApi = buildBookServiceClient()
+function buildDirectBookServiceClient() {
+  const baseURL = `${DIRECT_BOOK_SERVICE_URL.replace(/\/$/, '')}/api/book-service`
+  const client = axios.create({ baseURL })
+  return attachAuthInterceptor(client)
+}
+
+// In local dev, the vite proxy forwards `/api/book-service/*` to the
+// book-service microservice (port 5001). Using a dedicated axios instance
+// with baseURL `/api/book-service` keeps the request paths identical to the
+// direct (production) client, so call sites stay unchanged.
+function buildLocalBookServiceClient() {
+  const client = axios.create({ baseURL: '/api/book-service' })
+  return attachAuthInterceptor(client)
+}
+
 const useDirectBookService = Boolean(DIRECT_BOOK_SERVICE_URL)
+const bookServiceApi = useDirectBookService
+  ? buildDirectBookServiceClient()
+  : buildLocalBookServiceClient()
 
 // ── Public books ───────────────────────────────────────────────────
 export function getBooks(params = {}) {
