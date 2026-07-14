@@ -19,7 +19,11 @@ const { showSuccess, showError } = useToast()
 const deleting = ref(false)
 const toggling = ref(false)
 
-const coverUrl = computed(() => props.book?.coverImage || '/default-book-cover.png')
+const coverUrl = computed(() => {
+  const images = props.book?.coverImages
+  if (Array.isArray(images) && images.length > 0) return images[0]
+  return props.book?.coverImage || '/default-book-cover.png'
+})
 const status = computed(() => props.book?.status || 'draft')
 
 function editBook() {

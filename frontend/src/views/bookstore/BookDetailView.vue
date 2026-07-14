@@ -16,7 +16,11 @@ const book = computed(() => bookStore.currentBook)
 const loading = computed(() => bookStore.bookLoading)
 const error = computed(() => bookStore.bookError)
 
-const coverUrl = computed(() => book.value?.coverImage || '/default-book-cover.png')
+const coverUrl = computed(() => {
+  const images = book.value?.coverImages
+  if (Array.isArray(images) && images.length > 0) return images[0]
+  return book.value?.coverImage || '/default-book-cover.png'
+})
 const price = computed(() => Number(book.value?.price || 0))
 const originalPrice = computed(() => Number(book.value?.originalPrice || 0))
 const hasDiscount = computed(() => originalPrice.value > 0 && originalPrice.value > price.value)

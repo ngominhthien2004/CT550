@@ -5,7 +5,6 @@ import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import BookFilterBar from '@/components/bookstore/BookFilterBar.vue'
 import BookGrid from '@/components/bookstore/BookGrid.vue'
 import BookSection from '@/components/bookstore/BookSection.vue'
-import CategoryCard from '@/components/bookstore/CategoryCard.vue'
 import TagStrip from '@/components/shared/TagStrip.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { toggleNavCollapsed } from '@/utils/viewNavigation.js'
@@ -27,67 +26,8 @@ const loading = computed(() => bookStore.booksLoading)
 const pagination = computed(() => bookStore.pagination)
 const categories = computed(() => bookStore.categories)
 const popularTags = computed(() => bookStore.popularTags)
-const categorySections = computed(() => bookStore.categorySections)
-
-// Default Font Awesome icons assigned to common book categories
-const CATEGORY_ICON_FALLBACKS = [
-  'fa-book',
-  'fa-book-open',
-  'fa-feather',
-  'fa-palette',
-  'fa-pen-nib',
-  'fa-scroll',
-  'fa-mug-hot',
-  'fa-hat-wizard',
-  'fa-dragon',
-  'fa-ghost',
-  'fa-rocket',
-  'fa-gamepad',
-  'fa-music',
-  'fa-cube',
-  'fa-shirt',
-  'fa-comments',
-  'fa-heart',
-  'fa-magnifying-glass',
-  'fa-star',
-  'fa-flask',
-]
-
-function iconForCategory(category) {
-  if (!category) return 'fa-book'
-  if (category.icon) return category.icon
-  // Stable hash → icon so a category always gets the same glyph
-  const key = category._id || category.id || category.slug || category.name || ''
-  let hash = 0
-  for (let i = 0; i < key.length; i += 1) {
-    hash = (hash * 31 + key.charCodeAt(i)) >>> 0
-  }
-  return CATEGORY_ICON_FALLBACKS[hash % CATEGORY_ICON_FALLBACKS.length]
-}
-
-function accentForCategory(category) {
-  if (category?.accent) return category.accent
-  const palette = ['var(--accent)', '#7c3aed', '#0ea5e9', '#f59e0b', '#10b981', '#ec4899', '#6366f1']
-  const key = category?._id || category?.id || category?.slug || category?.name || ''
-  let hash = 0
-  for (let i = 0; i < key.length; i += 1) {
-    hash = (hash * 31 + key.charCodeAt(i)) >>> 0
-  }
-  return palette[hash % palette.length]
-}
-
-const enrichedCategories = computed(() =>
-  categories.value.map((cat) => ({
-    ...cat,
-    icon: iconForCategory(cat),
-    accent: accentForCategory(cat),
-  })),
-)
 
 const FEATURED_LIMIT = 8
-const SECTION_LIMIT = 4
-const HERO_CATEGORY_COUNT = 8
-const PER_CATEGORY_SECTION_COUNT = 5
 
 const featuredBooks = computed(() => books.value.slice(0, FEATURED_LIMIT))
 
@@ -97,32 +37,6 @@ const featuredBooks = computed(() => books.value.slice(0, FEATURED_LIMIT))
 // strips the leading "#" before emitting, so the click handler still receives
 // the raw tag name.
 const popularTagNames = computed(() => popularTags.value.map((t) => `#${t.name}`))
-
-// Top-N categories that get a dedicated Booth-style section underneath
-const topSectionCategories = computed(() =>
-  enrichedCategories.value.slice(0, PER_CATEGORY_SECTION_COUNT),
-)
-
-function sectionBooks(category) {
-  // Always use the category's _id as the cache key — the store's
-  // fetchBooksByCategory is called with the same _id in onMounted, so
-  // the lookup matches even when the category is fetched again.
-  const key = category?._id || category?.id
-  if (!key) return []
-  return categorySections.value?.[key]?.books || []
-}
-
-function sectionLoading(category) {
-  const key = category?._id || category?.id
-  if (!key) return false
-  return Boolean(categorySections.value?.[key]?.loading)
-}
-
-function categoryBookCount(category) {
-  const key = category?._id || category?.id || category?.slug || category?.name
-  if (!key) return 0
-  return (bookStore.booksByCategory.get(key) || []).length
-}
 
 function toggleLeftNav() {
   toggleNavCollapsed(isNavCollapsed)
@@ -162,15 +76,6 @@ function syncQueryToFilters() {
   router.replace({ path: '/bookstore', query })
 }
 
-function selectCategory(category) {
-  bookStore.setFilters({ category: category.slug || category._id || category.name || '' })
-  router.push({
-    path: '/bookstore',
-    query: { ...route.query, category: bookStore.filters.category },
-  })
-  bookStore.fetchBooks(1)
-}
-
 function selectTag(tagName) {
   bookStore.setFilters({ search: tagName, category: '' })
   router.push({
@@ -178,10 +83,6 @@ function selectTag(tagName) {
     query: { ...route.query, search: tagName, category: undefined },
   })
   bookStore.fetchBooks(1)
-}
-
-function showMoreForCategory(category) {
-  selectCategory(category)
 }
 
 function scrollToSection(selector) {
@@ -200,24 +101,11 @@ watch(
 )
 
 onMounted(async () => {
-  // Make sure categories are loaded BEFORE books so the per-category
-  // sections have something to render and the tag aggregation has books
-  // to count against.
+  // Make sure categories are loaded BEFORE books so the tag aggregation
+  // has books to count against. Categories are still used by the filter bar.
   await bookStore.fetchCategories()
   syncFiltersFromQuery()
   await bookStore.fetchBooks(pagination.value.page)
-
-  // Prefetch a small batch for each top-level category section in parallel.
-  // Pass the category _id (the book-service `listBooks` filter rejects
-  // category names, returning 400). The store will resolve slug/name → _id
-  // automatically, but we prefer the raw _id here for clarity.
-  const top = enrichedCategories.value.slice(0, PER_CATEGORY_SECTION_COUNT)
-  await Promise.all(
-    top.map((cat) => bookStore.fetchBooksByCategory(
-      cat._id || cat.id || cat.slug || cat.name,
-      { limit: SECTION_LIMIT },
-    )),
-  )
 })
 </script>
 
@@ -251,39 +139,6 @@ onMounted(async () => {
               <div class="bookstore-hero-glyph"><i class="fa-solid fa-book-open"></i></div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <!-- Categories (Booth-style 4-column grid) -->
-      <section class="bookstore-section">
-        <header class="bookstore-section-head">
-          <h2 class="bookstore-section-title">
-            <i class="fa-solid fa-layer-group bookstore-section-title-icon"></i>
-            Categories
-          </h2>
-          <a
-            v-if="enrichedCategories.length > HERO_CATEGORY_COUNT"
-            href="#all-categories"
-            class="bookstore-section-more"
-            @click.prevent="scrollToSection('.bookstore-section--all-categories')"
-          >
-            Show more
-            <i class="fa-solid fa-arrow-right bookstore-section-more-icon" aria-hidden="true"></i>
-          </a>
-        </header>
-
-        <div v-if="enrichedCategories.length" class="bookstore-categories-grid">
-          <CategoryCard
-            v-for="category in enrichedCategories.slice(0, HERO_CATEGORY_COUNT)"
-            :key="category._id || category.id || category.name"
-            :category="category"
-            :count="categoryBookCount(category)"
-            @select="selectCategory"
-          />
-        </div>
-        <div v-else class="bookstore-section-empty">
-          <i class="fa-solid fa-circle-info me-1"></i>
-          No categories yet.
         </div>
       </section>
 
@@ -350,23 +205,6 @@ onMounted(async () => {
             </ul>
           </nav>
         </div>
-      </section>
-
-      <!-- All categories sections (Booth-style stacked sections) -->
-      <section
-        v-for="category in topSectionCategories"
-        :key="category._id || category.id || category.name"
-        class="bookstore-section"
-      >
-        <BookSection
-          :title="category.name"
-          :icon="category.icon"
-          :books="sectionBooks(category)"
-          :loading="sectionLoading(category) && sectionBooks(category).length === 0"
-          :limit="SECTION_LIMIT"
-          :show-more="true"
-          @show-more="showMoreForCategory(category)"
-        />
       </section>
 
       <!-- Sell your work CTA -->

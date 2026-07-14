@@ -18,7 +18,11 @@ const removing = ref(false)
 const book = computed(() => props.item?.book || {})
 const price = computed(() => Number(props.item?.priceAtAdd || book.value?.price || 0))
 const lineTotal = computed(() => price.value * Number(props.item?.quantity || 1))
-const coverUrl = computed(() => book.value?.coverImage || '/default-book-cover.png')
+const coverUrl = computed(() => {
+  const images = book.value?.coverImages
+  if (Array.isArray(images) && images.length > 0) return images[0]
+  return book.value?.coverImage || '/default-book-cover.png'
+})
 
 async function updateQuantity(delta) {
   const newQty = Number(props.item?.quantity || 1) + delta

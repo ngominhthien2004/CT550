@@ -22,7 +22,11 @@ const bookStore = useBookStore()
 const { showSuccess, showError } = useToast()
 
 const book = computed(() => props.item?.book || {})
-const coverUrl = computed(() => book.value?.coverImage || '/default-book-cover.png')
+const coverUrl = computed(() =>
+  props.item?.coverImage
+  || props.item?.book?.coverImages?.[0]
+  || '/default-book-cover.png',
+)
 const isDownloadable = computed(() => props.showDownload && props.orderId && props.item._id)
 
 async function download() {

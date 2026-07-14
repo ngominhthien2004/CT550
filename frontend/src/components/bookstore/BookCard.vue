@@ -12,6 +12,8 @@ const props = defineProps({
 const router = useRouter()
 
 const coverUrl = computed(() => {
+  const images = props.book?.coverImages
+  if (Array.isArray(images) && images.length > 0) return images[0]
   return props.book?.coverImage || '/default-book-cover.png'
 })
 
