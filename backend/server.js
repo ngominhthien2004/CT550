@@ -65,13 +65,13 @@ app.use((req, res, next) => {
 
     return next();
 });
-app.use(express.json());
-
 const bookServiceUrl = process.env.BOOK_SERVICE_URL || 'http://localhost:5001';
 
-// Proxy to the book-service microservice. The 30s timeouts prevent the
-// frontend from hanging indefinitely if the upstream is slow or down —
-// instead we surface a 502 Bad Gateway so the UI can show a proper error.
+// IMPORTANT: The book-service proxy must be mounted BEFORE `express.json()`.
+// `express.json()` consumes the request body stream, so if it runs first
+// the proxy has no body left to forward and POST requests hang. Mounting
+// the proxy here lets http-proxy-middleware forward the raw body stream
+// untouched for `/api/book-service/*` requests.
 app.use('/api/book-service', createProxyMiddleware({
     target: `${bookServiceUrl}/api/book-service`,
     changeOrigin: true,
@@ -94,6 +94,8 @@ app.use('/api/book-service', createProxyMiddleware({
         proxyRes.headers['x-proxied-by'] = 'ct550-main-backend';
     },
 }));
+
+app.use(express.json());
 
 app.use(passport.initialize());
 
