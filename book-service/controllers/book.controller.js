@@ -1,6 +1,4 @@
-const mongoose = require('mongoose');
 const Book = require('../models/Book');
-const Category = require('../models/Category');
 const { uploadImage, uploadEbook } = require('../config/upload');
 
 const parsePositiveInt = (value, fallback) => {
@@ -37,27 +35,6 @@ const parseArrayInput = (value) => {
     return [];
 };
 
-const parseObjectId = (value) => {
-    try {
-        return new mongoose.Types.ObjectId(value);
-    } catch {
-        return null;
-    }
-};
-
-const parseObjectIds = (values) => {
-    return values.map(parseObjectId).filter(Boolean);
-};
-
-const validateCategoryIds = async (categoryIds) => {
-    if (categoryIds.length === 0) {
-        return [];
-    }
-
-    const existingCategories = await Category.find({ _id: { $in: categoryIds } }).select('_id');
-    return existingCategories.map((category) => category._id);
-};
-
 const isAuthorizedToModify = (book, user) => {
     return book.seller.toString() === user._id.toString() || user.role === 'admin';
 };
@@ -73,15 +50,6 @@ const listBooks = async (req, res, next) => {
         const status = req.query.status || 'published';
         if (['draft', 'published', 'archived'].includes(status)) {
             query.status = status;
-        }
-
-        if (req.query.category) {
-            const categoryId = parseObjectId(req.query.category);
-            if (!categoryId) {
-                res.status(400);
-                return next(new Error('Invalid category ID'));
-            }
-            query.categories = { $in: [categoryId] };
         }
 
         if (req.query.minPrice !== undefined || req.query.maxPrice !== undefined) {
@@ -125,7 +93,6 @@ const listBooks = async (req, res, next) => {
         const [books, total] = await Promise.all([
             Book.find(query)
                 .populate('seller', '_id username displayName avatar')
-                .populate('categories', 'name slug icon')
                 .sort(sortOption)
                 .skip(skip)
                 .limit(limit)
@@ -150,8 +117,7 @@ const listBooks = async (req, res, next) => {
 const getBookById = async (req, res, next) => {
     try {
         const book = await Book.findById(req.params.id)
-            .populate('seller', '_id username displayName avatar')
-            .populate('categories', 'name slug icon');
+            .populate('seller', '_id username displayName avatar');
 
         if (!book || !book.isActive) {
             res.status(404);
@@ -198,9 +164,6 @@ const createBook = async (req, res, next) => {
             coverImageUrls = [coverUpload.url];
         }
 
-        const categoryStrings = parseArrayInput(req.body.categories);
-        const validCategoryIds = await validateCategoryIds(parseObjectIds(categoryStrings));
-
         const tags = parseArrayInput(req.body.tags);
 
         const book = await Book.create({
@@ -217,7 +180,6 @@ const createBook = async (req, res, next) => {
                 mimeType: req.files.ebookFile[0].mimetype || '',
                 size: req.files.ebookFile[0].size || 0
             },
-            categories: validCategoryIds,
             seller: req.user._id,
             status: ['draft', 'published', 'archived'].includes(status) ? status : 'draft',
             tags
@@ -267,12 +229,6 @@ const updateBook = async (req, res, next) => {
         }
         if (status !== undefined && ['draft', 'published', 'archived'].includes(status)) {
             book.status = status;
-        }
-
-        const categoryStrings = parseArrayInput(req.body.categories);
-        if (categoryStrings.length > 0 || req.body.categories !== undefined) {
-            const validCategoryIds = await validateCategoryIds(parseObjectIds(categoryStrings));
-            book.categories = validCategoryIds;
         }
 
         const tags = parseArrayInput(req.body.tags);
@@ -344,7 +300,6 @@ const getMyBooks = async (req, res, next) => {
 
         const [books, total] = await Promise.all([
             Book.find(query)
-                .populate('categories', 'name slug icon')
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)

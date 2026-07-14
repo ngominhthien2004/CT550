@@ -65,14 +65,6 @@ describe('Book Service Public Endpoints', () => {
         assert.deepEqual(data, { status: 'ok', service: 'book-service' });
     });
 
-    test('categories endpoint returns 200 with array', async () => {
-        const response = await makeRequest('GET', '/api/book-service/categories');
-        const data = parseJson(response);
-
-        assert.equal(response.statusCode, 200);
-        assert.ok(Array.isArray(data));
-    });
-
     test('books endpoint returns 200', async () => {
         const response = await makeRequest('GET', '/api/book-service/books');
         const data = parseJson(response);
@@ -83,12 +75,6 @@ describe('Book Service Public Endpoints', () => {
 });
 
 describe('Book Service Protected Endpoints', () => {
-    test('create category without token returns 401', async () => {
-        const response = await makeRequest('POST', '/api/book-service/categories', { name: 'Test Category' });
-
-        assert.equal(response.statusCode, 401);
-    });
-
     test('cart endpoint without token returns 401', async () => {
         const response = await makeRequest('POST', '/api/book-service/cart', { bookId: '123', quantity: 1 });
 

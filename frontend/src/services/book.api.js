@@ -11,10 +11,6 @@ export function getBookById(bookId) {
   return api.get(`/book-service/books/${bookId}`)
 }
 
-export function getBookCategories() {
-  return api.get('/book-service/categories')
-}
-
 // ── Protected books ────────────────────────────────────────────────
 export function createBook(formData) {
   return api.post('/book-service/books', formData, { headers: multipartHeaders })

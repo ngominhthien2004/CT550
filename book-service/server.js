@@ -72,14 +72,12 @@ app.get('/', (req, res) => {
 });
 
 const bookRoutes = require('./routes/book.routes');
-const categoryRoutes = require('./routes/category.routes');
 const cartRoutes = require('./routes/cart.routes');
 const orderRoutes = require('./routes/order.routes');
 const checkoutRoutes = require('./routes/checkout.routes');
 const sellerRoutes = require('./routes/seller.routes');
 
 app.use('/api/book-service/books', bookRoutes);
-app.use('/api/book-service/categories', categoryRoutes);
 app.use('/api/book-service/cart', cartRoutes);
 app.use('/api/book-service/orders', orderRoutes);
 app.use('/api/book-service/checkout', checkoutRoutes);

@@ -5,8 +5,9 @@ Microservice for buying and selling digital books within IlluWrl.
 ## Local development
 
 1. Copy `.env.example` to `.env` and fill in your values.
-2. Make sure MongoDB is reachable.
-3. Run the service:
+2. **Use the same `MONGODB_URI` and `JWT_SECRET` as `backend/.env`.** The book-service shares the `users` collection and stores its own data in prefixed collections (`book_books`, `book_orders`, `book_carts`, `book_sellerprofiles`) inside the main `CT550` database. A separate local-only database (e.g. `mongodb://localhost:27017/ct550-books-test`) will appear empty because the data lives in the shared `CT550` database.
+3. Make sure MongoDB is reachable.
+4. Run the service:
 
 ```bash
 npm install

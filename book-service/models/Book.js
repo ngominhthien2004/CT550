@@ -14,7 +14,6 @@ const bookSchema = mongoose.Schema({
         mimeType: { type: String, default: '' },
         size: { type: Number, default: 0 }
     },
-    categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
     seller: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft' },
     isActive: { type: Boolean, default: true },

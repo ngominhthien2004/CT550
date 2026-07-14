@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import {
   getBooks,
   getBookById,
-  getBookCategories,
   createBook,
   updateBook,
   deleteBook,
@@ -35,9 +34,6 @@ function buildBookFormData(payload) {
   formData.append('stock', Number.isFinite(payload.stock) ? payload.stock : -1)
   formData.append('status', payload.status || 'draft')
 
-  const categories = Array.isArray(payload.categories) ? payload.categories : []
-  categories.forEach((category) => formData.append('categories', category))
-
   const tags = Array.isArray(payload.tags) ? payload.tags : []
   tags.forEach((tag) => formData.append('tags', tag))
 
@@ -60,7 +56,6 @@ export const useBookStore = defineStore('book', {
     booksError: '',
     filters: {
       search: '',
-      category: '',
       sort: 'newest',
       minPrice: '',
       maxPrice: '',
@@ -71,11 +66,6 @@ export const useBookStore = defineStore('book', {
       total: 0,
       pages: 1,
     },
-    categories: [],
-    categoriesLoading: false,
-
-    // Per-category book caches for Booth-style home sections
-    categorySections: {},
 
     // Book detail
     currentBook: null,
@@ -128,20 +118,6 @@ export const useBookStore = defineStore('book', {
       const items = state.cart?.items || state.cartItems || []
       return items.reduce((sum, item) => sum + Number(item?.quantity || 1), 0)
     },
-    // Books grouped by category id (or category-name string) for Booth-style home sections
-    booksByCategory: (state) => {
-      const groups = new Map()
-      for (const book of state.books || []) {
-        const cats = Array.isArray(book.categories) ? book.categories : []
-        for (const cat of cats) {
-          const key = cat?._id || cat?.id || cat?.name || cat
-          if (!key) continue
-          if (!groups.has(key)) groups.set(key, [])
-          groups.get(key).push(book)
-        }
-      }
-      return groups
-    },
     // Most-frequent tags from currently-loaded books (client-side aggregation)
     popularTags: (state) => {
       const counts = new Map()
@@ -169,21 +145,6 @@ export const useBookStore = defineStore('book', {
       this.pagination.page = 1
     },
 
-    async fetchCategories() {
-      this.categoriesLoading = true
-      try {
-        const { data } = await getBookCategories()
-        // The book-service returns either { data: [...] }, { value: [...] } (Azure-style),
-        // or a bare array. Accept all of them so the store stays forward-compatible.
-        const payload = data?.data ?? data?.value ?? data
-        this.categories = Array.isArray(payload) ? payload : payload?.categories || []
-      } catch (error) {
-        this.categories = []
-      } finally {
-        this.categoriesLoading = false
-      }
-    },
-
     async fetchBooks(page = 1) {
       this.booksLoading = true
       this.booksError = ''
@@ -193,7 +154,6 @@ export const useBookStore = defineStore('book', {
           page,
           limit: this.pagination.limit,
           search: this.filters.search || undefined,
-          category: this.filters.category || undefined,
           sort: this.filters.sort || 'newest',
           minPrice: this.filters.minPrice || undefined,
           maxPrice: this.filters.maxPrice || undefined,
@@ -231,62 +191,6 @@ export const useBookStore = defineStore('book', {
       } finally {
         this.bookLoading = false
       }
-    },
-
-    // Fetch a small batch of published books for a single category.
-    // Cached in `categorySections` so the home page can render multiple
-    // category sections without refetching the same data.
-    //
-    // `categoryKey` may be the category's `_id`, slug, or name. The
-    // book-service `listBooks` filter expects the category `_id`, so we
-    // resolve slug/name → _id against the loaded `state.categories` first.
-    async fetchBooksByCategory(categoryKey, { limit = 8 } = {}) {
-      if (!categoryKey) return []
-
-      const resolvedKey = this._resolveCategoryFilterId(categoryKey)
-
-      this.categorySections = {
-        ...this.categorySections,
-        [categoryKey]: { loading: true, books: this.categorySections[categoryKey]?.books || [] },
-      }
-
-      try {
-        const { data } = await getBooks({
-          page: 1,
-          limit,
-          category: resolvedKey,
-          sort: 'newest',
-        })
-        const list = data?.data ?? data?.books ?? []
-        const books = Array.isArray(list) ? list : []
-        this.categorySections = {
-          ...this.categorySections,
-          [categoryKey]: { loading: false, books },
-        }
-        return books
-      } catch (error) {
-        this.categorySections = {
-          ...this.categorySections,
-          [categoryKey]: { loading: false, books: this.categorySections[categoryKey]?.books || [] },
-        }
-        return []
-      }
-    },
-
-    // Internal: turn any of {_id, slug, name} into the _id string the
-    // book-service `listBooks` filter actually accepts. Falls back to the
-    // original value when no match is found (and to undefined if blank).
-    _resolveCategoryFilterId(categoryKey) {
-      if (!categoryKey) return undefined
-      const needle = String(categoryKey).toLowerCase()
-      const hit = (this.categories || []).find(
-        (cat) =>
-          cat?._id === categoryKey ||
-          cat?.id === categoryKey ||
-          cat?.slug === categoryKey ||
-          String(cat?.name || '').toLowerCase() === needle,
-      )
-      return hit?._id || hit?.id || categoryKey
     },
 
     resetUploadState() {

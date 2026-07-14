@@ -42,7 +42,6 @@ async function toggleStatus() {
       originalPrice: props.book.originalPrice,
       stock: props.book.stock,
       status: nextStatus,
-      categories: props.book.categories || [],
       tags: props.book.tags || [],
     })
     showSuccess(`Book ${nextStatus === 'published' ? 'published' : 'unpublished'}`)

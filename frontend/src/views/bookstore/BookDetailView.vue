@@ -68,7 +68,6 @@ onMounted(() => {
               <img :src="book.seller?.avatar || '/default-avatar.png'" alt="" class="seller-avatar" />
               <span>{{ book.seller?.displayName || book.seller?.username }}</span>
             </button>
-            <span v-if="book.categories?.length" class="category-pill">{{ book.categories.map((c) => c.name || c).join(', ') }}</span>
           </div>
 
           <div class="detail-price-row">
@@ -157,15 +156,6 @@ onMounted(() => {
   height: 26px;
   border-radius: 50%;
   object-fit: cover;
-}
-
-.category-pill {
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  color: var(--accent);
-  padding: 0.35rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 600;
 }
 
 .detail-price-row {

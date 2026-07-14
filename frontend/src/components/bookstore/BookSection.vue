@@ -70,7 +70,7 @@ function handleShowMore() {
     />
 
     <div v-if="!loading && (books?.length || 0) === 0" class="bookstore-section-empty">
-      No books in this category yet.
+      No books here yet.
     </div>
   </section>
 </template>

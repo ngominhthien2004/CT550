@@ -6,10 +6,6 @@ const props = defineProps({
     type: Object,
     default: null,
   },
-  categories: {
-    type: Array,
-    default: () => [],
-  },
   loading: {
     type: Boolean,
     default: false,
@@ -24,7 +20,6 @@ const form = ref({
   price: 0,
   originalPrice: 0,
   stock: -1,
-  categories: [],
   status: 'draft',
   tags: [],
   tagInput: '',
@@ -47,7 +42,6 @@ watch(
       price: book.price || 0,
       originalPrice: book.originalPrice || book.price || 0,
       stock: Number.isFinite(book.stock) ? book.stock : -1,
-      categories: Array.isArray(book.categories) ? book.categories.map((c) => c._id || c) : [],
       status: book.status || 'draft',
       tags: Array.isArray(book.tags) ? book.tags : [],
       tagInput: '',
@@ -142,16 +136,6 @@ function submit() {
         <label class="form-label">Stock (-1 for unlimited)</label>
         <input v-model.number="form.stock" type="number" class="form-control" min="-1" />
       </div>
-    </div>
-
-    <div>
-      <label class="form-label">Categories</label>
-      <select v-model="form.categories" class="form-select" multiple size="4">
-        <option v-for="category in categories" :key="category._id || category" :value="category._id || category">
-          {{ category.name || category }}
-        </option>
-      </select>
-      <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
     </div>
 
     <div>

@@ -62,7 +62,6 @@ async function loadBookForEdit() {
 watch(editId, loadBookForEdit, { immediate: true })
 
 onMounted(() => {
-  bookStore.fetchCategories()
   bookStore.fetchSellerProfile()
 })
 </script>
@@ -82,7 +81,6 @@ onMounted(() => {
 
       <BookUploadForm
         :initial-book="initialBook"
-        :categories="bookStore.categories"
         :loading="bookStore.uploadLoading"
         @submit="handleSubmit"
       />

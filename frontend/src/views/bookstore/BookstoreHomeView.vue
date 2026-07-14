@@ -25,7 +25,6 @@ const filters = computed({
 const books = computed(() => bookStore.books)
 const loading = computed(() => bookStore.booksLoading)
 const pagination = computed(() => bookStore.pagination)
-const categories = computed(() => bookStore.categories)
 const popularTags = computed(() => bookStore.popularTags)
 
 const FEATURED_LIMIT = 10
@@ -59,7 +58,6 @@ function syncFiltersFromQuery() {
   const query = route.query
   bookStore.setFilters({
     search: query.search || '',
-    category: query.category || '',
     sort: query.sort || 'newest',
     minPrice: query.minPrice || '',
     maxPrice: query.maxPrice || '',
@@ -69,7 +67,6 @@ function syncFiltersFromQuery() {
 function syncQueryToFilters() {
   const query = {}
   if (filters.value.search) query.search = filters.value.search
-  if (filters.value.category) query.category = filters.value.category
   if (filters.value.sort && filters.value.sort !== 'newest') query.sort = filters.value.sort
   if (filters.value.minPrice) query.minPrice = filters.value.minPrice
   if (filters.value.maxPrice) query.maxPrice = filters.value.maxPrice
@@ -78,10 +75,10 @@ function syncQueryToFilters() {
 }
 
 function selectTag(tagName) {
-  bookStore.setFilters({ search: tagName, category: '' })
+  bookStore.setFilters({ search: tagName })
   router.push({
     path: '/bookstore',
-    query: { ...route.query, search: tagName, category: undefined },
+    query: { ...route.query, search: tagName },
   })
   bookStore.fetchBooks(1)
 }
@@ -102,9 +99,6 @@ watch(
 )
 
 onMounted(async () => {
-  // Make sure categories are loaded BEFORE books so the tag aggregation
-  // has books to count against. Categories are still used by the filter bar.
-  await bookStore.fetchCategories()
   syncFiltersFromQuery()
   await bookStore.fetchBooks(pagination.value.page)
 })
@@ -181,7 +175,6 @@ onMounted(async () => {
         <div class="bookstore-filter-divider">
           <BookFilterBar
             v-model:filters="filters"
-            :categories="categories"
             :loading="loading"
             @search="applyFilters"
           />
@@ -191,7 +184,7 @@ onMounted(async () => {
           {{ bookStore.booksError }}
         </div>
 
-        <div v-if="filters.search || filters.category || filters.minPrice || filters.maxPrice" class="bookstore-filtered-grid">
+        <div v-if="filters.search || filters.minPrice || filters.maxPrice" class="bookstore-filtered-grid">
           <BookGrid :books="books" :loading="loading" />
           <nav v-if="pagination.pages > 1" class="bookstore-pagination-wrap bookstore-pagination" aria-label="Book pagination">
             <ul class="pagination mb-0">

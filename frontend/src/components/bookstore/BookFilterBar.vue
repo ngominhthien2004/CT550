@@ -4,10 +4,6 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
-  categories: {
-    type: Array,
-    default: () => [],
-  },
   loading: {
     type: Boolean,
     default: false,
@@ -48,13 +44,6 @@ function submitSearch() {
           />
         </div>
       </div>
-
-      <select class="form-select filter-select" :value="filters.category" @change="updateField('category', $event.target.value)">
-        <option value="">All categories</option>
-        <option v-for="category in categories" :key="category._id || category" :value="category._id || category">
-          {{ category.name || category }}
-        </option>
-      </select>
 
       <select class="form-select filter-select" :value="filters.sort" @change="updateField('sort', $event.target.value)">
         <option v-for="option in sortOptions" :key="option.value" :value="option.value">
