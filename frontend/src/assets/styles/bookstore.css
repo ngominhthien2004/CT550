@@ -326,10 +326,7 @@
   transform: translateY(-1px);
 }
 
-/* === Featured section + filter divider (used in BookstoreHomeView) === */
-.bookstore-filter-divider {
-  margin-top: 0.5rem;
-}
+/* Filter bar now sits directly in the Featured section */
 
 .bookstore-filtered-grid {
   display: grid;

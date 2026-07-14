@@ -164,13 +164,11 @@ onMounted(async () => {
           :show-more="false"
         />
 
-        <div class="bookstore-filter-divider">
-          <BookFilterBar
-            v-model:filters="filters"
-            :loading="loading"
-            @search="applyFilters"
-          />
-        </div>
+        <BookFilterBar
+          v-model:filters="filters"
+          :loading="loading"
+          @search="applyFilters"
+        />
 
         <div v-if="bookStore.booksError" class="alert alert-danger" role="alert">
           {{ bookStore.booksError }}
