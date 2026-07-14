@@ -1,12 +1,13 @@
 /* === Shared Bookstore Page Layout === */
 /* Root page wrapper (used by BookstoreHomeView and as a default for other
    bookstore views which override max-width locally).
-   The fixed BookStoreTopBar (top: 72px, height: ~60px) sits above this
-   region, so we offset the page content by 132px to clear it. */
+   The BookStoreTopBar is `position: sticky; top: 0;` and lives in normal
+   flow, so page content flows naturally below it without any padding-top
+   offset here. */
 .bookstore-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 132px 1rem 3rem;
+  padding: 1.5rem 1rem 3rem;
   display: grid;
   gap: 2.25rem;
 }
@@ -357,14 +358,14 @@
   opacity: 0.5;
 }
 
-/* === BookStoreTopBar (fixed sub-bar on /bookstore/* routes) ===
-   Fixed-position so it ignores the MainLayoutTemplate's sidebar offset
-   and spans the full viewport width. Sits below the main AppTopBar
-   (72px tall) so it always renders in the gap between the top bar and
-   the page content. */
+/* === BookStoreTopBar (sticky top bar on /bookstore/* routes) ===
+   Sticky at the top of the viewport. Lives in normal document flow, so
+   the .bookstore-layout-body sits directly underneath it without an
+   offset. This is intentional — the bookstore is a self-contained
+   sub-app, so the main app topbar is NOT shown on /bookstore/* routes. */
 .bookstore-topbar {
-  position: fixed;
-  top: 72px;
+  position: sticky;
+  top: 0;
   left: 0;
   right: 0;
   z-index: 99;
@@ -612,5 +613,275 @@
 
   .bookstore-topbar-search-input {
     padding-left: 2.1rem;
+  }
+}
+
+/* === BookstoreLayout (sidebar + main) === */
+.bookstore-layout-root {
+  display: block;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.bookstore-layout-body {
+  display: flex;
+  /* No margin-top here — the topbar is sticky and lives in normal flow,
+     so the body sits directly below it. */
+  min-height: calc(100vh - 60px);
+}
+
+.bookstore-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  padding: 1.25rem 0.75rem;
+  position: sticky;
+  top: 60px; /* sticks just below the topbar (topbar min-height: 60px) */
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  transition: width 0.18s ease;
+}
+
+.bookstore-sidebar.is-collapsed {
+  width: 68px;
+}
+
+.bookstore-sidebar.is-collapsed .bookstore-sidebar-label,
+.bookstore-sidebar.is-collapsed .bookstore-sidebar-text,
+.bookstore-sidebar.is-collapsed .bookstore-sidebar-toggle-label {
+  display: none;
+}
+
+.bookstore-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bookstore-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.bookstore-sidebar-link:hover {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  color: var(--accent);
+}
+
+.bookstore-sidebar-link.router-link-exact-active,
+.bookstore-sidebar-link--active {
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  color: var(--accent);
+}
+
+.bookstore-sidebar-link i {
+  font-size: 1rem;
+  width: 1.25rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.bookstore-sidebar-divider {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 0.4rem 0;
+}
+
+.bookstore-sidebar-toggle {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  font-family: inherit;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.bookstore-sidebar-toggle:hover {
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+.bookstore-sidebar-toggle-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.bookstore-sidebar.is-collapsed .bookstore-sidebar-toggle {
+  justify-content: center;
+  padding: 0.4rem;
+}
+
+.bookstore-main {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 920px) {
+  .bookstore-sidebar {
+    position: fixed;
+    z-index: 98;
+    top: 60px;
+    height: calc(100vh - 60px);
+    transform: translateX(-100%);
+  }
+  .bookstore-sidebar.is-collapsed {
+    transform: translateX(0);
+    width: 240px;
+  }
+  .bookstore-main {
+    margin-left: 0 !important;
+  }
+}
+
+/* === Bookstore topbar user menu === */
+.bookstore-topbar-user {
+  position: relative;
+  margin-left: 0.4rem;
+}
+
+.bookstore-topbar-user-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 40px;
+  padding: 0 0.6rem 0 0.4rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.bookstore-topbar-user-trigger:hover {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  border-color: var(--accent);
+}
+
+.bookstore-topbar-user-avatar-fallback,
+.bookstore-topbar-user-avatar-img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: inline-block;
+}
+
+.bookstore-topbar-user-avatar-fallback {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent) 0%, #6366f1 100%);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.bookstore-topbar-user-menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  min-width: 220px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  padding: 0.5rem;
+  z-index: 100;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.bookstore-topbar-user-menu a,
+.bookstore-topbar-user-menu button {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.bookstore-topbar-user-menu a:hover,
+.bookstore-topbar-user-menu button:hover {
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  color: var(--accent);
+}
+
+.bookstore-topbar-user-menu a i,
+.bookstore-topbar-user-menu button i {
+  width: 1rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.bookstore-topbar-user-menu a:hover i,
+.bookstore-topbar-user-menu button:hover i {
+  color: var(--accent);
+}
+
+.bookstore-topbar-user-info {
+  padding: 0.6rem 0.75rem;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.bookstore-topbar-user-info strong {
+  font-size: 0.92rem;
+  color: var(--brand);
+}
+
+.bookstore-topbar-user-info span {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.bookstore-topbar-user-menu hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 0.35rem 0;
+}
+
+@media (max-width: 720px) {
+  .bookstore-topbar-user-trigger {
+    padding: 0 0.5rem;
+  }
+  .bookstore-topbar-user-trigger > i,
+  .bookstore-topbar-user-trigger > span:not(.bookstore-topbar-user-avatar-fallback):not(.bookstore-topbar-user-avatar-img) {
+    display: none;
   }
 }

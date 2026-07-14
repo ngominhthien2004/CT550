@@ -1,19 +1,16 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
+import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import BookFilterBar from '@/components/bookstore/BookFilterBar.vue'
 import BookGrid from '@/components/bookstore/BookGrid.vue'
 import BookSection from '@/components/bookstore/BookSection.vue'
-import BookStoreTopBar from '@/components/bookstore/BookStoreTopBar.vue'
 import TagStrip from '@/components/shared/TagStrip.vue'
 import { useBookStore } from '@/stores/book.store.js'
-import { toggleNavCollapsed } from '@/utils/viewNavigation.js'
 
 const route = useRoute()
 const router = useRouter()
 const bookStore = useBookStore()
-const isNavCollapsed = ref(true)
 
 const filters = computed({
   get: () => bookStore.filters,
@@ -37,10 +34,6 @@ const featuredBooks = computed(() => books.value.slice(0, FEATURED_LIMIT))
 // strips the leading "#" before emitting, so the click handler still receives
 // the raw tag name.
 const popularTagNames = computed(() => popularTags.value.map((t) => `#${t.name}`))
-
-function toggleLeftNav() {
-  toggleNavCollapsed(isNavCollapsed)
-}
 
 function applyFilters() {
   bookStore.setFilters({ ...filters.value })
@@ -105,8 +98,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
-    <BookStoreTopBar />
+  <BookstoreLayout>
     <div class="bookstore-page">
       <!-- Hero / Banner -->
       <section class="bookstore-hero page-block">
@@ -221,7 +213,7 @@ onMounted(async () => {
         </div>
       </section>
     </div>
-  </MainLayoutTemplate>
+  </BookstoreLayout>
 </template>
 
 <style scoped src="../../assets/styles/bookstore.css"></style>

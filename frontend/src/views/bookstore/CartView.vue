@@ -1,26 +1,17 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
+import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import CartItem from '@/components/bookstore/CartItem.vue'
-import BookStoreTopBar from '@/components/bookstore/BookStoreTopBar.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
-import { toggleNavCollapsed } from '@/utils/viewNavigation.js'
 
-const router = useRouter()
 const bookStore = useBookStore()
 const { showSuccess, showError } = useToast()
-const isNavCollapsed = ref(true)
 const checkingOut = ref(false)
 
 const items = computed(() => bookStore.cart?.items || bookStore.cartItems || [])
 const loading = computed(() => bookStore.cartLoading)
 const total = computed(() => bookStore.cartTotal)
-
-function toggleLeftNav() {
-  toggleNavCollapsed(isNavCollapsed)
-}
 
 async function handleCheckout() {
   checkingOut.value = true
@@ -53,8 +44,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
-    <BookStoreTopBar />
+  <BookstoreLayout>
     <section class="bookstore-page page-block p-3 p-md-4">
       <h1 class="page-title">Shopping Cart</h1>
 
@@ -87,15 +77,13 @@ onMounted(() => {
         </div>
       </template>
     </section>
-  </MainLayoutTemplate>
+  </BookstoreLayout>
 </template>
 
 <style scoped>
 .bookstore-page {
   max-width: 800px;
   margin: 0 auto;
-  /* Offset for fixed BookStoreTopBar (top: 72px + 60px height) */
-  padding-top: 132px;
 }
 
 .page-title {

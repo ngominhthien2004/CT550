@@ -1,16 +1,13 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
+import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import AddToCartButton from '@/components/bookstore/AddToCartButton.vue'
-import BookStoreTopBar from '@/components/bookstore/BookStoreTopBar.vue'
 import { useBookStore } from '@/stores/book.store.js'
-import { toggleNavCollapsed } from '@/utils/viewNavigation.js'
 
 const route = useRoute()
 const router = useRouter()
 const bookStore = useBookStore()
-const isNavCollapsed = ref(true)
 
 const bookId = computed(() => route.params.id)
 const book = computed(() => bookStore.currentBook)
@@ -27,10 +24,6 @@ const originalPrice = computed(() => Number(book.value?.originalPrice || 0))
 const hasDiscount = computed(() => originalPrice.value > 0 && originalPrice.value > price.value)
 const isUnlimited = computed(() => book.value?.stock === -1)
 
-function toggleLeftNav() {
-  toggleNavCollapsed(isNavCollapsed)
-}
-
 function visitSeller() {
   const sellerId = book.value?.seller?._id
   if (!sellerId) return
@@ -45,8 +38,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
-    <BookStoreTopBar />
+  <BookstoreLayout>
     <section class="bookstore-page page-block p-3 p-md-4">
       <div v-if="loading" class="text-center py-5">
         <div class="spinner-border text-primary" role="status"></div>
@@ -95,15 +87,13 @@ onMounted(() => {
         </div>
       </div>
     </section>
-  </MainLayoutTemplate>
+  </BookstoreLayout>
 </template>
 
 <style scoped>
 .bookstore-page {
   max-width: 1000px;
   margin: 0 auto;
-  /* Offset for fixed BookStoreTopBar (top: 72px + 60px height) */
-  padding-top: 132px;
 }
 
 .detail-grid {

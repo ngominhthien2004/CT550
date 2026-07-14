@@ -1,26 +1,19 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
+import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import BookUploadForm from '@/components/bookstore/BookUploadForm.vue'
-import BookStoreTopBar from '@/components/bookstore/BookStoreTopBar.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
-import { toggleNavCollapsed } from '@/utils/viewNavigation.js'
 
 const route = useRoute()
 const router = useRouter()
 const bookStore = useBookStore()
 const { showSuccess, showError } = useToast()
-const isNavCollapsed = ref(true)
 const initialBook = ref(null)
 
 const editId = computed(() => route.query.edit)
 const isEdit = computed(() => Boolean(editId.value))
-
-function toggleLeftNav() {
-  toggleNavCollapsed(isNavCollapsed)
-}
 
 async function handleSubmit(formPayload) {
   try {
@@ -80,8 +73,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
-    <BookStoreTopBar />
+  <BookstoreLayout>
     <section class="bookstore-page page-block p-3 p-md-4">
       <h1 class="page-title">{{ isEdit ? 'Edit Book' : 'Upload E-book' }}</h1>
       <p class="page-subtitle">
@@ -98,15 +90,13 @@ onMounted(async () => {
         @submit="handleSubmit"
       />
     </section>
-  </MainLayoutTemplate>
+  </BookstoreLayout>
 </template>
 
 <style scoped>
 .bookstore-page {
   max-width: 900px;
   margin: 0 auto;
-  /* Offset for fixed BookStoreTopBar (top: 72px + 60px height) */
-  padding-top: 132px;
 }
 
 .page-title {

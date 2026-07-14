@@ -1,19 +1,9 @@
 <script setup>
-import { ref } from 'vue'
-import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
-import BookStoreTopBar from '@/components/bookstore/BookStoreTopBar.vue'
-import { toggleNavCollapsed } from '@/utils/viewNavigation.js'
-
-const isNavCollapsed = ref(true)
-
-function toggleLeftNav() {
-  toggleNavCollapsed(isNavCollapsed)
-}
+import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 </script>
 
 <template>
-  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
-    <BookStoreTopBar />
+  <BookstoreLayout>
     <section class="bookstore-page page-block p-3 p-md-4 text-center">
       <div class="cancel-icon">
         <i class="fa-solid fa-circle-xmark"></i>
@@ -26,15 +16,13 @@ function toggleLeftNav() {
         <router-link to="/bookstore" class="btn btn-outline-secondary">Browse Books</router-link>
       </div>
     </section>
-  </MainLayoutTemplate>
+  </BookstoreLayout>
 </template>
 
 <style scoped>
 .bookstore-page {
   max-width: 640px;
   margin: 0 auto;
-  /* Offset for fixed BookStoreTopBar (top: 72px + 60px height) */
-  padding-top: 132px;
 }
 
 .cancel-icon {
