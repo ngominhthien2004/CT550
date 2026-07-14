@@ -754,134 +754,28 @@
   }
 }
 
-/* === Bookstore topbar user menu === */
-.bookstore-topbar-user {
-  position: relative;
-  margin-left: 0.4rem;
-}
-
-.bookstore-topbar-user-trigger {
+/* === Bookstore topbar: compact login pill for unauthenticated users ===
+   The authenticated case reuses the shared <AppTopBarUserMenu> trigger,
+   which styles itself via its own scoped CSS. This rule only styles the
+   fallback pill shown when no user is signed in. */
+.bookstore-topbar-login {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
   height: 40px;
-  padding: 0 0.6rem 0 0.4rem;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  color: var(--text);
-  cursor: pointer;
-  font-size: 0.88rem;
-  font-weight: 600;
-  font-family: inherit;
-  transition: background 0.18s ease, border-color 0.18s ease;
-}
-
-.bookstore-topbar-user-trigger:hover {
-  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
-  border-color: var(--accent);
-}
-
-.bookstore-topbar-user-avatar-fallback,
-.bookstore-topbar-user-avatar-img {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: inline-block;
-}
-
-.bookstore-topbar-user-avatar-fallback {
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, var(--accent) 0%, #6366f1 100%);
+  padding: 0 1rem;
+  background: var(--accent);
   color: #fff;
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.bookstore-topbar-user-menu {
-  position: absolute;
-  top: calc(100% + 0.4rem);
-  right: 0;
-  min-width: 220px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  box-shadow: var(--shadow-lg);
-  padding: 0.5rem;
-  z-index: 100;
-  display: grid;
-  gap: 0.15rem;
-}
-
-.bookstore-topbar-user-menu a,
-.bookstore-topbar-user-menu button {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.6rem 0.75rem;
-  border-radius: 8px;
-  color: var(--text);
-  text-decoration: none;
+  border-radius: 999px;
   font-size: 0.88rem;
   font-weight: 600;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  width: 100%;
-  font-family: inherit;
-  transition: background 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+  transition: background 0.18s ease;
 }
-
-.bookstore-topbar-user-menu a:hover,
-.bookstore-topbar-user-menu button:hover {
-  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
-  color: var(--accent);
+.bookstore-topbar-login:hover {
+  background: var(--accent-hover);
+  color: #fff;
 }
-
-.bookstore-topbar-user-menu a i,
-.bookstore-topbar-user-menu button i {
-  width: 1rem;
-  text-align: center;
-  color: var(--muted);
-}
-
-.bookstore-topbar-user-menu a:hover i,
-.bookstore-topbar-user-menu button:hover i {
-  color: var(--accent);
-}
-
-.bookstore-topbar-user-info {
-  padding: 0.6rem 0.75rem;
-  display: grid;
-  gap: 0.1rem;
-}
-
-.bookstore-topbar-user-info strong {
-  font-size: 0.92rem;
-  color: var(--brand);
-}
-
-.bookstore-topbar-user-info span {
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-
-.bookstore-topbar-user-menu hr {
-  border: none;
-  border-top: 1px solid var(--line);
-  margin: 0.35rem 0;
-}
-
-@media (max-width: 720px) {
-  .bookstore-topbar-user-trigger {
-    padding: 0 0.5rem;
-  }
-  .bookstore-topbar-user-trigger > i,
-  .bookstore-topbar-user-trigger > span:not(.bookstore-topbar-user-avatar-fallback):not(.bookstore-topbar-user-avatar-img) {
-    display: none;
-  }
+.bookstore-topbar-login i {
+  font-size: 0.85rem;
 }

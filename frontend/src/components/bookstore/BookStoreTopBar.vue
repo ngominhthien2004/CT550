@@ -1,18 +1,21 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store.js'
 import { useBookStore } from '@/stores/book.store.js'
+import { useFollowStore } from '@/stores/follow.store.js'
+import AppTopBarUserMenu from '@/components/layout/AppTopBar/AppTopBarUserMenu.vue'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const bookStore = useBookStore()
 const authStore = useAuthStore()
+const followStore = useFollowStore()
 
 const searchQuery = ref('')
 const isSearchFocused = ref(false)
-const userMenuOpen = ref(false)
-const userMenuRef = ref(null)
 
 const initialQuery = computed(() => {
   const raw = route.query?.search
@@ -36,12 +39,53 @@ const cartCount = computed(() => bookStore.cartItemCount)
 
 // User-menu data. Pulls from the global auth store so the menu reflects the
 // current session (login, logout, or page reload).
-const user = computed(() => authStore.user)
+const currentUser = computed(() => authStore.user)
 const isLoggedIn = computed(() => Boolean(authStore.isAuthenticated))
-const userInitial = computed(() => {
-  const name = user.value?.username || user.value?.displayName || ''
-  return name ? name.charAt(0).toUpperCase() : '?'
+const userId = computed(() => currentUser.value?._id || '')
+const userAvatar = computed(() => currentUser.value?.avatar || '')
+const userDisplayName = computed(() => currentUser.value?.username || t('common.unknown'))
+const userStats = computed(() => ({
+  following: followStore.followingCount,
+  followers: followStore.followersCount,
+}))
+
+const userMainLinks = computed(() => {
+  const links = [
+    { label: t('nav.dashboard'), to: '/dashboard' },
+    { label: t('nav.myBooks'), to: '/bookstore/manage' },
+  ]
+  if (currentUser.value?.role === 'admin') {
+    links.unshift({ label: t('nav.adminManagement'), to: '/admin' })
+  }
+  return links
 })
+
+const userLibraryLinks = computed(() => [
+  { label: t('nav.myFavorite'), to: '/favorites' },
+  { label: t('nav.bookmarks'), to: '/bookmarks' },
+  { label: t('nav.browsingHistory'), to: '/history' },
+  { label: t('nav.myOrders'), to: '/bookstore/orders' },
+])
+
+const userSettingLinks = computed(() => [
+  { label: t('common.settings'), to: '/settings' },
+])
+
+// Trigger follow data load when user is authenticated (mirrors the main
+// AppTopBar pattern so the hero stats stay in sync with the global store).
+watch(
+  () => userId.value,
+  (id) => {
+    if (!authStore.isAuthenticated || !id) {
+      followStore.fetchFollowing('')
+      followStore.fetchFollowers('')
+      return
+    }
+    followStore.fetchFollowing(id)
+    followStore.fetchFollowers(id)
+  },
+  { immediate: true },
+)
 
 function onSearch() {
   const trimmed = searchQuery.value.trim()
@@ -58,34 +102,10 @@ function clearSearch() {
   onSearch()
 }
 
-function toggleUserMenu() {
-  userMenuOpen.value = !userMenuOpen.value
-}
-
-function closeUserMenu() {
-  userMenuOpen.value = false
-}
-
-function handleClickOutside(event) {
-  if (!userMenuOpen.value) return
-  if (userMenuRef.value && !userMenuRef.value.contains(event.target)) {
-    userMenuOpen.value = false
-  }
-}
-
-function handleLogout() {
-  userMenuOpen.value = false
+async function handleLogout() {
   authStore.logout()
-  router.push('/')
+  await router.push('/')
 }
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
-
-onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
 </script>
 
 <template>
@@ -161,112 +181,28 @@ onBeforeUnmount(() => {
           >{{ cartCount > 99 ? '99+' : cartCount }}</span>
         </router-link>
 
-        <!-- User menu (right-most) -->
-        <div ref="userMenuRef" class="bookstore-topbar-user">
-          <button
-            type="button"
-            class="bookstore-topbar-user-trigger"
-            :aria-expanded="userMenuOpen"
-            aria-haspopup="menu"
-            :aria-label="isLoggedIn ? `Open user menu for ${user?.username || 'user'}` : 'Open account menu'"
-            @click.stop="toggleUserMenu"
-          >
-            <img
-              v-if="user?.avatar"
-              :src="user.avatar"
-              :alt="user?.username || 'user avatar'"
-              class="bookstore-topbar-user-avatar-img"
-            />
-            <span
-              v-else
-              class="bookstore-topbar-user-avatar-fallback"
-              aria-hidden="true"
-            >{{ userInitial }}</span>
-            <i v-if="isLoggedIn" class="fa-solid fa-chevron-down"></i>
-          </button>
-
-          <div v-if="userMenuOpen" class="bookstore-topbar-user-menu" role="menu">
-            <template v-if="isLoggedIn">
-              <div class="bookstore-topbar-user-info">
-                <strong>{{ user?.displayName || user?.username }}</strong>
-                <span>@{{ user?.username }}</span>
-              </div>
-
-              <router-link
-                to="/account"
-                class="bookstore-topbar-user-action"
-                role="menuitem"
-                @click="closeUserMenu"
-              >
-                <i class="fa-solid fa-user" aria-hidden="true"></i>
-                Account
-              </router-link>
-
-              <router-link
-                to="/bookstore/manage"
-                class="bookstore-topbar-user-action"
-                role="menuitem"
-                @click="closeUserMenu"
-              >
-                <i class="fa-solid fa-book" aria-hidden="true"></i>
-                My Books
-              </router-link>
-
-              <router-link
-                to="/bookstore/orders"
-                class="bookstore-topbar-user-action"
-                role="menuitem"
-                @click="closeUserMenu"
-              >
-                <i class="fa-solid fa-receipt" aria-hidden="true"></i>
-                Orders
-              </router-link>
-
-              <router-link
-                to="/settings"
-                class="bookstore-topbar-user-action"
-                role="menuitem"
-                @click="closeUserMenu"
-              >
-                <i class="fa-solid fa-gear" aria-hidden="true"></i>
-                Settings
-              </router-link>
-
-              <hr />
-
-              <button
-                type="button"
-                class="bookstore-topbar-user-action"
-                role="menuitem"
-                @click="handleLogout"
-              >
-                <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
-                Log out
-              </button>
-            </template>
-
-            <template v-else>
-              <router-link
-                to="/login"
-                class="bookstore-topbar-user-action"
-                role="menuitem"
-                @click="closeUserMenu"
-              >
-                <i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>
-                Log in
-              </router-link>
-              <router-link
-                to="/signup"
-                class="bookstore-topbar-user-action"
-                role="menuitem"
-                @click="closeUserMenu"
-              >
-                <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
-                Sign up
-              </router-link>
-            </template>
-          </div>
-        </div>
+        <!-- User menu (right-most): reuse the shared AppTopBarUserMenu for
+             visual + functional parity with the main app topbar. -->
+        <AppTopBarUserMenu
+          v-if="isLoggedIn"
+          :user-id="userId"
+          :user-avatar="userAvatar"
+          :user-display-name="userDisplayName"
+          :user-stats="userStats"
+          :user-main-links="userMainLinks"
+          :user-library-links="userLibraryLinks"
+          :user-setting-links="userSettingLinks"
+          @logout="handleLogout"
+        />
+        <router-link
+          v-else
+          to="/login"
+          class="bookstore-topbar-login"
+          :aria-label="t('topbar.logIn')"
+        >
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>{{ t('topbar.logIn') }}</span>
+        </router-link>
       </nav>
     </div>
   </div>
