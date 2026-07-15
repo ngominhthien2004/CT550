@@ -1,16 +1,16 @@
-# Gợi ý người dùng (User Recommendation) — Gợi ý nghệ sĩ theo dõi
+# Gợi ý người dùng (User Recommendation) — Gợi ý người dùng theo dõi
 
 ## 1. Tổng quan
 
-**Gợi ý người dùng** là hệ thống đề xuất các nhà sáng tạo (creator/artist) mà người dùng có thể muốn theo dõi, sử dụng phương pháp **follow-graph collaborative filtering**:
+**Gợi ý người dùng** là hệ thống đề xuất người dùng khác mà bạn có thể muốn theo dõi, sử dụng phương pháp **follow-graph collaborative filtering**:
 
-- **Thuật toán chính (Backend):** Đề xuất nghệ sĩ dựa trên những người mà bạn đang theo dõi cũng theo dõi họ.
-  - Nếu User A follow Artist X và Artist Y
-  - Và cả Artist X lẫn Artist Y đều follow Creator Z
-  - Thì Creator Z được đề xuất cho User A
+- **Thuật toán chính (Backend):** Đề xuất người dùng dựa trên những người mà bạn đang theo dõi cũng theo dõi họ.
+  - Nếu User A follow User X và User Y
+  - Và cả User X lẫn User Y đều follow User Z
+  - Thì User Z được đề xuất cho User A
   - Điểm số = `mutualCount` (số lượng người dùng chung)
 
-- **Fallback (Frontend):** Khi API trả về danh sách rỗng (người dùng chưa follow ai), frontend tự suy luận người dùng đề xuất từ dữ liệu artwork — đếm số lượng tác phẩm theo từng creator từ kết quả feed chính.
+- **Fallback (Frontend):** Khi API trả về danh sách rỗng (người dùng chưa follow ai), frontend tự suy luận người dùng đề xuất từ dữ liệu artwork — đếm số lượng tác phẩm theo từng user từ kết quả feed chính.
 
 ## 2. Giao diện người dùng
 
@@ -49,7 +49,7 @@ Hình 1: Vị trí widget gợi ý người dùng ở sidebar phải trên trang
 | Trạng thái | Hiển thị |
 |-------------|----------|
 | **Loading** | Không có skeleton — danh sách rỗng cho đến khi API trả về |
-| **Empty (chưa follow ai)** | Fallback artwork-based: đếm creator từ feed |
+| **Empty (chưa follow ai)** | Fallback artwork-based: đếm user từ feed |
 | **Empty (không có artwork)** | `"No recommended users available yet."` |
 | **Có dữ liệu** | Grid card với nút Follow/Following |
 | **Toggling follow** | Nút bị disable (`:disabled="item._isToggling"`) |
@@ -171,15 +171,15 @@ Nếu đã đăng nhập:
 mutualCount(user) = số người mà tôi follow cũng follow người này
 
 Ví dụ:
-  User A follow: [Artist X, Artist Y]
-  Artist X follow: [Creator Z, Creator W]
-  Artist Y follow: [Creator Z, Creator V]
+  User A follow: [User X, User Y]
+  User X follow: [User Z, User W]
+  User Y follow: [User Z, User V]
 
-  → mutualCount(Creator Z) = 2  (cả Artist X và Artist Y)
-  → mutualCount(Creator W) = 1  (chỉ Artist X)
-  → mutualCount(Creator V) = 1  (chỉ Artist Y)
+  → mutualCount(User Z) = 2  (cả User X và User Y)
+  → mutualCount(User W) = 1  (chỉ User X)
+  → mutualCount(User V) = 1  (chỉ User Y)
 
-  → Kết quả: Creator Z (điểm cao nhất) → Creator W / Creator V
+  → Kết quả: User Z (điểm cao nhất) → User W / User V
 ```
 
 Công thức đầy đủ được ghi trong `docs/formulas.md` mục 1.
@@ -257,24 +257,24 @@ function normalizeRecommendedUsers(artworks) {
 ### Follow-graph recommendation
 
 ```
-User A follow Artist X (vẽ fantasy)
-User A follow Artist Y (vẽ sci-fi)
-Artist X follow Creator Z (cũng vẽ fantasy)
-Artist Y cũng follow Creator Z
+User A follow User X (vẽ fantasy)
+User A follow User Y (vẽ sci-fi)
+User X follow User Z (cũng vẽ fantasy)
+User Y cũng follow User Z
 
 → GET /api/users/recommended
-→ followingIds = [ArtistX._id, ArtistY._id]
+→ followingIds = [UserX._id, UserY._id]
 → Follow.aggregate:
-    $match: { follower: { $in: [ArtistX._id, ArtistY._id] } }
-    → tìm được: { follower: ArtistX, following: CreatorZ }
-                  { follower: ArtistY, following: CreatorZ }
-                  { follower: ArtistX, following: CreatorW }
-    $group: { CreatorZ → mutualCount: 2,
-              CreatorW → mutualCount: 1 }
-→ CreatorZ có mutualCount = 2 (cả X và Y đều follow)
-→ CreatorZ xuất hiện đầu danh sách recommend
+    $match: { follower: { $in: [UserX._id, UserY._id] } }
+    → tìm được: { follower: UserX, following: UserZ }
+                  { follower: UserY, following: UserZ }
+                  { follower: UserX, following: UserW }
+    $group: { UserZ → mutualCount: 2,
+              UserW → mutualCount: 1 }
+→ UserZ có mutualCount = 2 (cả X và Y đều follow)
+→ UserZ xuất hiện đầu danh sách recommend
 → User A thấy "Recommended users"
-   Card CreatorZ: avatar + "Creator Z" + "@creatorz" + "15 works" + [Follow]
+   Card UserZ: avatar + "User Z" + "@userz" + "15 works" + [Follow]
 ```
 
 ### Empty state — chưa follow ai
@@ -285,30 +285,30 @@ User A chưa follow ai
 → followingIds = [] → return []
 → Frontend: nhận data = []
 → Fallback: normalizeRecommendedUsers(filteredWorks)
-→ Đếm artwork theo creator từ feed (48 artworks)
-→ Lấy top 9 creators có nhiều artwork nhất
+→ Đếm artwork theo user từ feed (48 artworks)
+→ Lấy top 9 users có nhiều artwork nhất
 → Hiển thị danh sách card
 ```
 
 ### Tương tác Follow
 
 ```
-User A thấy Creator Z trong recommend list
+User A thấy User Z trong recommend list
 → Click "Follow"
-→ emit('toggle-follow', CreatorZ._id)
-→ followStore.toggleFollowByUser(CreatorZ._id)
-    ├─→ POST /api/users/CreatorZ._id/follow (JWT)
-    ├─→ Cập nhật followingByUser[CreatorZ._id] = true
+→ emit('toggle-follow', UserZ._id)
+→ followStore.toggleFollowByUser(UserZ._id)
+    ├─→ POST /api/users/UserZ._id/follow (JWT)
+    ├─→ Cập nhật followingByUser[UserZ._id] = true
     └─→ Button chuyển từ "Follow" → "Following"
-→ Creator Z vẫn ở trong recommend list (nhưng button đã đổi)
+→ User Z vẫn ở trong recommend list (nhưng button đã đổi)
 
 User A click "Following" lần nữa
-→ emit('toggle-follow', CreatorZ._id)
-→ followStore.toggleFollowByUser(CreatorZ._id)
-    ├─→ DELETE /api/users/CreatorZ._id/follow (JWT)
-    ├─→ Cập nhật followingByUser[CreatorZ._id] = false
+→ emit('toggle-follow', UserZ._id)
+→ followStore.toggleFollowByUser(UserZ._id)
+    ├─→ DELETE /api/users/UserZ._id/follow (JWT)
+    ├─→ Cập nhật followingByUser[UserZ._id] = false
     └─→ Button chuyển từ "Following" → "Follow"
-→ Lần sau load lại trang, Creator Z vẫn có thể xuất hiện nếu còn mutualCount
+→ Lần sau load lại trang, User Z vẫn có thể xuất hiện nếu còn mutualCount
 ```
 
 ## 7. Ghi chú kỹ thuật

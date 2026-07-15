@@ -23,7 +23,7 @@ Reference document for all algorithmic logic, scoring formulas, state machines, 
 
 ## 1. Follow-Graph User Recommendation
 
-Recommends creators based on who the people you follow also follow — collaborative filtering through the follow graph.
+Recommends users based on who the people you follow also follow — collaborative filtering through the follow graph.
 
 ### Formula
 
