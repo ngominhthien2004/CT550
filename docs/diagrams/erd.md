@@ -416,6 +416,96 @@ erDiagram
 
 ---
 
+## Danh sách quan hệ theo nhóm thực thể
+
+### Nhóm Core User System (USER — trung tâm)
+
+| # | Thực thể 1 | Quan hệ | Thực thể 2 | Kiểu | Mô tả |
+|---|-----------|---------|-----------|:----:|-------|
+| 1 | **USER** | 1 —— N | ARTWORK | 1 → N | Một người dùng tạo nhiều tác phẩm |
+| 2 | **USER** | 1 —— N | COMMENT | 1 → N | Một người dùng viết nhiều bình luận |
+| 3 | **USER** | 1 —— N | LIKE | 1 → N | Một người dùng thích nhiều tác phẩm |
+| 4 | **USER** | 1 —— N | BOOKMARK | 1 → N | Một người dùng đánh dấu nhiều tác phẩm |
+| 5 | **USER** (follower) | 1 —— N | FOLLOW | 1 → N | Một người dùng theo dõi nhiều người |
+| 6 | **USER** (following) | 1 —— N | FOLLOW | 1 → N | Một người dùng được nhiều người theo dõi |
+| 7 | **USER** (recipient) | 1 —— N | NOTIFICATION | 1 → N | Một người dùng nhận nhiều thông báo |
+| 8 | **USER** (actor) | 1 —— N | NOTIFICATION | 1 → N | Một người dùng kích hoạt nhiều thông báo |
+| 9 | **USER** (sender) | 1 —— N | MESSAGE | 1 → N | Một người dùng gửi nhiều tin nhắn |
+| 10 | **USER** (recipient) | 1 —— N | MESSAGE | 1 → N | Một người dùng nhận nhiều tin nhắn |
+| 11 | **USER** (blocker) | 1 —— N | USER_BLOCK | 1 → N | Một người dùng chặn nhiều người |
+| 12 | **USER** (blocked) | 1 —— N | USER_BLOCK | 1 → N | Một người dùng bị nhiều người chặn |
+| 13 | **USER** | 1 —— N | BROWSE_HISTORY | 1 → N | Một người dùng có nhiều lịch sử duyệt |
+| 14 | **BROWSE_HISTORY** | N —— 1 | ARTWORK | N → 1 | Nhiều lịch sử duyệt trỏ đến một tác phẩm |
+
+### Nhóm Content System
+
+| # | Thực thể 1 | Quan hệ | Thực thể 2 | Kiểu | Mô tả |
+|---|-----------|---------|-----------|:----:|-------|
+| 15 | **USER** | 1 —— N | READING_PROGRESS | 1 → N | Một người dùng có nhiều tiến độ đọc |
+| 16 | **USER** | 1 —— N | SERIES | 1 → N | Một người dùng tạo nhiều series |
+| 17 | **USER** (moderator) | 1 —— N | ARTWORK | 1 → N | Một người kiểm duyệt ẩn nhiều tác phẩm |
+| 18 | **ARTWORK** | 1 —— N | COMMENT | 1 → N | Một tác phẩm có nhiều bình luận |
+| 19 | **ARTWORK** | 1 —— N | LIKE | 1 → N | Một tác phẩm nhận nhiều lượt thích |
+| 20 | **ARTWORK** | 1 —— N | BOOKMARK | 1 → N | Một tác phẩm được nhiều người đánh dấu |
+| 21 | **ARTWORK** | 1 —— N | NOTIFICATION | 1 → N | Một tác phẩm kích hoạt nhiều thông báo |
+| 22 | **ARTWORK** | 1 —— N | CHAPTER | 1 → N | Một tác phẩm (novel) có nhiều chương |
+| 23 | **ARTWORK** | 1 —— N | READING_PROGRESS | 1 → N | Một tác phẩm có nhiều tiến độ đọc |
+| 24 | **ARTWORK** | N —— N | TAG | N → N | Một tác phẩm có nhiều thẻ, một thẻ gắn với nhiều tác phẩm |
+| 25 | **ARTWORK** | N —— N | SERIES | N → N | Một tác phẩm thuộc nhiều series, một series chứa nhiều tác phẩm |
+| 26 | **CHAPTER** | 1 —— N | READING_PROGRESS | 1 → N | Một chương có nhiều tiến độ đọc |
+| 27 | **SERIES** | 1 —— N | ARTWORK | 1 → N | Một series chứa nhiều tác phẩm |
+| 28 | **SERIES** | N —— N | TAG | N → N | Một series có nhiều thẻ, một thẻ gắn với nhiều series |
+| 29 | **COMMENT** | 1 —— N | COMMENT_REPORT | 1 → N | Một bình luận bị báo cáo nhiều lần |
+
+### Nhóm Analytics System
+
+| # | Thực thể 1 | Quan hệ | Thực thể 2 | Kiểu | Mô tả |
+|---|-----------|---------|-----------|:----:|-------|
+| 30 | **ARTWORK** | 1 —— N | VIEW_EVENT | 1 → N | Một tác phẩm có nhiều sự kiện xem |
+| 31 | **USER** | 1 —— N | VIEW_EVENT | 1 → N | Một người dùng tạo nhiều sự kiện xem |
+
+### Nhóm AI System
+
+| # | Thực thể 1 | Quan hệ | Thực thể 2 | Kiểu | Mô tả |
+|---|-----------|---------|-----------|:----:|-------|
+| 32 | **USER** | 1 —— N | CHAT_SESSION | 1 → N | Một người dùng có nhiều phiên AI chat |
+| 33 | **CHAT_SESSION** | 1 —— N | CHAT_MESSAGE | 1 → N | Một phiên AI chat chứa nhiều tin nhắn |
+
+### Nhóm Reporting & Moderation
+
+| # | Thực thể 1 | Quan hệ | Thực thể 2 | Kiểu | Mô tả |
+|---|-----------|---------|-----------|:----:|-------|
+| 34 | **USER** (reporter) | 1 —— N | ARTWORK_REPORT | 1 → N | Một người dùng báo cáo nhiều tác phẩm |
+| 35 | **USER** (resolver) | 1 —— N | ARTWORK_REPORT | 1 → N | Một người xử lý nhiều báo cáo tác phẩm |
+| 36 | **USER** (reporter) | 1 —— N | USER_REPORT | 1 → N | Một người dùng báo cáo nhiều người khác |
+| 37 | **USER** (resolver) | 1 —— N | USER_REPORT | 1 → N | Một người xử lý nhiều báo cáo người dùng |
+| 38 | **USER** (reporter) | 1 —— N | COMMENT_REPORT | 1 → N | Một người dùng báo cáo nhiều bình luận |
+| 39 | **USER** (resolver) | 1 —— N | COMMENT_REPORT | 1 → N | Một người xử lý nhiều báo cáo bình luận |
+| 40 | **ARTWORK** | 1 —— N | ARTWORK_REPORT | 1 → N | Một tác phẩm bị báo cáo nhiều lần |
+
+### Nhóm Commission System
+
+| # | Thực thể 1 | Quan hệ | Thực thể 2 | Kiểu | Mô tả |
+|---|-----------|---------|-----------|:----:|-------|
+| 41 | **USER** | 1 —— N | REQUEST_TERM | 1 → N | Một người dùng (creator) tạo nhiều điều khoản |
+| 42 | **USER** (creator) | 1 —— N | REQUEST | 1 → N | Một người sáng tạo nhận nhiều yêu cầu |
+| 43 | **USER** (requester) | 1 —— N | REQUEST | 1 → N | Một người đặt hàng tạo nhiều yêu cầu |
+| 44 | **USER** | 1 —— N | REQUEST_CHAT_MESSAGE | 1 → N | Một người dùng gửi nhiều tin nhắn trong request |
+| 45 | **USER** | 1 —— N | REQUEST_EVENT | 1 → N | Một người dùng thực hiện nhiều sự kiện request |
+| 46 | **USER** | 1 —— N | REQUEST_REVISION | 1 → N | Một người dùng yêu cầu nhiều lần chỉnh sửa |
+| 47 | **REQUEST_TERM** | 1 —— N | REQUEST | 1 → N | Một điều khoản định nghĩa nhiều yêu cầu |
+| 48 | **REQUEST** | 1 —— N | REQUEST_CHAT_MESSAGE | 1 → N | Một yêu cầu có nhiều tin nhắn |
+| 49 | **REQUEST** | 1 —— N | REQUEST_EVENT | 1 → N | Một yêu cầu ghi lại nhiều sự kiện |
+| 50 | **REQUEST** | 1 —— N | REQUEST_REVISION | 1 → N | Một yêu cầu có nhiều lần chỉnh sửa |
+
+### Ghi chú
+
+- **1 → N**: Một (One) — Nhiều (Many). Thực thể 1 có thể có nhiều bản ghi của thực thể 2.
+- **N → 1**: Nhiều (Many) — Một (One). Nhiều bản ghi của thực thể 1 thuộc về một thực thể 2.
+- **N → N**: Nhiều — Nhiều (Many-to-Many). Quan hệ hai chiều, cần bảng trung gian (Mongoose sử dụng mảng ref).
+
+---
+
 ## Legend
 
 ### Entity Groups
