@@ -54,6 +54,8 @@ mutualCount(user) = number of people I follow who also follow this user
 - Returns **empty array** if the user doesn't follow anyone
 - Frontend falls back to artwork-based tag derivation if the response is empty
 
+> 📖 Tài liệu đầy đủ: [`docs/ui-guide/features/user-recommendation.md`](ui-guide/features/user-recommendation.md)
+
 ---
 
 ## 2. For You Feed Recommendation
@@ -101,6 +103,8 @@ When no preferred tags exist (new user): return recent artworks sorted by `likeC
 |------|----------|
 | `backend/services/recommendation.service.js` | `getPreferredTags()`, `getForYouArtworks()` |
 | `backend/controllers/feed.controller.js:130` | `getForYou()` |
+
+> 📖 Tài liệu đầy đủ: [`docs/ui-guide/features/feed.md`](ui-guide/features/feed.md)
 
 ---
 
@@ -413,6 +417,8 @@ Breakdown priority:
 | File | Function | Lines |
 |------|----------|-------|
 | `backend/controllers/feed.controller.js` | `getRankings()` | 45–95 |
+
+> 📖 Tài liệu đầy đủ: [`docs/ui-guide/features/feed.md`](ui-guide/features/feed.md)
 
 ---
 
