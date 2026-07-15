@@ -2,7 +2,7 @@
 
 > **Môn học:** CT550 - Công nghệ phần mềm  
 > **Hệ thống:** IlluWrl - Nền tảng chia sẻ tranh vẽ và manga (Pixiv-clone)  
-> **Ngày:** 2026-06-10
+> **Ngày:** 2026-07-15
 
 ## Tổng Quan
 

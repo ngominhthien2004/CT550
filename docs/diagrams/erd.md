@@ -1,7 +1,7 @@
 # IlluWrl — Entity-Relationship Diagram
 
-> **Cập nhật:** 2026-07-09
-> **Entities:** 26 Mongoose models across 6 domain groups
+> **Cập nhật:** 2026-07-15
+> **Entities:** 27 Mongoose models across 7 domain groups
 > **Description:** Comprehensive ERD of the IlluWrl (Pixiv-clone) data model
 
 ---
@@ -18,7 +18,9 @@ erDiagram
     string bio
     string gender
     string location
-    date birthday
+    number birthYear
+    number birthdayMonth
+    number birthdayDay
     string website
     json socialLinks "embedded {x,facebook,instagram}"
     string role "user | admin"
@@ -26,6 +28,7 @@ erDiagram
     string googleId
     string facebookId
     string twitterId
+    boolean isSuspended
     datetime createdAt
     datetime updatedAt
   }
@@ -49,6 +52,7 @@ erDiagram
   SETTING {
     string _id PK "singleton key: global"
     boolean aiDetectionEnabled
+    boolean autoTaggingEnabled
     datetime createdAt
     datetime updatedAt
   }
@@ -73,6 +77,7 @@ erDiagram
     ObjectId artwork FK "ref Artwork — optional context"
     string type "follow|like|bookmark|comment|request|system"
     string message
+    mixed metadata "optional context payload"
     boolean isRead
     datetime createdAt
     datetime updatedAt
@@ -199,6 +204,14 @@ erDiagram
     string type "home|illust|manga|gif|novel"
     boolean isActive
     number sortOrder
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  VIEW_EVENT {
+    ObjectId _id PK
+    ObjectId artwork FK "ref Artwork — required"
+    ObjectId user FK "ref User — nullable"
     datetime createdAt
     datetime updatedAt
   }
@@ -397,6 +410,8 @@ erDiagram
   REQUEST ||--o{ REQUEST_CHAT_MESSAGE : "has"
   REQUEST ||--o{ REQUEST_EVENT : "logs"
   REQUEST ||--o{ REQUEST_REVISION : "requests"
+  ARTWORK ||--o{ VIEW_EVENT : "has view events"
+  USER ||--o{ VIEW_EVENT : "generates as viewer"
 ```
 
 ---
@@ -409,6 +424,7 @@ erDiagram
 |-------|----------|-------------|
 | **Core User System** | USER, FOLLOW, USER_BLOCK, MESSAGE, NOTIFICATION, BROWSE_HISTORY | Identity, social graph, messaging, alerts, behavior tracking |
 | **Content System** | ARTWORK, TAG, COMMENT, LIKE, BOOKMARK, CHAPTER, READING_PROGRESS, SERIES | Primary creative content, series management, and engagement |
+| **Analytics System** | VIEW_EVENT | Individual view event records for analytics |
 | **AI System** | CHAT_SESSION, CHAT_MESSAGE | AI chatbot sessions and message history |
 | **Reporting & Moderation** | ARTWORK_REPORT, USER_REPORT, COMMENT_REPORT | Content and user flagging and resolution |
 | **Commission System** | REQUEST_TERM, REQUEST, REQUEST_CHAT_MESSAGE, REQUEST_EVENT, REQUEST_REVISION | Commission marketplace and state machine |
@@ -437,8 +453,8 @@ erDiagram
 ## Entity Summary
 
 | # | Entity | Fields | Key Relationships | Group |
-|---|--------|--------|-------------------|-------|
-| 1 | **USER** | 19 | 24 relationships | Core User System |
+|--:|--------|--------|-------------------|-------|
+| 1 | **USER** | 22 | 24 relationships | Core User System |
 | 2 | **FOLLOW** | 5 | 2 relationships | Core User System |
 | 3 | **USER_BLOCK** | 5 | 2 relationships | Core User System |
 | 4 | **SETTING** | 5 | 0 relationships | System Config |
@@ -453,17 +469,18 @@ erDiagram
 | 13 | **READING_PROGRESS** | 9 | 3 relationships | Content System |
 | 14 | **SERIES** | 16 | 4 relationships | Content System |
 | 15 | **BROWSE_HISTORY** | 5 | 2 relationships | Core User System |
-| 16 | **BANNER** | 8 | 0 relationships | System Config |
-| 17 | **CHAT_SESSION** | 5 | 2 relationships | AI System |
-| 18 | **CHAT_MESSAGE** | 8 | 1 relationships | AI System |
-| 19 | **ARTWORK_REPORT** | 11 | 3 relationships | Reporting & Moderation |
-| 20 | **USER_REPORT** | 11 | 3 relationships | Reporting & Moderation |
-| 21 | **COMMENT_REPORT** | 11 | 3 relationships | Reporting & Moderation |
-| 22 | **REQUEST_TERM** | 18 | 2 relationships | Commission System |
-| 23 | **REQUEST** | 28 | 6 relationships | Commission System |
-| 24 | **REQUEST_CHAT_MESSAGE** | 8 | 2 relationships | Commission System |
-| 25 | **REQUEST_EVENT** | 9 | 2 relationships | Commission System |
-| 26 | **REQUEST_REVISION** | 7 | 2 relationships | Commission System |
+| 16 | **VIEW_EVENT** | 5 | 2 relationships | Analytics System |
+| 17 | **BANNER** | 8 | 0 relationships | System Config |
+| 18 | **CHAT_SESSION** | 5 | 2 relationships | AI System |
+| 19 | **CHAT_MESSAGE** | 8 | 1 relationships | AI System |
+| 20 | **ARTWORK_REPORT** | 11 | 3 relationships | Reporting & Moderation |
+| 21 | **USER_REPORT** | 11 | 3 relationships | Reporting & Moderation |
+| 22 | **COMMENT_REPORT** | 11 | 3 relationships | Reporting & Moderation |
+| 23 | **REQUEST_TERM** | 18 | 2 relationships | Commission System |
+| 24 | **REQUEST** | 28 | 6 relationships | Commission System |
+| 25 | **REQUEST_CHAT_MESSAGE** | 8 | 2 relationships | Commission System |
+| 26 | **REQUEST_EVENT** | 9 | 2 relationships | Commission System |
+| 27 | **REQUEST_REVISION** | 7 | 2 relationships | Commission System |
 
 ---
 
@@ -471,6 +488,10 @@ erDiagram
 
 | Change | Details |
 |--------|---------|
+| **VIEW_EVENT (new)** | Individual view event records for analytics. Replaces implicit view counting with explicit event log. |
+| **USER updated** | Split `birthday` (Date) into `birthYear`, `birthdayMonth`, `birthdayDay` (Number) for structured date input. Added `isSuspended` for account suspension. |
+| **NOTIFICATION updated** | Added `metadata` (Mixed) for flexible context payloads. |
+| **SETTING updated** | Added `autoTaggingEnabled` for AI auto-tagging feature toggle. |
 | **SERIES (new)** | Dedicated entity for managing series (manga/novel/illust). Replaces `novelFormat`/`novelSeriesName` fields in Artwork. Artwork now has `series` FK ref. |
 | **CHAT_SESSION / CHAT_MESSAGE (new)** | AI chatbot session tracking and message history. |
 | **BANNER (new)** | Homepage and category-specific banners. |
@@ -481,4 +502,4 @@ erDiagram
 
 ---
 
-*Last updated: 2026-07-09 — 26 entities, 45+ relationships.*
+*Last updated: 2026-07-15 — 27 entities, 47+ relationships.*

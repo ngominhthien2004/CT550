@@ -1,7 +1,7 @@
 # IlluWrl — MongoDB Schema (Tiếng Việt)
 
-> **Cập nhật:** 2026-07-09
-> **Số collection:** 26
+> **Cập nhật:** 2026-07-15
+> **Số collection:** 27
 > **Mô tả:** Chi tiết các collection trong MongoDB, bao gồm kiểu dữ liệu, khoá chính, khoá ngoại, ràng buộc Not Null và diễn giải.
 
 ---
@@ -19,9 +19,12 @@
 | `bio` | string |  |  |  | Tiểu sử người dùng |
 | `gender` | string |  |  |  | Giới tính |
 | `location` | string |  |  |  | Địa điểm |
-| `birthday` | date |  |  |  | Ngày sinh |
+| `birthYear` | number |  |  |  | Năm sinh |
+| `birthdayMonth` | number |  |  |  | Tháng sinh |
+| `birthdayDay` | number |  |  |  | Ngày sinh |
 | `website` | string |  |  |  | Trang web cá nhân |
 | `socialLinks` | object |  |  |  | Liên kết mạng xã hội (X, Facebook, Instagram) — object nhúng trong document User |
+| `isSuspended` | boolean |  |  |  | Tài khoản có bị treo hay không |
 | `role` | string |  |  |  | Vai trò: user | admin |
 | `password` | string |  |  |  | Mật khẩu (đã mã hoá) |
 | `googleId` | string |  |  |  | ID tài khoản Google (dùng cho đăng nhập OAuth) |
@@ -56,6 +59,7 @@
 |----------------|-------------|:----------:|:----------:|:--:|-----------|
 | `_id` | string | X |  | X | Khoá singleton (global) |
 | `aiDetectionEnabled` | boolean |  |  |  | Bật/tắt tính năng phát hiện AI trên toàn hệ thống |
+| `autoTaggingEnabled` | boolean |  |  |  | Bật/tắt tính năng tự động gắn thẻ AI |
 | `createdAt` | date |  |  |  | Thời điểm tạo |
 | `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
@@ -84,6 +88,7 @@
 | `artwork` | objectId |  | X | X | Tác phẩm liên quan (tuỳ chọn) |
 | `type` | string |  |  |  | Loại thông báo: follow | like | bookmark | comment | request | system |
 | `message` | string |  |  |  | Nội dung thông báo |
+| `metadata` | mixed |  |  |  | Dữ liệu ngữ cảnh động (tuỳ chọn) |
 | `isRead` | boolean |  |  |  | Đánh dấu đã đọc |
 | `createdAt` | date |  |  |  | Thời điểm gửi thông báo |
 | `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
@@ -231,6 +236,16 @@
 | `isActive` | boolean |  |  |  | Banner có đang hiển thị hay không |
 | `sortOrder` | number |  |  |  | Thứ tự hiển thị |
 | `createdAt` | date |  |  |  | Thời điểm tạo |
+| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
+
+## VIEW_EVENT — Sự kiện xem
+
+| Tên thuộc tính | Kiểu dữ liệu | Khóa chính | Khóa ngoại | NN | Diễn giải |
+|----------------|-------------|:----------:|:----------:|:--:|-----------|
+| `_id` | objectId | X |  | X | Mã sự kiện xem (tự động sinh) |
+| `artwork` | objectId |  | X | X | Tác phẩm được xem |
+| `user` | objectId |  | X |  | Người dùng xem (có thể null nếu chưa đăng nhập) |
+| `createdAt` | date |  |  |  | Thời điểm xem |
 | `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
 ## CHAT_SESSION — Phiên AI Chat
@@ -401,4 +416,4 @@
 
 ---
 
-*Cập nhật lần cuối: 2026-07-09 — 26 collection.*
+*Cập nhật lần cuối: 2026-07-15 — 27 collection.*
