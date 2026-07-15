@@ -51,7 +51,7 @@ Hình 1: Giao diện trang tải lên với khu vực kéo-thả tệp.
 ## AI Detection (Phát hiện AI)
 
 - Tự động chạy phát hiện AI trên hình ảnh tải lên qua `/api/ai/detect-image`.
-- Nếu phát hiện AI, tag `ai-generated` được tự động thêm vào.
+- Nếu phát hiện AI, tag `ai` được tự động thêm vào.
 - Người dùng có thể ghi đè cài đặt nếu cần.
 
 ## Auto-tagging (Gợi ý tag tự động)

@@ -26,7 +26,7 @@ HuggingFace model "umm-maybe/AI-image-detector" phân tích
         ▼
 So sánh confidence với AI_DETECTION_THRESHOLD
         │
-        ├── confidence >= threshold → isAI = true → tự động gắn tag "ai-generated"
+        ├── confidence >= threshold → isAI = true → tự động gắn tag "ai"
         └── confidence < threshold  → isAI = false → không gắn tag
         │
         ▼
@@ -110,7 +110,7 @@ Admin có thể bật/tắt tính năng này qua Setting trong database (`aiDete
 
 ## Tự động gắn tag
 
-Khi ảnh được xác định là AI-generated với confidence >= threshold, hệ thống **tự động** thêm tag `ai-generated` vào tác phẩm. Điều này giúp:
+Khi ảnh được xác định là AI-generated với confidence >= threshold, hệ thống **tự động** thêm tag `ai` vào tác phẩm. Điều này giúp:
 
 - Người xem dễ dàng lọc tác phẩm theo nguồn gốc.
 - Hỗ trợ công tác kiểm duyệt và quản lý nội dung.
@@ -122,7 +122,7 @@ Khi ảnh được xác định là AI-generated với confidence >= threshold, 
 
 - **Warning message**: Hiển thị cảnh báo "Ảnh này được phát hiện là AI-generated" trên form upload.
 - **AI toggle**: Tự động chuyển toggle "Tác phẩm AI" sang trạng thái "Yes".
-- **Tag**: Tag `ai-generated` được tự động thêm vào danh sách tag.
+- **Tag**: Tag `ai` được tự động thêm vào danh sách tag.
 
 ### Trang AI (AIView)
 

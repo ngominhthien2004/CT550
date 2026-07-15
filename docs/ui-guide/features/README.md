@@ -28,7 +28,7 @@ Upload ảnh
             └── Google Cloud Vision (fallback)
 ```
 
-- **AI Detection** kiểm tra xem ảnh có phải do AI tạo ra không. Nếu confidence >= threshold, tag `ai-generated` được tự động gắn.
+- **AI Detection** kiểm tra xem ảnh có phải do AI tạo ra không. Nếu confidence >= threshold, tag `ai` được tự động gắn.
 - **Auto Tagging** phân tích nội dung ảnh và đề xuất danh sách tag (tối đa 5 tag).
 - Cả hai kết quả được hiển thị trên form upload — người dùng có thể chỉnh sửa, thêm hoặc xoá tag trước khi đăng.
 

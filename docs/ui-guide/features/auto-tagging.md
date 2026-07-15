@@ -108,7 +108,7 @@ Auto Tagging chạy **đồng thời** với AI Detection khi người dùng upl
 
 ### Thứ tự hiển thị
 
-- Tag `ai-generated` (từ AI Detection) hiển thị đầu tiên.
+- Tag `ai` (từ AI Detection) hiển thị đầu tiên.
 - Tag đề xuất từ Auto Tagging hiển thị tiếp theo.
 - Tag do người dùng nhập thêm hiển thị sau cùng.
 
