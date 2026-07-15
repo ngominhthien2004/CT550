@@ -83,3 +83,7 @@ Hình 2: Back-to-top ở trạng thái hover với nền accent color.
 - Cả hai FAB đều được render qua Vue Teleport (`<Teleport to="#fab-container">`).
 - Container `#fab-container` được đặt trong `App.vue`, ở ngoài `MainLayoutTemplate`.
 - Không sử dụng FAB trên các standalone pages (Login, SignUp, Drawing, etc.).
+
+## Tài liệu liên quan
+
+- [Tính năng AI Chatbot](../features/ai-chatbot.md) — Mô tả chi tiết về trợ lý AI, kiến trúc, endpoint và luồng xử lý tin nhắn.
