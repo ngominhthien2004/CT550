@@ -516,5 +516,5 @@ User vào `/rankings` → chọn period "Rookie"
       filter.user = { $in: rookieUserIds }
   → Chỉ lấy artwork từ user mới tạo trong 30 ngày qua
   → Sort theo likeCount → bookmarkCount → viewCount → createdAt
-  → Tạo sân chơi riêng cho nghệ sĩ mới
+  → Tạo sân chơi riêng cho người dùng mới
 ```

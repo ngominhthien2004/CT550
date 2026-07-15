@@ -84,7 +84,7 @@ RankingsView (/rankings)
 - **Following Feed**: Artwork mới nhất từ các user đã follow.
 - **Discovery**: Duyệt công khai với filter theo type và date range.
 - **Rankings**: Bảng xếp hạng theo kỳ (ngày/tuần/tháng/rookie) và thể loại.
-- **User Recommendation**: Gợi ý creator dựa trên follow-graph (những người bạn follow cũng follow ai).
+- **User Recommendation**: Gợi ý người dùng dựa trên follow-graph (những người bạn follow cũng follow ai).
 - Chi tiết công thức và thuật toán tại [`docs/formulas.md`](../../formulas.md).
 
 ## Công nghệ sử dụng
@@ -151,7 +151,7 @@ RankingsView (/rankings)
 
 ### Feed & Gợi ý
 - [Feed System](feed.md) — Following Feed, Discovery, For You, Rankings
-- [Gợi ý người dùng](user-recommendation.md) — Đề xuất creator dựa trên follow-graph
+- [Gợi ý người dùng](user-recommendation.md) — Đề xuất người dùng dựa trên follow-graph
 
 ### Giao diện
 - [Trang AI (AIView)](../pages/ai.md) — Giao diện test/demo các tính năng AI
