@@ -19,8 +19,8 @@ Hình 1: ArtworkCard hiển thị trong lưới tác phẩm.
   _id: String,          // ID tác phẩm
   title: String,        // Tiêu đề
   type: String,         // "illust" | "manga" | "gif" | "novel"
-  ageRating: String,    // "safe" | "r18"
-  images: [{ url: String }],  // Mảng hình ảnh
+  ageRating: String,    // "all" | "r-18"
+  images: [String],  // Mảng URL hình ảnh
   user: {               // Thông tin tác giả
     _id: String,
     username: String,
@@ -61,13 +61,13 @@ Hình 1: ArtworkCard hiển thị trong lưới tác phẩm.
 
 Khi tác phẩm có `ageRating = "r18"`, một lớp phủ làm mờ (blur overlay) được áp dụng:
 
-- Hiệu ứng **blur(20px)** lên hình ảnh.
+- Hiệu ứng **blur(30px)** lên hình ảnh.
 - Hàng chữ "R-18 — Nhấp để xem" ở giữa.
 - Khi nhấp vào, blur được gỡ bỏ (tuỳ chọn xác nhận độ tuổi).
 
 ## Liên kết
 
-- Toàn bộ thẻ là một liên kết đến `/artworks/:id` (hoặc `/novels/:id` nếu type là novel).
+- Toàn bộ thẻ là một liên kết đến `/artworks/:id`.
 - Click chuột phải → mở trong tab mới.
 
 ## Lưới đáp ứng (Responsive Grid)

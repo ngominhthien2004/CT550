@@ -56,7 +56,6 @@
 |----------------|-------------|:----------:|:----------:|:--:|-----------|
 | `_id` | string | X |  | X | Khoá singleton (global) |
 | `aiDetectionEnabled` | boolean |  |  |  | Bật/tắt tính năng phát hiện AI trên toàn hệ thống |
-| `aiDetectionThreshold` | number |  |  |  | Ngưỡng phát hiện AI (0-100%), mặc định 70% |
 | `createdAt` | date |  |  |  | Thời điểm tạo |
 | `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 

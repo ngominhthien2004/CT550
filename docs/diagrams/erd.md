@@ -49,7 +49,6 @@ erDiagram
   SETTING {
     string _id PK "singleton key: global"
     boolean aiDetectionEnabled
-    number aiDetectionThreshold "0-100"
     datetime createdAt
     datetime updatedAt
   }

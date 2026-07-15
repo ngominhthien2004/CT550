@@ -46,11 +46,11 @@ Hai nút nổi được teleport từ component con lên cấp cao hơn:
 ### Breakpoint ≥ 1200px
 
 - Bố cục đầy đủ, sidebar hiển thị cạnh nội dung.
-- Khoảng cách margin giữa sidebar và nội dung: 16px.
+- Khoảng cách margin-left của main-pane: 240px (chiều rộng sidebar).
 
 ### Breakpoint 920px – 1199px
 
-- Margin nhỏ hơn (8px).
+- Chỉ thay đổi `padding-inline` của `.main-pane` và `margin` của `.main-content` thành `0 40px`. Margin-left của main-pane vẫn giữ nguyên.
 - Sidebar vẫn ở chế độ cố định (fixed) bên trái.
 
 ### Breakpoint < 920px
@@ -66,13 +66,13 @@ Hai nút nổi được teleport từ component con lên cấp cao hơn:
 |-------|-------|
 | `.sidebar-compact-active` | Kích hoạt chế độ sidebar thu gọn — chỉ hiển thị icon, ẩn văn bản |
 | `.sidebar-hidden` | Ẩn hoàn toàn sidebar khỏi viewport |
-| `.sidebar-overlay` | Chế độ overlay — sidebar nổi trên nội dung (dành cho mobile) |
+| `.left-nav.collapsed` | Sidebar ẩn khỏi viewport (transform: translateX(-100%)) |
 | `.sidebar-backdrop` | Lớp phủ tối phía sau sidebar ở chế độ overlay |
 
 ## Hành vi Interaction
 
 - **Toggle sidebar**: Nút hamburger ☰ trên AppTopBar hoặc nút toggle trong sidebar.
 - **Resize**: Tự động phát hiện thay đổi kích thước màn hình và chuyển đổi chế độ.
-- **Keyboard**: Có thể đóng sidebar bằng phím Escape ở chế độ overlay.
+- **Đóng sidebar**: Click vào backdrop hoặc nút toggle trên AppTopBar để đóng sidebar.
 
 Hình 2: MainLayoutTemplate ở chế độ mobile với sidebar overlay đang mở.

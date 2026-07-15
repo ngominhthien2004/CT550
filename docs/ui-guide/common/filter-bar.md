@@ -18,9 +18,9 @@ Hình 1: SearchFilterBar với các bộ lọc sort, age rating và novel-specif
 
 | Bộ lọc | Loại | Giá trị | Mô tả |
 |--------|------|---------|-------|
-| **Sort (Sắp xếp)** | Select dropdown | Newest, Popular, Most Viewed | Thứ tự hiển thị |
-| **Age rating (Độ tuổi)** | Pill buttons | Tất cả (All), An toàn (Safe), R-18 | Mức độ nội dung |
-| **Word count (Số từ)** | Select dropdown | `< 1K`, `1K–5K`, `5K–10K`, `> 10K` | Chỉ hiển thị cho novel |
+| **Sort (Sắp xếp)** | Select dropdown | newest, popular | Thứ tự hiển thị |
+| **Age rating (Độ tuổi)** | Pill buttons | All-Ages, R-18, All | Mức độ nội dung |
+| **Word count (Số từ)** | Hai ô nhập số (min/max) | Nhập số từ tối thiểu và tối đa | Chỉ hiển thị cho novel |
 
 ### Hành vi
 
@@ -78,9 +78,13 @@ Các component filter bar thường nhận các props sau:
 
 | Prop | Kiểu | Mô tả |
 |------|------|-------|
-| `modelValue` | Object | Giá trị bộ lọc hiện tại (v-model) |
-| `type` | String | Loại tác phẩm đang duyệt |
-| `options` | Array | Các tuỳ chọn sẵn có |
+| `sortMode` | String | Chế độ sắp xếp hiện tại |
+| `ageFilter` | String | Bộ lọc độ tuổi hiện tại |
+| `currentSearchOptions` | Object | Các tuỳ chọn tìm kiếm nâng cao |
+| `isNovelSearch` | Boolean | Đang tìm kiếm novel hay không |
+| `novelSortBy` | String | Tiêu chí sắp xếp cho novel |
+| `novelMinWords` | Number | Số từ tối thiểu (novel) |
+| `novelMaxWords` | Number | Số từ tối đa (novel) |
 
 ## Events
 

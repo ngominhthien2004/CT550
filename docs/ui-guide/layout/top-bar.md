@@ -48,7 +48,7 @@ Hình 2: AppTopBar với badge thông báo và tin nhắn.
 
 ## Props
 
-Component này không nhận props — toàn bộ dữ liệu được lấy từ store (Pinia) và Socket.IO.
+Component này nhận các props: `siteName` (String, default 'IlluWrl'), `searchPlaceholder` (String, default 'Search by title, tag, or artist') — phần còn lại của dữ liệu được lấy từ store (Pinia) và Socket.IO.
 
 ## Hành vi tương tác
 

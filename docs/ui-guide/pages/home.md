@@ -16,8 +16,7 @@ Tab điều hướng cho phép người dùng chuyển đổi giữa các chế 
 
 - Dải tag ngang hiển thị các tag thịnh hành.
 - Dữ liệu được lấy từ API tag phổ biến (giới hạn 12 tag).
-- Click vào tag → điều hướng đến `/search?tag=ten-tag`.
-- Tự động làm mới sau khoảng thời gian nhất định.
+- Click vào tag → điều hướng đến `/search?q=ten-tag&tag=1`.
 
 ### 3. HomeHeroBanner — Banner nổi bật
 
@@ -39,7 +38,7 @@ Khu vực này gồm hai cột:
 
 #### Cột trái: HomeFeedColumn
 
-- **Khách (chưa đăng nhập)**: Hiển thị các tác phẩm mới nhất (latest artworks) — giới hạn 48 tác phẩm.
+- **Khách (chưa đăng nhập)**: Hiển thị các tác phẩm mới nhất (latest artworks) — Tổng cộng fetch 48 tác phẩm, hiển thị 14 tác phẩm trong feed.
 - **Người dùng đã đăng nhập**: Hiển thị feed cá nhân hoá **"Dành cho bạn" (For You)** — lấy từ `/feed/for-you`, dựa trên sở thích và lịch sử tương tác.
 - Mỗi tác phẩm hiển thị dưới dạng thẻ với hình ảnh, tiêu đề, tác giả và thống kê tương tác.
 
@@ -54,7 +53,7 @@ Khu vực này gồm hai cột:
 | API endpoint | Dữ liệu | Số lượng |
 |--------------|---------|----------|
 | `/api/artworks` | Tác phẩm mới nhất (không bao gồm novel) | 48 |
-| `/api/tags/popular` | Tag phổ biến | 12 |
+| `/api/tags` | Tag phổ biến (với query `?limit=12`) | 12 |
 | `/api/banners` | Banner quảng cáo | Không giới hạn |
 | `/feed/for-you` | Đề xuất cá nhân hoá (authenticated) | Theo cấu hình |
 

@@ -107,7 +107,6 @@ Thực thể **SETTING** lưu trữ cấu hình toàn cục của hệ thống d
 | ---------------------- | -------- | --------- | ------------------------------------------------- |
 | `_id`                  | string   | PK        | Khoá singleton (global)                           |
 | `aiDetectionEnabled`   | boolean  | —         | Bật/tắt tính năng phát hiện AI trên toàn hệ thống |
-| `aiDetectionThreshold` | number   | —         | Ngưỡng phát hiện AI (0-100%), mặc định 70%        |
 | `createdAt`            | datetime | —         | Thời điểm tạo                                     |
 | `updatedAt`            | datetime | —         | Thời điểm cập nhật gần nhất                       |
 

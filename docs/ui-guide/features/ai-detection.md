@@ -24,10 +24,11 @@ HuggingFace model "umm-maybe/AI-image-detector" phân tích
          cấu trúc nén để ước tính)
         │
         ▼
-So sánh confidence với AI_DETECTION_THRESHOLD
+Quyết định isAI dựa trên kết quả từ model
         │
-        ├── confidence >= threshold → isAI = true → tự động gắn tag "ai"
-        └── confidence < threshold  → isAI = false → không gắn tag
+        ├── HF API: so sánh aiScore > realScore → isAI = true → gắn tag "ai"
+        │           (confidence = max(aiScore, realScore) * 100)
+        └── HF API: aiScore <= realScore → isAI = false → không gắn tag
         │
         ▼
 Frontend hiển thị kết quả trên form upload
@@ -95,22 +96,24 @@ image: <file>
 }
 ```
 
-## Ngưỡng phát hiện
+## Cơ chế phát hiện
 
-Ngưỡng phát hiện được cấu hình qua biến môi trường `AI_DETECTION_THRESHOLD`:
+Hệ thống không sử dụng ngưỡng cấu hình để quyết định AI hay thật. Quyết định dựa trên kết quả từ HuggingFace model:
 
-| Biến | Mặc định | Phạm vi |
-|------|----------|---------|
-| `AI_DETECTION_THRESHOLD` | `70` | 0 – 100 (%) |
+- **HuggingFace API** (`umm-maybe/AI-image-detector`): Model trả về danh sách label kèm score.
+  - `processHFResults()` tìm label có chứa từ khóa AI (`ai`, `generated`, `computer`, `artificial`, `synthetic`) và label thật (`real`, `natural`, `photo`, `human`).
+  - So sánh `aiScore > realScore` → nếu score AI cao hơn, `isAI = true`.
+  - `confidence = Math.round(Math.max(aiScore, realScore) * 100)` — chỉ là giá trị tham khảo, không dùng để quyết định.
 
-- Nếu `confidence >= threshold`: ảnh được xác định là AI-generated.
-- Nếu `confidence < threshold`: ảnh được xem là ảnh thật.
+- **Metadata fallback** (khi HuggingFace không khả dụng): Sử dụng hệ thống điểm dựa trên đặc tính file.
+  - `aiScore > 30` → `isAI = true`.
+  - Công thức: `confidence = Math.min(85, Math.max(30, 50 + aiScore))`.
 
-Admin có thể bật/tắt tính năng này qua Setting trong database (`aiDetectionEnabled`).
+Admin có thể bật/tắt toàn bộ tính năng qua Setting trong database (`aiDetectionEnabled`).
 
 ## Tự động gắn tag
 
-Khi ảnh được xác định là AI-generated với confidence >= threshold, hệ thống **tự động** thêm tag `ai` vào tác phẩm. Điều này giúp:
+Khi ảnh được xác định là AI-generated (`isAI = true`), hệ thống **tự động** thêm tag `ai` vào tác phẩm. Điều này giúp:
 
 - Người xem dễ dàng lọc tác phẩm theo nguồn gốc.
 - Hỗ trợ công tác kiểm duyệt và quản lý nội dung.
@@ -159,7 +162,6 @@ Công thức: `aiScore > 30 → isAI = true`, `confidence = min(85, max(30, 50 +
 | `backend/controllers/ai.controller.js` | Hàm `detectAIImage` — xử lý request |
 | `backend/routes/ai.routes.js` | Route `POST /ai/detect-image` |
 | `backend/services/huggingface.service.js` | `detectAIWithHuggingFace()`, `processHFResults()`, `detectWithMetadataAnalysis()` |
-| `backend/config/env.js` | `getAiDetectionThreshold()` — đọc biến môi trường |
 | `frontend/src/views/AIView.vue` | Giao diện test AI Detection |
 | `frontend/src/views/UploadArtworkView.vue` | Tích hợp AI Detection trong form upload |
 

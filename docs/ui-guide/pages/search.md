@@ -32,8 +32,8 @@ Thanh lọc kết quả với các tuỳ chọn:
 | Bộ lọc            | Giá trị                                | Mô tả                       |
 | ----------------- | -------------------------------------- | --------------------------- |
 | **Sắp xếp**       | Mới nhất (Newest) / Phổ biến (Popular) | Thứ tự hiển thị kết quả     |
-| **Độ tuổi**       | Tất cả (All) / An toàn (Safe) / R-18   | Lọc theo mức độ nội dung    |
-| **Số từ (Novel)** | Bộ lọc đặc thù cho novel               | Lọc theo độ dài tiểu thuyết |
+| **Độ tuổi**       | All-Ages / R-18 / All                  | Lọc theo mức độ nội dung    |
+| **Số từ (Novel)** | Hai ô nhập số (min/max words)          | Lọc theo độ dài tiểu thuyết |
 
 ### UserSearchFilters (dành cho tìm kiếm người dùng)
 
@@ -64,7 +64,7 @@ Modal tìm kiếm nâng cao với các tuỳ chọn:
 | **Include all (AND)** | Tác phẩm chứa tất cả từ khoá                      |
 | **Include any (OR)**  | Tác phẩm chứa bất kỳ từ khoá nào                  |
 | **Exclude**           | Từ khoá loại trừ                                  |
-| **Target field**      | Trường tìm kiếm: Tags, Title, Description, Artist |
+| **Target field**      | Trường tìm kiếm: `tag_partial`, `tag_exact`, `title`, `title_caption`, `all` |
 
 ## Trạng thái giao diện
 

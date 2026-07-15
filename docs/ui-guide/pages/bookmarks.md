@@ -59,7 +59,7 @@ Mỗi thẻ tác phẩm yêu thích hiển thị:
 - **Cover image**: Hình ảnh bìa của tác phẩm.
 - **Title**: Tiêu đề tác phẩm.
 - **Type**: Loại tác phẩm (Illustration, Manga, Novel, GIF) — hiển thị dưới dạng badge.
-- **Age rating**: Mức độ nội dung (Safe / R-18).
+- **Age rating**: Mức độ nội dung (All / R-18).
 - **Author**: Tên tác giả.
 - **Like count**: Số lượt thích của tác phẩm.
 

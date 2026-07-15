@@ -66,7 +66,7 @@ Mỗi thẻ hiển thị:
 
 ## Tương tác
 
-- **Click vào thẻ**: Điều hướng đến `/artworks/:id` (hoặc `/novels/:id`).
+- **Click vào thẻ**: Điều hướng đến `/artworks/:id`.
 - **Hover vào thẻ**: Hiệu ứng nổi (shadow) nhẹ.
 - **Xoá lịch sử**: Nút "Clear all" hiển thị hộp thoại xác nhận trước khi xoá.
 - **Lọc ngày**: Kết hợp với tìm kiếm từ khoá để lọc chính xác.
@@ -76,5 +76,5 @@ Hình 2: Date Filter Panel mở rộng với các input ngày.
 ## Ghi chú
 
 - Lịch sử được tự động ghi lại khi người dùng xem chi tiết tác phẩm.
-- Thời gian tương đối sử dụng thư viện moment hoặc hàm format tự động.
-- Dữ liệu lịch sử được phân trang từ server, mỗi trang 20-30 mục.
+- Thời gian tương đối sử dụng hàm `timeAgo()` tự định nghĩa.
+- Dữ liệu lịch sử được phân trang từ server, mỗi trang 20 mục.

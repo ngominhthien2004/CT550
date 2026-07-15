@@ -42,7 +42,7 @@ Hiển thị hai số liệu chính:
 
 | Mục | Route | Mô tả |
 |-----|-------|-------|
-| **Account settings** | `/account` | Cài đặt tài khoản: thông tin cá nhân, mật khẩu, thông báo, giao diện. |
+| **Account settings** | `/settings` | Cài đặt tài khoản: thông tin cá nhân, mật khẩu, thông báo, giao diện. |
 
 ### Nút đăng xuất (Logout Button)
 

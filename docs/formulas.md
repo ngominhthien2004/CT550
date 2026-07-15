@@ -194,7 +194,7 @@ confidence = Math.min(85, Math.max(30, 50 + aiScore))
 
 ### Threshold
 
-Configurable via `AI_DETECTION_THRESHOLD` env var — **default 70%**. Artworks scoring above this threshold are auto-tagged with the `ai` tag.
+AI detection uses HuggingFace model `umm-maybe/AI-image-detector` — artworks with `isAI=true` are auto-tagged with the `ai` tag.
 
 ### Code
 
@@ -206,23 +206,20 @@ Configurable via `AI_DETECTION_THRESHOLD` env var — **default 70%**. Artworks 
 
 ## 5. Auto-Tagging
 
-Generates tags from uploaded images using HuggingFace image classification (or Google Cloud Vision as fallback).
+Generates tags from uploaded images using Google Cloud Vision API.
 
 ### Configuration
 
 | Variable | Default |
 |----------|---------|
-| `AUTO_TAG_MODEL` | `google/vit-base-patch16-224` |
-| `AUTO_TAG_CONFIDENCE` | `0.2` |
-| `AUTO_TAG_MAX_TAGS` | `5` |
-| `AUTO_TAG_PROVIDER` | `huggingface` (or `google-vision`) |
+| `GOOGLE_VISION_API_KEY` | — (required) |
+| `GOOGLE_VISION_CONFIDENCE` | `0.6` |
+| `AUTO_TAG_MAX_TAGS` | `10` |
 
 ### Label Cleaning
 
 ```javascript
 label
-  .split(',')[0]           // take first label before comma
-  .trim()                  // remove surrounding whitespace
   .toLowerCase()           // normalize case
   .replace(/\s+/g, '_')    // spaces → underscores
   .replace(/[^a-z0-9_]/g, '')  // strip special chars
@@ -232,8 +229,8 @@ label
 
 ### Pipeline
 
-1. Call HuggingFace inference API (or Google Vision) with the image
-2. Filter results where `score >= AUTO_TAG_CONFIDENCE`
+1. Call Google Cloud Vision LABEL_DETECTION API with the image
+2. Filter results where `score >= GOOGLE_VISION_CONFIDENCE`
 3. Clean each label
 4. Deduplicate and collect up to `AUTO_TAG_MAX_TAGS`
 
@@ -241,7 +238,8 @@ label
 
 | File | Function |
 |------|----------|
-| `backend/services/autoTag.service.js` | `autoTagImage()`, `autoTagWithHuggingFace()`, `cleanHuggingFaceLabel()` |
+| `backend/services/autoTag.service.js` | `autoTagImage()` |
+| `backend/services/googleVision.service.js` | `detectLabels()`, `cleanLabel()` |
 
 ---
 

@@ -64,7 +64,7 @@ Hình 2: SearchOptionsModal với các trường tìm kiếm nâng cao.
 | **Include all (AND)** | Các từ khoá bắt buộc — tác phẩm phải chứa tất cả |
 | **Include any (OR)** | Các từ khoá tuỳ chọn — tác phẩm chứa bất kỳ từ nào |
 | **Exclude** | Các từ khoá loại trừ — tác phẩm không được chứa |
-| **Target field** | Trường tìm kiếm: Tags, Title, Description, Artist |
+| **Target field** | Trường tìm kiếm: `tag_partial`, `tag_exact`, `title`, `title_caption`, `all` |
 
 ### Hành vi
 

@@ -10,8 +10,8 @@ Hình 1: Giao diện AppSidebarMenu ở chế độ expanded.
 
 | Trạng thái | Mô tả |
 |------------|-------|
-| **Collapsed (mặc định)** | Sidebar ẩn hoàn toàn, chỉ hiện khi người dùng nhấn nút toggle hoặc hover vào cạnh trái. |
-| **Expanded** | Sidebar mở rộng, hiển thị đầy đủ icon và nhãn văn bản. Chiều rộng 250px. |
+| **Collapsed (mặc định)** | Sidebar ẩn hoàn toàn, chỉ hiện khi người dùng nhấn nút toggle. |
+| **Expanded** | Sidebar mở rộng, hiển thị đầy đủ icon và nhãn văn bản. Chiều rộng 240px. |
 | **Compact** | Chế độ thu gọn (icon-only), chỉ hiển thị biểu tượng, không hiển thị văn bản. |
 
 ## Cấu trúc
@@ -36,7 +36,7 @@ Sidebar được tổ chức thành các nhóm có thể thu gọn/mở rộng:
 - Plans (`/plans`)
 
 **3. Khám phá (Explore)**
-- Following (`/following`)
+- Following (`/newest_by_followed`)
 - Discovery (`/discovery`)
 - Rankings (`/rankings`)
 - My Favorite (`/favorites`)
@@ -52,7 +52,7 @@ Chỉ hiển thị cho người dùng đã đăng nhập:
 - Dashboard (`/dashboard`)
 - Requests (`/requests/manage`)
 - Browsing history (`/history`)
-- My Reports (`/reports`)
+- My Reports (`/my-reports`)
 - Admin (`/admin`) — **chỉ hiển thị với người dùng có role `admin`**
 
 ### Phần người dùng (User Section)

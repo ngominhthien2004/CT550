@@ -86,7 +86,5 @@ Hình 2: Hệ thống tag đa ngôn ngữ hiển thị trên thẻ tác phẩm.
 
 | Kích thước | Hành vi |
 |------------|---------|
-| ≥ 1200px | 4-5 cột artwork grid |
-| 920px – 1199px | 3-4 cột |
-| 600px – 919px | 2-3 cột |
-| < 600px | 2 cột |
+| ≥ 700px | Grid tự động điều chỉnh số cột |
+| < 700px | Grid chuyển sang 2 cột |

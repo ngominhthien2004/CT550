@@ -10,7 +10,9 @@
 - **Tư vấn nghệ thuật**: Trả lời câu hỏi về phong cách vẽ, kỹ thuật illustration, manga.
 - **Hỗ trợ đa phiên**: Quản lý nhiều cuộc hội thoại song song với lịch sử đầy đủ.
 
-Chatbot sử dụng **Ollama** (model mặc định `qwen2.5-coder:32b`) chạy local qua giao thức HTTP — không gọi API cloud trực tiếp từ frontend, đảm bảo quyền riêng tư và kiểm soát dữ liệu.
+Chatbot hỗ trợ hai provider AI, cấu hình qua biến `AI_PROVIDER`:
+- **Ollama** (mặc định) — model `llama3.2:3b`, chạy local tại `http://localhost:11434`, không gọi API cloud.
+- **OpenAI-compatible** (khi `AI_PROVIDER=openai`) — có thể dùng DeepSeek (`deepseek-chat`), OpenRouter, hoặc bất kỳ API nào tương thích OpenAI. Mặc định trỏ đến `https://api.deepseek.com`.
 
 ## 2. Giao diện người dùng
 
@@ -23,7 +25,7 @@ Nút AI Chat FAB (góc dưới phải)
         │   Icon: fa-robot, gradient tím–xanh dương
         │   Kích thước: 52×52px, hình tròn
         │
-        └── Click → điều hướng đến /chat
+        └── Click → mở chat bubble (in-app widget thông qua `chatStore.toggleBubble()`)
 ```
 
 Hình 1: Nút AI Chat FAB ở góc dưới bên phải màn hình.
@@ -37,7 +39,7 @@ Trang `/chat` có bố cục hai cột:
 │ ┌─────────────┐  ┌─────────────────────────────┐ │
 │ │ Session     │  │ Chat Header                  │ │
 │ │ Sidebar     │  │ 🤖 AI Assistant              │ │
-│ │ (260px)     │  │ [New Chat]                   │ │
+│ │ (180px)     │  │ [New Chat]                   │ │
 │ │             │  ├─────────────────────────────┤ │
 │ │ Lịch sử     │  │ Messages Area                │ │
 │ │ chat        │  │                              │ │
@@ -164,10 +166,11 @@ Khi chưa có tin nhắn hoặc đang ở trạng thái rảnh, hiển thị cá
 │  │  chatWithAI() / chatStreamWithAI() / buildAgentSystemPrompt│  │
 │  └───────────────────────┬───────────────────────────────────┘  │
 │                          ▼                                       │
-│              ┌──────────────────────┐                            │
-│              │  Ollama API (HTTP)   │                            │
-│              │  qwen2.5-coder:32b   │                            │
-│              └──────────────────────┘                            │
+│              ┌──────────────────────────────────────────────────┐│
+│              │  AI Provider (cấu hình qua AI_PROVIDER)           ││
+│              │  ├── Ollama: llama3.2:3b (mặc định)              ││
+│              │  └── OpenAI API: deepseek-chat (khi AI_PROVIDER=openai)││
+│              └──────────────────────────────────────────────────┘│
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -260,7 +263,9 @@ Xây dựng system prompt với ngữ cảnh cá nhân hoá:
   "Bạn là trợ lý nghệ thuật IlluWrl. Tên người dùng là {userName}..."
         │
         ▼
-Gọi Ollama API (qwen2.5-coder:32b) qua giao thức HTTP
+Gọi AI Provider qua chatWithAI() / chatStreamWithAI():
+├── AI_PROVIDER=ollama → Ollama API (llama3.2:3b)
+└── AI_PROVIDER=openai → OpenAI-compatible API (deepseek-chat)
         │
         ├── Có tool → gửi kết quả tool + yêu cầu giải thích
         └── Không tool → gửi hội thoại trực tiếp
@@ -324,9 +329,9 @@ function detectIntent(message) {
 
 ## 7. Ghi chú kỹ thuật
 
-- **Ollama model**: Mặc định sử dụng `qwen2.5-coder:32b`, có thể thay đổi qua biến `OLLAMA_MODEL`.
-- **Cấu hình Ollama**: Địa chỉ server mặc định `http://localhost:11434`, cấu hình qua `OLLAMA_HOСТ`.
-- **Provider thay thế**: Có thể chuyển sang OpenAI-compatible API bằng cách đặt `AI_PROVIDER=openai`.
+- **AI Provider**: Cấu hình qua biến `AI_PROVIDER` — `ollama` (mặc định) hoặc `openai`.
+- **Ollama**: Model mặc định `llama3.2:3b` (cấu hình qua `OLLAMA_MODEL`), host `http://localhost:11434` (cấu hình qua `OLLAMA_HOST`).
+- **OpenAI-compatible** (dùng cho DeepSeek, OpenRouter...): Base URL mặc định `https://api.deepseek.com` (cấu hình qua `OPENAI_BASE_URL`), model mặc định `deepseek-chat` (cấu hình qua `OPENAI_MODEL`), yêu cầu `OPENAI_API_KEY`.
 - **Session lifecycle**: Session không tự động xoá — người dùng phải xoá thủ công.
 - **Welcome message**: Mỗi session mới được tạo kèm welcome message hướng dẫn người dùng.
 - **ChatView hiện tại**: Component `ChatView.vue` đang ở trạng thái lưu trữ (`_archive/`), route `/chat` hiện redirect về trang chủ. Giao diện chat hoàn chỉnh đang được phát triển.
@@ -391,7 +396,7 @@ Reply: "Tác phẩm 'Hoàng hôn trên núi' — illustration, tác giả: ...
 ```
 User: "Phong cách vẽ manga khác gì anime?"
 Intent: chat (không khớp search/recommend/summarize)
-Action: Trực tiếp gọi Ollama với system prompt
+Action: Trực tiếp gọi AI service với system prompt
 Reply: "Phong cách vẽ manga thường có nét vẽ đơn giản hơn,
 tập trung vào biểu cảm nhân vật và kể chuyện..."
 ```

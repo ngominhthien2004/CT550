@@ -57,23 +57,24 @@ Frontend (ChatView)
 | **Backend** | Express 5 (Node.js) — CommonJS |
 | **Database** | MongoDB + Mongoose ODM |
 | **AI Image Detection** | HuggingFace Inference API — model `umm-maybe/AI-image-detector` |
-| **AI Auto-Tagging** | HuggingFace — model `google/vit-base-patch16-224` (mặc định) |
-| **AI Chat** | Ollama API — model mặc định `qwen2.5-coder:32b` |
+| **AI Auto-Tagging** | Google Cloud Vision API — LABEL_DETECTION |
+| **AI Chat** | Ollama (`llama3.2:3b`, default) hoặc OpenAI-compatible (`deepseek-chat`) — cấu hình qua `AI_PROVIDER` |
 | **Vector Search** | Không sử dụng pgvector — tìm kiếm dựa trên regex MongoDB + phân loại ý định heuristic |
 
 ## Cấu hình qua biến môi trường
 
 | Biến | Mặc định | Mô tả |
 |------|----------|-------|
-| `AI_DETECTION_THRESHOLD` | `70` | Ngưỡng phát hiện AI (%) |
 | `AI_PROVIDER` | `ollama` | Nhà cung cấp AI: `ollama` hoặc `openai` |
+| `OPENAI_API_KEY` | — | API key cho OpenAI-compatible provider (DeepSeek, OpenRouter...) |
+| `OPENAI_BASE_URL` | `https://api.deepseek.com` | Base URL cho OpenAI-compatible API |
+| `OPENAI_MODEL` | `deepseek-chat` | Model cho OpenAI-compatible provider |
 | `OLLAMA_HOST` | `http://localhost:11434` | Địa chỉ Ollama server |
-| `OLLAMA_MODEL` | `qwen2.5-coder:32b` | Model Ollama sử dụng |
+| `OLLAMA_MODEL` | `llama3.2:3b` | Model Ollama sử dụng |
 | `HF_TOKEN` | — | HuggingFace API token |
-| `AUTO_TAG_MODEL` | `google/vit-base-patch16-224` | Model phân loại ảnh |
-| `AUTO_TAG_CONFIDENCE` | `0.2` | Ngưỡng confidence cho tag |
-| `AUTO_TAG_MAX_TAGS` | `5` | Số tag tối đa trả về |
-| `AUTO_TAG_PROVIDER` | `huggingface` | Provider auto-tag: `huggingface` hoặc `google-vision` |
+| `GOOGLE_VISION_API_KEY` | — | Google Cloud Vision API key |
+| `GOOGLE_VISION_CONFIDENCE` | `0.6` | Ngưỡng confidence cho tag (0-1) |
+| `AUTO_TAG_MAX_TAGS` | `10` | Số tag tối đa trả về |
 
 ## Kiến trúc tổng thể
 
@@ -93,10 +94,11 @@ Frontend (ChatView)
     │  │  recommend  searchByAI  summarizeArtwork     │   │
     │  └──────────┬──────────┬───────────┬───────────┘   │
     │             │          │           │                │
-    │    ┌────────▼──┐ ┌────▼────┐ ┌────▼───────┐       │
-    │    │HuggingFace│ │Ollama   │ │ MongoDB    │       │
-    │    │ Service   │ │ Service │ │ (Sessions) │       │
-    │    └───────────┘ └─────────┘ └────────────┘       │
+    │    ┌────────▼──┐ ┌────────▼─┐ ┌────▼───────┐      │
+    │    │HuggingFace│ │AI Service│ │ MongoDB    │      │
+    │    │ Service   │ │(Ollama / │ │ (Sessions) │      │
+    │    │           │ │ OpenAI)  │ │            │      │
+    │    └───────────┘ └──────────┘ └────────────┘      │
     └─────────────────────────────────────────────────────┘
 ```
 

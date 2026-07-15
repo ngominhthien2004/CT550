@@ -88,4 +88,4 @@ Tab active nền `#4a90d9` (xanh dương).
 - Dark theme: nền gradient `#1a1a2e` → `#16213e`.
 - Default tab is `'detect'` — AI image detection is the primary use case.
 - Chat history gửi kèm trong request để AI có context.
-- AI detection threshold: 70% (configurable via `AI_DETECTION_THRESHOLD` env var).
+- AI detection: sử dụng HuggingFace model `umm-maybe/AI-image-detector` để phát hiện ảnh AI.
