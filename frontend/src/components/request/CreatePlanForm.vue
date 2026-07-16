@@ -185,7 +185,7 @@ watch(() => ({ ...termForm }), () => { requestStore.error = '' })
   color: var(--text);
 }
 
-.form-grid input, .form-section > input, .form-section > textarea {
+.form-grid input, .form-section > input, .form-section > label input, .form-section textarea {
   padding: 0.5rem 0.7rem;
   border: 1px solid var(--line);
   border-radius: 8px;
