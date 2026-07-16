@@ -32,14 +32,38 @@ const hasActiveFilters = computed(() =>
   browseHistoryStore.search || browseHistoryStore.filterFrom || browseHistoryStore.filterTo
 )
 
-const processedHistory = computed(() =>
-  historyEntries.value
+const typeLabelMap = { illust: 'Illustration', manga: 'Manga', novel: 'Novel', gif: 'GIF' }
+const activeType = ref('')
+
+const typeTabs = computed(() => {
+  const bucket = new Map()
+  historyEntries.value.forEach(entry => {
+    if (!entry.artwork) return
+    const type = String(entry.artwork.type || '').toLowerCase()
+    if (!typeLabelMap[type]) return
+    bucket.set(type, (bucket.get(type) || 0) + 1)
+  })
+  return Object.keys(typeLabelMap)
+    .filter(type => bucket.has(type))
+    .map(type => ({ value: type, label: typeLabelMap[type], count: bucket.get(type) || 0 }))
+})
+
+function selectType(type) {
+  activeType.value = activeType.value === type ? '' : type
+}
+
+const processedHistory = computed(() => {
+  let items = historyEntries.value
     .filter(entry => entry.artwork)
     .map(entry => ({
       ...entry,
       _timeAgo: timeAgo(entry.createdAt),
     }))
-)
+  if (activeType.value) {
+    items = items.filter(entry => String(entry.artwork.type || '').toLowerCase() === activeType.value)
+  }
+  return items
+})
 
 onMounted(() => {
   browseHistoryStore.fetchHistory(1)
@@ -129,6 +153,20 @@ function getImage(item) {
           </div>
         </div>
         <p class="page-subtitle">{{ total }} artwork{{ total !== 1 ? 's' : '' }} viewed</p>
+      </div>
+
+      <!-- Type Tabs -->
+      <div v-if="typeTabs.length > 1" class="type-tabs">
+        <button
+          v-for="tab in typeTabs"
+          :key="tab.value"
+          type="button"
+          class="type-tab"
+          :class="{ active: activeType === tab.value }"
+          @click="selectType(tab.value)"
+        >
+          {{ tab.label }} <span class="tab-count">{{ tab.count }}</span>
+        </button>
       </div>
 
       <!-- Search + Filters -->
@@ -317,6 +355,41 @@ function getImage(item) {
   font-size: 0.82rem;
   color: var(--muted);
   margin: 0.25rem 0 0;
+}
+
+.type-tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0.75rem 0;
+  flex-wrap: wrap;
+}
+
+.type-tab {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 20px;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.type-tab:hover {
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+.type-tab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.tab-count {
+  margin-left: 0.3rem;
+  opacity: 0.7;
 }
 
 .btn-clear {
