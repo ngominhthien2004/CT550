@@ -592,7 +592,7 @@ Mô hình dữ liệu mức quan niệm gồm có 27 thực thể. Trong đó, t
 - **ARTWORK — ARTWORK_REPORT**: Thực thể ARTWORK liên kết với thực thể ARTWORK_REPORT (Báo cáo tác phẩm) để cho biết tác phẩm bị báo cáo vì những lý do gì.
 - **ARTWORK — CHAPTER**: Thực thể ARTWORK liên kết với thực thể CHAPTER (Chương) để cho biết tác phẩm (tiểu thuyết) gồm có những chương nào.
 - **ARTWORK — READING_PROGRESS**: Thực thể ARTWORK liên kết với thực thể READING_PROGRESS (Tiến độ đọc) để theo dõi tiến độ đọc của người dùng trên tác phẩm.
-- **ARTWORK — SERIES**: Thực thể ARTWORK liên kết với thực thể SERIES (Series tác phẩm) qua quan hệ nhiều-nhiều để cho biết tác phẩm thuộc về series nào (manga/illust).
+- **ARTWORK — SERIES**: Thực thể ARTWORK liên kết với thực thể SERIES (Series tác phẩm) qua quan hệ nhiều-một (N-1) để cho biết tác phẩm thuộc về một series. Artwork có trường `series` (ObjectId, single ref) trỏ đến Series.
 - **ARTWORK — VIEW_EVENT**: Thực thể ARTWORK liên kết với thực thể VIEW_EVENT (Sự kiện xem) để cho biết tác phẩm có những sự kiện xem nào. Mỗi lần người dùng xem tác phẩm sẽ tạo một bản ghi VIEW_EVENT mới.
 - **CHAPTER — READING_PROGRESS**: Thực thể CHAPTER (Chương) liên kết với thực thể READING_PROGRESS (Tiến độ đọc) để cho biết mỗi chương có tiến độ đọc tương ứng của từng người dùng.
 - **SERIES — TAG**: Thực thể SERIES (Series) liên kết với thực thể TAG (Thẻ) qua quan hệ nhiều-nhiều tagged with để cho biết series được gắn những thẻ nào.

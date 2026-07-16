@@ -397,7 +397,6 @@ erDiagram
   ARTWORK ||--o{ CHAPTER : "contains"
   ARTWORK ||--o{ READING_PROGRESS : "tracks"
   ARTWORK }o--o{ TAG : "tagged with"
-  ARTWORK }o--o{ SERIES : "belongs to"
   CHAPTER ||--o{ READING_PROGRESS : "tracks"
   SERIES ||--o{ ARTWORK : "contains"
   SERIES }o--o{ TAG : "tagged with"
@@ -449,7 +448,7 @@ erDiagram
 | 22 | **ARTWORK** | 1 —— N | CHAPTER | 1 → N | Một tác phẩm (novel) có nhiều chương |
 | 23 | **ARTWORK** | 1 —— N | READING_PROGRESS | 1 → N | Một tác phẩm có nhiều tiến độ đọc |
 | 24 | **ARTWORK** | N —— N | TAG | N → N | Một tác phẩm có nhiều thẻ, một thẻ gắn với nhiều tác phẩm |
-| 25 | **ARTWORK** | N —— N | SERIES | N → N | Một tác phẩm thuộc nhiều series, một series chứa nhiều tác phẩm |
+| 25 | **ARTWORK** | N —— 1 | SERIES | N → 1 | Một tác phẩm thuộc về một series |
 | 26 | **CHAPTER** | 1 —— N | READING_PROGRESS | 1 → N | Một chương có nhiều tiến độ đọc |
 | 27 | **SERIES** | 1 —— N | ARTWORK | 1 → N | Một series chứa nhiều tác phẩm |
 | 28 | **SERIES** | N —— N | TAG | N → N | Một series có nhiều thẻ, một thẻ gắn với nhiều series |
