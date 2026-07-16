@@ -2,7 +2,6 @@ const Artwork = require('../models/Artwork');
 const ArtworkReport = require('../models/ArtworkReport');
 const User = require('../models/User');
 const Setting = require('../models/Setting');
-const Chapter = require('../models/Chapter');
 const ReadingProgress = require('../models/ReadingProgress');
 const Tag = require('../models/Tag');
 const BrowseHistory = require('../models/BrowseHistory');
@@ -25,22 +24,6 @@ const normalizeTagName = (rawTagName = '') =>
 
 const AI_TAG_NAME = normalizeTagName('ai');
 const MAX_ARTWORK_IMAGES = 50;
-
-/**
- * Aggregate word counts from all chapters of a series novel and update the artwork.
- * For oneshot novels, wordCount comes from novelContent directly.
- */
-async function aggregateWordCount(artworkId) {
-  const artwork = await Artwork.findById(artworkId);
-  if (!artwork || artwork.type !== 'novel') return;
-
-  if (artwork.series) {
-    const chapters = await Chapter.find({ artwork: artworkId }).select('wordCount').lean();
-    const totalWords = chapters.reduce((sum, ch) => sum + (ch.wordCount || 0), 0);
-    artwork.wordCount = totalWords;
-    await artwork.save();
-  }
-}
 
 async function runAiDetection(primaryImagePath) {
     try {
@@ -202,16 +185,6 @@ const createArtwork = async (req, res, next) => {
 
         const artwork = await Artwork.create(artworkData);
 
-        // Auto-create a Chapter for oneshot novels with content
-        if (artworkType === 'novel' && !req.body.series && novelContent) {
-            await Chapter.create({
-                artwork: artwork._id,
-                title: title || 'Chapter 1',
-                content: novelContent,
-                chapterNumber: 1,
-            });
-        }
-
         await createNotification({
             userId: req.user._id,
             artworkId: artwork._id,
@@ -360,16 +333,7 @@ const getArtworkById = async (req, res, next) => {
                 }
             }
 
-            // For novels, include chapter count from Chapter model
-            let chapters = [];
-            if (artwork.type === 'novel') {
-                chapters = await Chapter.find({ artwork: artwork._id })
-                    .sort({ chapterNumber: 1 })
-                    .select('title chapterNumber wordCount createdAt');
-            }
-
             const result = artwork.toObject({ virtuals: true });
-            result.chapters = chapters;
             res.json(result);
         } else {
             res.status(404);
@@ -577,106 +541,6 @@ const updateNovelContent = async (req, res, next) => {
 
         await artwork.save();
         res.json(artwork);
-    } catch (error) {
-        next(error);
-    }
-};
-
-// Chapter management
-const getChapters = async (req, res, next) => {
-    try {
-        const chapters = await Chapter.find({ artwork: req.params.id })
-            .sort({ chapterNumber: 1 })
-            .select('-content');
-        res.json(chapters);
-    } catch (error) {
-        next(error);
-    }
-};
-
-const getChapter = async (req, res, next) => {
-    try {
-        const chapter = await Chapter.findOne({
-            _id: req.params.chapterId,
-            artwork: req.params.id,
-        });
-        if (!chapter) {
-            res.status(404);
-            return next(new Error('Chapter not found'));
-        }
-        res.json(chapter);
-    } catch (error) {
-        next(error);
-    }
-};
-
-const createChapter = async (req, res, next) => {
-    try {
-        const artwork = await Artwork.findById(req.params.id);
-        if (!artwork) {
-            res.status(404);
-            return next(new Error('Artwork not found'));
-        }
-        if (artwork.user.toString() !== req.user._id.toString()) {
-            res.status(403);
-            return next(new Error('Not authorized'));
-        }
-
-        const { title, content } = req.body;
-
-        // Get next chapter number
-        const lastChapter = await Chapter.findOne({ artwork: req.params.id })
-            .sort({ chapterNumber: -1 });
-        const chapterNumber = lastChapter ? lastChapter.chapterNumber + 1 : 1;
-
-        const chapter = await Chapter.create({
-            artwork: req.params.id,
-            title,
-            content,
-            chapterNumber,
-        });
-
-        // Update chapter count on artwork
-        artwork.chapterCount = chapterNumber;
-        await artwork.save();
-
-        // Aggregate word count from all chapters
-        await aggregateWordCount(req.params.id);
-
-        res.status(201).json(chapter);
-    } catch (error) {
-        next(error);
-    }
-};
-
-const deleteChapter = async (req, res, next) => {
-    try {
-        const chapter = await Chapter.findOne({
-            _id: req.params.chapterId,
-            artwork: req.params.id,
-        });
-        if (!chapter) {
-            res.status(404);
-            return next(new Error('Chapter not found'));
-        }
-
-        const artwork = await Artwork.findById(req.params.id);
-        if (artwork.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-            res.status(403);
-            return next(new Error('Not authorized'));
-        }
-
-        await chapter.deleteOne();
-
-        // Recalculate chapter count
-        const count = await Chapter.countDocuments({ artwork: req.params.id });
-        artwork.chapterCount = count;
-        await artwork.save();
-
-        // Recalculate word count
-        await aggregateWordCount(req.params.id);
-
-        res.json({ message: 'Chapter deleted' });
     } catch (error) {
         next(error);
     }
@@ -930,48 +794,6 @@ const getHiddenArtworks = async (req, res, next) => {
     }
 };
 
-// ─── Update Chapter ────────────────────────────────────────────────────────────
-const updateChapter = async (req, res, next) => {
-    try {
-        const chapter = await Chapter.findOne({
-            _id: req.params.chapterId,
-            artwork: req.params.id,
-        });
-        if (!chapter) {
-            res.status(404);
-            return next(new Error('Chapter not found'));
-        }
-
-        const artwork = await Artwork.findById(req.params.id);
-        if (!artwork) {
-            res.status(404);
-            return next(new Error('Artwork not found'));
-        }
-        if (artwork.user.toString() !== req.user._id.toString()) {
-            res.status(403);
-            return next(new Error('Not authorized'));
-        }
-
-        if (!req.body || (req.body.title === undefined && req.body.content === undefined)) {
-            res.status(400);
-            return next(new Error('Nothing to update - provide title or content'));
-        }
-
-        const { title, content } = req.body;
-        if (title !== undefined) chapter.title = title;
-        if (content !== undefined) chapter.content = content;
-
-        await chapter.save();
-
-        // Recalculate word count (content may have changed)
-        await aggregateWordCount(req.params.id);
-
-        res.json(chapter);
-    } catch (error) {
-        next(error);
-    }
-};
-
 /**
  * GET /api/artworks/:id/similar
  * Returns similar artworks using collaborative filtering (item-to-item Jaccard similarity).
@@ -996,11 +818,6 @@ module.exports = {
     deleteArtwork,
     updateArtwork,
     updateNovelContent,
-    getChapters,
-    getChapter,
-    createChapter,
-    updateChapter,
-    deleteChapter,
     saveReadingProgress,
     getReadingProgress,
     reportArtwork,

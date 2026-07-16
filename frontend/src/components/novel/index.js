@@ -1,5 +1,4 @@
 export { default as NovelReader } from './NovelReader.vue'
-export { default as ChapterManager } from './ChapterManager.vue'
 export { default as NovelCard } from './NovelCard.vue'
 export { default as NovelSection } from './NovelSection.vue'
 export { default as NovelCreators } from './NovelCreators.vue'

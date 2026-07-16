@@ -52,7 +52,6 @@ const excerpt = computed(() => {
         <span>{{ formatLabel }}</span>
         <span>{{ novel?.authorName || novel?.user?.displayName || novel?.user?.username || 'Featured writer' }}</span>
         <span v-if="novel?.wordCount">{{ novel.wordCount.toLocaleString() }} words</span>
-        <span v-if="novel?.chapterCount">{{ novel.chapterCount }} {{ novel.chapterCount > 1 ? 'chapters' : 'chapter' }}</span>
         <span v-if="novel?.createdLabel">{{ novel.createdLabel }}</span>
       </div>
 

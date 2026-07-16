@@ -7,7 +7,6 @@ const {
     createArtwork, getArtworks, getArtworkById,
     getAdminArtworks, deleteArtwork, updateArtwork,
     updateNovelContent,
-    getChapters, getChapter, createChapter, updateChapter, deleteChapter,
     saveReadingProgress, getReadingProgress,
     reportArtwork,
     getReportedArtworks,
@@ -109,16 +108,6 @@ router.get('/:id/similar', optionalAuth, getSimilarArtworks);
 // Novel content update
 router.route('/:id/novel-content')
     .put(protect, updateNovelContent);
-
-// Chapter management
-router.route('/:id/chapters')
-    .get(getChapters)
-    .post(protect, createChapter);
-
-router.route('/:id/chapters/:chapterId')
-    .get(getChapter)
-    .put(protect, updateChapter)
-    .delete(protect, deleteChapter);
 
 // Reading progress
 router.route('/:id/reading-progress')

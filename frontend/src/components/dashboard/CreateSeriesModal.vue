@@ -294,7 +294,7 @@ onBeforeUnmount(() => {
         </div>
 
         <!-- Works -->
-        <div v-if="seriesType !== 'novel'" class="cs-works-section">
+        <div class="cs-works-section">
           <div class="cs-works-header">
             <span class="cs-label cs-label--plain">{{ $t('dashboard.tabWorks') }}</span>
             <button

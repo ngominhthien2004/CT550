@@ -78,10 +78,9 @@ function normalizeNovel(item) {
     excerpt: clipText(item?.description || item?.novelContent || '', 168),
     userId: author._id || '',
     wordCount: toNumber(item?.wordCount),
-    chapterCount: toNumber(item?.chapterCount) || (item?.series ? 1 : 0),
     createdLabel: formatDate(item?.createdAt),
     engagementScore:
-      toNumber(item?.viewCount) + toNumber(item?.likeCount) * 4 + toNumber(item?.bookmarkCount) * 5 + toNumber(item?.chapterCount) * 12,
+      toNumber(item?.viewCount) + toNumber(item?.likeCount) * 4 + toNumber(item?.bookmarkCount) * 5,
   }
 }
 

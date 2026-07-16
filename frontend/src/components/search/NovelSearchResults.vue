@@ -118,9 +118,6 @@ async function handleLike(item) {
             <i class="fa-regular fa-clock" aria-hidden="true"></i>
             {{ item._readTime }} {{ $t('search.minRead') }}
           </span>
-          <span v-if="item.series" class="novel-meta-stat">
-            {{ item.chapterCount || 1 }} {{ (item.chapterCount || 1) > 1 ? $t('search.chapters') : $t('search.chapter') }}
-          </span>
           <span>{{ item._formattedDate }}</span>
         </footer>
       </div>

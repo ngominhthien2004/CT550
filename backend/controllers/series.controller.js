@@ -1,6 +1,6 @@
 const Series = require('../models/Series');
 const Artwork = require('../models/Artwork');
-const Chapter = require('../models/Chapter');
+
 const cloudinary = require('cloudinary').v2;
 const mongoose = require('mongoose');
 
@@ -38,29 +38,7 @@ const createSeries = async (req, res, next) => {
       tags: tags || [],
     };
 
-    // For novel series, create a linked Artwork to hold chapters
-    if (type === 'novel') {
-      const artwork = await Artwork.create({
-        user: req.user._id,
-        title,
-        description: description || '',
-        type: 'novel',
-        images: [],
-        tags: tags || [],
-        chapterCount: 0,
-      });
-
-      seriesData.novelArtwork = artwork._id;
-    }
-
     const series = await Series.create(seriesData);
-
-    // Set the series reference on the linked artwork
-    if (type === 'novel') {
-      await Artwork.findByIdAndUpdate(seriesData.novelArtwork, {
-        series: series._id,
-      });
-    }
 
     const populated = await Series.findById(series._id)
       .populate('user', 'username avatar')
@@ -89,17 +67,12 @@ const getMySeries = async (req, res, next) => {
       .populate('user', 'username avatar')
       .populate('tags', 'name')
       .populate('artworks', 'title images type viewCount likeCount commentCount')
-      .populate('novelArtwork', 'title type chapterCount wordCount viewCount likeCount commentCount')
       .sort(sortOrder);
 
     // Compute aggregated stats for each series
     const enriched = series.map((s) => {
       const doc = s.toObject();
-      if (doc.type === 'novel' && doc.novelArtwork) {
-        doc.totalViews = doc.novelArtwork.viewCount || 0;
-        doc.totalLikes = doc.novelArtwork.likeCount || 0;
-        doc.totalComments = doc.novelArtwork.commentCount || 0;
-      } else if ((doc.type === 'manga' || doc.type === 'illust') && doc.artworks?.length > 0) {
+      if ((doc.type === 'manga' || doc.type === 'illust' || doc.type === 'novel') && doc.artworks?.length > 0) {
         doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0);
         doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);
         doc.totalComments = doc.artworks.reduce((sum, a) => sum + (a.commentCount || 0), 0);
@@ -127,8 +100,7 @@ const getSeriesById = async (req, res, next) => {
     const series = await Series.findById(req.params.id)
       .populate('user', 'username avatar')
       .populate('tags', 'name')
-      .populate('artworks', 'title images type viewCount likeCount commentCount')
-      .populate('novelArtwork', 'title type chapterCount wordCount viewCount likeCount commentCount');
+      .populate('artworks', 'title images type viewCount likeCount commentCount');
 
     if (!series) {
       res.status(404);
@@ -144,11 +116,7 @@ const getSeriesById = async (req, res, next) => {
 
     // Compute aggregated stats
     const doc = series.toObject();
-    if (doc.type === 'novel' && doc.novelArtwork) {
-      doc.totalViews = (doc.novelArtwork.viewCount || 0) + (isOwner ? 0 : 1); // +1 for page view if not owner
-      doc.totalLikes = doc.novelArtwork.likeCount || 0;
-      doc.totalComments = doc.novelArtwork.commentCount || 0;
-    } else if ((doc.type === 'manga' || doc.type === 'illust') && doc.artworks?.length > 0) {
+    if ((doc.type === 'manga' || doc.type === 'illust' || doc.type === 'novel') && doc.artworks?.length > 0) {
       doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0) + (isOwner ? 0 : 1);
       doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);
       doc.totalComments = doc.artworks.reduce((sum, a) => sum + (a.commentCount || 0), 0);
@@ -229,14 +197,8 @@ const deleteSeries = async (req, res, next) => {
       return next(new Error('Not authorized to delete this series'));
     }
 
-    // For novel series, optionally delete the linked artwork and its chapters
-    if (series.type === 'novel' && series.novelArtwork) {
-      await Chapter.deleteMany({ artwork: series.novelArtwork });
-      await Artwork.findByIdAndDelete(series.novelArtwork);
-    }
-
-    // For manga/illust series, unlink artworks
-    if ((series.type === 'manga' || series.type === 'illust') && series.artworks?.length > 0) {
+    // For manga/illust/novel series, unlink artworks
+    if (series.artworks?.length > 0) {
       await Artwork.updateMany(
         { _id: { $in: series.artworks } },
         { $unset: { series: '' } }

@@ -63,15 +63,6 @@ const visibleTags = computed(() => {
   })
 })
 
-const chapterLabel = computed(() => {
-  const count = Number(props.item?.chapterCount || 0)
-  if (!count) {
-    return ''
-  }
-
-  return `${count} ${count > 1 ? 'chapters' : 'chapter'}`
-})
-
 const authorLink = computed(() => {
   if (!props.item?.userId) {
     return ''
@@ -128,7 +119,6 @@ const authorLink = computed(() => {
         <span><i class="fa-regular fa-heart" aria-hidden="true"></i> {{ Number(item.likeCount || 0).toLocaleString() }}</span>
         <span><i class="fa-regular fa-bookmark" aria-hidden="true"></i> {{ Number(item.bookmarkCount || 0).toLocaleString() }}</span>
         <span v-if="item.wordCount">{{ Number(item.wordCount).toLocaleString() }} words</span>
-        <span v-if="chapterLabel">{{ chapterLabel }}</span>
       </footer>
     </div>
 

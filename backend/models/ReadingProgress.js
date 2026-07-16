@@ -11,11 +11,6 @@ const readingProgressSchema = mongoose.Schema({
         ref: 'Artwork',
         required: true,
     },
-    chapter: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Chapter',
-        default: null,
-    },
     // Scroll position as percentage (0-100)
     progressPercent: {
         type: Number,

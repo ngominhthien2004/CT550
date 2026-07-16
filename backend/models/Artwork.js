@@ -60,10 +60,6 @@ const artworkSchema = mongoose.Schema({
         trim: true,
         default: '',
     },
-    chapterCount: {
-        type: Number,
-        default: 1,
-    },
     // Real wordCount field (stored, filterable, sortable)
     wordCount: {
         type: Number,

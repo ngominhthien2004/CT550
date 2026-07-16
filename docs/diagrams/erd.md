@@ -1,7 +1,7 @@
 # IlluWrl — Entity-Relationship Diagram
 
 > **Cập nhật:** 2026-07-15
-> **Entities:** 27 Mongoose models across 7 domain groups
+> **Entities:** 26 Mongoose models across 7 domain groups
 > **Description:** Comprehensive ERD of the IlluWrl (Pixiv-clone) data model
 
 ---
@@ -96,7 +96,6 @@ erDiagram
     number commentCount
     number reportCount
     string novelContent
-    number chapterCount
     number wordCount
     ObjectId series FK "ref Series — optional"
     boolean commentsEnabled
@@ -141,17 +140,6 @@ erDiagram
     ObjectId user FK "ref User"
     ObjectId artwork FK "ref Artwork"
     string folder
-    datetime createdAt
-    datetime updatedAt
-  }
-
-  CHAPTER {
-    ObjectId _id PK
-    ObjectId artwork FK "ref Artwork"
-    string title
-    string content
-    number chapterNumber "unique per artwork"
-    number wordCount
     datetime createdAt
     datetime updatedAt
   }
@@ -394,10 +382,8 @@ erDiagram
   ARTWORK ||--o{ BOOKMARK : "gets"
   ARTWORK ||--o{ NOTIFICATION : "triggers"
   ARTWORK ||--o{ ARTWORK_REPORT : "reported in"
-  ARTWORK ||--o{ CHAPTER : "contains"
   ARTWORK ||--o{ READING_PROGRESS : "tracks"
   ARTWORK }o--o{ TAG : "tagged with"
-  CHAPTER ||--o{ READING_PROGRESS : "tracks"
   SERIES ||--o{ ARTWORK : "contains"
   SERIES }o--o{ TAG : "tagged with"
   COMMENT ||--o{ COMMENT_REPORT : "reported in"
@@ -445,55 +431,53 @@ erDiagram
 | 19 | **ARTWORK** | 1 —— N | LIKE | 1 → N | Một tác phẩm nhận nhiều lượt thích |
 | 20 | **ARTWORK** | 1 —— N | BOOKMARK | 1 → N | Một tác phẩm được nhiều người đánh dấu |
 | 21 | **ARTWORK** | 1 —— N | NOTIFICATION | 1 → N | Một tác phẩm kích hoạt nhiều thông báo |
-| 22 | **ARTWORK** | 1 —— N | CHAPTER | 1 → N | Một tác phẩm (novel) có nhiều chương |
-| 23 | **ARTWORK** | 1 —— N | READING_PROGRESS | 1 → N | Một tác phẩm có nhiều tiến độ đọc |
-| 24 | **ARTWORK** | N —— N | TAG | N → N | Một tác phẩm có nhiều thẻ, một thẻ gắn với nhiều tác phẩm |
-| 25 | **ARTWORK** | N —— 1 | SERIES | N → 1 | Một tác phẩm thuộc về một series |
-| 26 | **CHAPTER** | 1 —— N | READING_PROGRESS | 1 → N | Một chương có nhiều tiến độ đọc |
-| 27 | **SERIES** | 1 —— N | ARTWORK | 1 → N | Một series chứa nhiều tác phẩm |
-| 28 | **SERIES** | N —— N | TAG | N → N | Một series có nhiều thẻ, một thẻ gắn với nhiều series |
-| 29 | **COMMENT** | 1 —— N | COMMENT_REPORT | 1 → N | Một bình luận bị báo cáo nhiều lần |
+| 22 | **ARTWORK** | 1 —— N | READING_PROGRESS | 1 → N | Một tác phẩm có nhiều tiến độ đọc |
+| 23 | **ARTWORK** | N —— N | TAG | N → N | Một tác phẩm có nhiều thẻ, một thẻ gắn với nhiều tác phẩm |
+| 24 | **ARTWORK** | N —— 1 | SERIES | N → 1 | Một tác phẩm thuộc về một series |
+| 25 | **SERIES** | 1 —— N | ARTWORK | 1 → N | Một series chứa nhiều tác phẩm |
+| 26 | **SERIES** | N —— N | TAG | N → N | Một series có nhiều thẻ, một thẻ gắn với nhiều series |
+| 27 | **COMMENT** | 1 —— N | COMMENT_REPORT | 1 → N | Một bình luận bị báo cáo nhiều lần |
 
 ### Nhóm Analytics System
 
 | # | Thực thể 1 | Quan hệ | Thực thể 2 | Kiểu | Mô tả |
 |---|-----------|---------|-----------|:----:|-------|
-| 30 | **ARTWORK** | 1 —— N | VIEW_EVENT | 1 → N | Một tác phẩm có nhiều sự kiện xem |
-| 31 | **USER** | 1 —— N | VIEW_EVENT | 1 → N | Một người dùng tạo nhiều sự kiện xem |
+| 28 | **ARTWORK** | 1 —— N | VIEW_EVENT | 1 → N | Một tác phẩm có nhiều sự kiện xem |
+| 29 | **USER** | 1 —— N | VIEW_EVENT | 1 → N | Một người dùng tạo nhiều sự kiện xem |
 
 ### Nhóm AI System
 
 | # | Thực thể 1 | Quan hệ | Thực thể 2 | Kiểu | Mô tả |
 |---|-----------|---------|-----------|:----:|-------|
-| 32 | **USER** | 1 —— N | CHAT_SESSION | 1 → N | Một người dùng có nhiều phiên AI chat |
-| 33 | **CHAT_SESSION** | 1 —— N | CHAT_MESSAGE | 1 → N | Một phiên AI chat chứa nhiều tin nhắn |
+| 30 | **USER** | 1 —— N | CHAT_SESSION | 1 → N | Một người dùng có nhiều phiên AI chat |
+| 31 | **CHAT_SESSION** | 1 —— N | CHAT_MESSAGE | 1 → N | Một phiên AI chat chứa nhiều tin nhắn |
 
 ### Nhóm Reporting & Moderation
 
 | # | Thực thể 1 | Quan hệ | Thực thể 2 | Kiểu | Mô tả |
 |---|-----------|---------|-----------|:----:|-------|
-| 34 | **USER** (reporter) | 1 —— N | ARTWORK_REPORT | 1 → N | Một người dùng báo cáo nhiều tác phẩm |
-| 35 | **USER** (resolver) | 1 —— N | ARTWORK_REPORT | 1 → N | Một người xử lý nhiều báo cáo tác phẩm |
-| 36 | **USER** (reporter) | 1 —— N | USER_REPORT | 1 → N | Một người dùng báo cáo nhiều người khác |
-| 37 | **USER** (resolver) | 1 —— N | USER_REPORT | 1 → N | Một người xử lý nhiều báo cáo người dùng |
-| 38 | **USER** (reporter) | 1 —— N | COMMENT_REPORT | 1 → N | Một người dùng báo cáo nhiều bình luận |
-| 39 | **USER** (resolver) | 1 —— N | COMMENT_REPORT | 1 → N | Một người xử lý nhiều báo cáo bình luận |
-| 40 | **ARTWORK** | 1 —— N | ARTWORK_REPORT | 1 → N | Một tác phẩm bị báo cáo nhiều lần |
+| 32 | **USER** (reporter) | 1 —— N | ARTWORK_REPORT | 1 → N | Một người dùng báo cáo nhiều tác phẩm |
+| 33 | **USER** (resolver) | 1 —— N | ARTWORK_REPORT | 1 → N | Một người xử lý nhiều báo cáo tác phẩm |
+| 34 | **USER** (reporter) | 1 —— N | USER_REPORT | 1 → N | Một người dùng báo cáo nhiều người khác |
+| 35 | **USER** (resolver) | 1 —— N | USER_REPORT | 1 → N | Một người xử lý nhiều báo cáo người dùng |
+| 36 | **USER** (reporter) | 1 —— N | COMMENT_REPORT | 1 → N | Một người dùng báo cáo nhiều bình luận |
+| 37 | **USER** (resolver) | 1 —— N | COMMENT_REPORT | 1 → N | Một người xử lý nhiều báo cáo bình luận |
+| 38 | **ARTWORK** | 1 —— N | ARTWORK_REPORT | 1 → N | Một tác phẩm bị báo cáo nhiều lần |
 
 ### Nhóm Commission System
 
 | # | Thực thể 1 | Quan hệ | Thực thể 2 | Kiểu | Mô tả |
 |---|-----------|---------|-----------|:----:|-------|
-| 41 | **USER** | 1 —— N | REQUEST_TERM | 1 → N | Một người dùng (creator) tạo nhiều điều khoản |
-| 42 | **USER** (creator) | 1 —— N | REQUEST | 1 → N | Một người sáng tạo nhận nhiều yêu cầu |
-| 43 | **USER** (requester) | 1 —— N | REQUEST | 1 → N | Một người đặt hàng tạo nhiều yêu cầu |
-| 44 | **USER** | 1 —— N | REQUEST_CHAT_MESSAGE | 1 → N | Một người dùng gửi nhiều tin nhắn trong request |
-| 45 | **USER** | 1 —— N | REQUEST_EVENT | 1 → N | Một người dùng thực hiện nhiều sự kiện request |
-| 46 | **USER** | 1 —— N | REQUEST_REVISION | 1 → N | Một người dùng yêu cầu nhiều lần chỉnh sửa |
-| 47 | **REQUEST_TERM** | 1 —— N | REQUEST | 1 → N | Một điều khoản định nghĩa nhiều yêu cầu |
-| 48 | **REQUEST** | 1 —— N | REQUEST_CHAT_MESSAGE | 1 → N | Một yêu cầu có nhiều tin nhắn |
-| 49 | **REQUEST** | 1 —— N | REQUEST_EVENT | 1 → N | Một yêu cầu ghi lại nhiều sự kiện |
-| 50 | **REQUEST** | 1 —— N | REQUEST_REVISION | 1 → N | Một yêu cầu có nhiều lần chỉnh sửa |
+| 39 | **USER** | 1 —— N | REQUEST_TERM | 1 → N | Một người dùng (creator) tạo nhiều điều khoản |
+| 40 | **USER** (creator) | 1 —— N | REQUEST | 1 → N | Một người sáng tạo nhận nhiều yêu cầu |
+| 41 | **USER** (requester) | 1 —— N | REQUEST | 1 → N | Một người đặt hàng tạo nhiều yêu cầu |
+| 42 | **USER** | 1 —— N | REQUEST_CHAT_MESSAGE | 1 → N | Một người dùng gửi nhiều tin nhắn trong request |
+| 43 | **USER** | 1 —— N | REQUEST_EVENT | 1 → N | Một người dùng thực hiện nhiều sự kiện request |
+| 44 | **USER** | 1 —— N | REQUEST_REVISION | 1 → N | Một người dùng yêu cầu nhiều lần chỉnh sửa |
+| 45 | **REQUEST_TERM** | 1 —— N | REQUEST | 1 → N | Một điều khoản định nghĩa nhiều yêu cầu |
+| 46 | **REQUEST** | 1 —— N | REQUEST_CHAT_MESSAGE | 1 → N | Một yêu cầu có nhiều tin nhắn |
+| 47 | **REQUEST** | 1 —— N | REQUEST_EVENT | 1 → N | Một yêu cầu ghi lại nhiều sự kiện |
+| 48 | **REQUEST** | 1 —— N | REQUEST_REVISION | 1 → N | Một yêu cầu có nhiều lần chỉnh sửa |
 
 ### Ghi chú
 
@@ -510,7 +494,7 @@ erDiagram
 | Group | Entities | Description |
 |-------|----------|-------------|
 | **Core User System** | USER, FOLLOW, USER_BLOCK, MESSAGE, NOTIFICATION, BROWSE_HISTORY | Identity, social graph, messaging, alerts, behavior tracking |
-| **Content System** | ARTWORK, TAG, COMMENT, LIKE, BOOKMARK, CHAPTER, READING_PROGRESS, SERIES | Primary creative content, series management, and engagement |
+| **Content System** | ARTWORK, TAG, COMMENT, LIKE, BOOKMARK, READING_PROGRESS, SERIES | Primary creative content, series management, and engagement |
 | **Analytics System** | VIEW_EVENT | Individual view event records for analytics |
 | **AI System** | CHAT_SESSION, CHAT_MESSAGE | AI chatbot sessions and message history |
 | **Reporting & Moderation** | ARTWORK_REPORT, USER_REPORT, COMMENT_REPORT | Content and user flagging and resolution |
@@ -547,27 +531,26 @@ erDiagram
 | 4 | **SETTING** | 5 | 0 relationships | System Config |
 | 5 | **MESSAGE** | 10 | 2 relationships | Core User System |
 | 6 | **NOTIFICATION** | 9 | 3 relationships | Core User System |
-| 7 | **ARTWORK** | 24 | 11 relationships | Content System |
+| 7 | **ARTWORK** | 23 | 11 relationships | Content System |
 | 8 | **TAG** | 6 | 2 relationships | Content System |
 | 9 | **COMMENT** | 8 | 2 relationships | Content System |
 | 10 | **LIKE** | 5 | 2 relationships | Content System |
 | 11 | **BOOKMARK** | 6 | 2 relationships | Content System |
-| 12 | **CHAPTER** | 8 | 2 relationships | Content System |
-| 13 | **READING_PROGRESS** | 9 | 3 relationships | Content System |
-| 14 | **SERIES** | 16 | 4 relationships | Content System |
-| 15 | **BROWSE_HISTORY** | 5 | 2 relationships | Core User System |
-| 16 | **VIEW_EVENT** | 5 | 2 relationships | Analytics System |
-| 17 | **BANNER** | 8 | 0 relationships | System Config |
-| 18 | **CHAT_SESSION** | 5 | 2 relationships | AI System |
-| 19 | **CHAT_MESSAGE** | 8 | 1 relationships | AI System |
-| 20 | **ARTWORK_REPORT** | 11 | 3 relationships | Reporting & Moderation |
-| 21 | **USER_REPORT** | 11 | 3 relationships | Reporting & Moderation |
-| 22 | **COMMENT_REPORT** | 11 | 3 relationships | Reporting & Moderation |
-| 23 | **REQUEST_TERM** | 18 | 2 relationships | Commission System |
-| 24 | **REQUEST** | 28 | 6 relationships | Commission System |
-| 25 | **REQUEST_CHAT_MESSAGE** | 8 | 2 relationships | Commission System |
-| 26 | **REQUEST_EVENT** | 9 | 2 relationships | Commission System |
-| 27 | **REQUEST_REVISION** | 7 | 2 relationships | Commission System |
+| 12 | **READING_PROGRESS** | 9 | 3 relationships | Content System |
+| 13 | **SERIES** | 16 | 4 relationships | Content System |
+| 14 | **BROWSE_HISTORY** | 5 | 2 relationships | Core User System |
+| 15 | **VIEW_EVENT** | 5 | 2 relationships | Analytics System |
+| 16 | **BANNER** | 8 | 0 relationships | System Config |
+| 17 | **CHAT_SESSION** | 5 | 2 relationships | AI System |
+| 18 | **CHAT_MESSAGE** | 8 | 1 relationships | AI System |
+| 19 | **ARTWORK_REPORT** | 11 | 3 relationships | Reporting & Moderation |
+| 20 | **USER_REPORT** | 11 | 3 relationships | Reporting & Moderation |
+| 21 | **COMMENT_REPORT** | 11 | 3 relationships | Reporting & Moderation |
+| 22 | **REQUEST_TERM** | 18 | 2 relationships | Commission System |
+| 23 | **REQUEST** | 28 | 6 relationships | Commission System |
+| 24 | **REQUEST_CHAT_MESSAGE** | 8 | 2 relationships | Commission System |
+| 25 | **REQUEST_EVENT** | 9 | 2 relationships | Commission System |
+| 26 | **REQUEST_REVISION** | 7 | 2 relationships | Commission System |
 
 ---
 
@@ -589,4 +572,4 @@ erDiagram
 
 ---
 
-*Last updated: 2026-07-15 — 27 entities, 47+ relationships.*
+*Last updated: 2026-07-15 — 26 entities, 45+ relationships.*

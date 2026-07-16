@@ -2,10 +2,10 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArtworkDetailCard, ArtworkDetailSidebar, ArtworkDetailCommentsCard, ArtworkDetailRelatedGrid } from '@/components/artwork'
-import { NovelReader, ChapterManager } from '@/components/novel'
+import { NovelReader } from '@/components/novel'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
-import { getArtworks, getChapters, getChapter, getReadingProgress, saveReadingProgress, getSimilarArtworks, seriesApi } from '../services/api'
+import api, { getArtworks, getReadingProgress, saveReadingProgress, getSimilarArtworks, seriesApi } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useArtworkStore } from '../stores/artwork.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
@@ -32,9 +32,7 @@ const likeError = ref('')
 const followError = ref('')
 const artistFollowersCount = ref(0)
 const artistFollowingCount = ref(0)
-const chapters = ref([])
 const novelContent = ref('')
-const currentChapterId = ref(null)
 const readingProgress = ref(0)
 const readingScrollPosition = ref(0)
 const readingLastReadAt = ref('')
@@ -226,22 +224,8 @@ async function loadRelatedWorks() {
 async function loadNovelData() {
   if (artwork.value?.type !== 'novel') return
 
-  // Load chapters if series
-  if (artwork.value?.series) {
-    try {
-      const { data } = await getChapters(artworkId.value)
-      chapters.value = Array.isArray(data) ? data : []
-    } catch (_err) {
-      chapters.value = []
-    }
-  }
-
-  // Auto-load first chapter content (for series) or fallback to oneshot content
-  if (chapters.value.length > 0 && chapters.value[0]._id) {
-    await handleSelectChapter(chapters.value[0]._id)
-  } else {
-    novelContent.value = artwork.value?.novelContent || artwork.value?.description || ''
-  }
+  // Use artwork's novelContent directly (no separate Chapter model anymore)
+  novelContent.value = artwork.value?.novelContent || artwork.value?.description || ''
 
   // Load reading progress (if authenticated)
   if (authStore.isAuthenticated) {
@@ -263,7 +247,7 @@ async function loadNovelData() {
 }
 
 async function loadSeriesNavigation() {
-  if (!artwork.value?.series || artwork.value?.type === 'novel') return
+  if (!artwork.value?.series) return
   try {
     const { data } = await seriesApi.getById(artwork.value.series)
     if (data?.artworks?.length > 1) {
@@ -280,25 +264,12 @@ async function loadSeriesNavigation() {
   }
 }
 
-async function handleSelectChapter(chapterId) {
-  currentChapterId.value = chapterId
-  try {
-    const { data } = await getChapter(artworkId.value, chapterId)
-    if (data?.content) {
-      novelContent.value = data.content
-    }
-  } catch (_err) {
-    // Fallback
-  }
-}
-
 async function handleProgressChange({ progressPercent, scrollPosition }) {
   if (!authStore.isAuthenticated) return
   try {
     await saveReadingProgress(artworkId.value, {
       progressPercent,
       scrollPosition: scrollPosition || 0,
-      chapter: currentChapterId.value || null,
     })
   } catch (_err) {
     // Non-critical
@@ -457,19 +428,9 @@ watch(
         <div class="novel-detail-layout d-grid gap-4 mx-auto">
           <div class="detail-main">
             <div class="left-col">
-              <!-- Chapter Manager (only for author of series novels) -->
-              <ChapterManager
-                v-if="isOwnArtist && artwork.series"
-                :artwork-id="artwork._id"
-                :chapters="chapters"
-                :is-own-artwork="isOwnArtist"
-                @chapters-updated="loadNovelData"
-              />
-
               <NovelReader
                 :artwork="displayArtwork"
                 :novel-content="novelContent"
-                :chapters="chapters"
                 :word-count="displayArtwork.wordCount || 0"
                 :reading-time="displayArtwork.readingTime || 0"
                 :is-liked="isLiked"
@@ -479,11 +440,37 @@ watch(
                 :initial-scroll-position="readingScrollPosition"
                 :last-read-at="readingLastReadAt"
                 @progress-change="handleProgressChange"
-                @select-chapter="handleSelectChapter"
                 @toggle-like="handleLikeToggle"
                 @toggle-bookmark="handleBookmarkToggle"
                 @scroll-change="handleScrollChange"
               />
+
+              <!-- Series navigation for novels (prev/next artwork in series) -->
+              <div v-if="seriesArtworkIds.length > 1" class="series-nav-bar">
+                <router-link
+                  v-if="seriesPrevId"
+                  :to="`/artworks/${seriesPrevId}`"
+                  class="series-nav-btn"
+                >
+                  <i class="fa-solid fa-chevron-left"></i>
+                  Previous
+                </router-link>
+                <router-link
+                  :to="`/series/${seriesInfo?._id}`"
+                  class="series-nav-info"
+                >
+                  <i class="fa-solid fa-images"></i>
+                  {{ seriesInfo?.title }}
+                </router-link>
+                <router-link
+                  v-if="seriesNextId"
+                  :to="`/artworks/${seriesNextId}`"
+                  class="series-nav-btn"
+                >
+                  Next
+                  <i class="fa-solid fa-chevron-right"></i>
+                </router-link>
+              </div>
 
               <!-- Pixiv-like In-Content Author Card -->
               <div v-if="artwork?.user" class="in-content-author-card">

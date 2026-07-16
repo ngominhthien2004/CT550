@@ -109,7 +109,6 @@
 | `commentCount` | number |  |  |  | Số bình luận (duy trì tự động bằng $inc) |
 | `reportCount` | number |  |  |  | Số lần bị báo cáo (duy trì tự động bằng $inc) |
 | `novelContent` | string |  |  |  | Nội dung tiểu thuyết (dạng văn bản) |
-| `chapterCount` | number |  |  |  | Số chương (mặc định 1) |
 | `wordCount` | number |  |  |  | Số từ (tự động tính từ novelContent) |
 | `series` | objectId |  | X |  | Series chứa tác phẩm (tuỳ chọn, ref Series) |
 | `commentsEnabled` | boolean |  |  |  | Cho phép bình luận trên tác phẩm |
@@ -165,19 +164,6 @@
 | `createdAt` | date |  |  |  | Thời điểm tạo |
 | `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 
-## CHAPTER — Chương
-
-| Tên thuộc tính | Kiểu dữ liệu | Khóa chính | Khóa ngoại | NN | Diễn giải |
-|----------------|-------------|:----------:|:----------:|:--:|-----------|
-| `_id` | objectId | X |  | X | Mã chương (tự động sinh) |
-| `artwork` | objectId |  | X | X | Tác phẩm chứa chương |
-| `title` | string |  |  |  | Tiêu đề chương |
-| `content` | string |  |  |  | Nội dung chương |
-| `chapterNumber` | number |  |  |  | duy nhất trong tác phẩm |
-| `wordCount` | number |  |  |  | Số từ trong chương |
-| `createdAt` | date |  |  |  | Thời điểm tạo |
-| `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
-
 ## READING_PROGRESS — Tiến độ đọc
 
 | Tên thuộc tính | Kiểu dữ liệu | Khóa chính | Khóa ngoại | NN | Diễn giải |
@@ -185,7 +171,6 @@
 | `_id` | objectId | X |  | X | Mã tiến độ đọc (tự động sinh) |
 | `user` | objectId |  | X | X | Người đọc |
 | `artwork` | objectId |  | X | X | Tác phẩm đang đọc |
-| `chapter` | objectId |  | X | X | Chương đang đọc |
 | `progressPercent` | number |  |  |  | Phần trăm hoàn thành (0-100) |
 | `scrollPosition` | number |  |  |  | Vị trí cuộc đang đọc (dùng để khôi phục) |
 | `lastReadAt` | date |  |  |  | Thời điểm đọc gần nhất |

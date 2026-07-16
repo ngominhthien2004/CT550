@@ -3,11 +3,10 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSeriesStore } from '@/stores/series.store'
 import { useAuthStore } from '@/stores/auth.store'
-import { getChapters } from '@/services/api'
+import api from '@/services/api'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import SeriesHero from '@/components/series/SeriesHero.vue'
 import SeriesArtworksGrid from '@/components/series/SeriesArtworksGrid.vue'
-import SeriesChaptersList from '@/components/series/SeriesChaptersList.vue'
 import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
@@ -17,8 +16,6 @@ const authStore = useAuthStore()
 const { t } = useI18n()
 
 const isNavCollapsed = ref(true)
-const chapters = ref([])
-const chaptersLoading = ref(false)
 const seriesLoadError = ref('')
 const successMsg = ref('')
 let successTimeout = null
@@ -38,14 +35,6 @@ const processedArtworks = computed(() => {
     _icon: getSeriesIcon(artwork.type || series.value?.type),
   }))
 })
-
-const processedChapters = computed(() =>
-  chapters.value.map(chapter => ({
-    ...chapter,
-    _formattedDate: formatDate(chapter.createdAt),
-    _wordCount: (chapter.wordCount || 0).toLocaleString(),
-  }))
-)
 
 const isOwner = computed(() => {
   if (!series.value || !authStore.user) return false
@@ -68,19 +57,6 @@ function getSeriesIcon(type) {
   }
 }
 
-async function loadChapters() {
-  if (!series.value?.novelArtwork?._id) return
-  chaptersLoading.value = true
-  try {
-    const { data } = await getChapters(series.value.novelArtwork._id)
-    chapters.value = Array.isArray(data) ? data : []
-  } catch (err) {
-    chapters.value = []
-  } finally {
-    chaptersLoading.value = false
-  }
-}
-
 function goToArtwork(artworkId) {
   router.push(`/artworks/${artworkId}`)
 }
@@ -96,9 +72,6 @@ function goBack() {
 onMounted(async () => {
   try {
     await seriesStore.fetchSeriesById(route.params.id)
-    if (series.value?.type === 'novel') {
-      await loadChapters()
-    }
   } catch (err) {
     seriesLoadError.value = err?.response?.data?.message || t('artwork.noData')
   }
@@ -136,19 +109,8 @@ onMounted(async () => {
         <SeriesHero :series="series" />
 
         <SeriesArtworksGrid
-          v-if="series.type !== 'novel'"
           :artworks="processedArtworks"
           @select="goToArtwork"
-        />
-
-        <SeriesChaptersList
-          v-else
-          :series="series"
-          :chapters="processedChapters"
-          :loading="chaptersLoading"
-          :is-owner="isOwner"
-          @refresh="loadChapters"
-          @navigate="navigateTo"
         />
 
         <div v-if="isOwner" class="owner-actions">

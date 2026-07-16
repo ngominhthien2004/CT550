@@ -1,15 +1,13 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import NovelControls from './NovelControls.vue'
 import NovelHeader from './NovelHeader.vue'
-import NovelChapterSelector from './NovelChapterSelector.vue'
 import NovelActionToolbar from './NovelActionToolbar.vue'
 import { useTheme } from '../../composables/useTheme'
 
 const props = defineProps({
   artwork: { type: Object, required: true },
   novelContent: { type: String, default: '' },
-  chapters: { type: Array, default: () => [] },
   wordCount: { type: Number, default: 0 },
   readingTime: { type: Number, default: 0 },
   isBookmarked: { type: Boolean, default: false },
@@ -20,7 +18,7 @@ const props = defineProps({
   lastReadAt: { type: String, default: '' },
 })
 
-const emit = defineEmits(['progress-change', 'select-chapter', 'toggle-like', 'toggle-bookmark', 'scroll-change'])
+const emit = defineEmits(['progress-change', 'toggle-like', 'toggle-bookmark', 'scroll-change'])
 
 const DEFAULT_FONT_SIZE = '1.05rem'
 const fontSize = ref(localStorage.getItem('novel-font-size') || DEFAULT_FONT_SIZE)
@@ -45,29 +43,6 @@ function increaseFontSize() {
 
 const canDecrease = computed(() => parseFloat(fontSize.value) > 0.85)
 const canIncrease = computed(() => parseFloat(fontSize.value) < 1.5)
-
-const currentChapterIndex = computed(() => {
-  if (!props.chapters.length || !selectedChapterId.value) return -1
-  return props.chapters.findIndex(ch => ch._id === selectedChapterId.value)
-})
-
-const prevChapterId = computed(() => {
-  const idx = currentChapterIndex.value
-  if (idx <= 0) return null
-  return props.chapters[idx - 1]?._id || null
-})
-
-const nextChapterId = computed(() => {
-  const idx = currentChapterIndex.value
-  if (idx < 0 || idx >= props.chapters.length - 1) return null
-  return props.chapters[idx + 1]?._id || null
-})
-
-function selectChapter(chapterId) {
-  if (!chapterId) return
-  selectedChapterId.value = chapterId
-  emit('select-chapter', chapterId)
-}
 
 const formattedParagraphs = computed(() => {
   if (!props.novelContent) return []
@@ -111,12 +86,7 @@ function onScroll() {
   }, 3000)
 }
 
-const selectedChapterId = ref('')
-
 onMounted(() => {
-  if (props.chapters.length > 0 && props.chapters[0]._id) {
-    selectedChapterId.value = props.chapters[0]._id
-  }
   if (props.initialScrollPosition > 0 && readingArea.value) {
     nextTick(() => { readingArea.value.scrollTop = props.initialScrollPosition })
   }
@@ -125,12 +95,6 @@ onMounted(() => {
 onUnmounted(() => {
   if (scrollTimer) clearTimeout(scrollTimer)
 })
-
-watch(() => props.chapters, (newChapters) => {
-  if (newChapters.length > 0 && !selectedChapterId.value && newChapters[0]._id) {
-    selectedChapterId.value = newChapters[0]._id
-  }
-}, { immediate: true })
 </script>
 
 <template>
@@ -162,31 +126,6 @@ watch(() => props.chapters, (newChapters) => {
       :word-count="wordCount"
       :reading-time="readingTime"
     />
-
-    <NovelChapterSelector
-      :chapters="chapters"
-      :selected-chapter-id="selectedChapterId"
-      @select="selectChapter"
-    />
-
-    <div v-if="chapters.length > 1" class="chapter-nav-buttons">
-      <button
-        class="chapter-nav-btn"
-        :disabled="!prevChapterId"
-        @click="selectChapter(prevChapterId)"
-      >
-        <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
-        <span>Previous</span>
-      </button>
-      <button
-        class="chapter-nav-btn"
-        :disabled="!nextChapterId"
-        @click="selectChapter(nextChapterId)"
-      >
-        <span>Next</span>
-        <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-      </button>
-    </div>
 
     <div class="novel-divider" />
 
@@ -355,39 +294,6 @@ watch(() => props.chapters, (newChapters) => {
   font-style: italic;
   color: var(--novel-muted);
   white-space: nowrap;
-}
-
-.chapter-nav-buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin: 1rem 0 1.5rem;
-}
-
-.chapter-nav-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.45rem 0.75rem;
-  border: 1px solid var(--novel-border);
-  border-radius: 0.72rem;
-  background: var(--novel-surface);
-  color: var(--novel-text-color);
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
-  font-family: inherit;
-}
-
-.chapter-nav-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.chapter-nav-btn:hover:not(:disabled) {
-  border-color: var(--novel-accent);
-  color: var(--novel-accent);
 }
 
 @media (max-width: 640px) {
