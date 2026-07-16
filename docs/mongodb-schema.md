@@ -24,7 +24,7 @@
 | `birthdayDay` | number |  |  |  | Ngày sinh |
 | `website` | string |  |  |  | Trang web cá nhân |
 | `socialLinks` | object |  |  |  | Liên kết mạng xã hội (X, Facebook, Instagram) — object nhúng trong document User |
-| `isSuspended` | boolean |  |  |  | Tài khoản có bị treo hay không |
+| `isSuspended` | boolean |  |  |  | Tài khoản bị khóa (suspended) — true thì không thể đăng nhập |
 | `role` | string |  |  |  | Vai trò: user | admin |
 | `password` | string |  |  |  | Mật khẩu (đã mã hoá) |
 | `googleId` | string |  |  |  | ID tài khoản Google (dùng cho đăng nhập OAuth) |

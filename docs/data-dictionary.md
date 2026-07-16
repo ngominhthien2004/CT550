@@ -65,7 +65,7 @@ Thực thể **USER** là thực thể trung tâm của toàn bộ nền tảng,
 | `birthdayMonth` | number | —         | Tháng sinh        |
 | `birthdayDay` | number   | —         | Ngày sinh         |
 | `socialLinks` | json     | —         | Liên kết mạng xã hội (X, Facebook, Instagram) — object nhúng trong document User |
-| `isSuspended` | boolean  | —         | Tài khoản có bị treo (suspended) hay không           |
+| `isSuspended` | boolean  | —         | Tài khoản bị khóa (suspended) — true thì không thể đăng nhập |
 | `role`        | string   | —         | Vai trò: user | admin                                                            |
 | `password`    | string   | —         | Mật khẩu (đã mã hoá)                                                             |
 | `googleId`    | string   | —         | ID tài khoản Google (dùng cho đăng nhập OAuth)                                   |

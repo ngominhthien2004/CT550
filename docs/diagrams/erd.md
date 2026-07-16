@@ -26,7 +26,7 @@ erDiagram
     string role "user | admin"
     string password "hashed"
     string googleId
-    boolean isSuspended
+    boolean isSuspended "account locked/banned — blocks login"
     datetime createdAt
     datetime updatedAt
   }
