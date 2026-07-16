@@ -360,9 +360,10 @@ function getImage(item) {
 }
 
 .page-header h1 {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 700;
   margin: 0;
+  color: var(--brand);
 }
 
 .page-subtitle {
