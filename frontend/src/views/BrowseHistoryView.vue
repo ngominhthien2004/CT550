@@ -33,10 +33,12 @@ const hasActiveFilters = computed(() =>
 )
 
 const processedHistory = computed(() =>
-  historyEntries.value.map(entry => ({
-    ...entry,
-    _timeAgo: timeAgo(entry.createdAt),
-  }))
+  historyEntries.value
+    .filter(entry => entry.artwork)
+    .map(entry => ({
+      ...entry,
+      _timeAgo: timeAgo(entry.createdAt),
+    }))
 )
 
 onMounted(() => {
