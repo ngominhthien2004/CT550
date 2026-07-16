@@ -235,7 +235,7 @@ watch(favoriteTagKey, loadFavoriteTags)
           :key="tag.label"
           type="button"
           class="popular-item"
-          @click="emit('choose-item', tag.label)"
+          @click="emit('choose-item', tag.label.replace(/^#+/, ''))"
         >
           <img :src="tag.image" :alt="tag.label" loading="lazy" />
           <span>{{ tag.label }}</span>

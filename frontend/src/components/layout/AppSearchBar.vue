@@ -482,7 +482,7 @@ defineExpose({
   flex: 1;
   border: none;
   background: transparent;
-  color: #474747;
+  color: var(--text);
   font-size: 0.875rem;
   line-height: 1.4;
   min-width: 0;
