@@ -60,6 +60,13 @@ api.interceptors.response.use((response) => {
   response.data = normalizeResponseData(response.data)
   return response
 }, (error) => {
+  if (error.response?.status === 401 && error.config?.url !== '/auth/login' && error.config?.url !== '/auth/register') {
+    localStorage.removeItem('token')
+    localStorage.removeItem('authUser')
+    if (!window.location.pathname.startsWith('/login')) {
+      window.location.href = '/login?reason=session_expired'
+    }
+  }
   if (error.response?.status === 403 && error.response?.data?.message?.includes('suspended')) {
     localStorage.removeItem('token')
     window.location.href = '/login?reason=suspended'

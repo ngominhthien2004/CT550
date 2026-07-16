@@ -549,14 +549,13 @@ const updateNovelContent = async (req, res, next) => {
 // Reading progress
 const saveReadingProgress = async (req, res, next) => {
     try {
-        const { chapter, progressPercent, scrollPosition } = req.body;
+        const { progressPercent, scrollPosition } = req.body;
 
         const progress = await ReadingProgress.findOneAndUpdate(
             { user: req.user._id, artwork: req.params.id },
             {
                 user: req.user._id,
                 artwork: req.params.id,
-                chapter: chapter || null,
                 progressPercent: progressPercent || 0,
                 scrollPosition: scrollPosition || 0,
                 lastReadAt: new Date(),

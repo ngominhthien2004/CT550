@@ -11,14 +11,12 @@ const readingProgressSchema = mongoose.Schema({
         ref: 'Artwork',
         required: true,
     },
-    // Scroll position as percentage (0-100)
     progressPercent: {
         type: Number,
         default: 0,
         min: 0,
         max: 100,
     },
-    // For single-chapter novels, store the scroll position
     scrollPosition: {
         type: Number,
         default: 0,
