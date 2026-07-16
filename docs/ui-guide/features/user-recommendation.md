@@ -35,25 +35,25 @@ Hình 1: Vị trí widget gợi ý người dùng ở sidebar phải trên trang
 
 ### 2.2. Cấu trúc Card
 
-| Thành phần | Mô tả |
-|------------|-------|
-| **Avatar** | Ảnh đại diện người dùng, fallback về `no_profile.png` nếu không có |
-| **Display name** | Tên hiển thị (ưu tiên `displayName`, fallback `username`) |
-| **Handle** | `@username`, fallback `@member` |
-| **Artwork count** | Số lượng tác phẩm (`item.artworkCount || 0 works`) |
-| **Follow button** | Nút bo tròn `border-radius: 999px` — trạng thái `not-following` (nền accent) / `following` (nền surface) |
-| **Link to profile** | Click vào avatar/name → `/account?user={userId}` |
+| Thành phần          | Mô tả                                                                                                   |
+| ------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Avatar**          | Ảnh đại diện người dùng, fallback về`no_profile.png` nếu không có                                       |
+| **Display name**    | Tên hiển thị (ưu tiên`displayName`, fallback `username`)                                                |
+| **Handle**          | `@username`, fallback `@member`                                                                         |
+| **Artwork count**   | Số lượng tác phẩm (`item.artworkCount                                                                   |
+| **Follow button**   | Nút bo tròn`border-radius: 999px` — trạng thái `not-following` (nền accent) / `following` (nền surface) |
+| **Link to profile** | Click vào avatar/name →`/account?user={userId}`                                                         |
 
 ### 2.3. Trạng thái và phản hồi
 
-| Trạng thái | Hiển thị |
-|-------------|----------|
-| **Loading** | Không có skeleton — danh sách rỗng cho đến khi API trả về |
-| **Empty (chưa follow ai)** | Fallback artwork-based: đếm user từ feed |
-| **Empty (không có artwork)** | `"No recommended users available yet."` |
-| **Có dữ liệu** | Grid card với nút Follow/Following |
-| **Toggling follow** | Nút bị disable (`:disabled="item._isToggling"`) |
-| **Chưa đăng nhập** | Nút "Follow" là link đến `/login` |
+| Trạng thái                   | Hiển thị                                                  |
+| ---------------------------- | --------------------------------------------------------- |
+| **Loading**                  | Không có skeleton — danh sách rỗng cho đến khi API trả về |
+| **Empty (chưa follow ai)**   | Fallback artwork-based: đếm user từ feed                  |
+| **Empty (không có artwork)** | `"No recommended users available yet."`                   |
+| **Có dữ liệu**               | Grid card với nút Follow/Following                        |
+| **Toggling follow**          | Nút bị disable (`:disabled="item._isToggling"`)           |
+| **Chưa đăng nhập**           | Nút "Follow" là link đến`/login`                          |
 
 ## 3. Kiến trúc kỹ thuật
 
@@ -156,14 +156,14 @@ Nếu đã đăng nhập:
 
 ### 3.4. API Endpoints
 
-| Method | Endpoint | Auth | Mô tả |
-|--------|----------|------|-------|
-| `GET` | `/api/users/recommended` | ✅ | Top 9 user đề xuất dựa trên follow graph |
-| `POST` | `/api/users/:id/follow` | ✅ | Follow một user |
-| `DELETE` | `/api/users/:id/follow` | ✅ | Unfollow một user |
-| `GET` | `/api/users/:id/follow-status` | ✅ | Kiểm tra trạng thái follow |
-| `GET` | `/api/users/:id/following` | ❌ | Danh sách user mà `:id` đang follow |
-| `GET` | `/api/users/:id/followers` | ❌ | Danh sách follower của user `:id` |
+| Method   | Endpoint                       | Auth | Mô tả                                    |
+| -------- | ------------------------------ | ---- | ---------------------------------------- |
+| `GET`    | `/api/users/recommended`       | ✅   | Top 9 user đề xuất dựa trên follow graph |
+| `POST`   | `/api/users/:id/follow`        | ✅   | Follow một user                          |
+| `DELETE` | `/api/users/:id/follow`        | ✅   | Unfollow một user                        |
+| `GET`    | `/api/users/:id/follow-status` | ✅   | Kiểm tra trạng thái follow               |
+| `GET`    | `/api/users/:id/following`     | ❌   | Danh sách user mà`:id` đang follow       |
+| `GET`    | `/api/users/:id/followers`     | ❌   | Danh sách follower của user`:id`         |
 
 ## 4. Công thức tương tác
 
@@ -188,8 +188,8 @@ Công thức đầy đủ được ghi trong `docs/formulas.md` mục 1.
 
 ```javascript
 // Step 1: Lấy danh sách user đang follow
-const myFollows = await Follow.find({ follower: userId }).select('following');
-const followingIds = myFollows.map(f => f.following);
+const myFollows = await Follow.find({ follower: userId }).select("following");
+const followingIds = myFollows.map((f) => f.following);
 
 // Step 2: Nếu không follow ai → return []
 if (followingIds.length === 0) return res.json([]);
@@ -198,12 +198,27 @@ if (followingIds.length === 0) return res.json([]);
 const pipeline = [
   { $match: { follower: { $in: followingIds } } },
   { $match: { following: { $nin: [...followingIds, userId] } } },
-  { $group: { _id: '$following', mutualCount: { $sum: 1 } } },
+  { $group: { _id: "$following", mutualCount: { $sum: 1 } } },
   { $sort: { mutualCount: -1 } },
   { $limit: 9 },
-  { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'user' } },
-  { $unwind: '$user' },
-  { $project: { _id: '$user._id', username: '$user.username', displayName: '$user.displayName', avatar: '$user.avatar', mutualCount: 1 } },
+  {
+    $lookup: {
+      from: "users",
+      localField: "_id",
+      foreignField: "_id",
+      as: "user",
+    },
+  },
+  { $unwind: "$user" },
+  {
+    $project: {
+      _id: "$user._id",
+      username: "$user.username",
+      displayName: "$user.displayName",
+      avatar: "$user.avatar",
+      mutualCount: 1,
+    },
+  },
 ];
 ```
 
@@ -211,46 +226,46 @@ const pipeline = [
 
 ```javascript
 function normalizeRecommendedUsers(artworks) {
-  const userMap = new Map()
+  const userMap = new Map();
 
   artworks.forEach((item) => {
-    const user = item?.user
-    if (!user?._id) return
-    if (authStore.user?._id && user._id === authStore.user._id) return
+    const user = item?.user;
+    if (!user?._id) return;
+    if (authStore.user?._id && user._id === authStore.user._id) return;
 
     if (!userMap.has(user._id)) {
       userMap.set(user._id, {
         _id: user._id,
-        username: user.username || '',
-        displayName: user.displayName || user.username || 'Unknown user',
-        avatar: user.avatar || '',
+        username: user.username || "",
+        displayName: user.displayName || user.username || "Unknown user",
+        avatar: user.avatar || "",
         artworkCount: 0,
-      })
+      });
     }
 
-    const current = userMap.get(user._id)
-    current.artworkCount += 1
-  })
+    const current = userMap.get(user._id);
+    current.artworkCount += 1;
+  });
 
   recommendedUsers.value = Array.from(userMap.values())
     .sort((a, b) => b.artworkCount - a.artworkCount)
-    .slice(0, 9)
+    .slice(0, 9);
 }
 ```
 
 ## 5. Các tệp liên quan
 
-| Tệp | Hàm / Thành phần | Mô tả |
-|-----|-------------------|-------|
-| `backend/controllers/user.controller.js` | `getRecommendedUsers()` (dòng 711) | Thuật toán follow-graph recommendation |
-| `backend/routes/user.routes.js` | Route dòng 83 | `GET /api/users/recommended` với `protect` middleware |
-| `backend/models/Follow.js` | — | Mongoose schema cho quan hệ follow |
-| `frontend/src/components/home/HomeRecommendedUsers.vue` | — | Component UI hiển thị danh sách user đề xuất |
-| `frontend/src/views/HomePage.vue` | `normalizeRecommendedUsers()`, `loadHomeArtworks()`, `toggleFollowFromHome()` | Trang chủ — tích hợp recommend ở sidebar |
-| `frontend/src/views/TypedHomeFeedView.vue` | `normalizeRecommendedUsers()`, `loadTypedArtworks()`, `toggleFollowFromHome()` | Feed theo loại — tích hợp recommend ở sidebar |
-| `frontend/src/services/api.js` | `userApi.getRecommended()` (dòng 147) | API client cho endpoint recommended |
-| `frontend/src/stores/follow.store.js` | `fetchFollowStatus()`, `toggleFollowByUser()`, `isFollowingUser()`, `isTogglingFollow()` | Pinia store quản lý trạng thạng follow |
-| `docs/formulas.md` | Mục 1 | Công thức và pipeline đầy đủ |
+| Tệp                                                     | Hàm / Thành phần                                                                         | Mô tả                                                 |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `backend/controllers/user.controller.js`                | `getRecommendedUsers()` (dòng 711)                                                       | Thuật toán follow-graph recommendation                |
+| `backend/routes/user.routes.js`                         | Route dòng 83                                                                            | `GET /api/users/recommended` với `protect` middleware |
+| `backend/models/Follow.js`                              | —                                                                                        | Mongoose schema cho quan hệ follow                    |
+| `frontend/src/components/home/HomeRecommendedUsers.vue` | —                                                                                        | Component UI hiển thị danh sách user đề xuất          |
+| `frontend/src/views/HomePage.vue`                       | `normalizeRecommendedUsers()`, `loadHomeArtworks()`, `toggleFollowFromHome()`            | Trang chủ — tích hợp recommend ở sidebar              |
+| `frontend/src/views/TypedHomeFeedView.vue`              | `normalizeRecommendedUsers()`, `loadTypedArtworks()`, `toggleFollowFromHome()`           | Feed theo loại — tích hợp recommend ở sidebar         |
+| `frontend/src/services/api.js`                          | `userApi.getRecommended()` (dòng 147)                                                    | API client cho endpoint recommended                   |
+| `frontend/src/stores/follow.store.js`                   | `fetchFollowStatus()`, `toggleFollowByUser()`, `isFollowingUser()`, `isTogglingFollow()` | Pinia store quản lý trạng thạng follow                |
+| `docs/formulas.md`                                      | Mục 1                                                                                    | Công thức và pipeline đầy đủ                          |
 
 ## 6. Kịch bản sử dụng mẫu
 

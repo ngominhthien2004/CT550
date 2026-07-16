@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1350" viewBox="0 0 1500 1350">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7fff8"/>
+      <stop offset="0.48" stop-color="#f8fbff"/>
+      <stop offset="1" stop-color="#fffaf0"/>
+    </linearGradient>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#111827"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#2563eb"/>
+    </marker>
+    <style>
+      .font { font-family: "Segoe UI", Arial, sans-serif; font-weight: 800; }
+      .title { font-size: 36px; fill: #064e3b; }
+      .subtitle { font-size: 18px; fill: #334155; }
+      .section { font-size: 28px; }
+      .label { font-size: 23px; fill: #111827; }
+      .small { font-size: 19px; fill: #334155; }
+      .tiny { font-size: 16px; fill: #475569; }
+      .mono { font-family: "Cascadia Mono", Consolas, monospace; font-size: 17px; font-weight: 800; fill: #1e293b; }
+      .arrow { stroke: #111827; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .arrowBlue { stroke: #2563eb; stroke-width: 3; fill: none; marker-end: url(#arrowBlue); }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1500" height="1350" rx="28" fill="url(#bg)"/>
+
+  <g class="font">
+    <text x="750" y="58" text-anchor="middle" class="title">Luồng Auto-tagging khi upload ảnh</text>
+    <text x="750" y="90" text-anchor="middle" class="subtitle">Upload image → Google Cloud Vision LABEL_DETECTION → chuẩn hoá tag → tự động thêm vào form upload</text>
+
+    <rect x="80" y="125" width="1340" height="1120" rx="16" fill="#f8fbff" stroke="#2563eb" stroke-width="2.5" filter="url(#shadow)"/>
+
+    <rect x="170" y="180" width="1160" height="92" rx="14" fill="#f0fdf4" stroke="#16a34a" stroke-width="2.3"/>
+    <text x="750" y="218" text-anchor="middle" class="label" fill="#166534">Người dùng chọn file upload</text>
+    <text x="750" y="248" text-anchor="middle" class="small">Ảnh được chọn trong form upload artwork</text>
+
+    <line x1="750" y1="272" x2="750" y2="330" class="arrow"/>
+
+    <rect x="170" y="330" width="1160" height="96" rx="14" fill="#ffffff" stroke="#3b82f6" stroke-width="2.3"/>
+    <text x="750" y="368" text-anchor="middle" class="label" fill="#1d4ed8">Upload ảnh và gửi đến Auto-tag API</text>
+    <text x="750" y="399" text-anchor="middle" class="mono">POST /api/ai/auto-tag</text>
+
+    <line x1="750" y1="426" x2="750" y2="485" class="arrow"/>
+
+    <rect x="170" y="485" width="1160" height="104" rx="14" fill="#fff7ed" stroke="#f59e0b" stroke-width="2.3"/>
+    <text x="750" y="525" text-anchor="middle" class="label" fill="#92400e">Gọi Google Cloud Vision API</text>
+    <text x="750" y="557" text-anchor="middle" class="mono">LABEL_DETECTION</text>
+
+    <line x1="750" y1="589" x2="750" y2="650" class="arrow"/>
+
+    <rect x="155" y="650" width="1190" height="345" rx="16" fill="#faf5ff" stroke="#9333ea" stroke-width="2.5"/>
+    <text x="750" y="694" text-anchor="middle" class="section" fill="#6b21a8">Xử lý nhãn trả về từ Vision API</text>
+
+    <rect x="205" y="735" width="330" height="205" rx="12" fill="#ffffff" stroke="#a855f7" stroke-width="2"/>
+    <text x="370" y="775" text-anchor="middle" class="label" fill="#6b21a8">Lọc kết quả</text>
+    <text x="370" y="812" text-anchor="middle" class="small">Chỉ giữ label có:</text>
+    <text x="370" y="846" text-anchor="middle" class="mono">score &gt;=</text>
+    <text x="370" y="878" text-anchor="middle" class="mono">GOOGLE_VISION_CONFIDENCE</text>
+    <text x="370" y="912" text-anchor="middle" class="small">Mặc định: 0.6</text>
+
+    <rect x="585" y="735" width="330" height="205" rx="12" fill="#ffffff" stroke="#a855f7" stroke-width="2"/>
+    <text x="750" y="775" text-anchor="middle" class="label" fill="#6b21a8">Làm sạch nhãn</text>
+    <text x="620" y="814" class="small">• Chuyển chữ thường</text>
+    <text x="620" y="852" class="small">• Thay khoảng trắng</text>
+    <text x="642" y="882" class="small">bằng dấu gạch dưới</text>
+    <text x="620" y="920" class="small">• Xoá ký tự đặc biệt</text>
+
+    <rect x="965" y="735" width="330" height="205" rx="12" fill="#ffffff" stroke="#a855f7" stroke-width="2"/>
+    <text x="1130" y="775" text-anchor="middle" class="label" fill="#6b21a8">Giới hạn số tag</text>
+    <text x="1130" y="812" text-anchor="middle" class="small">Thu thập tối đa:</text>
+    <text x="1130" y="846" text-anchor="middle" class="mono">AUTO_TAG_MAX_TAGS</text>
+    <text x="1130" y="880" text-anchor="middle" class="small">Mặc định: 10 tag</text>
+
+    <line x1="535" y1="838" x2="575" y2="838" class="arrowBlue"/>
+    <line x1="915" y1="838" x2="955" y2="838" class="arrowBlue"/>
+
+    <line x1="750" y1="995" x2="750" y2="1055" class="arrow"/>
+
+    <rect x="170" y="1055" width="1160" height="92" rx="14" fill="#ecfdf5" stroke="#16a34a" stroke-width="2.3"/>
+    <text x="750" y="1092" text-anchor="middle" class="label" fill="#166534">Trả về danh sách tag đề xuất cho frontend</text>
+    <text x="750" y="1123" text-anchor="middle" class="mono">response.json({ tags: [...] })</text>
+
+    <line x1="750" y1="1147" x2="750" y2="1205" class="arrow"/>
+
+    <rect x="170" y="1205" width="1160" height="96" rx="14" fill="#fdf2f8" stroke="#db2777" stroke-width="2.3"/>
+    <text x="750" y="1242" text-anchor="middle" class="label" fill="#9d174d">Frontend tự động thêm tag vào form upload</text>
+    <text x="750" y="1275" text-anchor="middle" class="small">Người dùng có thể xoá tag đề xuất hoặc thêm tag khác</text>
+  </g>
+</svg>

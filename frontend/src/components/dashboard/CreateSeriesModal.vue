@@ -371,6 +371,7 @@ onBeforeUnmount(() => {
       v-if="showArtworkPicker"
       :selected-ids="selectedArtworks.map((a) => a._id)"
       :type="seriesType"
+      :include-series="isEditMode ? editSeries._id : ''"
       @close="showArtworkPicker = false"
       @select="onArtworksSelected"
     />

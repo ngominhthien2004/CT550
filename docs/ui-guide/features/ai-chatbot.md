@@ -11,6 +11,7 @@
 - **Hỗ trợ đa phiên**: Quản lý nhiều cuộc hội thoại song song với lịch sử đầy đủ.
 
 Chatbot hỗ trợ hai provider AI, cấu hình qua biến `AI_PROVIDER`:
+
 - **Ollama** (mặc định) — model `llama3.2:3b`, chạy local tại `http://localhost:11434`, không gọi API cloud.
 - **OpenAI-compatible** (khi `AI_PROVIDER=openai`) — có thể dùng DeepSeek (`deepseek-chat`), OpenRouter, hoặc bất kỳ API nào tương thích OpenAI. Mặc định trỏ đến `https://api.deepseek.com`.
 
@@ -61,12 +62,12 @@ Hình 2: Giao diện ChatView với session sidebar và khu vực chat.
 
 #### Session Sidebar (trái)
 
-| Thành phần | Mô tả |
-|------------|-------|
-| **Header** | "Lịch sử chat" + nút "+" tạo session mới |
-| **Danh sách session** | Sắp xếp theo `updatedAt` (mới nhất ở trên) |
-| **Session item** | Title (truncated 50 ký tự) + thời gian + nút "×" xoá (hiện khi hover) |
-| **Toggle sidebar** | Chevron trái/phải để collapse/expand trên mobile |
+| Thành phần            | Mô tả                                                                 |
+| --------------------- | --------------------------------------------------------------------- |
+| **Header**            | "Lịch sử chat" + nút "+" tạo session mới                              |
+| **Danh sách session** | Sắp xếp theo`updatedAt` (mới nhất ở trên)                             |
+| **Session item**      | Title (truncated 50 ký tự) + thời gian + nút "×" xoá (hiện khi hover) |
+| **Toggle sidebar**    | Chevron trái/phải để collapse/expand trên mobile                      |
 
 - Session active có nền accent màu.
 - Xoá session có xác nhận trước khi thực hiện.
@@ -74,24 +75,24 @@ Hình 2: Giao diện ChatView với session sidebar và khu vực chat.
 
 #### Khu vực Chat (phải)
 
-| Loại tin nhắn | Hiển thị |
-|---------------|----------|
-| **User** | Bubble nền accent (xanh dương), căn phải, avatar 👤 |
-| **Assistant** | Bubble nền surface-alt, căn trái, avatar 🤖 |
-| **Error** | Bubble nền đỏ nhạt, chữ danger |
-| **Welcome** | Bubble gradient tím với lời chào + danh sách khả năng |
-| **Tool used** | Badge "Sử dụng công cụ" trên tin nhắn assistant |
+| Loại tin nhắn | Hiển thị                                              |
+| ------------- | ----------------------------------------------------- |
+| **User**      | Bubble nền accent (xanh dương), căn phải, avatar 👤   |
+| **Assistant** | Bubble nền surface-alt, căn trái, avatar 🤖           |
+| **Error**     | Bubble nền đỏ nhạt, chữ danger                        |
+| **Welcome**   | Bubble gradient tím với lời chào + danh sách khả năng |
+| **Tool used** | Badge "Sử dụng công cụ" trên tin nhắn assistant       |
 
 #### Suggested Prompts
 
 Khi chưa có tin nhắn hoặc đang ở trạng thái rảnh, hiển thị các câu gợi ý:
 
-| Icon | Label | Nội dung gửi |
-|------|-------|--------------|
-| 🔍 | Tìm artwork | "Tìm artwork về phong cảnh thiên nhiên" |
-| 👤 | Tìm user | "Tìm user có tên là minh" |
-| 💡 | Gợi ý cho tôi | "Gợi ý cho tôi artwork hay về fantasy" |
-| 🎨 | Hỏi về nghệ thuật | "Cho tôi hỏi về phong cách vẽ manga" |
+| Icon | Label             | Nội dung gửi                            |
+| ---- | ----------------- | --------------------------------------- |
+| 🔍   | Tìm artwork       | "Tìm artwork về phong cảnh thiên nhiên" |
+| 👤   | Tìm user          | "Tìm user có tên là minh"               |
+| 💡   | Gợi ý cho tôi     | "Gợi ý cho tôi artwork hay về fantasy"  |
+| 🎨   | Hỏi về nghệ thuật | "Cho tôi hỏi về phong cách vẽ manga"    |
 
 #### Input Area
 
@@ -184,35 +185,35 @@ Khi chưa có tin nhắn hoặc đang ở trạng thái rảnh, hiển thị cá
 
 #### ChatSession (MongoDB)
 
-| Trường | Kiểu | Mô tả |
-|--------|------|-------|
-| `user` | ObjectId (ref: User) | Chủ sở hữu session |
-| `title` | String | Tiêu đề session (mặc định "Cuộc trò chuyện mới") |
-| `createdAt` | Date | Ngày tạo |
-| `updatedAt` | Date | Ngày cập nhật cuối |
+| Trường      | Kiểu                 | Mô tả                                            |
+| ----------- | -------------------- | ------------------------------------------------ |
+| `user`      | ObjectId (ref: User) | Chủ sở hữu session                               |
+| `title`     | String               | Tiêu đề session (mặc định "Cuộc trò chuyện mới") |
+| `createdAt` | Date                 | Ngày tạo                                         |
+| `updatedAt` | Date                 | Ngày cập nhật cuối                               |
 
 #### ChatMessage (MongoDB)
 
-| Trường | Kiểu | Mô tả |
-|--------|------|-------|
-| `session` | ObjectId (ref: ChatSession) | Session chứa tin nhắn |
-| `role` | String (`user` / `assistant` / `system`) | Vai trò người gửi |
-| `content` | String | Nội dung tin nhắn |
-| `toolUsed` | Boolean | Tin nhắn assistant có sử dụng công cụ không |
-| `isError` | Boolean | Tin nhắn lỗi |
-| `isWelcome` | Boolean | Tin nhắn chào mừng đầu session |
-| `createdAt` | Date | Thời gian gửi |
+| Trường      | Kiểu                                     | Mô tả                                       |
+| ----------- | ---------------------------------------- | ------------------------------------------- |
+| `session`   | ObjectId (ref: ChatSession)              | Session chứa tin nhắn                       |
+| `role`      | String (`user` / `assistant` / `system`) | Vai trò người gửi                           |
+| `content`   | String                                   | Nội dung tin nhắn                           |
+| `toolUsed`  | Boolean                                  | Tin nhắn assistant có sử dụng công cụ không |
+| `isError`   | Boolean                                  | Tin nhắn lỗi                                |
+| `isWelcome` | Boolean                                  | Tin nhắn chào mừng đầu session              |
+| `createdAt` | Date                                     | Thời gian gửi                               |
 
 ### 3.4. API Session
 
-| Method | Endpoint | Mô tả |
-|--------|----------|-------|
-| `GET` | `/api/chat-sessions` | Danh sách session của user |
-| `POST` | `/api/chat-sessions` | Tạo session mới (kèm welcome message) |
-| `GET` | `/api/chat-sessions/:id` | Chi tiết session |
-| `PATCH` | `/api/chat-sessions/:id` | Cập nhật title session |
-| `DELETE` | `/api/chat-sessions/:id` | Xoá session và tất cả tin nhắn |
-| `GET` | `/api/chat-sessions/:id/messages` | Danh sách tin nhắn trong session |
+| Method   | Endpoint                          | Mô tả                                 |
+| -------- | --------------------------------- | ------------------------------------- |
+| `GET`    | `/api/chat-sessions`              | Danh sách session của user            |
+| `POST`   | `/api/chat-sessions`              | Tạo session mới (kèm welcome message) |
+| `GET`    | `/api/chat-sessions/:id`          | Chi tiết session                      |
+| `PATCH`  | `/api/chat-sessions/:id`          | Cập nhật title session                |
+| `DELETE` | `/api/chat-sessions/:id`          | Xoá session và tất cả tin nhắn        |
+| `GET`    | `/api/chat-sessions/:id/messages` | Danh sách tin nhắn trong session      |
 
 ## 4. Xử lý tin nhắn Agent
 
@@ -295,37 +296,37 @@ Hệ thống sử dụng phương pháp **keyword matching heuristic** (không d
 
 ```javascript
 function detectIntent(message) {
-    // Search patterns
-    if (/tìm|search|tìm kiếm|cho xem/i.test(message)) return 'search';
-    // Recommend patterns
-    if (/gợi.ý|đề xuất|recommend|giới thiệu/i.test(message)) return 'recommend';
-    // Summarize patterns
-    if (/tóm tắt|summarize|tổng quan/i.test(message)) return 'summarize';
-    // Default
-    return 'chat';
+  // Search patterns
+  if (/tìm|search|tìm kiếm|cho xem/i.test(message)) return "search";
+  // Recommend patterns
+  if (/gợi.ý|đề xuất|recommend|giới thiệu/i.test(message)) return "recommend";
+  // Summarize patterns
+  if (/tóm tắt|summarize|tổng quan/i.test(message)) return "summarize";
+  // Default
+  return "chat";
 }
 ```
 
 ## 5. Các endpoint AI
 
-| Method | Endpoint | Mô tả | Input | Output |
-|--------|----------|-------|-------|--------|
-| `POST` | `/api/ai/chat` | Chat đơn giản (trợ lý nghệ thuật tiếng Việt) | `{ message, history }` | `{ reply }` |
-| `POST` | `/api/ai/agent-chat` | Chat agent với phát hiện ý định + thực thi công cụ | `{ message, history, sessionId }` | `{ reply, toolUsed, toolResult }` |
-| `POST` | `/api/ai/agent-chat/stream` | Chat agent streaming (SSE) | `{ message, history, sessionId }` | Stream `{ type, token }` events |
-| `POST` | `/api/ai/recommend` | Gợi ý tác phẩm dựa trên thể loại/mô tả | `{ favoriteGenres, description }` | `{ recommendations }` |
-| `POST` | `/api/ai/search` | Phân tích truy vấn, gợi ý từ khoá/thể loại/bộ lọc | `{ query }` | `{ analysis }` |
-| `POST` | `/api/ai/summarize/:artworkId` | Tóm tắt nội dung tác phẩm | `artworkId` (params) | `{ summary }` |
+| Method | Endpoint                       | Mô tả                                              | Input                             | Output                            |
+| ------ | ------------------------------ | -------------------------------------------------- | --------------------------------- | --------------------------------- |
+| `POST` | `/api/ai/chat`                 | Chat đơn giản (trợ lý nghệ thuật tiếng Việt)       | `{ message, history }`            | `{ reply }`                       |
+| `POST` | `/api/ai/agent-chat`           | Chat agent với phát hiện ý định + thực thi công cụ | `{ message, history, sessionId }` | `{ reply, toolUsed, toolResult }` |
+| `POST` | `/api/ai/agent-chat/stream`    | Chat agent streaming (SSE)                         | `{ message, history, sessionId }` | Stream`{ type, token }` events    |
+| `POST` | `/api/ai/recommend`            | Gợi ý tác phẩm dựa trên thể loại/mô tả             | `{ favoriteGenres, description }` | `{ recommendations }`             |
+| `POST` | `/api/ai/search`               | Phân tích truy vấn, gợi ý từ khoá/thể loại/bộ lọc  | `{ query }`                       | `{ analysis }`                    |
+| `POST` | `/api/ai/summarize/:artworkId` | Tóm tắt nội dung tác phẩm                          | `artworkId` (params)              | `{ summary }`                     |
 
 ## 6. Trạng thái và phản hồi
 
-| Trạng thái | Hiển thị |
-|-------------|----------|
-| **Loading** | 3 dots animation (typing-pulse) |
-| **Streaming** | Token xuất hiện dần trong bubble |
-| **Error** | Bubble đỏ với icon ❌ + thông báo lỗi |
-| **Success** | Bubble xanh (user) / bubble tối (assistant) |
-| **Tool used** | Badge "Sử dụng công cụ" trên tin nhắn |
+| Trạng thái    | Hiển thị                                    |
+| ------------- | ------------------------------------------- |
+| **Loading**   | 3 dots animation (typing-pulse)             |
+| **Streaming** | Token xuất hiện dần trong bubble            |
+| **Error**     | Bubble đỏ với icon ❌ + thông báo lỗi       |
+| **Success**   | Bubble xanh (user) / bubble tối (assistant) |
+| **Tool used** | Badge "Sử dụng công cụ" trên tin nhắn       |
 
 ## 7. Ghi chú kỹ thuật
 
@@ -338,23 +339,23 @@ function detectIntent(message) {
 
 ## 8. Các tệp liên quan
 
-| Tệp | Mô tả |
-|-----|-------|
-| `backend/controllers/ai.controller.js` | `chat()`, `agentChat()`, `agentChatStream()`, `detectIntent()`, `executeSearchTool()`, `executeRecommendTool()`, `executeSummarizeTool()` |
-| `backend/routes/ai.routes.js` | Route definitions cho tất cả AI endpoints |
-| `backend/routes/chatSession.routes.js` | CRUD routes cho chat sessions |
-| `backend/services/ai.service.js` | `chatWithAI()`, `chatStreamWithAI()`, `buildAgentSystemPrompt()` |
-| `backend/services/agent-tools.js` | `buildAgentActions()` — xây dựng action frames cho frontend |
-| `backend/models/ChatSession.js` | Mongoose schema cho session |
-| `backend/models/ChatMessage.js` | Mongoose schema cho tin nhắn |
-| `frontend/src/stores/chat.store.js` | Pinia store — quản lý session, tin nhắn, streaming |
-| `frontend/src/components/chat/ChatBubble.vue` | Component hiển thị tin nhắn |
-| `frontend/src/components/chat/ChatMessageList.vue` | Danh sách tin nhắn |
-| `frontend/src/components/chat/ChatInput.vue` | Input chat |
-| `frontend/src/components/chat/ChatSessionSidebar.vue` | Sidebar danh sách session |
-| `frontend/src/components/chat/ChatPanelHeader.vue` | Header khu vực chat |
-| `docs/ui-guide/pages/chat.md` | Tài liệu giao diện ChatView |
-| `docs/ui-guide/layout/floating-actions.md` | Tài liệu nút AI Chat FAB |
+| Tệp                                                   | Mô tả                                                                                                                                     |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `backend/controllers/ai.controller.js`                | `chat()`, `agentChat()`, `agentChatStream()`, `detectIntent()`, `executeSearchTool()`, `executeRecommendTool()`, `executeSummarizeTool()` |
+| `backend/routes/ai.routes.js`                         | Route definitions cho tất cả AI endpoints                                                                                                 |
+| `backend/routes/chatSession.routes.js`                | CRUD routes cho chat sessions                                                                                                             |
+| `backend/services/ai.service.js`                      | `chatWithAI()`, `chatStreamWithAI()`, `buildAgentSystemPrompt()`                                                                          |
+| `backend/services/agent-tools.js`                     | `buildAgentActions()` — xây dựng action frames cho frontend                                                                               |
+| `backend/models/ChatSession.js`                       | Mongoose schema cho session                                                                                                               |
+| `backend/models/ChatMessage.js`                       | Mongoose schema cho tin nhắn                                                                                                              |
+| `frontend/src/stores/chat.store.js`                   | Pinia store — quản lý session, tin nhắn, streaming                                                                                        |
+| `frontend/src/components/chat/ChatBubble.vue`         | Component hiển thị tin nhắn                                                                                                               |
+| `frontend/src/components/chat/ChatMessageList.vue`    | Danh sách tin nhắn                                                                                                                        |
+| `frontend/src/components/chat/ChatInput.vue`          | Input chat                                                                                                                                |
+| `frontend/src/components/chat/ChatSessionSidebar.vue` | Sidebar danh sách session                                                                                                                 |
+| `frontend/src/components/chat/ChatPanelHeader.vue`    | Header khu vực chat                                                                                                                       |
+| `docs/ui-guide/pages/chat.md`                         | Tài liệu giao diện ChatView                                                                                                               |
+| `docs/ui-guide/layout/floating-actions.md`            | Tài liệu nút AI Chat FAB                                                                                                                  |
 
 ## 9. Kịch bản sử dụng mẫu
 

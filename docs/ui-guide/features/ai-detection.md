@@ -36,13 +36,13 @@ Frontend hiển thị kết quả trên form upload
 
 ## API endpoint
 
-| Thông tin | Giá trị |
-|-----------|---------|
-| **Method** | `POST` |
-| **URL** | `/api/ai/detect-image` |
-| **Xác thực** | JWT (`protect` middleware) |
-| **Content-Type** | `multipart/form-data` |
-| **Field name** | `image` |
+| Thông tin        | Giá trị                    |
+| ---------------- | -------------------------- |
+| **Method**       | `POST`                     |
+| **URL**          | `/api/ai/detect-image`     |
+| **Xác thực**     | JWT (`protect` middleware) |
+| **Content-Type** | `multipart/form-data`      |
+| **Field name**   | `image`                    |
 
 ### Request
 
@@ -157,13 +157,13 @@ Công thức: `aiScore > 30 → isAI = true`, `confidence = min(85, max(30, 50 +
 
 ## Các tệp liên quan
 
-| Tệp | Mô tả |
-|-----|-------|
-| `backend/controllers/ai.controller.js` | Hàm `detectAIImage` — xử lý request |
-| `backend/routes/ai.routes.js` | Route `POST /ai/detect-image` |
-| `backend/services/huggingface.service.js` | `detectAIWithHuggingFace()`, `processHFResults()`, `detectWithMetadataAnalysis()` |
-| `frontend/src/views/AIView.vue` | Giao diện test AI Detection |
-| `frontend/src/views/UploadArtworkView.vue` | Tích hợp AI Detection trong form upload |
+| Tệp                                        | Mô tả                                                                             |
+| ------------------------------------------ | --------------------------------------------------------------------------------- |
+| `backend/controllers/ai.controller.js`     | Hàm`detectAIImage` — xử lý request                                                |
+| `backend/routes/ai.routes.js`              | Route`POST /ai/detect-image`                                                      |
+| `backend/services/huggingface.service.js`  | `detectAIWithHuggingFace()`, `processHFResults()`, `detectWithMetadataAnalysis()` |
+| `frontend/src/views/AIView.vue`            | Giao diện test AI Detection                                                       |
+| `frontend/src/views/UploadArtworkView.vue` | Tích hợp AI Detection trong form upload                                           |
 
 ## Ghi chú
 

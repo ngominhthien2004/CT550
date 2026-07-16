@@ -11,7 +11,7 @@ const getSettings = async (req, res, next) => {
 
 const updateSettings = async (req, res, next) => {
   try {
-    const allowedFields = ['aiDetectionEnabled', 'aiDetectionThreshold', 'autoTaggingEnabled'];
+    const allowedFields = ['aiDetectionEnabled', 'autoTaggingEnabled'];
     const updates = {};
     for (const key of allowedFields) {
       if (req.body[key] !== undefined) {

@@ -1,0 +1,141 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1520" viewBox="0 0 1800 1520">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7fff8"/>
+      <stop offset="0.48" stop-color="#f8fbff"/>
+      <stop offset="1" stop-color="#fffaf0"/>
+    </linearGradient>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#111827"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#2563eb"/>
+    </marker>
+    <style>
+      .font { font-family: "Segoe UI", Arial, sans-serif; font-weight: 800; }
+      .title { font-size: 38px; fill: #064e3b; }
+      .subtitle { font-size: 18px; fill: #334155; }
+      .section { font-size: 28px; }
+      .label { font-size: 22px; fill: #111827; }
+      .small { font-size: 19px; fill: #334155; }
+      .tiny { font-size: 16px; fill: #475569; }
+      .mono { font-family: "Cascadia Mono", Consolas, monospace; font-size: 15px; font-weight: 800; fill: #1e293b; }
+      .arrow { stroke: #111827; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .arrowBlue { stroke: #2563eb; stroke-width: 3; fill: none; marker-end: url(#arrowBlue); }
+      .dash { stroke: #64748b; stroke-width: 2.5; stroke-dasharray: 8 8; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1800" height="1520" rx="28" fill="url(#bg)"/>
+
+  <g class="font">
+    <text x="900" y="60" text-anchor="middle" class="title">User Recommendation Scenarios</text>
+    <text x="900" y="94" text-anchor="middle" class="subtitle">Follow graph recommendation · Empty state fallback · Follow / Following interaction</text>
+
+    <rect x="45" y="130" width="1710" height="500" rx="18" fill="#f8fbff" stroke="#2563eb" stroke-width="2.5" filter="url(#shadow)"/>
+    <text x="900" y="178" text-anchor="middle" class="section" fill="#1d4ed8">1. Follow-graph recommendation</text>
+
+    <g transform="translate(105 220)">
+      <rect x="0" y="0" width="420" height="335" rx="16" fill="#f0fdf4" stroke="#16a34a" stroke-width="2.3"/>
+      <text x="210" y="38" text-anchor="middle" class="label" fill="#166534">Follow graph</text>
+      <circle cx="80" cy="110" r="34" fill="#dbeafe" stroke="#2563eb" stroke-width="2.2"/>
+      <text x="80" y="118" text-anchor="middle" class="small">A</text>
+      <circle cx="225" cy="75" r="34" fill="#dcfce7" stroke="#16a34a" stroke-width="2.2"/>
+      <text x="225" y="83" text-anchor="middle" class="small">X</text>
+      <text x="225" y="126" text-anchor="middle" class="tiny">fantasy</text>
+      <circle cx="225" cy="190" r="34" fill="#e0f2fe" stroke="#0284c7" stroke-width="2.2"/>
+      <text x="225" y="198" text-anchor="middle" class="small">Y</text>
+      <text x="225" y="241" text-anchor="middle" class="tiny">sci-fi</text>
+      <circle cx="350" cy="132" r="34" fill="#fef3c7" stroke="#d97706" stroke-width="2.2"/>
+      <text x="350" y="140" text-anchor="middle" class="small">Z</text>
+      <text x="350" y="183" text-anchor="middle" class="tiny">fantasy</text>
+      <circle cx="350" cy="270" r="30" fill="#fce7f3" stroke="#db2777" stroke-width="2.2"/>
+      <text x="350" y="278" text-anchor="middle" class="small">W</text>
+      <line x1="114" y1="102" x2="184" y2="82" class="arrowBlue"/>
+      <line x1="112" y1="126" x2="184" y2="176" class="arrowBlue"/>
+      <line x1="258" y1="90" x2="317" y2="116" class="arrow"/>
+      <line x1="259" y1="178" x2="317" y2="146" class="arrow"/>
+      <line x1="250" y1="99" x2="326" y2="246" class="dash"/>
+    </g>
+
+    <g transform="translate(575 220)">
+      <rect x="0" y="0" width="520" height="335" rx="16" fill="#ffffff" stroke="#60a5fa" stroke-width="2.3"/>
+      <text x="260" y="38" text-anchor="middle" class="label" fill="#1d4ed8">Backend aggregation</text>
+      <text x="35" y="78" class="mono">GET /api/users/recommended</text>
+      <text x="35" y="112" class="mono">followingIds = [UserX._id, UserY._id]</text>
+      <text x="35" y="154" class="mono">$match: { follower: { $in: [X, Y] } }</text>
+      <text x="35" y="188" class="small">Tìm được:</text>
+      <text x="55" y="220" class="mono">{ follower: UserX, following: UserZ }</text>
+      <text x="55" y="252" class="mono">{ follower: UserY, following: UserZ }</text>
+      <text x="55" y="284" class="mono">{ follower: UserX, following: UserW }</text>
+    </g>
+
+    <g transform="translate(1145 220)">
+      <rect x="0" y="0" width="500" height="335" rx="16" fill="#fff7ed" stroke="#f97316" stroke-width="2.3"/>
+      <text x="250" y="38" text-anchor="middle" class="label" fill="#9a3412">Ranking result</text>
+      <rect x="55" y="72" width="390" height="82" rx="12" fill="#ffffff" stroke="#f59e0b" stroke-width="2"/>
+      <text x="250" y="104" text-anchor="middle" class="label">UserZ → mutualCount: 2</text>
+      <text x="250" y="134" text-anchor="middle" class="small">X và Y đều follow Z</text>
+      <rect x="55" y="172" width="390" height="70" rx="12" fill="#ffffff" stroke="#f59e0b" stroke-width="2"/>
+      <text x="250" y="215" text-anchor="middle" class="label">UserW → mutualCount: 1</text>
+      <text x="250" y="277" text-anchor="middle" class="small">UserZ xuất hiện đầu danh sách recommend</text>
+      <text x="250" y="310" text-anchor="middle" class="small">Card: avatar · User Z · @userz · 15 works · Follow</text>
+    </g>
+
+    <path d="M525 388 L570 388" class="arrow"/>
+    <path d="M1095 388 L1140 388" class="arrow"/>
+
+    <rect x="45" y="675" width="820" height="610" rx="18" fill="#f0fdf4" stroke="#16a34a" stroke-width="2.5" filter="url(#shadow)"/>
+    <text x="455" y="723" text-anchor="middle" class="section" fill="#166534">2. Empty state — chưa follow ai</text>
+
+    <rect x="115" y="765" width="680" height="78" rx="13" fill="#ffffff" stroke="#22c55e" stroke-width="2"/>
+    <text x="455" y="797" text-anchor="middle" class="label">User A chưa follow ai</text>
+    <text x="455" y="824" text-anchor="middle" class="mono">followingIds = [] → return []</text>
+    <line x1="455" y1="843" x2="455" y2="900" class="arrow"/>
+
+    <rect x="115" y="900" width="680" height="78" rx="13" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="455" y="934" text-anchor="middle" class="label" fill="#1d4ed8">Frontend nhận data = []</text>
+    <text x="455" y="962" text-anchor="middle" class="small">Kích hoạt fallback từ feed hiện tại</text>
+    <line x1="455" y1="978" x2="455" y2="1035" class="arrow"/>
+
+    <rect x="115" y="1035" width="680" height="160" rx="13" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
+    <text x="455" y="1072" text-anchor="middle" class="label" fill="#9a3412">normalizeRecommendedUsers(filteredWorks)</text>
+    <text x="160" y="1110" class="small">• Đếm artwork theo user từ feed, ví dụ 48 artworks</text>
+    <text x="160" y="1144" class="small">• Loại trừ user hiện tại</text>
+    <text x="160" y="1178" class="small">• Lấy top 9 users có nhiều artwork nhất</text>
+    <line x1="455" y1="1195" x2="455" y2="1245" class="arrow"/>
+
+    <rect x="115" y="1245" width="680" height="56" rx="13" fill="#fdf2f8" stroke="#db2777" stroke-width="2"/>
+    <text x="455" y="1281" text-anchor="middle" class="label" fill="#9d174d">Hiển thị danh sách card Recommended users</text>
+
+    <rect x="935" y="675" width="820" height="700" rx="18" fill="#f8fbff" stroke="#2563eb" stroke-width="2.5" filter="url(#shadow)"/>
+    <text x="1345" y="723" text-anchor="middle" class="section" fill="#1d4ed8">3. Tương tác Follow / Following</text>
+
+    <rect x="1005" y="765" width="680" height="82" rx="13" fill="#ffffff" stroke="#60a5fa" stroke-width="2"/>
+    <text x="1345" y="798" text-anchor="middle" class="label">User A thấy User Z trong recommend list</text>
+    <text x="1345" y="827" text-anchor="middle" class="small">Click nút "Follow"</text>
+    <line x1="1345" y1="847" x2="1345" y2="900" class="arrow"/>
+
+    <rect x="1005" y="900" width="680" height="130" rx="13" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="1345" y="935" text-anchor="middle" class="label" fill="#1d4ed8">followStore.toggleFollowByUser(UserZ._id)</text>
+    <text x="1045" y="974" class="mono">POST /api/users/UserZ._id/follow (JWT)</text>
+    <text x="1045" y="1006" class="mono">followingByUser[UserZ._id] = true</text>
+    <line x1="1345" y1="1030" x2="1345" y2="1080" class="arrow"/>
+
+    <rect x="1005" y="1080" width="680" height="82" rx="13" fill="#ecfdf5" stroke="#16a34a" stroke-width="2"/>
+    <text x="1345" y="1114" text-anchor="middle" class="label" fill="#166534">Button chuyển "Follow" → "Following"</text>
+    <text x="1345" y="1143" text-anchor="middle" class="small">User Z vẫn ở trong recommend list, chỉ đổi trạng thái nút</text>
+    <line x1="1345" y1="1162" x2="1345" y2="1212" class="arrow"/>
+
+    <rect x="1005" y="1212" width="680" height="178" rx="13" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
+    <text x="1345" y="1247" text-anchor="middle" class="label" fill="#9a3412">Click "Following" lần nữa</text>
+    <text x="1045" y="1286" class="mono">DELETE /api/users/UserZ._id/follow (JWT)</text>
+    <text x="1045" y="1318" class="mono">followingByUser[UserZ._id] = false</text>
+    <text x="1345" y="1350" text-anchor="middle" class="small">Button chuyển "Following" → "Follow"</text>
+    <text x="1345" y="1382" text-anchor="middle" class="tiny">Lần sau load lại, User Z vẫn có thể xuất hiện nếu còn mutualCount</text>
+  </g>
+</svg>
+

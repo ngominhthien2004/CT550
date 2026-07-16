@@ -234,6 +234,7 @@ const getArtworks = async (req, res, next) => {
         const {
             type, ageRating, user, tag, q, limit: rawLimit,
             sortBy, minWords, maxWords, series, from, to,
+            unassigned, includeSeries,
         } = req.query;
         const query = { isHidden: { $ne: true } };
         const parsedLimit = Number.parseInt(rawLimit, 10);
@@ -243,6 +244,11 @@ const getArtworks = async (req, res, next) => {
         if (ageRating) query.ageRating = ageRating;
         if (user) query.user = user;
         if (series) query.series = series;
+        // When unassigned=true, only show artworks not in any series
+        // (optionally including artworks from a specific series for edit mode)
+        if (unassigned === 'true') {
+            query.series = includeSeries ? { $in: [null, includeSeries] } : null;
+        }
         if (tag) {
             const foundTag = await Tag.findOne({ name: normalizeTagName(tag) });
             if (foundTag) query.tags = foundTag._id;

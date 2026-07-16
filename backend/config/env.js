@@ -45,13 +45,6 @@ function getMaxUploadFileSizeBytes() {
     return safeValue * 1024 * 1024;
 }
 
-function getAiDetectionThreshold() {
-    const rawValue = process.env.AI_DETECTION_THRESHOLD;
-    const parsedValue = Number.parseInt(rawValue || '70', 10);
-    const safeValue = Number.isNaN(parsedValue) ? 70 : parsedValue;
-    return Math.min(Math.max(safeValue, 0), 100);
-}
-
 function getGoogleClientId() {
     return process.env.GOOGLE_CLIENT_ID || '';
 }
@@ -74,7 +67,6 @@ function getFacebookClientSecret() {
 
 module.exports = {
     getAllowedOrigins,
-    getAiDetectionThreshold,
     getFacebookClientId,
     getFacebookClientSecret,
     getGoogleClientId,

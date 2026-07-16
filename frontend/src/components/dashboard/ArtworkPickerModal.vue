@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n'
 const props = defineProps({
   selectedIds: { type: Array, default: () => [] },
   type: { type: String, default: null },
+  includeSeries: { type: String, default: '' },
 })
 
 const emit = defineEmits(['close', 'select'])
@@ -21,8 +22,9 @@ async function loadArtworks() {
   if (!authStore.user?._id) return
   loading.value = true
   try {
-    const params = { user: authStore.user._id, limit: 120 }
+    const params = { user: authStore.user._id, limit: 120, unassigned: true }
     if (props.type) params.type = props.type
+    if (props.includeSeries) params.includeSeries = props.includeSeries
     const { data } = await getArtworks(params)
     artworks.value = Array.isArray(data) ? data : []
   } catch {

@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1350" viewBox="0 0 1700 1350">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7fff8"/>
+      <stop offset="0.48" stop-color="#f8fbff"/>
+      <stop offset="1" stop-color="#fffaf0"/>
+    </linearGradient>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#111827"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#2563eb"/>
+    </marker>
+    <style>
+      .font { font-family: "Segoe UI", Arial, sans-serif; font-weight: 800; }
+      .title { font-size: 36px; fill: #064e3b; }
+      .subtitle { font-size: 18px; fill: #334155; }
+      .section { font-size: 28px; }
+      .label { font-size: 22px; fill: #111827; }
+      .small { font-size: 18px; fill: #334155; }
+      .tiny { font-size: 15px; fill: #475569; }
+      .mono { font-family: "Cascadia Mono", Consolas, monospace; font-size: 16px; font-weight: 800; fill: #1e293b; }
+      .arrow { stroke: #111827; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .arrowBlue { stroke: #2563eb; stroke-width: 3; fill: none; marker-end: url(#arrowBlue); }
+      .dash { stroke: #64748b; stroke-width: 2.5; stroke-dasharray: 8 8; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1700" height="1350" rx="28" fill="url(#bg)"/>
+
+  <g class="font">
+    <text x="850" y="58" text-anchor="middle" class="title">Luồng gợi ý người dùng trên Home Feed</text>
+    <text x="850" y="90" text-anchor="middle" class="subtitle">Frontend gọi API recommendation → Backend tính mutual follows → Fallback từ artwork nếu không có dữ liệu</text>
+
+    <rect x="50" y="125" width="760" height="1000" rx="16" fill="#f0fdf4" stroke="#15803d" stroke-width="2.5" filter="url(#shadow)"/>
+    <text x="430" y="170" text-anchor="middle" class="section" fill="#166534">Frontend (Vue 3 / Pinia)</text>
+
+    <rect x="105" y="210" width="650" height="100" rx="12" fill="#ffffff" stroke="#22c55e" stroke-width="2"/>
+    <text x="430" y="248" text-anchor="middle" class="label">HomePage.vue / TypedHomeFeedView.vue</text>
+    <text x="430" y="280" text-anchor="middle" class="mono">loadHomeArtworks() / loadTypedArtworks()</text>
+
+    <line x1="430" y1="310" x2="430" y2="355" class="arrow"/>
+    <rect x="105" y="355" width="650" height="92" rx="12" fill="#ffffff" stroke="#22c55e" stroke-width="2"/>
+    <text x="430" y="392" text-anchor="middle" class="label">Gọi API recommended users</text>
+    <text x="430" y="423" text-anchor="middle" class="mono">userApi.getRecommended()</text>
+
+    <line x1="430" y1="447" x2="430" y2="505" class="arrow"/>
+    <rect x="105" y="505" width="650" height="155" rx="12" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="430" y="542" text-anchor="middle" class="label" fill="#1e40af">Nếu API trả về data.length &gt; 0</text>
+    <text x="145" y="582" class="small">• recommendedUsers = recRes.data</text>
+    <text x="145" y="616" class="small">• fetchFollowStatus() cho từng user</text>
+
+    <line x1="430" y1="660" x2="430" y2="715" class="arrow"/>
+    <rect x="105" y="715" width="650" height="250" rx="12" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
+    <text x="430" y="752" text-anchor="middle" class="label" fill="#9a3412">Fallback khi data.length === 0 hoặc lỗi</text>
+    <text x="430" y="786" text-anchor="middle" class="mono">normalizeRecommendedUsers(filteredWorks)</text>
+    <text x="145" y="826" class="small">• Map&lt;userId, user + artworkCount&gt;</text>
+    <text x="145" y="860" class="small">• Loại trừ user hiện tại</text>
+    <text x="145" y="894" class="small">• Sort by artworkCount descending</text>
+    <text x="145" y="928" class="small">• Slice top 9</text>
+
+    <line x1="430" y1="965" x2="430" y2="1015" class="arrow"/>
+    <rect x="105" y="1015" width="650" height="82" rx="12" fill="#fdf2f8" stroke="#db2777" stroke-width="2"/>
+    <text x="430" y="1050" text-anchor="middle" class="label" fill="#9d174d">Hiển thị Recommended users</text>
+    <text x="430" y="1078" text-anchor="middle" class="small">Avatar, displayName, @username, work count, Follow/Following</text>
+
+    <rect x="890" y="125" width="760" height="1000" rx="16" fill="#f8fbff" stroke="#2563eb" stroke-width="2.5" filter="url(#shadow)"/>
+    <text x="1270" y="170" text-anchor="middle" class="section" fill="#1d4ed8">Backend (Express 5)</text>
+
+    <rect x="950" y="210" width="640" height="92" rx="12" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="1270" y="246" text-anchor="middle" class="label" fill="#1e40af">GET /api/users/recommended</text>
+    <text x="1270" y="276" text-anchor="middle" class="small">JWT required</text>
+
+    <line x1="1270" y1="302" x2="1270" y2="352" class="arrow"/>
+    <rect x="950" y="352" width="640" height="86" rx="12" fill="#ffffff" stroke="#60a5fa" stroke-width="2"/>
+    <text x="1270" y="388" text-anchor="middle" class="label">user.controller.getRecommendedUsers()</text>
+    <text x="1270" y="416" text-anchor="middle" class="mono">userId = req.user._id</text>
+
+    <line x1="1270" y1="438" x2="1270" y2="488" class="arrow"/>
+    <rect x="950" y="488" width="640" height="116" rx="12" fill="#ffffff" stroke="#60a5fa" stroke-width="2"/>
+    <text x="1270" y="524" text-anchor="middle" class="label">Lấy danh sách đang follow</text>
+    <text x="1270" y="554" text-anchor="middle" class="mono">Follow.find({ follower: userId })</text>
+    <text x="1270" y="582" text-anchor="middle" class="mono">followingIds = myFollows.map(f =&gt; f.following)</text>
+
+    <line x1="1270" y1="604" x2="1270" y2="654" class="arrow"/>
+    <rect x="950" y="654" width="640" height="82" rx="12" fill="#fff7ed" stroke="#f59e0b" stroke-width="2"/>
+    <text x="1270" y="688" text-anchor="middle" class="label" fill="#92400e">Nếu followingIds.length === 0</text>
+    <text x="1270" y="716" text-anchor="middle" class="small">Return [] để frontend dùng fallback</text>
+
+    <line x1="1270" y1="736" x2="1270" y2="790" class="arrow"/>
+    <rect x="950" y="790" width="640" height="255" rx="12" fill="#faf5ff" stroke="#9333ea" stroke-width="2"/>
+    <text x="1270" y="827" text-anchor="middle" class="label" fill="#6b21a8">MongoDB Aggregate Pipeline</text>
+    <text x="990" y="866" class="mono">$match: { follower: { $in: followingIds } }</text>
+    <text x="990" y="898" class="mono">$match: { following: { $nin: [...followingIds, userId] } }</text>
+    <text x="990" y="930" class="mono">$group: { _id: '$following', mutualCount: { $sum: 1 } }</text>
+    <text x="990" y="962" class="mono">$sort: { mutualCount: -1 }  |  $limit: 9</text>
+    <text x="990" y="994" class="mono">$lookup: users → username, displayName, avatar</text>
+    <text x="990" y="1026" class="mono">$project: _id, username, displayName, avatar, mutualCount</text>
+
+    <line x1="1270" y1="1045" x2="1270" y2="1095" class="arrow"/>
+    <rect x="950" y="1095" width="640" height="82" rx="12" fill="#ecfdf5" stroke="#16a34a" stroke-width="2"/>
+    <text x="1270" y="1130" text-anchor="middle" class="label" fill="#166534">Return recommendations</text>
+    <text x="1270" y="1158" text-anchor="middle" class="mono">[{ _id, username, displayName, avatar, mutualCount }]</text>
+
+    <path d="M755 401 C815 401, 875 256, 950 256" class="arrowBlue"/>
+    <path d="M950 1136 C820 1136, 835 582, 755 582" class="dash"/>
+  </g>
+
+  <g class="font">
+    <rect x="180" y="1165" width="1340" height="140" rx="16" fill="#ffffff" stroke="#0f766e" stroke-width="2.5" filter="url(#shadow)"/>
+    <text x="850" y="1205" text-anchor="middle" class="section" fill="#0f766e">UI: Recommended users</text>
+    <text x="850" y="1238" text-anchor="middle" class="small">Artists you may want to follow</text>
+
+    <g transform="translate(250 1258)">
+      <circle cx="32" cy="32" r="24" fill="#bfdbfe" stroke="#2563eb" stroke-width="2"/>
+      <text x="80" y="20" class="small">Display name</text>
+      <text x="80" y="48" class="tiny">@username · 12 works</text>
+      <rect x="270" y="12" width="92" height="38" rx="19" fill="#2563eb"/>
+      <text x="316" y="37" text-anchor="middle" class="tiny" fill="#ffffff">Follow</text>
+    </g>
+
+    <g transform="translate(665 1258)">
+      <circle cx="32" cy="32" r="24" fill="#bbf7d0" stroke="#16a34a" stroke-width="2"/>
+      <text x="80" y="20" class="small">Display name</text>
+      <text x="80" y="48" class="tiny">@username · 8 works</text>
+      <rect x="270" y="12" width="112" height="38" rx="19" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+      <text x="326" y="37" text-anchor="middle" class="tiny" fill="#166534">Following</text>
+    </g>
+
+    <g transform="translate(1095 1258)">
+      <circle cx="32" cy="32" r="24" fill="#fed7aa" stroke="#f97316" stroke-width="2"/>
+      <text x="80" y="20" class="small">Display name</text>
+      <text x="80" y="48" class="tiny">@username · 5 works</text>
+      <rect x="270" y="12" width="92" height="38" rx="19" fill="#2563eb"/>
+      <text x="316" y="37" text-anchor="middle" class="tiny" fill="#ffffff">Follow</text>
+    </g>
+  </g>
+</svg>
