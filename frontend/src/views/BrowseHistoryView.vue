@@ -131,8 +131,8 @@ function getImage(item) {
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <div class="browse-history-page">
       <div class="page-header">
-        <div class="page-header-top">
-          <h1><i class="fa-regular fa-clock me-2"></i>Browsing History</h1>
+        <div class="section-head">
+          <h3><i class="fa-regular fa-clock me-2"></i>Browsing History</h3>
           <div class="header-actions">
             <button
               type="button"
@@ -350,20 +350,6 @@ function getImage(item) {
 
 .page-header {
   margin-bottom: 1.5rem;
-}
-
-.page-header-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.page-header h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--brand);
 }
 
 .page-subtitle {
@@ -847,10 +833,6 @@ function getImage(item) {
   .card-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 0.85rem;
-  }
-
-  .page-header h1 {
-    font-size: 1.25rem;
   }
 }
 </style>
