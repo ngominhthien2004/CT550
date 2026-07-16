@@ -28,8 +28,6 @@
 | `role` | string |  |  |  | Vai trò: user | admin |
 | `password` | string |  |  |  | Mật khẩu (đã mã hoá) |
 | `googleId` | string |  |  |  | ID tài khoản Google (dùng cho đăng nhập OAuth) |
-| `facebookId` | string |  |  |  | ID tài khoản Facebook (dùng cho đăng nhập OAuth) |
-| `twitterId` | string |  |  |  | ID tài khoản Twitter (dùng cho đăng nhập OAuth) |
 | `createdAt` | date |  |  |  | Thời điểm tạo tài khoản |
 | `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |
 

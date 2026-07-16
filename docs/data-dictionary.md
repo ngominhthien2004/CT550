@@ -69,7 +69,6 @@ Thực thể **USER** là thực thể trung tâm của toàn bộ nền tảng,
 | `role`        | string   | —         | Vai trò: user | admin                                                            |
 | `password`    | string   | —         | Mật khẩu (đã mã hoá)                                                             |
 | `googleId`    | string   | —         | ID tài khoản Google (dùng cho đăng nhập OAuth)                                   |
-| `facebookId`  | string   | —         | ID tài khoản Facebook (dùng cho đăng nhập OAuth)                                 |
 | `createdAt`   | datetime | —         | Thời điểm tạo tài khoản                                                          |
 | `updatedAt`   | datetime | —         | Thời điểm cập nhật gần nhất                                                      |
 

@@ -21,7 +21,6 @@ const userSchema = mongoose.Schema({
     },
     googleId: { type: String },
     facebookId: { type: String },
-    twitterId: { type: String },
 
     username: {
         type: String,

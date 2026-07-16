@@ -26,8 +26,6 @@ erDiagram
     string role "user | admin"
     string password "hashed"
     string googleId
-    string facebookId
-    string twitterId
     boolean isSuspended
     datetime createdAt
     datetime updatedAt
@@ -544,7 +542,7 @@ erDiagram
 
 | # | Entity | Fields | Key Relationships | Group |
 |--:|--------|--------|-------------------|-------|
-| 1 | **USER** | 22 | 24 relationships | Core User System |
+| 1 | **USER** | 20 | 24 relationships | Core User System |
 | 2 | **FOLLOW** | 5 | 2 relationships | Core User System |
 | 3 | **USER_BLOCK** | 5 | 2 relationships | Core User System |
 | 4 | **SETTING** | 5 | 0 relationships | System Config |
