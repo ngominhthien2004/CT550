@@ -241,12 +241,26 @@ function getImage(item) {
 
       <!-- Empty -->
       <div v-else-if="historyEntries.length === 0" class="empty-state">
-        <i class="fa-regular fa-clock"></i>
-        <h3>No browsing history yet</h3>
-        <p>Artworks you view will appear here</p>
-        <router-link to="/discovery" class="btn-explore">
-          <i class="fa-regular fa-compass"></i> Explore artworks
-        </router-link>
+        <div class="card-grid">
+          <div v-for="i in 6" :key="'empty-' + i" class="history-card empty-card">
+            <div class="card-cover-wrapper">
+              <div class="card-placeholder empty-placeholder">
+                <i class="fa-regular fa-clock"></i>
+              </div>
+            </div>
+            <div class="card-meta">
+              <span class="empty-label">No history yet</span>
+            </div>
+          </div>
+        </div>
+        <div class="empty-overlay">
+          <i class="fa-regular fa-clock"></i>
+          <h3>No browsing history yet</h3>
+          <p>Artworks you view will appear here</p>
+          <router-link to="/discovery" class="btn-explore">
+            <i class="fa-regular fa-compass"></i> Explore artworks
+          </router-link>
+        </div>
       </div>
 
       <!-- Grid -->
@@ -700,30 +714,72 @@ function getImage(item) {
 .skeleton-pulse { animation: pulse 1.5s ease-in-out infinite; }
 
 /* Empty / Error */
-.empty-state,
-.error-state {
-  text-align: center;
-  padding: 4rem 1rem;
+.empty-state {
+  position: relative;
+}
+
+.empty-card {
+  pointer-events: none;
+}
+
+.empty-placeholder {
+  display: grid;
+  place-items: center;
+  background: var(--surface-alt);
   color: var(--muted);
+  font-size: 2rem;
+  opacity: 0.4;
 }
 
-.empty-state i,
-.error-state i {
+.empty-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+.empty-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--bg-rgb, 15, 23, 42), 0.85);
+  backdrop-filter: blur(4px);
+  border-radius: 12px;
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty-overlay i {
   font-size: 2.5rem;
-  margin-bottom: 1rem;
-  display: block;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
 }
 
-.empty-state h3 {
+.empty-overlay h3 {
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text);
   margin: 0 0 0.3rem;
 }
 
-.empty-state p {
+.empty-overlay p {
   font-size: 0.85rem;
+  color: var(--muted);
   margin: 0 0 1.25rem;
+}
+
+.error-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--muted);
+}
+
+.error-state i {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  display: block;
 }
 
 .btn-explore {
