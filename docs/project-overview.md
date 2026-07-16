@@ -149,7 +149,7 @@ Những chức năng dưới đây đã được code nhưng chưa có trong tà
 | **ArtworkReport** | artwork, reportedBy, reason, description, status, resolvedBy, resolvedAt, resolutionNote |
 | **UserReport** | reportedUser, reportedBy, reason, description, status, resolvedBy, resolvedAt, resolutionNote |
 | **CommentReport** | comment, reportedBy, reason, description, status, resolvedBy, resolvedAt, resolutionNote |
-| **RequestTerm** | creator, title, tier, targetPrice, currency, acceptedWorkTypes[], estimatedDays, maxOpenRequests, acceptedAgeRatings[], rules, forbiddenTopics[], preferredStyles[], strengths, commercialUse, isOpen |
+| **RequestTerm** | creator, title, tier, targetPrice, currency, acceptedWorkTypes[], estimatedDays, maxOpenRequests, acceptedAgeRatings[], rules, forbiddenTopics[], preferredStyles[], strengths, isOpen |
 | **Request** | term, creator, requester, title, description, workType, tags[], specifics, proposedAmount, currency, visibility, isAnonymous, ageRating, status, referenceImages[], draftFiles[], finalFiles[], giftFiles[], revisionCount, autoCompleteAt, dueAt, extensionRequestedAt, extensionDays, chatClosedAt, licenseTier |
 | **RequestChatMessage** | request, sender, content, attachments[], isSystem |
 | **RequestEvent** | request, actor, type, fromStatus, toStatus, metadata |

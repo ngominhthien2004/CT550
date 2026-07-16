@@ -1,12 +1,6 @@
 const mongoose = require('mongoose');
 const { AGE_RATINGS, WORK_TYPES } = require('../utils/requestValidation');
 
-const commercialUseSchema = mongoose.Schema({
-    allowed: { type: Boolean, default: false },
-    feeMultiplier: { type: Number, min: 1, default: 1 },
-    notes: { type: String, trim: true, maxlength: 1000, default: '' },
-}, { _id: false });
-
 const requestTermSchema = mongoose.Schema({
     creator: {
         type: mongoose.Schema.Types.ObjectId,
@@ -81,10 +75,6 @@ const requestTermSchema = mongoose.Schema({
         required: true,
         trim: true,
         maxlength: 3000,
-    },
-    commercialUse: {
-        type: commercialUseSchema,
-        default: () => ({}),
     },
     isOpen: {
         type: Boolean,

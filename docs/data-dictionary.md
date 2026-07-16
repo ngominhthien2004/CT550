@@ -443,7 +443,6 @@ Thực thể **REQUEST_TERM** lưu trữ các điều khoản ủy thác do ngư
 | `forbiddenTopics`    | array    | —         | Danh sách chủ đề không nhận                                                                  |
 | `preferredStyles`    | array    | —         | Phong cách ưa thích                                                                          |
 | `strengths`          | string   | —         | Thế mạnh của người sáng tạo                                                                  |
-| `commercialUse`      | json     | —         | Cấu hình sử dụng thương mại {allowed, feeMultiplier, notes} — object nhúng trong RequestTerm |
 | `isOpen`             | boolean  | —         | Đang mở nhận ủy thác hay không                                                               |
 | `createdAt`          | datetime | —         | Thời điểm tạo                                                                                |
 | `updatedAt`          | datetime | —         | Thời điểm cập nhật gần nhất                                                                  |

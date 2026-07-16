@@ -71,7 +71,6 @@ Partial refund chỉ dùng khi admin dispute quyết định có thỏa thuận 
 
 ### Commercial License
 
-- RequestTerm có `commercialUse.allowed`, `feeMultiplier`, `notes`.
 - Checkout commercial tier tính giá cao hơn, ghi `Request.licenseTier = commercial`.
 - Payment success phát hành license record/invoice line để requester tải giấy phép.
 

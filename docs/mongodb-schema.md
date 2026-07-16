@@ -319,7 +319,6 @@
 | `forbiddenTopics` | array |  |  |  | Danh sách chủ đề không nhận |
 | `preferredStyles` | array |  |  |  | Phong cách ưa thích |
 | `strengths` | string |  |  |  | Thế mạnh của người sáng tạo |
-| `commercialUse` | object |  |  |  | Cấu hình sử dụng thương mại {allowed, feeMultiplier, notes} — object nhúng trong RequestTerm |
 | `isOpen` | boolean |  |  |  | Đang mở nhận ủy thác hay không |
 | `createdAt` | date |  |  |  | Thời điểm tạo |
 | `updatedAt` | date |  |  |  | Thời điểm cập nhật gần nhất |

@@ -77,7 +77,6 @@ flowchart TD
 - `maxOpenRequests`: capacity cap.
 - `acceptedAgeRatings`: `all | r-18 | r-18g`.
 - `rules`, `forbiddenTopics`, `preferredStyles`, `strengths`.
-- `commercialUse`: `{ allowed, feeMultiplier, notes }`.
 - `isOpen`, timestamps.
 
 ### Request

@@ -277,7 +277,6 @@ erDiagram
     array forbiddenTopics
     array preferredStyles
     string strengths
-    json commercialUse "embedded {allowed,feeMultiplier,notes}"
     boolean isOpen
     datetime createdAt
     datetime updatedAt
