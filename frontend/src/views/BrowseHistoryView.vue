@@ -10,6 +10,11 @@ import { formatShortDate } from '../utils/date.js'
 const browseHistoryStore = useBrowseHistoryStore()
 const authStore = useAuthStore()
 
+const isNavCollapsed = ref(true)
+function toggleLeftNav() {
+  isNavCollapsed.value = !isNavCollapsed.value
+}
+
 const historyEntries = computed(() => browseHistoryStore.entries)
 const loading = computed(() => browseHistoryStore.loading)
 const error = computed(() => browseHistoryStore.error)
@@ -97,7 +102,7 @@ function getImage(item) {
 </script>
 
 <template>
-  <MainLayoutTemplate>
+  <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <div class="browse-history-page">
       <div class="page-header">
         <div class="page-header-top">
