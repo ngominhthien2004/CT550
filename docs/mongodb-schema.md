@@ -187,8 +187,7 @@
 | `description` | string |  |  |  | Mô tả series |
 | `type` | string |  |  |  | Loại series: manga | novel | illust |
 | `coverImage` | string |  |  |  | Ảnh bìa series |
-| `novelArtwork` | objectId |  | X |  | Tác phẩm chứa chương cho series tiểu thuyết (tuỳ chọn) |
-| `artworks` | array |  | X |  | Danh sách tác phẩm trong series (manga/illust), theo thứ tự |
+| `artworks` | array |  | X |  | Danh sách tác phẩm trong series, theo thứ tự |
 | `artworkCount` | number |  |  |  | Số lượng tác phẩm trong series |
 | `totalViews` | number |  |  |  | Tổng lượt xem của series |
 | `totalLikes` | number |  |  |  | Tổng lượt thích của series |

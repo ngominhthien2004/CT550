@@ -29,13 +29,7 @@ const seriesSchema = mongoose.Schema(
       type: String,
       default: '',
     },
-    // For novel series: links to the Artwork that holds chapters
-    novelArtwork: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Artwork',
-      default: null,
-    },
-    // Ordered list of artworks in this series (for manga and illust types)
+    // Ordered list of artworks in this series (for manga, illust, and novel types)
     artworks: [
       {
         type: mongoose.Schema.Types.ObjectId,

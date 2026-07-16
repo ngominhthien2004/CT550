@@ -542,18 +542,12 @@ const getUserSeries = async (req, res, next) => {
             .populate('user', 'username avatar')
             .populate('tags', 'name')
             .populate('artworks', 'title images type viewCount likeCount commentCount')
-            .populate('novelArtwork', 'title type chapterCount wordCount viewCount likeCount commentCount')
             .sort({ createdAt: -1 });
 
-        // Compute aggregated stats
+        // Compute aggregated stats from artworks for all types
         const enriched = series.map((s) => {
             const doc = s.toObject();
-            if (doc.type === 'novel' && doc.novelArtwork) {
-                doc.totalViews = doc.novelArtwork.viewCount || 0;
-                doc.totalLikes = doc.novelArtwork.likeCount || 0;
-                doc.totalComments = doc.novelArtwork.commentCount || 0;
-                doc.episodeCount = doc.novelArtwork.chapterCount || 0;
-            } else if ((doc.type === 'manga' || doc.type === 'illust') && doc.artworks?.length > 0) {
+            if (doc.artworks?.length > 0) {
                 doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0);
                 doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);
                 doc.totalComments = doc.artworks.reduce((sum, a) => sum + (a.commentCount || 0), 0);

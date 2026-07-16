@@ -130,7 +130,7 @@ Những chức năng dưới đây đã được code nhưng chưa có trong tà
 | Model | Mô tả |
 |-------|-------|
 | **User** | email, password_hash, googleId, facebookId, twitterId, username, displayName, avatar, coverImage, bio, socialLinks, role |
-| **Artwork** | user, title, description, type (illust/manga/gif/novel), images[], tags[], ageRating, viewCount, likeCount, bookmarkCount, commentCount, reportCount, novelContent, chapterCount, wordCount, series (ref Series), commentsEnabled, isHidden, hiddenBy, hiddenAt, hiddenReason |
+| **Artwork** | user, title, description, type (illust/manga/gif/novel), images[], tags[], ageRating, viewCount, likeCount, bookmarkCount, commentCount, reportCount, novelContent, wordCount, series (ref Series), commentsEnabled, isHidden, hiddenBy, hiddenAt, hiddenReason |
 | **Tag** | name (unique), translations (en/vi/ja), usageCount, isLocked |
 | **Comment** | artwork, user, content, parentComment, emoji |
 | **Like** | user, artwork (unique compound) |
@@ -141,7 +141,7 @@ Những chức năng dưới đây đã được code nhưng chưa có trong tà
 | **UserBlock** | blocker, blocked (unique compound) |
 | **Chapter** | artwork, title, content, chapterNumber, wordCount |
 | **ReadingProgress** | user, artwork, chapter, progressPercent, scrollPosition, lastReadAt |
-| **Series** | user, title, description, type (manga/novel/illust), coverImage, novelArtwork (ref Artwork), artworks[] (ref Artwork), artworkCount, totalViews, totalLikes, isCompleted, tags[] |
+| **Series** | user, title, description, type (manga/novel/illust), coverImage, artworks[] (ref Artwork), artworkCount, totalViews, totalLikes, isCompleted, tags[] |
 | **BrowseHistory** | user, artwork (unique compound) |
 | **Banner** | image, link, title, type, isActive, sortOrder |
 | **ChatSession** | user, title |

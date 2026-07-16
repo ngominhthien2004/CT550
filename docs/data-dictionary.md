@@ -275,8 +275,7 @@ Thực thể **SERIES** quản lý các nhóm tác phẩm liên kết (series), 
 | `description`  | string   | —         | Mô tả series                                                       |
 | `type`         | string   | —         | Loại series: manga | novel | illust                                |
 | `coverImage`   | string   | —         | Ảnh bìa series                                                     |
-| `novelArtwork` | ObjectId | FK        | Tác phẩm chứa chương cho series tiểu thuyết (tuỳ chọn)              |
-| `artworks`     | array    | FK        | Danh sách tác phẩm trong series (manga/illust), theo thứ tự        |
+| `artworks`     | array    | FK        | Danh sách tác phẩm trong series, theo thứ tự                        |
 | `artworkCount` | number   | —         | Số lượng tác phẩm trong series                                      |
 | `totalViews`   | number   | —         | Tổng lượt xem của series                                           |
 | `totalLikes`   | number   | —         | Tổng lượt thích của series                                         |
@@ -574,7 +573,7 @@ Mô hình dữ liệu mức quan niệm gồm có 27 thực thể. Trong đó, t
 - **ARTWORK — SERIES**: Thực thể ARTWORK liên kết với thực thể SERIES (Series tác phẩm) qua quan hệ nhiều-một (N-1) để cho biết tác phẩm thuộc về một series. Artwork có trường `series` (ObjectId, single ref) trỏ đến Series.
 - **ARTWORK — VIEW_EVENT**: Thực thể ARTWORK liên kết với thực thể VIEW_EVENT (Sự kiện xem) để cho biết tác phẩm có những sự kiện xem nào. Mỗi lần người dùng xem tác phẩm sẽ tạo một bản ghi VIEW_EVENT mới.
 - **SERIES — TAG**: Thực thể SERIES (Series) liên kết với thực thể TAG (Thẻ) qua quan hệ nhiều-nhiều tagged with để cho biết series được gắn những thẻ nào.
-- **SERIES — ARTWORK**: Thực thể SERIES (Series) liên kết với thực thể ARTWORK (Tác phẩm) để quản lý danh sách tác phẩm trong series. Với novel series, `novelArtwork` trỏ đến tác phẩm chứa chương.
+- **SERIES — ARTWORK**: Thực thể SERIES (Series) liên kết với thực thể ARTWORK (Tác phẩm) để quản lý danh sách tác phẩm trong series. Tất cả các loại series (manga, illust, novel) đều dùng chung mảng `artworks`.
 - **COMMENT — COMMENT_REPORT**: Thực thể COMMENT liên kết với thực thể COMMENT_REPORT (Báo cáo bình luận) để cho biết bình luận bị báo cáo vì những lý do gì.
 - **BROWSE_HISTORY — ARTWORK**: Thực thể BROWSE_HISTORY liên kết với thực thể ARTWORK để ghi lại tác phẩm nào đã được xem.
 - **CHAT_SESSION — CHAT_MESSAGE**: Thực thể CHAT_SESSION (Phiên AI Chat) liên kết với thực thể CHAT_MESSAGE (Tin nhắn AI Chat) để quản lý các tin nhắn trong phiên.

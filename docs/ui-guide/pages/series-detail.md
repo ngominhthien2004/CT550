@@ -36,7 +36,6 @@ Hình 1: Giao diện trang Chi tiết Series với hero và lưới tác phẩm.
 - Hiển thị khi `series.type === 'novel'`.
 - Component `SeriesChaptersList` hiển thị danh sách chapter của novel series.
 - Mỗi chapter hiển thị: tiêu đề, ngày tạo (`MM/DD/YYYY`), số từ (formatted với `toLocaleString()`).
-- Chỉ hiển thị khi series có `novelArtwork._id`.
 - Owner có thể quản lý chapters (thêm/sửa/xoá).
 
 ### 5. Owner actions
@@ -49,7 +48,7 @@ Hình 1: Giao diện trang Chi tiết Series với hero và lưới tác phẩm.
 | API endpoint | Dữ liệu |
 |--------------|---------|
 | `seriesStore.fetchSeriesById(id)` | Thông tin series + artworks list |
-| `getChapters(novelArtwork._id)` | Danh sách chương (chỉ cho novel) |
+| `getChapters(artworkId)` | Danh sách chương (chỉ cho novel) |
 
 ## Trạng thái
 

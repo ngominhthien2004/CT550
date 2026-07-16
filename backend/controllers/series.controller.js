@@ -162,13 +162,6 @@ const updateSeries = async (req, res, next) => {
 
     const updated = await series.save();
 
-    // If the series title changed and it has a linked novel artwork, sync the artwork title
-    if (title !== undefined && series.type === 'novel' && series.novelArtwork) {
-      await Artwork.findByIdAndUpdate(series.novelArtwork, {
-        title,
-      });
-    }
-
     const populated = await Series.findById(updated._id)
       .populate('user', 'username avatar')
       .populate('tags', 'name');
@@ -231,9 +224,9 @@ const addArtworkToSeries = async (req, res, next) => {
       return next(new Error('Not authorized to modify this series'));
     }
 
-    if (series.type !== 'manga' && series.type !== 'illust') {
+    if (series.type !== 'manga' && series.type !== 'illust' && series.type !== 'novel') {
       res.status(400);
-      return next(new Error('Artworks can only be added to manga or illust series'));
+      return next(new Error('Artworks can only be added to manga, illust, or novel series'));
     }
 
     const { artworkId } = req.body;
@@ -308,9 +301,9 @@ const removeArtworkFromSeries = async (req, res, next) => {
       return next(new Error('Not authorized to modify this series'));
     }
 
-    if (series.type !== 'manga' && series.type !== 'illust') {
+    if (series.type !== 'manga' && series.type !== 'illust' && series.type !== 'novel') {
       res.status(400);
-      return next(new Error('Artworks can only be removed from manga or illust series'));
+      return next(new Error('Artworks can only be removed from manga, illust, or novel series'));
     }
 
     const { artworkId } = req.params;
@@ -361,9 +354,9 @@ const reorderSeriesArtworks = async (req, res, next) => {
       return next(new Error('Not authorized to modify this series'));
     }
 
-    if (series.type !== 'manga' && series.type !== 'illust') {
+    if (series.type !== 'manga' && series.type !== 'illust' && series.type !== 'novel') {
       res.status(400);
-      return next(new Error('Only manga or illust series support artwork reordering'));
+      return next(new Error('Only manga, illust, or novel series support artwork reordering'));
     }
 
     const { artworkIds } = req.body;

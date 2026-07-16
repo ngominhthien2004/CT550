@@ -163,7 +163,6 @@ erDiagram
     string description
     string type "manga|novel|illust"
     string coverImage
-    ObjectId novelArtwork FK "ref Artwork — for novel series"
     array artworks "ref Artwork[] — ordered list"
     number artworkCount
     number totalViews
