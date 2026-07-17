@@ -7,7 +7,6 @@ import { useArtworkStore } from '@/stores/artwork.store'
 import { useSeriesStore } from '@/stores/series.store'
 import { getArtworks } from '@/services/api'
 import DashboardSeriesPanel from './DashboardSeriesPanel.vue'
-import EditArtworkModal from './EditArtworkModal.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -22,10 +21,6 @@ const loadingArtworks = ref(false)
 
 // Menu state
 const openMenuId = ref(null)
-
-// Edit modal state
-const showEditModal = ref(false)
-const editingArtwork = ref(null)
 
 // Delete confirmation state
 const showDeleteConfirm = ref(false)
@@ -64,9 +59,10 @@ function goToArtworkDetail(artworkId) {
   router.push(`/artworks/${artworkId}/edit`)
 }
 
-function openEditModal(artwork) {
-  editingArtwork.value = artwork
-  showEditModal.value = true
+function goToArtworkEdit(artwork) {
+  if (artwork?._id) {
+    router.push(`/artworks/${artwork._id}/edit`)
+  }
   openMenuId.value = null
 }
 
@@ -92,8 +88,6 @@ async function confirmDelete() {
 }
 
 function handleArtworkUpdated() {
-  showEditModal.value = false
-  editingArtwork.value = null
   loadArtworks()
 }
 </script>
@@ -138,7 +132,7 @@ function handleArtworkUpdated() {
               <i class="fa-solid fa-ellipsis-vertical"></i>
             </button>
             <div v-if="openMenuId === artwork._id" class="card-menu-dropdown">
-              <button type="button" class="menu-dropdown-item" @click.stop="openEditModal(artwork)">
+              <button type="button" class="menu-dropdown-item" @click.stop="goToArtworkEdit(artwork)">
                 <i class="fa-solid fa-pen"></i> {{ $t('common.edit') }}
               </button>
               <button type="button" class="menu-dropdown-item menu-dropdown-item--danger" @click.stop="openDeleteConfirm(artwork)">
@@ -169,13 +163,6 @@ function handleArtworkUpdated() {
     <!-- Series content -->
     <DashboardSeriesPanel v-if="activeSubTab === 'series'" />
 
-    <!-- Edit modal -->
-    <EditArtworkModal
-      v-if="showEditModal"
-      :artwork="editingArtwork"
-      @close="showEditModal = false"
-      @updated="handleArtworkUpdated"
-    />
 
     <!-- Delete confirmation -->
     <div v-if="showDeleteConfirm" class="del-backdrop" @click.self="showDeleteConfirm = false">
