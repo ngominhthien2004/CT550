@@ -276,17 +276,7 @@ function toggleLeftNav() {
                 </div>
               </div>
 
-              <div class="section-divider"></div>
 
-              <!-- Blocklist -->
-              <div class="setting-row">
-                <div class="setting-label-col">
-                  <span class="setting-label">Blocklist</span>
-                </div>
-                <div class="setting-control-col">
-                  <button type="button" class="btn-configure" @click="activeTab = 'privacy'">Configure</button>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -309,7 +299,7 @@ function toggleLeftNav() {
 
               <!-- Blocked users list -->
               <div class="blocked-users-section">
-                <h3 class="blocked-subtitle">Setting in effect</h3>
+                <h3 class="blocked-subtitle">Block list</h3>
 
                 <p v-if="blockedLoading" class="state-text">Loading...</p>
                 <p v-else-if="blockedError" class="state-text error">{{ blockedError }}</p>
