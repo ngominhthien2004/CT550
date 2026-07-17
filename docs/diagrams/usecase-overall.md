@@ -88,14 +88,12 @@ rectangle "Quản lý Tác phẩm (Artwork Management)" {
   usecase "UC18" as UC_UPLOAD_ART
   usecase "UC19" as UC_EDIT_ART
   usecase "UC20" as UC_DELETE_ART
-  usecase "UC21" as UC_MANAGE_CHAPTERS
   usecase "UC22" as UC_DASHBOARD
 }
 
 Member --> UC_UPLOAD_ART
 Member --> UC_EDIT_ART
 Member --> UC_DELETE_ART
-Member --> UC_MANAGE_CHAPTERS
 Member --> UC_DASHBOARD
 
 %% === PACKAGE: Social Interaction ===
@@ -126,11 +124,10 @@ Member --> UC_NOTIFICATIONS
 Member --> UC_REPORT_ARTWORK
 
 %% === PACKAGE: Commission & Payment ===
-rectangle "Ủy thác & Thanh toán (Commission & Payment)" {
+rectangle "Ủy thác (Commission)" {
   usecase "UC33" as UC_CREATE_TERM
   usecase "UC34" as UC_ORDER_REQUEST
   usecase "UC35" as UC_MANAGE_REQUEST
-  usecase "UC36" as UC_PAYMENT
   usecase "UC37" as UC_FAN_LETTER
   usecase "UC38" as UC_REQUEST_CHAT
 }
@@ -138,7 +135,6 @@ rectangle "Ủy thác & Thanh toán (Commission & Payment)" {
 Member --> UC_CREATE_TERM
 Member --> UC_ORDER_REQUEST
 Member --> UC_MANAGE_REQUEST
-Member --> UC_PAYMENT
 Member --> UC_FAN_LETTER
 Member --> UC_REQUEST_CHAT
 
@@ -223,7 +219,6 @@ Admin --> UC_UNHIDE_ARTWORK
 | UC18 | Đăng tải tác phẩm | Đăng tải illust/manga/gif/novel lên hệ thống | Member |
 | UC19 | Chỉnh sửa tác phẩm | Sửa thông tin, nội dung của tác phẩm đã đăng | Member |
 | UC20 | Xóa tác phẩm | Xóa tác phẩm của mình khỏi hệ thống | Member |
-| UC21 | Quản lý chương (novel) | Thêm/sửa/xóa chương cho tác phẩm novel | Member |
 | UC22 | Xem Dashboard sáng tác | Thống kê lượt xem, thích, bookmark của tác phẩm | Member |
 | UC23 | Thích/Bỏ thích | Thích hoặc bỏ thích một tác phẩm | Member |
 | UC24 | Bookmark tác phẩm | Lưu tác phẩm vào bộ sưu tập (folder-based) | Member |
@@ -238,7 +233,6 @@ Admin --> UC_UNHIDE_ARTWORK
 | UC33 | Tạo Request Term | Người sáng tác tạo các điều khoản nhận request | Member |
 | UC34 | Đặt hàng Request | Người đặt tạo request commission cho người sáng tác | Member |
 | UC35 | Quản lý Request | Quản lý trạng thái request (chấp nhận/từ chối/hủy) | Member |
-| UC36 | Thanh toán (Escrow/Refund) | Thanh toán qua escrow hoặc yêu cầu hoàn tiền | Member |
 | UC37 | Gửi Fan Letter | Gửi tin nhắn hỗ trợ kèm tip cho người sáng tác | Member |
 | UC38 | Chat trong Request | Trao đổi trực tiếp giữa hai bên trong request | Member |
 | UC39 | Chat với AI Assistant | Trò chuyện với trợ lý AI để được hỗ trợ | Member |

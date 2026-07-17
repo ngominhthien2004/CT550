@@ -97,7 +97,6 @@ Member có tất cả quyền của Guest.
 | UC18 | Đăng tải tác phẩm | — | ✅ | ✅ |
 | UC19 | Chỉnh sửa tác phẩm | — | ✅ | ✅ |
 | UC20 | Xóa tác phẩm | — | ✅ | ✅ |
-| UC21 | Quản lý chương (novel) | — | ✅ | ✅ |
 | UC22 | Xem Dashboard sáng tác | — | ✅ | ✅ |
 | UC23 | Thích/Bỏ thích | — | ✅ | ✅ |
 | UC24 | Bookmark tác phẩm | — | ✅ | ✅ |
@@ -112,7 +111,6 @@ Member có tất cả quyền của Guest.
 | UC33 | Tạo Request Term | — | ✅ | ✅ |
 | UC34 | Đặt hàng Request | — | ✅ | ✅ |
 | UC35 | Quản lý Request | — | ✅ | ✅ |
-| UC36 | Thanh toán (Escrow/Refund) | — | ✅ | ✅ |
 | UC37 | Gửi Fan Letter | — | ✅ | ✅ |
 | UC38 | Chat trong Request | — | ✅ | ✅ |
 | UC39 | Chat với AI Assistant | — | ✅ | ✅ |
@@ -183,7 +181,6 @@ Member có tất cả quyền của Guest.
 | UC18 | Đăng tải tác phẩm | Upload file (illust/manga/gif) hoặc nhập nội dung (novel), thêm tag, mô tả, cài đặt NSFW. | Member / Admin | — |
 | UC19 | Chỉnh sửa tác phẩm | Sửa thông tin, thay thế file, thêm/xóa tag, cập nhật NSFW setting. | Member / Admin | — |
 | UC20 | Xóa tác phẩm | Xóa vĩnh viễn tác phẩm và tất cả dữ liệu liên quan (comments, likes, bookmarks). | Member / Admin | — |
-| UC21 | Quản lý chương (novel) | Thêm, sửa nội dung, xóa chương cho novel dài tập. | Member / Admin | UC18 |
 | UC22 | Xem Dashboard sáng tác | Biểu đồ thống kê lượt xem, thích, bookmark, theo dõi. Lọc theo thời gian. | Member / Admin | — |
 
 ### 4.6 Nhóm: Tương tác Xã hội (Social Interaction)
@@ -206,9 +203,8 @@ Member có tất cả quyền của Guest.
 | Mã số | Tên | Mô tả | Actor | Phụ thuộc |
 |-------|-----|-------|-------|-----------|
 | UC33 | Tạo Request Term | Creator tạo gói request: mô tả, price, content type, thời gian hoàn thành. | Member / Admin | — |
-| UC34 | Đặt hàng Request | Client chọn term, điền yêu cầu chi tiết, thanh toán escrow. | Member / Admin | UC33 |
+| UC34 | Đặt hàng Request | Client chọn term, điền yêu cầu chi tiết. | Member / Admin | UC33 |
 | UC35 | Quản lý Request | Theo dõi lifecycle: pending → accepted → completed / rejected / cancelled. | Member / Admin | UC34 |
-| UC36 | Thanh toán (Escrow/Refund) | Giữ tiền trong escrow, giải ngân khi hoàn thành, hỗ trợ refund. | Member / Admin | UC35 |
 | UC37 | Gửi Fan Letter | Gửi tin nhắn kèm tip (donation) không qua commission. | Member / Admin | — |
 | UC38 | Chat trong Request | Chat giữa creator và client trong từng request cụ thể. | Member / Admin | UC35 |
 
@@ -275,7 +271,6 @@ Member có tất cả quyền của Guest.
 | Use Case Chính | Bao gồm | Mô tả |
 |----------------|---------|-------|
 | UC33 (Tạo Request Term) | UC34 (Đặt hàng Request) | Term là tiền đề để tạo order |
-| UC34 (Đặt hàng Request) | UC36 (Thanh toán) | Đặt hàng yêu cầu thanh toán escrow |
 | UC35 (Quản lý Request) | UC38 (Chat Request) | Mỗi request có chat đi kèm |
 | UC48 (Quản lý user) | UC53 (Xử lý báo cáo) | Xử lý báo cáo có thể dẫn đến quản lý user |
 | UC49 (Kiểm duyệt art) | UC53 (Xử lý báo cáo) | Kiểm duyệt art thường từ báo cáo |
@@ -293,7 +288,6 @@ UC39 (Chat AI) --extend--> UC41 (AI Summarize)
 UC43 (Draw) --extend--> UC44 (Export)
                            |
 UC33 (Term) --include--> UC34 (Order)
-UC34 (Order) --include--> UC36 (Payment)
 UC35 (Manage) --include--> UC38 (Chat)
                            |
 UC48 (User Mgmt) --include--> UC53 (Report)
@@ -313,20 +307,20 @@ Hệ thống **IlluWrl** được mô hình hóa với:
 | Thành phần | Số lượng |
 |------------|:--------:|
 | Actors | **4** (Guest, Member, Admin, AI System) |
-| Use cases | **55** |
+| Use cases | **53** |
 | Nhóm chức năng | **10** (Authentication, Browse, Search, Profile, Artwork, Social, Commission, AI, Drawing, Admin) |
 
 ### 6.2 Phân bố use case theo mức độ ưu tiên
 
 | Mức độ | Số lượng | Mô tả |
 |--------|:--------:|-------|
-| ✅ **Đã triển khai** | 54 | Hầu hết các use case đã được implement |
-| ⚠️ **Triển khai một phần** | 1 | UC36 (Thanh toán Escrow) — chức năng cốt lõi nhưng chưa đầy đủ |
+| ✅ **Đã triển khai** | 53 | Tất cả các use case đã được implement |
+| ⚠️ **Triển khai một phần** | 0 | — |
 | ❌ **Chưa triển khai** | 0 | — |
 
 ### 6.3 Kết quả đạt được
 
-1. **Bao phủ toàn diện**: 55 use case bao phủ tất cả chức năng từ xác thực, duyệt nội dung,
+1. **Bao phủ toàn diện**: 53 use case bao phủ tất cả chức năng từ xác thực, duyệt nội dung,
    tương tác xã hội, báo cáo & kiểm duyệt, đến quản trị và AI.
 
 2. **Phân quyền rõ ràng**: Quan hệ kế thừa (generalization) 3 tầng Guest → Member → Admin
@@ -338,12 +332,11 @@ Hệ thống **IlluWrl** được mô hình hóa với:
 4. **Quy trình nghiệp vụ**: Commission/Payment được mô hình hóa với chuỗi include/extend
    rõ ràng: Term → Order → Payment → Request → Chat.
 
-5. **Hỗ trợ báo cáo**: 55 use case mỗi use case có mã số duy nhất, mô tả chi tiết,
+5. **Hỗ trợ báo cáo**: 53 use case mỗi use case có mã số duy nhất, mô tả chi tiết,
    trạng thái triển khai và phụ thuộc, thuận tiện cho việc theo dõi tiến độ dự án.
 
 ### 6.4 Hướng phát triển
 
-- **UC36 (Thanh toán Escrow)**: Hoàn thiện quy trình escrow, dispute resolution
 - **Bổ sung**: Có thể mở rộng thêm use case cho mobile app hoặc API third-party
 
 ---
