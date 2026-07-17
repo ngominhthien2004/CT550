@@ -285,18 +285,6 @@ function toggleLeftNav() {
             <div class="section-card">
               <h2 class="section-title">Privacy</h2>
 
-              <!-- Block access -->
-              <div class="setting-row">
-                <div class="setting-label-col">
-                  <span class="setting-label">Block access</span>
-                </div>
-                <div class="setting-control-col">
-                  <p class="setting-desc">This will block specified accounts from accessing your page. You can block accounts directly from their profile page.</p>
-                </div>
-              </div>
-
-              <div class="section-divider"></div>
-
               <!-- Blocked users list -->
               <div class="blocked-users-section">
                 <h3 class="blocked-subtitle">Block list</h3>
@@ -328,20 +316,7 @@ function toggleLeftNav() {
                 </div>
               </div>
 
-              <div class="section-divider"></div>
 
-              <!-- Include works in collections -->
-              <div class="setting-row">
-                <div class="setting-label-col">
-                  <span class="setting-label">Include works in collections</span>
-                </div>
-                <div class="setting-control-col">
-                  <div class="toggle-row">
-                    <span class="toggle-label">Allow</span>
-                  </div>
-                  <span class="info-hint">You can choose whether others can include your works in their collections.</span>
-                </div>
-              </div>
             </div>
           </div>
 
