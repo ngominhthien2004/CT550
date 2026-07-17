@@ -38,6 +38,20 @@ Phần này mô tả chi tiết từng trang trong hệ thống IlluWrl. Mỗi t
 | `/signup` | SignUpView | Standalone | [login-signup.md](login-signup.md) |
 | `/following` | FollowingNewestView | MainLayout | [following.md](following.md) |
 | `/auth/callback` | AuthCallbackView | Standalone | [auth-callback.md](auth-callback.md) |
+| `/settings` | SettingsView | MainLayout | [settings.md](settings.md) |
+| `/artworks/:id/edit` | EditArtworkView | MainLayout | [edit-artwork.md](edit-artwork.md) |
+| `/users/:id/following` | FollowUsersView | MainLayout | [follow-users.md](follow-users.md) |
+| `/users/:id/followers` | FollowUsersView | MainLayout | [follow-users.md](follow-users.md) |
+| `/my-reports` | MyReportsView | MainLayout | [my-reports.md](my-reports.md) |
+| `/bookstore` | BookstoreHomeView | BookstoreLayout | [bookstore-ui-pages](../../book-store/ui-pages.md) |
+| `/bookstore/:id` | BookDetailView | BookstoreLayout | [bookstore-ui-pages](../../book-store/ui-pages.md) |
+| `/bookstore/upload` | BookUploadView | BookstoreLayout | [bookstore-ui-pages](../../book-store/ui-pages.md) |
+| `/bookstore/manage` | BookManageView | BookstoreLayout | [bookstore-ui-pages](../../book-store/ui-pages.md) |
+| `/bookstore/cart` | CartView | BookstoreLayout | [bookstore-ui-pages](../../book-store/ui-pages.md) |
+| `/bookstore/orders` | OrderHistoryView | BookstoreLayout | [bookstore-ui-pages](../../book-store/ui-pages.md) |
+| `/bookstore/seller` | SellerDashboardView | BookstoreLayout | [bookstore-ui-pages](../../book-store/ui-pages.md) |
+| `/bookstore/checkout/success` | CheckoutSuccessView | BookstoreLayout | [bookstore-ui-pages](../../book-store/ui-pages.md) |
+| `/bookstore/checkout/cancel` | CheckoutCancelView | BookstoreLayout | [bookstore-ui-pages](../../book-store/ui-pages.md) |
 
 ## Trang standalone
 
@@ -48,5 +62,9 @@ Các standalone pages không sử dụng `MainLayoutTemplate`:
 - **DrawingView** (`/draw`): Công cụ vẽ với Konva.js, toàn màn hình.
 - **AIView** (`/ai`): Trang test tính năng AI.
 - **AuthCallbackView** (`/auth/callback`): Xử lý callback OAuth (Google, Facebook).
+
+## Bookstore Layout
+
+Tất cả các trang bookstore (`/bookstore*`) đều sử dụng `BookstoreLayout` — layout riêng của microservice bookstore, không dùng `MainLayoutTemplate`. Xem chi tiết tại [docs/book-store/ui-pages.md](../../book-store/ui-pages.md).
 
 Hình 1: Sơ đồ các route chính trong hệ thống IlluWrl.
