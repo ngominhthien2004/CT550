@@ -110,35 +110,31 @@ const formattedUsers = computed(() =>
     </div>
 
     <div v-show="userPanelFiltersOpen" id="admin-user-filters" class="filters" role="region" aria-label="User filters">
-      <div class="filter-row-main">
-        <input
-          :value="userQuery"
-          type="text"
-          class="form-control form-control-sm"
-          placeholder="Search by username/email"
-          aria-label="Search users by username or email"
-          @input="onQueryInput"
-          @keyup.enter="emit('apply-filters')"
-        />
-        <AdminPillSelect
-          :model-value="userRoleFilter"
-          :options="[
-            { value: 'all', label: 'All roles' },
-            { value: 'user', label: 'User' },
-            { value: 'admin', label: 'Admin' },
-          ]"
-          label="Filter users by role"
-          @update:model-value="onRoleFilterChange"
-        />
-        <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingUsers" @click="emit('apply-filters')">Apply</button>
-      </div>
-      <div class="filter-row-dates">
-        <DateRangeFilter
-          :model-value="userDateRange"
-          compact
-          @update:model-value="emit('update:userDateRange', $event)"
-        />
-      </div>
+      <input
+        :value="userQuery"
+        type="text"
+        class="form-control form-control-sm search-input"
+        placeholder="Search by username/email"
+        aria-label="Search users by username or email"
+        @input="onQueryInput"
+        @keyup.enter="emit('apply-filters')"
+      />
+      <AdminPillSelect
+        :model-value="userRoleFilter"
+        :options="[
+          { value: 'all', label: 'All roles' },
+          { value: 'user', label: 'User' },
+          { value: 'admin', label: 'Admin' },
+        ]"
+        label="Filter users by role"
+        @update:model-value="onRoleFilterChange"
+      />
+      <DateRangeFilter
+        :model-value="userDateRange"
+        compact
+        @update:model-value="emit('update:userDateRange', $event)"
+      />
+      <button type="button" class="btn btn-sm btn-primary apply-btn" :disabled="loadingUsers" @click="emit('apply-filters')">Apply</button>
     </div>
 
     <p v-if="loadingUsers" class="state-note">Loading users...</p>
@@ -224,21 +220,19 @@ const formattedUsers = computed(() =>
 <style scoped>
 .filters {
   display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.filter-row-main {
-  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  flex-wrap: wrap;
 }
 
-.filter-row-dates {
-  display: flex;
-  align-items: center;
-  padding-top: 0.4rem;
+.search-input {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.apply-btn {
+  white-space: nowrap;
+  margin-left: auto;
 }
 
 .user-link {
@@ -306,12 +300,10 @@ const formattedUsers = computed(() =>
   border-color: var(--line);
 }
 
-/* Role menu item sizing override */
 .dd-panel .dd-item {
   padding: 0.35rem 0.75rem;
   font-size: 0.78rem;
   font-weight: 600;
   text-align: center;
 }
-
 </style>

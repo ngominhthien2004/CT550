@@ -114,13 +114,13 @@ const formattedTags = computed(() =>
       <input
         :value="tagQuery"
         type="text"
-        class="form-control form-control-sm"
+        class="form-control form-control-sm search-input"
         placeholder="Search tag name..."
         aria-label="Search tags by name"
         @input="onQueryInput"
         @keyup.enter="emit('apply-filters')"
       />
-      <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingTags" @click="emit('apply-filters')">Apply</button>
+      <button type="button" class="btn btn-sm btn-primary apply-btn" :disabled="loadingTags" @click="emit('apply-filters')">Apply</button>
     </div>
 
     <!-- Merge form -->
@@ -214,6 +214,23 @@ const formattedTags = computed(() =>
 </template>
 
 <style scoped>
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-input {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.apply-btn {
+  white-space: nowrap;
+  margin-left: auto;
+}
+
 .tag-edit-form {
   background: var(--surface-alt);
   border: 1px solid var(--line);

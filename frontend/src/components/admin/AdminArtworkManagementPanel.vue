@@ -92,37 +92,33 @@ const formattedArtworks = computed(() =>
     </div>
 
     <div v-show="artworkPanelFiltersOpen" id="admin-artwork-filters" class="filters" role="region" aria-label="Artwork filters">
-      <div class="filter-row-main">
-        <input
-          :value="artworkQuery"
-          type="text"
-          class="form-control form-control-sm"
-          placeholder="Search by title"
-          aria-label="Search artworks by title"
-          @input="onQueryInput"
-          @keyup.enter="emit('apply-filters')"
-        />
-        <AdminPillSelect
-          :model-value="artworkTypeFilter"
-          :options="[
-            { value: 'all', label: 'All types' },
-            { value: 'illust', label: 'Illustration' },
-            { value: 'manga', label: 'Manga' },
-            { value: 'gif', label: 'GIF' },
-            { value: 'novel', label: 'Novel' },
-          ]"
-          label="Filter artworks by type"
-          @update:model-value="onTypeFilterChange"
-        />
-        <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingArtworks" @click="emit('apply-filters')">Apply</button>
-      </div>
-      <div class="filter-row-dates">
-        <DateRangeFilter
-          :model-value="artworkDateRange"
-          compact
-          @update:model-value="emit('update:artworkDateRange', $event)"
-        />
-      </div>
+      <input
+        :value="artworkQuery"
+        type="text"
+        class="form-control form-control-sm search-input"
+        placeholder="Search by title"
+        aria-label="Search artworks by title"
+        @input="onQueryInput"
+        @keyup.enter="emit('apply-filters')"
+      />
+      <AdminPillSelect
+        :model-value="artworkTypeFilter"
+        :options="[
+          { value: 'all', label: 'All types' },
+          { value: 'illust', label: 'Illustration' },
+          { value: 'manga', label: 'Manga' },
+          { value: 'gif', label: 'GIF' },
+          { value: 'novel', label: 'Novel' },
+        ]"
+        label="Filter artworks by type"
+        @update:model-value="onTypeFilterChange"
+      />
+      <DateRangeFilter
+        :model-value="artworkDateRange"
+        compact
+        @update:model-value="emit('update:artworkDateRange', $event)"
+      />
+      <button type="button" class="btn btn-sm btn-primary apply-btn" :disabled="loadingArtworks" @click="emit('apply-filters')">Apply</button>
     </div>
 
     <p v-if="loadingArtworks" class="state-note">Loading artworks...</p>
@@ -175,21 +171,19 @@ const formattedArtworks = computed(() =>
 <style scoped>
 .filters {
   display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.filter-row-main {
-  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  flex-wrap: wrap;
 }
 
-.filter-row-dates {
-  display: flex;
-  align-items: center;
-  padding-top: 0.4rem;
+.search-input {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.apply-btn {
+  white-space: nowrap;
+  margin-left: auto;
 }
 
 .artwork-link {
