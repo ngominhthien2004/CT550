@@ -126,16 +126,7 @@ watch(() => props.activeTab, (tab) => {
         </label>
       </div>
 
-      <div class="ai-status-info">
-        <p><strong>Status:</strong>
-          <span :class="aiDetectionEnabled ? 'text-success' : 'text-danger'">
-            {{ aiDetectionEnabled ? '🟢 Active' : '🔴 Disabled' }}
-          </span>
-        </p>
-        <p class="text-secondary small mb-0">
-          This setting is managed by the admin account and applies globally.
-        </p>
-      </div>
+
     </div>
   </section>
 </template>
@@ -204,13 +195,7 @@ watch(() => props.activeTab, (tab) => {
   font-size: 0.85rem;
   min-width: 60px;
 }
-.ai-status-info {
-  margin-top: 1rem;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  background: var(--surface-alt);
-  border: 1px solid var(--line);
-}
+
 .success-note {
   color: #155724;
   background: var(--surface-alt);
