@@ -24,7 +24,7 @@ defineProps({
 <style scoped>
 .plans-hero {
   border-radius: 16px;
-  background: linear-gradient(135deg, #0096fa 0%, #7c3aed 100%);
+  background: #0096fa;
   padding: 2.2rem 2rem;
   color: #fff;
 }
