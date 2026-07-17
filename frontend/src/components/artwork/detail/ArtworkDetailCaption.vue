@@ -1,5 +1,8 @@
 <script setup>
 import { ref, computed, toRefs } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n()
 
 const emit = defineEmits(['toggle-like', 'toggle-bookmark'])
 
@@ -26,7 +29,17 @@ function formatNumber(value) {
   return new Intl.NumberFormat().format(Number(value) || 0)
 }
 
-const tagList = computed(() => (Array.isArray(artwork.value?.tags) ? artwork.value.tags : []))
+const tagList = computed(() => {
+  if (!Array.isArray(artwork.value?.tags)) return []
+  return artwork.value.tags.map(tag => {
+    const lang = locale.value
+    let secondary = ''
+    if (lang !== 'en' && tag.translations) {
+      secondary = tag.translations[lang] || ''
+    }
+    return { ...tag, secondary }
+  })
+})
 
 const displayNumbers = computed(() => {
   const fmt = (v) => new Intl.NumberFormat().format(Number(v) || 0)
@@ -67,7 +80,7 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
         :to="{ path: '/search', query: { q: tag.name, tag: '1', type: artwork?.type || 'illust' } }"
         class="tag-link"
       >
-        #{{ tag.name }}
+        #{{ tag.name }}<span v-if="tag.secondary" class="tag-secondary">{{ tag.secondary }}</span>
       </router-link>
     </div>
 
@@ -142,6 +155,13 @@ const isDescriptionLong = computed(() => (artwork.value?.description || '').leng
 
 .tag-link:hover {
   text-decoration: underline;
+}
+
+.tag-secondary {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-left: 0.35rem;
+  font-weight: 400;
 }
 
 .stats-row {
