@@ -58,14 +58,16 @@ function toggleFollow() {
 <template>
   <article class="follow-user-card">
     <header class="user-head">
-      <div class="identity-wrap">
-        <img :src="avatarSrc" :alt="displayName" class="avatar" @error="handleAvatarError" />
-        <div class="identity-text">
-          <h3>{{ displayName }}</h3>
-          <p>@{{ username }}</p>
-          <p class="bio">{{ shortBio }}</p>
+      <router-link :to="`/account?user=${user._id}`" class="identity-link">
+        <div class="identity-wrap">
+          <img :src="avatarSrc" :alt="displayName" class="avatar" @error="handleAvatarError" />
+          <div class="identity-text">
+            <h3>{{ displayName }}</h3>
+            <p>@{{ username }}</p>
+            <p class="bio">{{ shortBio }}</p>
+          </div>
         </div>
-      </div>
+      </router-link>
 
       <div class="action-wrap">
         <button
@@ -115,6 +117,17 @@ function toggleFollow() {
   align-items: flex-start;
   gap: 0.52rem;
   min-width: 0;
+}
+
+.identity-link {
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+  flex: 1;
+}
+
+.identity-link:hover .identity-text h3 {
+  text-decoration: underline;
 }
 
 .avatar {
