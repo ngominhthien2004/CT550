@@ -189,6 +189,9 @@ const baseSearchQuery = computed(() => {
   const target = typeof route.query.target === 'string' ? route.query.target : ''
   const order = typeof route.query.order === 'string' ? route.query.order : ''
   const age = typeof route.query.age === 'string' ? route.query.age : ''
+  const series = typeof route.query.series === 'string' ? route.query.series : ''
+  const dateFrom = typeof route.query.dateFrom === 'string' ? route.query.dateFrom : ''
+  const dateTo = typeof route.query.dateTo === 'string' ? route.query.dateTo : ''
 
   if (q) query.q = q
   if (qall) query.qall = qall
@@ -197,6 +200,9 @@ const baseSearchQuery = computed(() => {
   if (target && target !== 'all') query.target = target
   if (order && order !== 'newest') query.order = order
   if (age && age !== 'all') query.age = age
+  if (series && series !== 'all') query.series = series
+  if (dateFrom) query.dateFrom = dateFrom
+  if (dateTo) query.dateTo = dateTo
 
   return query
 })
@@ -367,19 +373,26 @@ function buildTypeRoute(type) {
   if (type === 'user') {
     return {
       path: '/search/users',
-      query: searchKeyword.value
-        ? { nick: searchKeyword.value, s_mode: 's_usr' }
-        : { s_mode: 's_usr' },
+      query: {
+        nick: searchKeyword.value || undefined,
+        s_mode: 's_usr',
+      },
     }
   }
-  return {
-    path: '/search',
-    query: {
-      ...baseSearchQuery.value,
-      type,
-      s_mode: type === 'novel' ? 'tag_tc' : undefined,
-    },
+
+  // Preserve s_mode from current route query
+  const currentS_mode = typeof route.query.s_mode === 'string' ? route.query.s_mode : ''
+  const s_mode = type === 'novel'
+    ? (currentS_mode || 'tag_tc')
+    : currentS_mode
+
+  const query = {
+    ...baseSearchQuery.value,
+    type,
   }
+  if (s_mode) query.s_mode = s_mode
+
+  return { path: '/search', query }
 }
 
 async function handleFilterSortChange(value) {
