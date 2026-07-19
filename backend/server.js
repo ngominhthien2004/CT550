@@ -11,6 +11,10 @@ const connectDB = require('./config/db');
 const { getAllowedOrigins, getJwtSecret } = require('./config/env');
 const { errorHandler, notFound } = require('./middlewares/error.middleware');
 const { verifyToken } = require('./middlewares/auth.middleware');
+const {
+  globalLimiter, authLimiter, aiLimiter,
+  uploadLimiter, generalLimiter
+} = require('./middlewares/rateLimit.middleware');
 
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
@@ -96,6 +100,22 @@ app.use('/api/book-service', createProxyMiddleware({
 }));
 
 app.use(express.json());
+
+// ── Rate Limiting ──────────────────────────────────────────────
+app.use(globalLimiter);
+
+// Auth limiter — chống brute force login/register
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+
+// AI limiter — endpoint tốn kém
+app.use('/api/ai', aiLimiter);
+
+// Upload limiter — chỉ POST artwork
+app.use('/api/artworks', (req, res, next) => {
+  if (req.method === 'POST') return uploadLimiter(req, res, next);
+  next();
+});
 
 app.use(passport.initialize());
 

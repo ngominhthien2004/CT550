@@ -65,6 +65,16 @@ function getFacebookClientSecret() {
     return process.env.FACEBOOK_CLIENT_SECRET || '';
 }
 
+function getRateLimitConfig() {
+  return {
+    global: parseInt(process.env.RATE_LIMIT_GLOBAL_MAX || '200', 10),
+    auth: parseInt(process.env.RATE_LIMIT_AUTH_MAX || '10', 10),
+    ai: parseInt(process.env.RATE_LIMIT_AI_MAX || '20', 10),
+    upload: parseInt(process.env.RATE_LIMIT_UPLOAD_MAX || '10', 10),
+    general: parseInt(process.env.RATE_LIMIT_GENERAL_MAX || '100', 10),
+  };
+}
+
 module.exports = {
     getAllowedOrigins,
     getFacebookClientId,
@@ -74,5 +84,6 @@ module.exports = {
     getFrontendUrl,
     getJwtSecret,
     getMaxUploadFileSizeBytes,
+    getRateLimitConfig,
     getRequiredEnv,
 };

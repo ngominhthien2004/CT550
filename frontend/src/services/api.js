@@ -71,6 +71,13 @@ api.interceptors.response.use((response) => {
     localStorage.removeItem('token')
     window.location.href = '/login?reason=suspended'
   }
+  if (error.response?.status === 429) {
+    const retryAfter = error.response?.data?.retryAfter;
+    const msg = retryAfter
+      ? `Too many requests. Try again in ${retryAfter}s.`
+      : 'Too many requests. Please slow down.';
+    console.warn('[Rate Limit]', msg);
+  }
   return Promise.reject(error)
 })
 

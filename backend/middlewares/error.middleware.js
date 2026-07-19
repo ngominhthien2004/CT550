@@ -52,6 +52,14 @@ const errorHandler = (err, req, res, next) => {
         });
     }
 
+    // Handle rate limit exceeded — return 429
+    if (err.statusCode === 429) {
+        return res.status(429).json({
+            message: err.message || 'Too many requests, please try again later.',
+            retryAfter: err.retryAfter || null,
+        });
+    }
+
     res.json({
         message: err.message,
         stack: process.env.NODE_ENV === 'production' ? null : err.stack,
