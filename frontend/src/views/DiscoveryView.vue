@@ -5,6 +5,8 @@ import { getDiscovery } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { ArtworkCard } from '@/components/artwork'
 import DateRangeFilter from '../components/common/DateRangeFilter.vue'
+import { useAuthStore } from '../stores/auth.store'
+import { useLikeStore } from '../stores/like.store'
 
 const route = useRoute()
 const router = useRouter()
@@ -13,6 +15,8 @@ const artworks = ref([])
 const loading = ref(false)
 const error = ref('')
 const isNavCollapsed = ref(true)
+const authStore = useAuthStore()
+const likeStore = useLikeStore()
 
 const currentPage = ref(1)
 const totalPages = ref(1)
@@ -66,6 +70,9 @@ async function loadArtworks() {
     artworks.value = []
   } finally {
     loading.value = false
+    if (authStore.isAuthenticated) {
+      likeStore.fetchMyLikes({ limit: 120 })
+    }
   }
 }
 

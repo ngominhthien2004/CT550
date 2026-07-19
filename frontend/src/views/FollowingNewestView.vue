@@ -3,12 +3,16 @@ import { computed, onMounted, ref } from 'vue'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid, HomeFeedColumn, HomeTagStrip, HomeTabs } from '@/components/home'
 import { getFeed, getTags } from '../services/api'
+import { useAuthStore } from '../stores/auth.store'
+import { useLikeStore } from '../stores/like.store'
 
 const isNavCollapsed = ref(true)
 const liveWorks = ref([])
 const liveTags = ref([])
 const loading = ref(false)
 const error = ref('')
+const authStore = useAuthStore()
+const likeStore = useLikeStore()
 
 const normalizedWorks = computed(() =>
   liveWorks.value.map((item) => ({
@@ -50,6 +54,9 @@ async function loadTags() {
 
 onMounted(() => {
   Promise.all([loadFollowingWorks(), loadTags()])
+  if (authStore.isAuthenticated) {
+    likeStore.fetchMyLikes({ limit: 120 })
+  }
 })
 </script>
 

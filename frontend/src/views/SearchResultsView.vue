@@ -15,6 +15,7 @@ import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
 import { useAuthStore } from '../stores/auth.store'
 import { useFollowStore } from '../stores/follow.store'
+import { useLikeStore } from '../stores/like.store'
 
 import { formatShortDate } from '../utils/date.js'
 import { useTagStore } from '../stores/tag.store'
@@ -51,6 +52,7 @@ const userLoadingMore = ref(false)
 const userArtworkPreviews = ref({})
 
 const tagStore = useTagStore()
+const likeStore = useLikeStore()
 
 const isTagContext = computed(() => route.query.tag === '1')
 
@@ -625,6 +627,9 @@ onMounted(() => {
   if (searchKeyword.value) {
     tagStore.fetchTagDetail(searchKeyword.value)
     loadFavoriteTagStatus()
+  }
+  if (authStore.isAuthenticated) {
+    likeStore.fetchMyLikes({ limit: 120 })
   }
 })
 

@@ -8,6 +8,7 @@ import api from '../services/api'
 
 import { useFollowStore } from '../stores/follow.store'
 import { useAuthStore } from '../stores/auth.store'
+import { useLikeStore } from '../stores/like.store'
 
 const isNavCollapsed = ref(true)
 const liveWorks = ref([])
@@ -21,6 +22,7 @@ const heroSlide = ref({
 const bannerLink = ref(null)
 const authStore = useAuthStore()
 const followStore = useFollowStore()
+const likeStore = useLikeStore()
 
 const normalizedWorks = computed(() =>
   liveWorks.value.map((item) => ({
@@ -155,6 +157,9 @@ async function loadForYou() {
 
 onMounted(async () => {
   await Promise.all([loadHomeArtworks(), loadHomeTags(), loadBanners()])
+  if (authStore.isAuthenticated) {
+    likeStore.fetchMyLikes({ limit: 120 })
+  }
   await loadForYou()
 })
 

@@ -6,6 +6,7 @@ import { getArtworks, bannerApi, userApi } from '../services/api'
 
 import { useFollowStore } from '../stores/follow.store'
 import { useAuthStore } from '../stores/auth.store'
+import { useLikeStore } from '../stores/like.store'
 
 const props = defineProps({
   workType: {
@@ -29,6 +30,7 @@ const novelSortBy = ref('newest')
 
 const authStore = useAuthStore()
 const followStore = useFollowStore()
+const likeStore = useLikeStore()
 
 const heroSlide = ref({
   title: '',
@@ -177,6 +179,9 @@ async function loadData() {
   isLoading.value = true
   try {
     await Promise.all([loadTypedArtworks(), loadBanners()])
+    if (authStore.isAuthenticated) {
+      likeStore.fetchMyLikes({ limit: 120 })
+    }
   } finally {
     isLoading.value = false
   }
