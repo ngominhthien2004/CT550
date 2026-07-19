@@ -79,7 +79,7 @@ const getRankings = async (req, res, next) => {
             filter.user = { $in: rookieUserIds };
         }
 
-        const [artworks, total] = await Promise.all([
+        let [artworks, total] = await Promise.all([
             Artwork.find(filter)
                 .populate('user', 'username displayName avatar')
                 .populate('tags', 'name')
@@ -88,6 +88,24 @@ const getRankings = async (req, res, next) => {
                 .limit(limit),
             Artwork.countDocuments(filter)
         ]);
+
+        // Annotate isLiked/isBookmarked if user is authenticated
+        if (req.user && artworks.length > 0) {
+            const artworkIds = artworks.map(a => a._id);
+            const [userLikes, userBookmarks] = await Promise.all([
+                Like.find({ user: req.user._id, artwork: { $in: artworkIds } }).select('artwork').lean(),
+                Bookmark.find({ user: req.user._id, artwork: { $in: artworkIds } }).select('artwork').lean()
+            ]);
+            const likedIds = new Set(userLikes.map(l => l.artwork.toString()));
+            const bookmarkedIds = new Set(userBookmarks.map(b => b.artwork.toString()));
+
+            artworks = artworks.map(a => {
+                const obj = a.toObject ? a.toObject() : { ...a };
+                obj.isLiked = likedIds.has(a._id.toString());
+                obj.isBookmarked = bookmarkedIds.has(a._id.toString());
+                return obj;
+            });
+        }
 
         res.json({ period, type, artworks, total, page, pages: Math.ceil(total / limit) });
     } catch (error) {

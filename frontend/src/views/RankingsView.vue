@@ -36,8 +36,6 @@ const isNavCollapsed = ref(true)
 const period = ref('daily')
 const type = ref('all')
 const loadingMore = ref(false)
-const localLikes = ref({})
-const localBookmarks = ref({})
 
 const rankings = computed(() => feedStore.rankings)
 
@@ -103,37 +101,73 @@ const emptyStateMessage = computed(() => ({
   rookie: 'No artworks from rookie creators yet'
 })[period.value] || 'No rankings found for this category.')
 
+function getLikeStatus(item) {
+  if (likeStore.statusByArtwork[item._id] !== undefined) {
+    return likeStore.getLikeStatus(item._id)
+  }
+  return Boolean(item.isLiked)
+}
+
+function getBookmarkStatus(item) {
+  if (bookmarkStore.statusByArtwork[item._id] !== undefined) {
+    return bookmarkStore.getBookmarkStatus(item._id)
+  }
+  return Boolean(item.isBookmarked)
+}
+
 async function handleLikeToggle(item) {
   if (!authStore.isAuthenticated) { await router.push({ name: 'login', query: { redirect: '/rankings' } }); return }
   const id = item._id
-  const currentStatus = localLikes.value[id] !== undefined ? localLikes.value[id] : Boolean(item.isLiked)
   if (likeStore.isTogglingLike(id)) return
-  localLikes.value[id] = !currentStatus
-  if (!localLikes.value[id]) item.likeCount = Math.max(0, (item.likeCount || 0) - 1)
-  else item.likeCount = (item.likeCount || 0) + 1
+
+  const original = feedStore.rankings.find(a => a._id === id)
+  const previousStatus = getLikeStatus(item)
+  const previousCount = (original?.likeCount || item.likeCount || 0)
+  const nextStatus = !previousStatus
+
+  // Optimistic: flip immediately
+  if (likeStore.statusByArtwork[id] === undefined) {
+    likeStore.statusByArtwork[id] = previousStatus
+  }
+  likeStore.statusByArtwork[id] = nextStatus
+  if (original) original.likeCount = Math.max(0, previousCount + (nextStatus ? 1 : -1))
+  else item.likeCount = Math.max(0, previousCount + (nextStatus ? 1 : -1))
+
   try {
     await likeStore.toggleLikeByArtwork(id)
-    localLikes.value[id] = likeStore.getLikeStatus(id)
   } catch {
-    localLikes.value[id] = currentStatus
-    item.likeCount = currentStatus ? (item.likeCount || 0) + 1 : Math.max(0, (item.likeCount || 0) - 1)
+    // Rollback on failure
+    likeStore.statusByArtwork[id] = previousStatus
+    if (original) original.likeCount = previousCount
+    else item.likeCount = previousCount
   }
 }
 
 async function handleBookmarkToggle(item) {
   if (!authStore.isAuthenticated) { await router.push({ name: 'login', query: { redirect: '/rankings' } }); return }
   const id = item._id
-  const currentStatus = localBookmarks.value[id] !== undefined ? localBookmarks.value[id] : Boolean(item.isBookmarked)
   if (bookmarkStore.isTogglingBookmark(id)) return
-  localBookmarks.value[id] = !currentStatus
-  if (!localBookmarks.value[id]) item.bookmarkCount = Math.max(0, (item.bookmarkCount || 0) - 1)
-  else item.bookmarkCount = (item.bookmarkCount || 0) + 1
+
+  const original = feedStore.rankings.find(a => a._id === id)
+  const previousStatus = getBookmarkStatus(item)
+  const previousCount = (original?.bookmarkCount || item.bookmarkCount || 0)
+  const nextStatus = !previousStatus
+
+  // Optimistic: flip immediately
+  if (bookmarkStore.statusByArtwork[id] === undefined) {
+    bookmarkStore.statusByArtwork[id] = previousStatus
+  }
+  bookmarkStore.statusByArtwork[id] = nextStatus
+  if (original) original.bookmarkCount = Math.max(0, previousCount + (nextStatus ? 1 : -1))
+  else item.bookmarkCount = Math.max(0, previousCount + (nextStatus ? 1 : -1))
+
   try {
     await bookmarkStore.toggleBookmarkByArtwork(id)
-    localBookmarks.value[id] = bookmarkStore.getBookmarkStatus(id)
   } catch {
-    localBookmarks.value[id] = currentStatus
-    item.bookmarkCount = currentStatus ? (item.bookmarkCount || 0) + 1 : Math.max(0, (item.bookmarkCount || 0) - 1)
+    // Rollback on failure
+    bookmarkStore.statusByArtwork[id] = previousStatus
+    if (original) original.bookmarkCount = previousCount
+    else item.bookmarkCount = previousCount
   }
 }
 
@@ -143,9 +177,6 @@ function formatCount(num) {
   if (num >= 1000) return (num / 1000).toFixed(1) + 'k'
   return num.toString()
 }
-
-function getLikeStatus(item) { return localLikes.value[item._id] !== undefined ? localLikes.value[item._id] : Boolean(item.isLiked) }
-function getBookmarkStatus(item) { return localBookmarks.value[item._id] !== undefined ? localBookmarks.value[item._id] : Boolean(item.isBookmarked) }
 
 function getRankClass(rank) {
   if (rank === 1) return 'rank-top-1'
@@ -177,7 +208,15 @@ const emptyStateType = computed(() => {
   return null
 })
 
-onMounted(async () => { normalizeFromRoute(); await loadRankings(false) })
+onMounted(async () => {
+  normalizeFromRoute()
+  await loadRankings(false)
+  // Pre-populate like/bookmark status from the server
+  if (authStore.isAuthenticated) {
+    likeStore.fetchMyLikes({ limit: 120 })
+    bookmarkStore.fetchMyBookmarks({ limit: 120 })
+  }
+})
 watch(() => [route.query.period, route.query.type], async () => { normalizeFromRoute(); await loadRankings(false) })
 </script>
 
