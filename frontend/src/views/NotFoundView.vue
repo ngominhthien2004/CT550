@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
-
 const route = useRoute()
 const isNavCollapsed = ref(true)
 
@@ -16,11 +15,11 @@ function toggleLeftNav() {
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="not-found-wrap page-block p-4 p-md-5 text-center">
       <p class="error-code mb-2">404</p>
-      <h1 class="h3 mb-2">Page not found</h1>
-      <p class="text-secondary mb-4">The route <strong>{{ route.fullPath }}</strong> does not exist.</p>
+      <h1 class="h3 mb-2">{{ $t('page.notFound') }}</h1>
+      <p class="text-secondary mb-4">{{ $t('page.notFoundDesc', { path: route.fullPath }) }}</p>
       <div class="d-flex justify-content-center gap-2 flex-wrap">
-        <router-link to="/" class="btn btn-primary">Back to home</router-link>
-        <router-link to="/discovery" class="btn btn-outline-secondary">Explore</router-link>
+        <router-link to="/" class="btn btn-primary">{{ $t('page.backToHome') }}</router-link>
+        <router-link to="/discovery" class="btn btn-outline-secondary">{{ $t('page.explore') }}</router-link>
       </div>
     </section>
   </MainLayoutTemplate>

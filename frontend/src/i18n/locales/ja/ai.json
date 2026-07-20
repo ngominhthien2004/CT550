@@ -1,4 +1,21 @@
 {
-  "testFeatures": "AI機能をテスト",
-  "featureSettings": "AI機能設定"
+  "testFeatures": "AI機能のテスト",
+  "featureSettings": "AI機能設定",
+  "aiChat": "AIチャット",
+  "aiDetection": "AI画像検出",
+  "chatWelcome": "こんにちは！作品を検索したり、おすすめの作品を紹介できます。",
+  "chatInputPlaceholder": "メッセージを入力...",
+  "send": "送信",
+  "errorOccurred": "エラーが発生しました。もう一度お試しください。",
+  "dropImageHere": "クリックまたは画像をここにドラッグ",
+  "supportedFormats": "対応形式: JPG, PNG, GIF, WEBP",
+  "clearImage": "画像をクリア",
+  "analyzeImage": "画像を分析",
+  "analyzing": "分析中...",
+  "aiDetected": "AI生成画像",
+  "realImage": "実際の画像",
+  "confidence": "信頼度 {confidence}%",
+  "size": "サイズ: {size}",
+  "type": "種類: {type}",
+  "analysisError": "画像分析中にエラーが発生しました"
 }

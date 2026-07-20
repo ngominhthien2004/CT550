@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import ThreadListPane from '../components/messages/ThreadListPane.vue'
@@ -43,6 +44,7 @@ const isDragging = ref(false)
 
 const router = useRouter()
 const route = useRoute()
+const { t } = useI18n()
 const authStore = useAuthStore()
 const messageStore = useMessageStore()
 const { connect: connectSocket, disconnect: disconnectSocket, on: socketOn, off: socketOff } = useSocket()
@@ -188,9 +190,9 @@ const unreadInboxCount = computed(() => inboxMessages.value.filter((item) => !it
 const activeRecipientId = computed(() => selectedThreadId.value)
 
 const headerTitle = computed(() => {
-  if (selectedThread.value) return selectedThread.value.peer?.displayName || selectedThread.value.peer?.username || 'Unknown user'
+  if (selectedThread.value) return selectedThread.value.peer?.displayName || selectedThread.value.peer?.username || t('common.unknown')
   if (profilePreviewName.value) return profilePreviewName.value
-  return 'Select a conversation'
+  return t('chat.chooseConversation')
 })
 
 const headerAvatar = computed(() => {
@@ -229,7 +231,7 @@ async function loadMessages() {
     }
     lastPolledAt.value = new Date().toISOString()
   } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || 'Failed to load messages'
+    error.value = fetchError?.response?.data?.message || t('chat.loadFailed')
     inboxMessages.value = []
     sentMessages.value = []
   } finally {
@@ -249,7 +251,7 @@ async function searchWithinThread() {
 }
 
 async function deleteMessage(messageId) {
-  if (!window.confirm('Delete this message for you? This cannot be undone.')) return
+  if (!window.confirm(t('chat.deleteConfirm'))) return
   try {
     await messageStore.softDelete(messageId)
     inboxMessages.value = inboxMessages.value.filter(item => item._id !== messageId)
@@ -371,10 +373,10 @@ function handleDrop(e) {
 
 async function sendMessage() {
   const recipientId = activeRecipientId.value
-  if (!recipientId) { error.value = 'Please choose a conversation first'; return }
+  if (!recipientId) { error.value = t('chat.chooseConversation'); return }
   const trimmedContent = content.value.trim()
   const hasFiles = selectedImages.value.length > 0
-  if (!trimmedContent && !hasFiles) { error.value = 'Please enter a message or choose at least one image'; return }
+  if (!trimmedContent && !hasFiles) { error.value = t('chat.enterMessageOrImage'); return }
   let payloadContent = trimmedContent
   if (replyingTo.value) {
     const peerName = replyingTo.value.sender?.displayName || replyingTo.value.sender?.username || 'user'
@@ -399,28 +401,28 @@ async function sendMessage() {
     content.value = ''; selectedImages.value = []; selectedImageFiles.value = []; replyingTo.value = null; showEmojiPicker.value = false
     nextTick(() => { scrollChatToBottom() })
   } catch (sendError) {
-    error.value = sendError?.response?.data?.message || 'Failed to send message'
+    error.value = sendError?.response?.data?.message || t('chat.sendFailed')
   } finally { sending.value = false }
 }
 
 async function blockUser() {
   if (!selectedThreadId.value) return
-  if (!window.confirm('Block this user? You won\'t receive messages from them.')) return
+  if (!window.confirm(t('chat.blockConfirm'))) return
   try {
     await userApi.block(selectedThreadId.value)
     selectedThreadId.value = ''
     await loadMessages()
-  } catch (e) { alert(e?.response?.data?.message || 'Failed to block user') }
+  } catch (e) { alert(e?.response?.data?.message || t('chat.blockFailed')) }
 }
 
 async function reportUser() {
   if (!selectedThreadId.value) return
-  const reason = window.prompt('Report reason:')
+  const reason = window.prompt(t('chat.reportReason'))
   if (!reason) return
   try {
     await reportApi.reportUser(selectedThreadId.value, { reason })
-    alert('Report submitted. Thank you.')
-  } catch (e) { alert(e?.response?.data?.message || 'Failed to report user') }
+    alert(t('chat.reportSuccess'))
+  } catch (e) { alert(e?.response?.data?.message || t('chat.reportFailed')) }
 }
 
 async function markAsRead(messageId) {
@@ -537,7 +539,7 @@ onUnmounted(() => {
     </section>
 
     <section v-else class="page-block p-3 p-md-4 d-grid gap-2">
-      <h1 class="h4 mb-0">Messages</h1>
+      <h1 class="h4 mb-0">{{ $t('chat.messages') }}</h1>
       <p class="text-secondary mb-0">You are not logged in.</p>
       <button type="button" class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
     </section>

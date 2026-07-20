@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import {
   AdminOverviewCards, AdminSectionTabs,
@@ -33,6 +34,7 @@ const isAdmin = computed(() => authStore.user?.role === 'admin')
 
 const error = ref('')
 const mutating = ref(false)
+const { t } = useI18n()
 
 // --- Composables ---
 const { overview, loadingOverview, loadOverview } = useAdminOverview({ error, mutating })
@@ -68,14 +70,14 @@ const {
 
 // --- Tab state ---
 const activeTab = ref(route.query.tab || 'users')
-const adminTabs = [
-  { id: 'users', label: 'Users' },
-  { id: 'artworks', label: 'Artworks' },
-  { id: 'reports', label: 'Reports' },
-  { id: 'tags', label: 'Tags' },
-  { id: 'ai', label: 'AI Settings' },
-  { id: 'banners', label: 'Banners' },
-]
+const adminTabs = computed(() => [
+  { id: 'users', label: t('admin.users') },
+  { id: 'artworks', label: t('admin.content') },
+  { id: 'reports', label: t('admin.reports') },
+  { id: 'tags', label: t('admin.tags') },
+  { id: 'ai', label: t('admin.aiSettings') },
+  { id: 'banners', label: t('admin.bannerManagement') },
+])
 
 // Sync URL query params to tab state
 watch(() => route.query, (query) => {
@@ -163,19 +165,19 @@ onMounted(async () => {
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section v-if="!authStore.isAuthenticated" class="page-block p-3 p-md-4 d-grid gap-2">
-      <h1 class="h4 mb-0">Admin Management</h1>
-      <p class="text-secondary mb-0">You are not logged in.</p>
-      <button type="button" class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
+      <h1 class="h4 mb-0">{{ $t('admin.management') }}</h1>
+      <p class="text-secondary mb-0">{{ $t('profile.loggedOut') }}</p>
+      <button type="button" class="btn btn-primary btn-sm justify-self-start" @click="goLogin">{{ $t('profile.goToLogin') }}</button>
     </section>
 
     <section v-else-if="!isAdmin" class="page-block p-3 p-md-4 d-grid gap-2">
-      <h1 class="h4 mb-0">Admin Management</h1>
-      <p class="text-danger mb-0">You do not have permission to access this page.</p>
+      <h1 class="h4 mb-0">{{ $t('admin.management') }}</h1>
+      <p class="text-danger mb-0">{{ $t('error.unauthorized') }}</p>
     </section>
 
     <section v-else class="admin-page page-block">
       <header class="admin-head">
-        <h1>Admin Management Hub</h1>
+        <h1>{{ $t('admin.hub') }}</h1>
         <p>Manage users, monitor key metrics, and moderate content.</p>
         <button type="button"
           class="btn btn-sm btn-admin-refresh"
@@ -194,10 +196,10 @@ onMounted(async () => {
 
       <!-- Report sub-filters -->
       <div v-if="activeTab === 'reports'" class="sub-filter-bar">
-        <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'artwork' }" @click="activeReportTab = 'artwork'">Artwork</button>
-        <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'comment' }" @click="activeReportTab = 'comment'">Comment</button>
-        <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'user' }" @click="activeReportTab = 'user'">User</button>
-        <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'hidden' }" @click="activeReportTab = 'hidden'">Hidden</button>
+        <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'artwork' }" @click="activeReportTab = 'artwork'">{{ $t('admin.artwork') }}</button>
+        <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'comment' }" @click="activeReportTab = 'comment'">{{ $t('admin.comment') }}</button>
+        <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'user' }" @click="activeReportTab = 'user'">{{ $t('admin.user') }}</button>
+        <button type="button" class="sub-filter-btn" :class="{ active: activeReportTab === 'hidden' }" @click="activeReportTab = 'hidden'">{{ $t('admin.hidden') }}</button>
       </div>
 
       <AdminUserManagementPanel

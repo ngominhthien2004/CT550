@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '../stores/auth.store'
+import { useLanguageStore } from '../stores/language.store'
 import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import api from '../services/api'
@@ -9,18 +10,19 @@ import { useToast } from '../composables/useToast'
 import { toggleNavCollapsed } from '../utils/viewNavigation'
 
 const authStore = useAuthStore()
+const languageStore = useLanguageStore()
 const { t } = useI18n()
 const { showSuccess, showError } = useToast()
 const isNavCollapsed = ref(true)
 
 const activeTab = ref('account')
 
-const tabs = [
-  { id: 'account', label: 'Account' },
-  { id: 'language', label: 'Language and location' },
-  { id: 'display', label: 'Display settings' },
-  { id: 'privacy', label: 'Privacy' },
-]
+const tabs = computed(() => [
+  { id: 'account', label: t('settings.account') },
+  { id: 'language', label: t('settings.language') },
+  { id: 'display', label: t('settings.display') },
+  { id: 'privacy', label: t('settings.privacy') },
+])
 
 const user = computed(() => authStore.user)
 
@@ -32,15 +34,15 @@ const passwordSubmitting = ref(false)
 async function changePassword() {
   passwordError.value = ''
   if (!passwordForm.value.currentPassword || !passwordForm.value.newPassword || !passwordForm.value.confirmPassword) {
-    passwordError.value = 'All password fields are required.'
+    passwordError.value = t('settings.allFieldsRequired')
     return
   }
   if (passwordForm.value.newPassword.length < 6) {
-    passwordError.value = 'New password must be at least 6 characters.'
+    passwordError.value = t('settings.passwordMinLength')
     return
   }
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-    passwordError.value = 'New passwords do not match.'
+    passwordError.value = t('settings.passwordsDoNotMatch')
     return
   }
   passwordSubmitting.value = true
@@ -49,25 +51,25 @@ async function changePassword() {
       currentPassword: passwordForm.value.currentPassword,
       newPassword: passwordForm.value.newPassword,
     })
-    showSuccess('Password updated successfully!')
+    showSuccess(t('settings.passwordUpdated'))
     passwordForm.value = { currentPassword: '', newPassword: '', confirmPassword: '' }
   } catch (err) {
-    passwordError.value = getApiErrorMessage(err, 'Failed to update password.')
+    passwordError.value = getApiErrorMessage(err, t('settings.failUpdatePassword'))
   } finally {
     passwordSubmitting.value = false
   }
 }
 
 // ── Language & Location ──
-const selectedLanguage = ref(localStorage.getItem('i18n_lang') || 'en')
+const selectedLanguage = ref(languageStore.currentLocale || 'en')
 const languages = [
   { code: 'en', label: 'English' },
   { code: 'ja', label: '日本語' },
   { code: 'vi', label: 'Tiếng Việt' },
 ]
 function saveLanguage() {
-  localStorage.setItem('i18n_lang', selectedLanguage.value)
-  showSuccess('Language preference saved. Refresh to apply.')
+  languageStore.setLocale(selectedLanguage.value)
+  showSuccess(t('settings.languageSaved'))
 }
 
 // ── Display Settings ──
@@ -76,12 +78,12 @@ const showAiContent = ref(localStorage.getItem('hide_ai_content') !== 'true')
 
 function saveExplicit() {
   localStorage.setItem('r18_preference', showExplicit.value ? 'show' : '')
-  showSuccess('Display settings saved.')
+  showSuccess(t('settings.displaySaved'))
 }
 
 function saveAiContent() {
   localStorage.setItem('hide_ai_content', showAiContent.value ? '' : 'true')
-  showSuccess('AI content display saved.')
+  showSuccess(t('settings.aiContentSaved'))
 }
 
 // ── Privacy: Blocklist ──
@@ -97,7 +99,7 @@ async function loadBlockedUsers() {
     const { data } = await api.get('/users/blocked')
     blockedUsers.value = data
   } catch (err) {
-    blockedError.value = err?.response?.data?.message || 'Failed to load blocked users'
+    blockedError.value = err?.response?.data?.message || t('settings.loadFailedBlocked')
   } finally {
     blockedLoading.value = false
   }
@@ -109,9 +111,9 @@ async function toggleBlock(blockItem) {
   try {
     await api.delete(`/users/${blockedUserId}/block`)
     blockedUsers.value = blockedUsers.value.filter((u) => u.blocked._id !== blockedUserId)
-    showSuccess(`Unblocked ${blockItem.blocked.displayName || blockItem.blocked.username}`)
+    showSuccess(t('settings.unblocked') + ' ' + (blockItem.blocked.displayName || blockItem.blocked.username))
   } catch (err) {
-    showError(getApiErrorMessage(err, 'Failed to unblock user'))
+    showError(getApiErrorMessage(err, t('settings.failUnblock')))
   } finally {
     unblockingId.value = ''
   }
@@ -132,7 +134,7 @@ function toggleLeftNav() {
       <div class="settings-layout">
         <!-- Left Sidebar -->
         <nav class="settings-sidebar">
-          <h1 class="settings-heading">Settings</h1>
+          <h1 class="settings-heading">{{ $t('settings.title') }}</h1>
           <ul class="settings-nav">
             <li v-for="tab in tabs" :key="tab.id">
               <button
@@ -153,53 +155,53 @@ function toggleLeftNav() {
           <!-- ═══ Account ═══ -->
           <div v-if="activeTab === 'account'" class="settings-section">
             <div class="section-card">
-              <h2 class="section-title">Account</h2>
+              <h2 class="section-title">{{ $t('settings.account') }}</h2>
 
               <div class="manage-account-card">
-                <h3 class="manage-title">Manage IlluWrl account</h3>
-                <p class="manage-desc">Manage your account information and login/security settings.</p>
+                <h3 class="manage-title">{{ $t('settings.manageAccount') }}</h3>
+                <p class="manage-desc">{{ $t('settings.manageAccountDesc') }}</p>
                 <router-link to="/account" class="manage-link">
-                  Go to Profile page <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                  {{ $t('settings.goToProfile') }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
                 </router-link>
               </div>
 
               <div class="section-divider"></div>
 
               <div class="info-row">
-                <span class="info-label">Nickname</span>
+                <span class="info-label">{{ $t('settings.nickname') }}</span>
                 <div class="info-value">
                   <span class="info-text">{{ user?.displayName || user?.username }}</span>
-                  <span class="info-hint">You can change your nickname from your <router-link to="/account" class="inline-link">Profile page</router-link>.</span>
+                  <span class="info-hint">{{ $t('settings.nicknameHint') }}</span>
                 </div>
               </div>
 
               <div class="info-row">
-                <span class="info-label">Email</span>
+                <span class="info-label">{{ $t('settings.email') }}</span>
                 <div class="info-value">
-                  <span class="info-text">{{ user?.email || 'Not set' }}</span>
-                  <span class="info-hint">Used for login and notifications.</span>
+                  <span class="info-text">{{ user?.email || $t('settings.notSet') }}</span>
+                  <span class="info-hint">{{ $t('settings.emailHint') }}</span>
                 </div>
               </div>
 
               <div class="section-divider"></div>
 
-              <h3 class="subsection-title">Change Password</h3>
+              <h3 class="subsection-title">{{ $t('settings.changePassword') }}</h3>
               <form @submit.prevent="changePassword" class="password-form">
                 <div class="form-group">
-                  <label for="current-password" class="form-label">Current Password</label>
+                  <label for="current-password" class="form-label">{{ $t('settings.currentPassword') }}</label>
                   <input id="current-password" v-model="passwordForm.currentPassword" type="password" class="form-input" required />
                 </div>
                 <div class="form-group">
-                  <label for="new-password" class="form-label">New Password</label>
+                  <label for="new-password" class="form-label">{{ $t('settings.newPassword') }}</label>
                   <input id="new-password" v-model="passwordForm.newPassword" type="password" class="form-input" required minlength="6" />
                 </div>
                 <div class="form-group">
-                  <label for="confirm-password" class="form-label">Confirm New Password</label>
+                  <label for="confirm-password" class="form-label">{{ $t('settings.confirmPassword') }}</label>
                   <input id="confirm-password" v-model="passwordForm.confirmPassword" type="password" class="form-input" required />
                 </div>
                 <p v-if="passwordError" class="form-error">{{ passwordError }}</p>
                 <button type="submit" class="btn-save" :disabled="passwordSubmitting">
-                  {{ passwordSubmitting ? 'Updating...' : 'Update Password' }}
+                  {{ passwordSubmitting ? $t('settings.updating') : $t('settings.updatePassword') }}
                 </button>
               </form>
             </div>
@@ -208,25 +210,25 @@ function toggleLeftNav() {
           <!-- ═══ Language and Location ═══ -->
           <div v-if="activeTab === 'language'" class="settings-section">
             <div class="section-card">
-              <h2 class="section-title">Language and location</h2>
+              <h2 class="section-title">{{ $t('settings.languageAndLocation') }}</h2>
 
               <div class="info-row">
-                <span class="info-label">Language</span>
+                <span class="info-label">{{ $t('settings.language') }}</span>
                 <div class="info-value">
                   <select v-model="selectedLanguage" class="form-select">
                     <option v-for="lang in languages" :key="lang.code" :value="lang.code">{{ lang.label }}</option>
                   </select>
-                  <button type="button" class="btn-save btn-save--small" @click="saveLanguage">Save</button>
+                  <button type="button" class="btn-save btn-save--small" @click="saveLanguage">{{ $t('settings.saveLanguage') }}</button>
                 </div>
               </div>
 
               <div class="section-divider"></div>
 
               <div class="info-row">
-                <span class="info-label">Country/Region</span>
+                <span class="info-label">{{ $t('settings.countryRegion') }}</span>
                 <div class="info-value">
-                  <span class="info-text">Viet Nam</span>
-                  <span class="info-hint">Used for regional content recommendations.</span>
+                  <span class="info-text">{{ $t('settings.countryRegionValue') }}</span>
+                  <span class="info-hint">{{ $t('settings.regionalContent') }}</span>
                 </div>
               </div>
             </div>
@@ -235,12 +237,12 @@ function toggleLeftNav() {
           <!-- ═══ Display Settings ═══ -->
           <div v-if="activeTab === 'display'" class="settings-section">
             <div class="section-card">
-              <h2 class="section-title">Display settings</h2>
+              <h2 class="section-title">{{ $t('settings.displaySettings') }}</h2>
 
               <!-- Explicit content -->
               <div class="setting-row">
                 <div class="setting-label-col">
-                  <span class="setting-label">Explicit content</span>
+                  <span class="setting-label">{{ $t('settings.explicitContent') }}</span>
                 </div>
                 <div class="setting-control-col">
                   <div class="toggle-row">
@@ -248,11 +250,11 @@ function toggleLeftNav() {
                       <input type="checkbox" v-model="showExplicit" @change="saveExplicit" />
                       <span class="toggle-slider"></span>
                     </label>
-                    <span class="toggle-label">Show explicit content (R-18)</span>
+                    <span class="toggle-label">{{ $t('settings.showExplicit') }}</span>
                   </div>
                   <div class="info-banner">
                     <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-                    <span>You can choose whether to display works in lists or on work pages based on their ratings.</span>
+                    <span>{{ $t('settings.explicitDesc') }}</span>
                   </div>
                 </div>
               </div>
@@ -262,7 +264,7 @@ function toggleLeftNav() {
               <!-- AI-generated work -->
               <div class="setting-row">
                 <div class="setting-label-col">
-                  <span class="setting-label">AI-generated work</span>
+                  <span class="setting-label">{{ $t('settings.aiGeneratedWork') }}</span>
                 </div>
                 <div class="setting-control-col">
                   <div class="toggle-row">
@@ -270,9 +272,9 @@ function toggleLeftNav() {
                       <input type="checkbox" v-model="showAiContent" @change="saveAiContent" />
                       <span class="toggle-slider"></span>
                     </label>
-                    <span class="toggle-label">Display</span>
+                    <span class="toggle-label">{{ $t('settings.display') }}</span>
                   </div>
-                  <span class="info-hint">You can choose to hide AI-generated works on most pages.</span>
+                  <span class="info-hint">{{ $t('settings.aiContentDesc') }}</span>
                 </div>
               </div>
 
@@ -283,15 +285,15 @@ function toggleLeftNav() {
           <!-- ═══ Privacy ═══ -->
           <div v-if="activeTab === 'privacy'" class="settings-section">
             <div class="section-card">
-              <h2 class="section-title">Privacy</h2>
+              <h2 class="section-title">{{ $t('settings.privacySettings') }}</h2>
 
               <!-- Blocked users list -->
               <div class="blocked-users-section">
-                <h3 class="blocked-subtitle">Block list</h3>
+                <h3 class="blocked-subtitle">{{ $t('settings.blockList') }}</h3>
 
-                <p v-if="blockedLoading" class="state-text">Loading...</p>
+                <p v-if="blockedLoading" class="state-text">{{ $t('settings.loading') }}</p>
                 <p v-else-if="blockedError" class="state-text error">{{ blockedError }}</p>
-                <p v-else-if="blockedUsers.length === 0" class="state-text">No blocked users.</p>
+                <p v-else-if="blockedUsers.length === 0" class="state-text">{{ $t('settings.noBlockedUsers') }}</p>
 
                 <div v-else class="blocked-list">
                   <div v-for="blockedUser in blockedUsers" :key="blockedUser.blocked._id" class="blocked-row">
@@ -308,7 +310,7 @@ function toggleLeftNav() {
                       class="toggle-switch"
                       :disabled="unblockingId === blockedUser.blocked._id"
                       @click="toggleBlock(blockedUser)"
-                      :title="'Unblock ' + (blockedUser.blocked.displayName || blockedUser.blocked.username)"
+                      :title="$t('settings.unblockTitle', { username: blockedUser.blocked.displayName || blockedUser.blocked.username })"
                     >
                       <span class="toggle-slider active"></span>
                     </button>

@@ -1,5 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -8,12 +11,12 @@ import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
       <div class="cancel-icon">
         <i class="fa-solid fa-circle-xmark"></i>
       </div>
-      <h1 class="page-title">Payment Cancelled</h1>
-      <p class="lead">Your checkout was cancelled. Your cart is still available if you want to try again.</p>
+      <h1 class="page-title">{{ $t('bookstore.checkoutCancel') }}</h1>
+      <p class="lead">{{ $t('bookstore.checkoutCancelledMsg') }}</p>
 
       <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
-        <router-link to="/bookstore/cart" class="btn btn-primary">Back to Cart</router-link>
-        <router-link to="/bookstore" class="btn btn-outline-secondary">Browse Books</router-link>
+        <router-link to="/bookstore/cart" class="btn btn-primary">{{ $t('bookstore.backToCart') }}</router-link>
+        <router-link to="/bookstore" class="btn btn-outline-secondary">{{ $t('bookstore.browseBooks') }}</router-link>
       </div>
     </section>
   </BookstoreLayout>

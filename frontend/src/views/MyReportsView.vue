@@ -1,11 +1,13 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 
 import { useAuthStore } from '@/stores/auth.store'
 import { reportApi } from '@/services/api'
 
+const { t } = useI18n()
 const isNavCollapsed = ref(true)
 const router = useRouter()
 const authStore = useAuthStore()
@@ -29,7 +31,7 @@ async function loadReports(nextPage = 1) {
     totalPages.value = data?.pages || 1
     total.value = data?.total || reports.value.length
   } catch (err) {
-    error.value = err?.response?.data?.message || 'Failed to load reports'
+    error.value = err?.response?.data?.message || t('report.loadFailed')
     reports.value = []
   } finally {
     loading.value = false
@@ -69,14 +71,14 @@ function formatDate(dateStr) {
 function getTargetLabel(report) {
   const target = report?.target
   const type = report?.targetType || report?.type || ''
-  if (!target) return 'Unknown'
+  if (!target) return t('common.unknown')
   if (type === 'artwork') return target.title || 'Untitled Artwork'
   if (type === 'comment') {
     const content = target.content || ''
     return content.length > 80 ? content.slice(0, 80) + '...' : content
   }
-  if (type === 'user') return target?.displayName || target?.username || 'Unknown User'
-  return 'Unknown'
+  if (type === 'user') return target?.displayName || target?.username || t('common.unknown')
+  return t('common.unknown')
 }
 
 function getTargetLink(report) {
@@ -124,7 +126,7 @@ onMounted(() => {
       <header class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>
           <h1 class="h4 mb-1">
-            <i class="fa-regular fa-flag me-2"></i>My Reports
+            <i class="fa-regular fa-flag me-2"></i>{{ $t('report.myReports') }}
           </h1>
           <p class="text-secondary mb-0">Track the status of reports you've submitted</p>
         </div>
@@ -137,13 +139,13 @@ onMounted(() => {
 
       <div v-if="loading" class="text-center py-5">
         <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
+          <span class="visually-hidden">{{ $t('common.loading') }}</span>
         </div>
       </div>
 
       <div v-else-if="reports.length === 0" class="text-center py-5">
         <i class="fa-regular fa-flag fa-3x text-muted mb-3"></i>
-        <h4 class="text-muted">No reports yet</h4>
+        <h4 class="text-muted">{{ $t('report.noReports') }}</h4>
         <p class="text-muted">You haven't submitted any reports yet.</p>
       </div>
 
@@ -204,7 +206,7 @@ onMounted(() => {
         <nav v-if="totalPages > 1" class="mt-2">
           <ul class="pagination justify-content-center pagination-sm">
             <li class="page-item" :class="{ disabled: page <= 1 }">
-              <button type="button" class="page-link" @click="goToPage(page - 1)">Previous</button>
+              <button type="button" class="page-link" @click="goToPage(page - 1)">{{ $t('common.previous') }}</button>
             </li>
             <li
               v-for="p in totalPages"
@@ -215,7 +217,7 @@ onMounted(() => {
               <button type="button" class="page-link" @click="goToPage(p)">{{ p }}</button>
             </li>
             <li class="page-item" :class="{ disabled: page >= totalPages }">
-              <button type="button" class="page-link" @click="goToPage(page + 1)">Next</button>
+              <button type="button" class="page-link" @click="goToPage(page + 1)">{{ $t('common.next') }}</button>
             </li>
           </ul>
         </nav>
@@ -223,9 +225,9 @@ onMounted(() => {
     </section>
 
     <section v-else class="page-block p-3 p-md-4 d-grid gap-2">
-      <h1 class="h4 mb-0">My Reports</h1>
+      <h1 class="h4 mb-0">{{ $t('report.myReports') }}</h1>
       <p class="text-secondary mb-0">You are not logged in.</p>
-      <button type="button" class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
+      <button type="button" class="btn btn-primary btn-sm justify-self-start" @click="goLogin">{{ $t('auth.loginButton') }}</button>
     </section>
   </MainLayoutTemplate>
 </template>

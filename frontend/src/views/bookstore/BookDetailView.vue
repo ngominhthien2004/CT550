@@ -1,10 +1,12 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import AddToCartButton from '@/components/bookstore/AddToCartButton.vue'
 import { useBookStore } from '@/stores/book.store.js'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const bookStore = useBookStore()
@@ -68,8 +70,8 @@ onMounted(() => {
           </div>
 
           <p class="detail-stock">
-            Stock:
-            <strong>{{ isUnlimited ? 'Unlimited' : book.stock }}</strong>
+            {{ $t('bookstore.stock') }}
+            <strong>{{ isUnlimited ? $t('bookstore.unlimited') : book.stock }}</strong>
           </p>
 
           <div class="detail-actions">
@@ -77,8 +79,8 @@ onMounted(() => {
           </div>
 
           <div class="detail-description">
-            <h2>Description</h2>
-            <p>{{ book.description || 'No description provided.' }}</p>
+            <h2>{{ $t('bookstore.description') }}</h2>
+            <p>{{ book.description || $t('bookstore.noDescription') }}</p>
           </div>
 
           <div v-if="book.tags?.length" class="detail-tags">

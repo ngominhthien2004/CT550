@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import BookFilterBar from '@/components/bookstore/BookFilterBar.vue'
 import BookGrid from '@/components/bookstore/BookGrid.vue'
@@ -8,6 +9,7 @@ import BookSection from '@/components/bookstore/BookSection.vue'
 import TagStrip from '@/components/shared/TagStrip.vue'
 import { useBookStore } from '@/stores/book.store.js'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const bookStore = useBookStore()
@@ -104,18 +106,15 @@ onMounted(async () => {
       <section class="bookstore-hero page-block">
         <div class="bookstore-hero-grid">
           <div class="bookstore-hero-copy">
-            <span class="bookstore-hero-eyebrow">IlluWrl Book Store</span>
-            <h1 class="bookstore-hero-title">Discover and buy<br />digital books from creators</h1>
-            <p class="bookstore-hero-subtitle">
-              Browse comics, illustration books, novels, and guides from independent
-              creators around the world. Buy once, download forever.
-            </p>
+            <span class="bookstore-hero-eyebrow">{{ $t('bookstore.bookstore') }}</span>
+            <h1 class="bookstore-hero-title">{{ $t('bookstore.heroTitle') }}</h1>
+            <p class="bookstore-hero-subtitle">{{ $t('bookstore.heroSubtitle') }}</p>
             <div class="bookstore-hero-actions">
               <button type="button" class="bookstore-hero-cta" @click="scrollToSection('.bookstore-section--featured')">
-                <i class="fa-solid fa-compass me-1"></i> Explore books
+                <i class="fa-solid fa-compass me-1"></i> {{ $t('bookstore.exploreBooks') }}
               </button>
               <router-link to="/bookstore/upload" class="bookstore-hero-cta bookstore-hero-cta--ghost">
-                <i class="fa-solid fa-upload me-1"></i> Sell a book
+                <i class="fa-solid fa-upload me-1"></i> {{ $t('bookstore.sellABook') }}
               </router-link>
             </div>
           </div>
@@ -135,7 +134,7 @@ onMounted(async () => {
         <header class="bookstore-section-head">
           <h2 class="bookstore-section-title">
             <i class="fa-solid fa-tags bookstore-section-title-icon"></i>
-            Popular Tags
+            {{ $t('bookstore.popularTags') }}
           </h2>
         </header>
 
@@ -149,14 +148,14 @@ onMounted(async () => {
         </div>
         <div v-else class="bookstore-section-empty">
           <i class="fa-solid fa-circle-info me-1"></i>
-          No tags yet — be the first to publish a book.
+          {{ $t('bookstore.noTagsYet') }}
         </div>
       </section>
 
       <!-- Featured / Latest books -->
       <section class="bookstore-section bookstore-section--featured">
         <BookSection
-          title="Featured"
+          :title="$t('bookstore.featured')"
           icon="fa-fire"
           :books="featuredBooks"
           :loading="loading && books.length === 0"
@@ -176,16 +175,16 @@ onMounted(async () => {
 
         <div v-if="filters.search || filters.minPrice || filters.maxPrice" class="bookstore-filtered-grid">
           <BookGrid :books="books" :loading="loading" />
-          <nav v-if="pagination.pages > 1" class="bookstore-pagination-wrap bookstore-pagination" aria-label="Book pagination">
+          <nav v-if="pagination.pages > 1" class="bookstore-pagination-wrap bookstore-pagination" :aria-label="$t('bookstore.bookstore')">
             <ul class="pagination mb-0">
               <li class="page-item" :class="{ disabled: pagination.page <= 1 }">
-                <button type="button" class="page-link" :disabled="pagination.page <= 1" @click="goToPage(pagination.page - 1)">Previous</button>
+                <button type="button" class="page-link" :disabled="pagination.page <= 1" @click="goToPage(pagination.page - 1)">{{ $t('bookstore.previous') }}</button>
               </li>
               <li v-for="page in pagination.pages" :key="page" class="page-item" :class="{ active: page === pagination.page }">
                 <button type="button" class="page-link" @click="goToPage(page)">{{ page }}</button>
               </li>
               <li class="page-item" :class="{ disabled: pagination.page >= pagination.pages }">
-                <button type="button" class="page-link" :disabled="pagination.page >= pagination.pages" @click="goToPage(pagination.page + 1)">Next</button>
+                <button type="button" class="page-link" :disabled="pagination.page >= pagination.pages" @click="goToPage(pagination.page + 1)">{{ $t('bookstore.next') }}</button>
               </li>
             </ul>
           </nav>
@@ -198,15 +197,12 @@ onMounted(async () => {
           <i class="fa-solid fa-bullhorn"></i>
         </div>
         <div class="bookstore-cta-sell-copy">
-          <h2 class="bookstore-cta-sell-title">Sell your work on IlluWrl Book Store!</h2>
-          <p class="bookstore-cta-sell-sub">
-            Reach readers around the world. Publish comics, illustration books, novels,
-            or guides — keep full control of your pricing and rights.
-          </p>
+          <h2 class="bookstore-cta-sell-title">{{ $t('bookstore.sellYourWork') }}</h2>
+          <p class="bookstore-cta-sell-sub">{{ $t('bookstore.sellSubtitle') }}</p>
         </div>
         <div class="bookstore-cta-sell-action">
           <router-link to="/bookstore/upload" class="btn btn-warning bookstore-cta-sell-btn">
-            <i class="fa-solid fa-upload me-1"></i> Sell your book
+            <i class="fa-solid fa-upload me-1"></i> {{ $t('bookstore.sellYourBook') }}
           </router-link>
         </div>
       </section>

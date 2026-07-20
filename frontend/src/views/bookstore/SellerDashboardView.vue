@@ -1,11 +1,13 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import OrderItem from '@/components/bookstore/OrderItem.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
 import { formatShortDate } from '@/utils/date.js'
 
+const { t } = useI18n()
 const bookStore = useBookStore()
 const { showSuccess, showError } = useToast()
 const expandedOrderId = ref('')
@@ -22,9 +24,9 @@ async function becomeSeller() {
   becomingSeller.value = true
   try {
     await bookStore.ensureSeller()
-    showSuccess('You are now a seller')
+    showSuccess(t('bookstore.save'))
   } catch (error) {
-    showError(error?.response?.data?.message || 'Failed to become seller')
+    showError(error?.response?.data?.message || t('bookstore.loadFailed'))
   } finally {
     becomingSeller.value = false
   }
@@ -33,22 +35,22 @@ async function becomeSeller() {
 async function updateStatus(orderId, status) {
   try {
     await bookStore.updateSellerOrderStatus(orderId, status)
-    showSuccess('Order status updated')
+    showSuccess(t('bookstore.save'))
     await bookStore.fetchSellerOrders()
   } catch (error) {
-    showError(error?.response?.data?.message || 'Failed to update status')
+    showError(error?.response?.data?.message || t('bookstore.loadFailed'))
   }
 }
 
 function formatStatus(status) {
   const map = {
-    pending: 'Pending',
-    paid: 'Paid',
-    processing: 'Processing',
-    shipped: 'Shipped',
-    completed: 'Completed',
-    cancelled: 'Cancelled',
-    refunded: 'Refunded',
+    pending: t('bookstore.pending'),
+    paid: t('bookstore.paid'),
+    processing: t('bookstore.processing'),
+    shipped: t('bookstore.shipped'),
+    completed: t('bookstore.completed'),
+    cancelled: t('bookstore.cancelled'),
+    refunded: t('bookstore.refunded'),
   }
   return map[status] || status
 }
@@ -87,15 +89,15 @@ onMounted(() => {
 <template>
   <BookstoreLayout>
     <section class="bookstore-page page-block p-3 p-md-4">
-      <h1 class="page-title">Seller Dashboard</h1>
+      <h1 class="page-title">{{ $t('bookstore.sellerDashboard') }}</h1>
 
       <div v-if="!bookStore.isSeller && !bookStore.sellerLoading" class="seller-onboarding">
         <div class="onboarding-card">
           <i class="fa-solid fa-store onboarding-icon"></i>
-          <h2>Become a Seller</h2>
-          <p>Sell your digital books directly to readers around the world.</p>
+          <h2>{{ $t('bookstore.becomeSeller') }}</h2>
+          <p>{{ $t('bookstore.sellDirectly') }}</p>
           <button type="button" class="btn btn-primary" :disabled="becomingSeller" @click="becomeSeller">
-            {{ becomingSeller ? 'Setting up...' : 'Start Selling' }}
+            {{ becomingSeller ? $t('bookstore.settingUp') : $t('bookstore.startSelling') }}
           </button>
         </div>
       </div>
@@ -103,29 +105,29 @@ onMounted(() => {
       <template v-else>
         <div class="stats-grid">
           <div class="stat-card">
-            <span class="stat-label">Revenue</span>
+            <span class="stat-label">{{ $t('bookstore.revenue') }}</span>
             <span class="stat-value">${{ totalRevenue.toFixed(2) }}</span>
           </div>
           <div class="stat-card">
-            <span class="stat-label">Books Sold</span>
+            <span class="stat-label">{{ $t('bookstore.booksSold') }}</span>
             <span class="stat-value">{{ totalSales }}</span>
           </div>
           <div class="stat-card">
-            <span class="stat-label">Orders</span>
+            <span class="stat-label">{{ $t('bookstore.orders') }}</span>
             <span class="stat-value">{{ sellerOrders.length }}</span>
           </div>
         </div>
 
         <div class="dashboard-actions">
           <router-link to="/bookstore/upload" class="btn btn-primary btn-sm">
-            <i class="fa-solid fa-plus me-1"></i> New book
+            <i class="fa-solid fa-plus me-1"></i> {{ $t('bookstore.newBook') }}
           </router-link>
           <router-link to="/bookstore/manage" class="btn btn-outline-secondary btn-sm">
-            Manage books
+            {{ $t('bookstore.manageBooks') }}
           </router-link>
         </div>
 
-        <h2 class="section-title">Orders containing your books</h2>
+        <h2 class="section-title">{{ $t('bookstore.ordersContainingYourBooks') }}</h2>
 
         <div v-if="bookStore.sellerOrdersError" class="alert alert-danger" role="alert">
           {{ bookStore.sellerOrdersError }}
@@ -136,7 +138,7 @@ onMounted(() => {
         </div>
 
         <div v-else-if="sellerOrders.length === 0" class="empty-state">
-          <p>No orders yet.</p>
+          <p>{{ $t('bookstore.noOrdersYet') }}</p>
         </div>
 
         <div v-else class="order-list">
@@ -163,11 +165,11 @@ onMounted(() => {
               />
 
               <div class="status-actions">
-                <span class="status-label">Update status:</span>
-                <button type="button" class="btn btn-outline-secondary btn-sm" @click="updateStatus(order._id, 'processing')">Processing</button>
-                <button type="button" class="btn btn-outline-primary btn-sm" @click="updateStatus(order._id, 'shipped')">Shipped</button>
-                <button type="button" class="btn btn-outline-success btn-sm" @click="updateStatus(order._id, 'completed')">Completed</button>
-                <button type="button" class="btn btn-outline-danger btn-sm" @click="updateStatus(order._id, 'cancelled')">Cancelled</button>
+                <span class="status-label">{{ $t('bookstore.updateStatus') }}</span>
+                <button type="button" class="btn btn-outline-secondary btn-sm" @click="updateStatus(order._id, 'processing')">{{ $t('bookstore.processing') }}</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" @click="updateStatus(order._id, 'shipped')">{{ $t('bookstore.shipped') }}</button>
+                <button type="button" class="btn btn-outline-success btn-sm" @click="updateStatus(order._id, 'completed')">{{ $t('bookstore.completed') }}</button>
+                <button type="button" class="btn btn-outline-danger btn-sm" @click="updateStatus(order._id, 'cancelled')">{{ $t('bookstore.cancelled') }}</button>
               </div>
             </div>
           </div>

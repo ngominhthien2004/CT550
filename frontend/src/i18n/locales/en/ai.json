@@ -1,4 +1,21 @@
 {
   "testFeatures": "Test AI Features",
-  "featureSettings": "AI Feature Settings"
+  "featureSettings": "AI Feature Settings",
+  "aiChat": "AI Chat",
+  "aiDetection": "AI Image Detection",
+  "chatWelcome": "Hello! I can help you find artworks and recommend great pieces.",
+  "chatInputPlaceholder": "Type a message...",
+  "send": "Send",
+  "errorOccurred": "An error occurred. Please try again.",
+  "dropImageHere": "Click or drag an image here",
+  "supportedFormats": "Supported: JPG, PNG, GIF, WEBP",
+  "clearImage": "Clear image",
+  "analyzeImage": "Analyze image",
+  "analyzing": "Analyzing...",
+  "aiDetected": "AI-generated image",
+  "realImage": "Real image",
+  "confidence": "{confidence}% confidence",
+  "size": "Size: {size}",
+  "type": "Type: {type}",
+  "analysisError": "An error occurred while analyzing the image"
 }

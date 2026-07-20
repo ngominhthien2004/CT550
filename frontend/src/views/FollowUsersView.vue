@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import FollowUserCard from '../components/follow/FollowUserCard.vue'
@@ -10,6 +11,7 @@ import { useFollowStore } from '../stores/follow.store'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 const authStore = useAuthStore()
 const followStore = useFollowStore()
 
@@ -21,14 +23,14 @@ const profileUser = ref(null)
 const allArtworks = ref([])
 
 const mode = computed(() => (route.name === 'followers' ? 'followers' : 'following'))
-const pageTitle = computed(() => (mode.value === 'followers' ? 'Followers' : 'Following'))
+const pageTitle = computed(() => (mode.value === 'followers' ? t('follow.followers') : t('follow.following')))
 const routeUserId = computed(() => String(route.params.id || authStore.user?._id || ''))
 
 const tabs = computed(() => {
   const userId = routeUserId.value
   return [
-    { key: 'following', label: 'Following', to: `/users/${userId}/following` },
-    { key: 'followers', label: 'Followers', to: `/users/${userId}/followers` },
+    { key: 'following', label: t('follow.following'), to: `/users/${userId}/following` },
+    { key: 'followers', label: t('follow.followers'), to: `/users/${userId}/followers` },
   ]
 })
 
@@ -45,7 +47,7 @@ const targetUsers = computed(() => {
       return {
         _id: user._id,
         username: user.username || '',
-        displayName: user.displayName || user.username || 'Unknown user',
+        displayName: user.displayName || user.username || t('common.unknown'),
         avatar: user.avatar || '',
       }
     })
@@ -127,7 +129,7 @@ async function loadFollowUsers() {
       )
     }
   } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || 'Failed to load follow users'
+    error.value = fetchError?.response?.data?.message || t('follow.loadFailed')
   } finally {
     loading.value = false
   }
@@ -188,7 +190,7 @@ watch(
         </div>
 
         <p v-if="error" class="state-note error">{{ error }}</p>
-        <p v-else-if="loading" class="state-note">Loading {{ pageTitle.toLowerCase() }} users...</p>
+        <p v-else-if="loading" class="state-note">{{ $t('common.loading') }} {{ $t('follow.' + mode) }}...</p>
 
         <div v-else-if="visibleUsers.length" class="follow-grid">
           <FollowUserCard
@@ -203,7 +205,7 @@ watch(
             @toggle-follow="handleToggleFollow"
           />
         </div>
-        <p v-else class="state-note">No users found.</p>
+        <p v-else class="state-note">{{ $t('follow.noUsers') }}</p>
       </div>
     </section>
   </MainLayoutTemplate>

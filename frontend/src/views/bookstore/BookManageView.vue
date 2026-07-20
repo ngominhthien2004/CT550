@@ -1,9 +1,11 @@
 <script setup>
 import { onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import SellerBookRow from '@/components/bookstore/SellerBookRow.vue'
 import { useBookStore } from '@/stores/book.store.js'
 
+const { t } = useI18n()
 const bookStore = useBookStore()
 
 async function loadBooks() {
@@ -19,9 +21,9 @@ onMounted(() => {
   <BookstoreLayout>
     <section class="bookstore-page page-block p-3 p-md-4">
       <div class="page-header">
-        <h1 class="page-title">My Books</h1>
+        <h1 class="page-title">{{ $t('bookstore.myBooks') }}</h1>
         <router-link to="/bookstore/upload" class="btn btn-primary btn-sm">
-          <i class="fa-solid fa-plus me-1"></i> Upload new
+          <i class="fa-solid fa-plus me-1"></i> {{ $t('bookstore.uploadNew') }}
         </router-link>
       </div>
 
@@ -35,8 +37,8 @@ onMounted(() => {
 
       <div v-else-if="bookStore.myBooks.length === 0" class="empty-state">
         <i class="fa-solid fa-book-open empty-icon"></i>
-        <p>You haven't uploaded any books yet.</p>
-        <router-link to="/bookstore/upload" class="btn btn-primary">Upload your first book</router-link>
+        <p>{{ $t('bookstore.noBooksYet') }}</p>
+        <router-link to="/bookstore/upload" class="btn btn-primary">{{ $t('bookstore.uploadFirstBook') }}</router-link>
       </div>
 
       <div v-else class="book-list">

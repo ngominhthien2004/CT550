@@ -1,8 +1,10 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import { useBookStore } from '@/stores/book.store.js'
 
+const { t } = useI18n()
 const bookStore = useBookStore()
 const loading = ref(false)
 
@@ -22,12 +24,12 @@ onMounted(async () => {
       <div class="success-icon">
         <i class="fa-solid fa-circle-check"></i>
       </div>
-      <h1 class="page-title">Payment Successful</h1>
-      <p class="lead">Thank you for your purchase. Your books are now available in your order history.</p>
+      <h1 class="page-title">{{ $t('bookstore.checkoutSuccess') }}</h1>
+      <p class="lead">{{ $t('bookstore.thankYouPurchase') }}</p>
 
       <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
-        <router-link to="/bookstore/orders" class="btn btn-primary">View Orders</router-link>
-        <router-link to="/bookstore" class="btn btn-outline-secondary">Continue Shopping</router-link>
+        <router-link to="/bookstore/orders" class="btn btn-primary">{{ $t('bookstore.viewOrders') }}</router-link>
+        <router-link to="/bookstore" class="btn btn-outline-secondary">{{ $t('bookstore.continueShopping') }}</router-link>
       </div>
     </section>
   </BookstoreLayout>

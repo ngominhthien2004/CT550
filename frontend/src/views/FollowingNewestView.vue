@@ -1,11 +1,13 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid, HomeFeedColumn, HomeTagStrip, HomeTabs } from '@/components/home'
 import { getFeed, getTags } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useLikeStore } from '../stores/like.store'
 
+const { t } = useI18n()
 const isNavCollapsed = ref(true)
 const liveWorks = ref([])
 const liveTags = ref([])
@@ -36,7 +38,7 @@ async function loadFollowingWorks() {
     const items = Array.isArray(data.artworks) ? data.artworks : []
     liveWorks.value = items
   } catch (err) {
-    error.value = err?.response?.data?.message || 'Failed to load followed works'
+    error.value = err?.response?.data?.message || t('error.loadFailed')
     liveWorks.value = []
   } finally {
     loading.value = false
@@ -68,10 +70,10 @@ onMounted(() => {
         <HomeTagStrip :tags="liveTags" />
         <HomeArtworkGrid :works="spotlightWorks" />
 
-        <p v-if="loading && liveWorks.length === 0" class="state-note">Loading artworks from followed users...</p>
+        <p v-if="loading && liveWorks.length === 0" class="state-note">{{ $t('common.loading') }}...</p>
         <p v-else-if="error" class="state-note error">{{ error }}</p>
         <p v-else-if="!loading && liveWorks.length === 0" class="state-note">
-          No artworks from followed users. Follow more artists to see their works here!
+          {{ $t('home.noWorksFollowed') }}
         </p>
 
         <HomeFeedColumn :works="feedWorks" />

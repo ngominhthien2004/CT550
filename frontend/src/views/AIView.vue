@@ -1,20 +1,22 @@
 <template>
   <div class="ai-test-page">
     <div class="container">
-      <h1>Test AI Features</h1>
+      <h1>{{ $t('ai.testFeatures') }}</h1>
       
       <div class="tabs">
         <button type="button" 
           :class="['tab', { active: activeTab === 'chat' }]" 
           @click="activeTab = 'chat'"
+          :aria-label="$t('ai.aiChat')"
         >
-          AI Chat
+          {{ $t('ai.aiChat') }}
         </button>
         <button type="button" 
           :class="['tab', { active: activeTab === 'detect' }]" 
           @click="activeTab = 'detect'"
+          :aria-label="$t('ai.aiDetection')"
         >
-          Phát hiện ảnh AI
+          {{ $t('ai.aiDetection') }}
         </button>
       </div>
 
@@ -22,7 +24,7 @@
         <div class="chat-container">
           <div class="messages">
             <div v-if="messages.length === 0" class="welcome-msg">
-              👋 Xin chào! Tôi có thể giúp bạn tìm tác phẩm, gợi ý tác phẩm hay.
+              {{ $t('ai.chatWelcome') }}
             </div>
             <div v-for="(msg, i) in messages" :key="'msg-' + i" :class="['message', msg.role]">
               <div class="msg-content">{{ msg.content }}</div>
@@ -35,12 +37,12 @@
           <form @submit.prevent="sendMessage" class="chat-input">
             <input 
               v-model="inputMessage" 
-              placeholder="Nhập tin nhắn..." 
+              :placeholder="$t('ai.chatInputPlaceholder')" 
               :disabled="loading"
               aria-label="Chat message input"
             />
             <button type="submit" :disabled="loading || !inputMessage.trim()">
-              Gửi
+              {{ $t('ai.send') }}
             </button>
           </form>
         </div>
@@ -59,8 +61,8 @@
             />
             <div v-if="!previewImage" class="upload-placeholder">
               <span class="upload-icon">📁</span>
-              <p>Click hoặc kéo ảnh vào đây</p>
-              <p class="hint">Hỗ trợ: JPG, PNG, GIF, WEBP</p>
+              <p>{{ $t('ai.dropImageHere') }}</p>
+              <p class="hint">{{ $t('ai.supportedFormats') }}</p>
             </div>
             <img v-else :src="previewImage" alt="Preview" class="preview-image" />
           </div>
@@ -70,7 +72,7 @@
             @click="clearImage" 
             class="clear-btn"
           >
-            Xóa ảnh
+            {{ $t('ai.clearImage') }}
           </button>
 
           <button type="button" 
@@ -78,24 +80,24 @@
             @click="analyzeImage" 
             class="analyze-btn"
           >
-            Phân tích ảnh
+            {{ $t('ai.analyzeImage') }}
           </button>
 
           <div v-if="isAnalyzing" class="loading">
             <div class="spinner"></div>
-            <p>Đang phân tích...</p>
+            <p>{{ $t('ai.analyzing') }}</p>
           </div>
 
           <div v-if="result" :class="['result', result.isAI ? 'ai-detected' : 'real-image']">
             <div class="result-header">
-              <span v-if="result.isAI" class="badge ai">⚠️ Ảnh AI</span>
-              <span v-else class="badge real">✅ Ảnh thật</span>
-              <span class="confidence">{{ result.confidence }}% độ tin cậy</span>
+              <span v-if="result.isAI" class="badge ai">{{ $t('ai.aiDetected') }}</span>
+              <span v-else class="badge real">{{ $t('ai.realImage') }}</span>
+              <span class="confidence">{{ $t('ai.confidence', { confidence: result.confidence }) }}</span>
             </div>
             <p class="reason">{{ result.reason }}</p>
             <div class="result-details" v-if="result.imageSize">
-              <span>Kích thước: {{ formatSize(result.imageSize) }}</span>
-              <span>Loại: {{ result.imageType }}</span>
+              <span>{{ $t('ai.size', { size: formatSize(result.imageSize) }) }}</span>
+              <span>{{ $t('ai.type', { type: result.imageType }) }}</span>
             </div>
           </div>
 
@@ -108,7 +110,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import api from '../services/api'
+
+const { t } = useI18n()
 
 const activeTab = ref('detect')
 
@@ -129,7 +134,7 @@ async function sendMessage() {
     const { data } = await api.post('/ai/chat', { message: userMsg, history })
     messages.value.push({ role: 'assistant', content: data.reply })
   } catch (err) {
-    messages.value.push({ role: 'assistant', content: 'Có lỗi xảy ra. Vui lòng thử lại.' })
+    messages.value.push({ role: 'assistant', content: t('ai.errorOccurred') })
     console.error(err)
   } finally {
     loading.value = false
@@ -199,7 +204,7 @@ async function analyzeImage() {
 
     result.value = data
   } catch (err) {
-    error.value = err.response?.data?.message || 'Có lỗi xảy ra khi phân tích ảnh'
+    error.value = err.response?.data?.message || t('ai.analysisError')
     console.error(err)
   } finally {
     isAnalyzing.value = false

@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import { useBrowseHistoryStore } from '@/stores/browseHistory.store'
 import { useAuthStore } from '@/stores/auth.store'
@@ -7,6 +8,7 @@ import { useAuthStore } from '@/stores/auth.store'
 import { formatShortDate } from '../utils/date.js'
 
 
+const { t } = useI18n()
 const browseHistoryStore = useBrowseHistoryStore()
 const authStore = useAuthStore()
 
@@ -96,7 +98,7 @@ function goToPage(page) {
 }
 
 function handleClearHistory() {
-  if (confirm('Are you sure you want to clear your browsing history?')) {
+  if (confirm(t('browseHistory.clearConfirm'))) {
     browseHistoryStore.clearHistory()
   }
 }
@@ -132,7 +134,7 @@ function getImage(item) {
     <div class="browse-history-page">
       <div class="page-header">
         <div class="section-head">
-          <h3><i class="fa-regular fa-clock me-2"></i>Browsing History</h3>
+          <h3><i class="fa-regular fa-clock me-2"></i>{{ $t('browseHistory.title') }}</h3>
           <div class="header-actions">
             <button
               type="button"
@@ -148,7 +150,7 @@ function getImage(item) {
               class="btn-clear"
               @click="handleClearHistory"
             >
-              <i class="fa-regular fa-trash-can"></i> Clear
+              <i class="fa-regular fa-trash-can"></i> {{ $t('browseHistory.clearHistory') }}
             </button>
           </div>
         </div>
@@ -176,7 +178,7 @@ function getImage(item) {
           <input
             type="text"
             :value="searchQuery"
-            placeholder="Search by title..."
+            :placeholder="$t('browseHistory.searchByTitle')"
             class="search-input"
             @input="onSearchInput($event.target.value)"
           />
@@ -192,7 +194,7 @@ function getImage(item) {
 
         <div v-if="showFilters" class="filter-panel">
           <div class="filter-row">
-            <label class="filter-label">From</label>
+            <label class="filter-label">{{ $t('common.from') }}</label>
             <input
               type="date"
               v-model="dateFrom"
@@ -201,7 +203,7 @@ function getImage(item) {
             />
           </div>
           <div class="filter-row">
-            <label class="filter-label">To</label>
+            <label class="filter-label">{{ $t('common.to') }}</label>
             <input
               type="date"
               v-model="dateTo"
@@ -215,7 +217,7 @@ function getImage(item) {
             class="btn-clear-filters"
             @click="clearAllFilters"
           >
-            <i class="fa-solid fa-xmark"></i> Clear filters
+            <i class="fa-solid fa-xmark"></i> {{ $t('common.reset') }}
           </button>
         </div>
       </div>
@@ -249,13 +251,13 @@ function getImage(item) {
               </div>
             </div>
             <div class="card-meta">
-              <span class="empty-label">No history yet</span>
+              <span class="empty-label">{{ $t('browseHistory.noHistory') }}</span>
             </div>
           </div>
         </div>
         <div class="empty-overlay">
           <i class="fa-regular fa-clock"></i>
-          <h3>No browsing history yet</h3>
+          <h3>{{ $t('browseHistory.noHistory') }}</h3>
           <p>Artworks you view will appear here</p>
           <router-link to="/discovery" class="btn-explore">
             <i class="fa-regular fa-compass"></i> Explore artworks

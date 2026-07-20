@@ -33,9 +33,9 @@ onMounted(() => {
   <section class="auth-callback-shell d-flex align-items-center justify-content-center" style="min-height: 100vh;">
     <div class="text-center">
       <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Signing in...</span>
+        <span class="visually-hidden">{{ $t('auth.loggingIn') }}</span>
       </div>
-      <p class="mt-3 text-muted">Signing in...</p>
+      <p class="mt-3 text-muted">{{ $t('auth.loggingIn') }}</p>
     </div>
   </section>
 </template>

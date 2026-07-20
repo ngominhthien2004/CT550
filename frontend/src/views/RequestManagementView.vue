@@ -105,11 +105,11 @@ onMounted(loadAll)
     <section class="request-management page-block">
       <header class="request-header">
         <div>
-          <h1>Request Management</h1>
+          <h1>{{ $t('request.management') }}</h1>
         </div>
         <div class="request-header-actions">
-          <router-link to="/dashboard" class="profile-link">Dashboard</router-link>
-          <router-link to="/account?tab=requests" class="profile-link">View profile plans</router-link>
+          <router-link to="/dashboard" class="profile-link">{{ $t('nav.dashboard') }}</router-link>
+          <router-link to="/account?tab=requests" class="profile-link">{{ $t('request.createPlan') }}</router-link>
         </div>
       </header>
 

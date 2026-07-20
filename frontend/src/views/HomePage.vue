@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid, HomeFeedColumn, HomeHeroBanner, HomeRecommendedUsers, HomeTabs, HomeTagStrip } from '@/components/home'
 import { getArtworks, getTags, userApi } from '../services/api'
@@ -10,13 +11,14 @@ import { useFollowStore } from '../stores/follow.store'
 import { useAuthStore } from '../stores/auth.store'
 import { useLikeStore } from '../stores/like.store'
 
+const { t } = useI18n()
 const isNavCollapsed = ref(true)
 const liveWorks = ref([])
 const liveTags = ref([])
 const recommendedUsers = ref([])
 const forYouWorks = ref([])
 const heroSlide = ref({
-  title: 'Featured gallery',
+  title: t('home.featuredGallery'),
   image: '',
 })
 const bannerLink = ref(null)
@@ -133,7 +135,7 @@ async function loadBanners() {
     if (Array.isArray(data) && data.length > 0) {
       const active = data[0]
       heroSlide.value = {
-        title: active.title || 'Featured gallery',
+        title: active.title || t('home.featuredGallery'),
         image: active.image || '',
       }
       bannerLink.value = active.link || null

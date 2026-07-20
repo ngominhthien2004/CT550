@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import RankingFilters from '../components/rankings/RankingFilters.vue'
@@ -11,19 +12,21 @@ import { useLikeStore } from '../stores/like.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
 import { useAuthStore } from '../stores/auth.store'
 
-const TYPE_OPTIONS = [
-  { value: 'all', label: 'Overall' },
-  { value: 'illust', label: 'Illustrations' },
-  { value: 'manga', label: 'Manga' },
-  { value: 'novel', label: 'Novels' },
-]
+const { t } = useI18n()
 
-const PERIOD_OPTIONS = [
-  { value: 'daily', label: 'Daily' },
-  { value: 'weekly', label: 'Weekly' },
-  { value: 'monthly', label: 'Monthly' },
-  { value: 'rookie', label: 'Rookie' },
-]
+const TYPE_OPTIONS = computed(() => [
+  { value: 'all', label: t('ranking.overall') },
+  { value: 'illust', label: t('ranking.illustrations') },
+  { value: 'manga', label: t('ranking.manga') },
+  { value: 'novel', label: t('ranking.novels') },
+])
+
+const PERIOD_OPTIONS = computed(() => [
+  { value: 'daily', label: t('ranking.daily') },
+  { value: 'weekly', label: t('ranking.weekly') },
+  { value: 'monthly', label: t('ranking.monthly') },
+  { value: 'rookie', label: t('ranking.rookie') },
+])
 
 const route = useRoute()
 const router = useRouter()
@@ -70,8 +73,8 @@ async function updateFilter(newPeriod, newType) {
 function normalizeFromRoute() {
   const qPeriod = route.query.period || 'daily'
   const qType = route.query.type || 'all'
-  period.value = PERIOD_OPTIONS.some(o => o.value === qPeriod) ? qPeriod : 'daily'
-  type.value = TYPE_OPTIONS.some(o => o.value === qType) ? qType : 'all'
+  period.value = PERIOD_OPTIONS.value.some(o => o.value === qPeriod) ? qPeriod : 'daily'
+  type.value = TYPE_OPTIONS.value.some(o => o.value === qType) ? qType : 'all'
 }
 
 const periodLabel = computed(() => {
@@ -95,11 +98,11 @@ const periodLabel = computed(() => {
 })
 
 const emptyStateMessage = computed(() => ({
-  daily: 'No artworks ranked in the last 24 hours',
-  weekly: 'No artworks ranked in the last 7 days',
-  monthly: 'No artworks ranked in the last 30 days',
-  rookie: 'No artworks from rookie creators yet'
-})[period.value] || 'No rankings found for this category.')
+  daily: t('ranking.noRankingsDaily'),
+  weekly: t('ranking.noRankingsWeekly'),
+  monthly: t('ranking.noRankingsMonthly'),
+  rookie: t('ranking.noRankingsRookie')
+})[period.value] || t('ranking.noRankings'))
 
 function getLikeStatus(item) {
   if (likeStore.statusByArtwork[item._id] !== undefined) {
@@ -259,7 +262,7 @@ watch(() => [route.query.period, route.query.type], async () => { normalizeFromR
         <div v-if="feedStore.rankingsPage < feedStore.rankingsPages" class="load-more-wrap">
           <button type="button" class="load-more-btn" :disabled="loadingMore" @click="loadMore">
             <span v-if="loadingMore" class="spinner-sm"></span>
-            <span v-else>Load More</span>
+            <span v-else>{{ $t('common.loadMore') }}</span>
           </button>
         </div>
       </section>

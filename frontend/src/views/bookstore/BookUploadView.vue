@@ -1,11 +1,13 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import BookUploadForm from '@/components/bookstore/BookUploadForm.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const bookStore = useBookStore()
@@ -19,14 +21,14 @@ async function handleSubmit(formPayload) {
   try {
     if (isEdit.value) {
       await bookStore.updateBookById(editId.value, formPayload)
-      showSuccess('Book updated')
+      showSuccess(t('bookstore.save'))
       router.push('/bookstore/manage')
       return
     }
 
     await bookStore.ensureSeller()
     const created = await bookStore.uploadBook(formPayload)
-    showSuccess('Book uploaded')
+    showSuccess(t('bookstore.save'))
     const nextId = created?._id || created?.id
     if (nextId) {
       router.push(`/bookstore/${nextId}`)
@@ -34,7 +36,7 @@ async function handleSubmit(formPayload) {
       router.push('/bookstore/manage')
     }
   } catch (error) {
-    showError(error?.response?.data?.message || error?.message || 'Failed to save book')
+    showError(error?.response?.data?.message || error?.message || t('bookstore.saveFailed'))
   }
 }
 
@@ -48,7 +50,7 @@ async function loadBookForEdit() {
     await bookStore.fetchBookDetail(editId.value)
     initialBook.value = bookStore.currentBook
   } catch (error) {
-    showError('Failed to load book for editing')
+    showError(t('bookstore.loadFailed'))
   }
 }
 
@@ -75,9 +77,9 @@ onMounted(async () => {
 <template>
   <BookstoreLayout>
     <section class="bookstore-page page-block p-3 p-md-4">
-      <h1 class="page-title">{{ isEdit ? 'Edit Book' : 'Upload E-book' }}</h1>
+      <h1 class="page-title">{{ isEdit ? $t('bookstore.editBook') : $t('bookstore.uploadBook') }}</h1>
       <p class="page-subtitle">
-        {{ isEdit ? 'Update your book details and files.' : 'Become a seller and start distributing your digital books.' }}
+        {{ isEdit ? $t('bookstore.updateBookDetails') : $t('bookstore.becomeSellerMsg') }}
       </p>
 
       <div v-if="bookStore.sellerError && !isEdit" class="alert alert-warning" role="alert">

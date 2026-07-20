@@ -12,7 +12,7 @@
       accept="image/png,image/jpeg,image/webp,image/gif"
       style="display: none"
       @change="store.handleFileImport"
-      aria-label="Import image to drawing canvas"
+      :aria-label="$t('drawing.importImage')"
     />
     <SaveSlotsModal />
     <PostDrawingModal />
@@ -22,6 +22,7 @@
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useDrawingStore } from '../stores/drawing.store.js'
 import DrawingTopBar from '../components/drawing/DrawingTopBar.vue'
 import DrawingToolPanel from '../components/drawing/DrawingToolPanel.vue'
@@ -31,10 +32,11 @@ import SaveSlotsModal from '../components/drawing/SaveSlotsModal.vue'
 import PostDrawingModal from '../components/drawing/PostDrawingModal.vue'
 
 const store = useDrawingStore()
+const { t } = useI18n()
 
 onBeforeRouteLeave((_to, _from, next) => {
   if (store.hasContent && !store.isGoHomeIntentConfirmed()) {
-    const answer = window.confirm('You have unsaved drawing content. Leave anyway?')
+    const answer = window.confirm(t('drawing.unsavedConfirm'))
     if (!answer) {
       next(false)
       return

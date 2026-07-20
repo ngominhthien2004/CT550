@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid, HomeFeedColumn, HomeHeroBanner, HomeRecommendedUsers, HomeTabs, HomeTagStrip } from '@/components/home'
 import { getArtworks, bannerApi, userApi } from '../services/api'
@@ -19,6 +20,7 @@ const props = defineProps({
   },
 })
 
+const { t } = useI18n()
 const isNavCollapsed = ref(true)
 const isLoading = ref(false)
 const liveWorks = ref([])
@@ -223,16 +225,16 @@ watch(
         <div v-if="isNovelPage" class="novel-filter-bar">
           <label class="nf-sort">
             <select v-model="novelSortBy" aria-label="Novel sort by">
-              <option value="newest">Newest</option>
-              <option value="views">Most viewed</option>
-              <option value="likes">Most liked</option>
+              <option value="newest">{{ $t('home.newest') }}</option>
+              <option value="views">{{ $t('home.mostViewed') }}</option>
+              <option value="likes">{{ $t('home.mostLiked') }}</option>
             </select>
           </label>
         </div>
 
         <HomeTagStrip :tags="liveTags" />
         <HomeHeroBanner :slide="heroSlide" :banner-link="bannerLink" />
-        <p v-if="isLoading" class="type-loading">Loading {{ pageTitle.toLowerCase() }}...</p>
+        <p v-if="isLoading" class="type-loading">{{ $t('common.loading') }} {{ pageTitle.toLowerCase() }}...</p>
         <HomeArtworkGrid :works="spotlightWorks" />
 
         <div class="typed-home-feed-layout">

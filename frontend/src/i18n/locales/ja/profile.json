@@ -37,6 +37,8 @@
   "maxResolution": "最大解像度",
   "coverGuidelines": "R18画像やガイドラインに違反する画像はアップロードしないでください。カバー画像が該当する場合、設定は無効になります。",
   "deleteAvatar": "アバターを削除",
+  "deleteCover": "カバーを削除",
+  "deleteCoverConfirm": "カバーを削除してもよろしいですか？",
   "selectImageFirst": "先に画像を選択してください。",
   "tabHome": "ホーム",
   "tabIllustrations": "イラスト",

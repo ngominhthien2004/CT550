@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { getDiscovery } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
@@ -8,6 +9,7 @@ import DateRangeFilter from '../components/common/DateRangeFilter.vue'
 import { useAuthStore } from '../stores/auth.store'
 import { useLikeStore } from '../stores/like.store'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
@@ -22,12 +24,12 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 const totalItems = ref(0)
 
-const tabs = [
-  { key: 'illust', label: 'Illustrations' },
-  { key: 'manga', label: 'Manga' },
-  { key: 'gif', label: 'GIF' },
-  { key: 'novel', label: 'Novels' },
-]
+const tabs = computed(() => [
+  { key: 'illust', label: t('nav.illustrations') },
+  { key: 'manga', label: t('nav.manga') },
+  { key: 'gif', label: t('nav.gif') },
+  { key: 'novel', label: t('nav.novels') },
+])
 
 const activeType = computed(() => (typeof route.query.type === 'string' ? route.query.type : 'illust'))
 const activePage = computed(() => parseInt(route.query.page, 10) || 1)
@@ -66,7 +68,7 @@ async function loadArtworks() {
     totalPages.value = data.pages || 1
     currentPage.value = data.page || activePage.value
   } catch (err) {
-    error.value = err?.response?.data?.message || 'Failed to load artworks.'
+    error.value = err?.response?.data?.message || t('error.loadFailed')
     artworks.value = []
   } finally {
     loading.value = false
@@ -125,7 +127,7 @@ onMounted(() => {
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="discovery-page">
-      <h1 class="page-title">Discovery</h1>
+      <h1 class="page-title">{{ $t('nav.discovery') }}</h1>
 
       <!-- Tabs -->
       <nav class="type-tabs" aria-label="Content type tabs">
@@ -163,13 +165,13 @@ onMounted(() => {
 
       <!-- Content -->
       <div class="content-block">
-        <p v-if="loading" class="state-note">Loading...</p>
+        <p v-if="loading" class="state-note">{{ $t('common.loading') }}...</p>
         <p v-else-if="error" class="state-note error">{{ error }}</p>
 
         <div v-else-if="visibleItems.length" class="artwork-grid">
           <ArtworkCard v-for="item in visibleItems" :key="item._id" :item="item" />
         </div>
-        <p v-else class="state-note">No artworks found.</p>
+        <p v-else class="state-note">{{ $t('home.noWorksCategory') }}</p>
 
         <!-- Pagination -->
         <nav v-if="totalPages > 1" class="pagination" aria-label="Pagination">

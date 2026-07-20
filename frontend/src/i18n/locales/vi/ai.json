@@ -1,4 +1,21 @@
 {
-  "testFeatures": "Kiểm tra tính năng AI",
-  "featureSettings": "Cài đặt tính năng AI"
+  "testFeatures": "Kiểm tra Tính năng AI",
+  "featureSettings": "Cài đặt Tính năng AI",
+  "aiChat": "AI Trò chuyện",
+  "aiDetection": "Phát hiện ảnh AI",
+  "chatWelcome": "Xin chào! Tôi có thể giúp bạn tìm tác phẩm và gợi ý tác phẩm hay.",
+  "chatInputPlaceholder": "Nhập tin nhắn...",
+  "send": "Gửi",
+  "errorOccurred": "Có lỗi xảy ra. Vui lòng thử lại.",
+  "dropImageHere": "Click hoặc kéo ảnh vào đây",
+  "supportedFormats": "Hỗ trợ: JPG, PNG, GIF, WEBP",
+  "clearImage": "Xóa ảnh",
+  "analyzeImage": "Phân tích ảnh",
+  "analyzing": "Đang phân tích...",
+  "aiDetected": "Ảnh AI",
+  "realImage": "Ảnh thật",
+  "confidence": "{confidence}% độ tin cậy",
+  "size": "Kích thước: {size}",
+  "type": "Loại: {type}",
+  "analysisError": "Có lỗi xảy ra khi phân tích ảnh"
 }

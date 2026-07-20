@@ -30,6 +30,8 @@ import enError from './locales/en/error.json'
 import enFooter from './locales/en/footer.json'
 import enLocale from './locales/en/locale.json'
 import enAi from './locales/en/ai.json'
+import enSettings from './locales/en/settings.json'
+import enBookstore from './locales/en/bookstore.json'
 
 import viNav from './locales/vi/nav.json'
 import viTopbar from './locales/vi/topbar.json'
@@ -61,6 +63,8 @@ import viError from './locales/vi/error.json'
 import viFooter from './locales/vi/footer.json'
 import viLocale from './locales/vi/locale.json'
 import viAi from './locales/vi/ai.json'
+import viSettings from './locales/vi/settings.json'
+import viBookstore from './locales/vi/bookstore.json'
 
 import jaNav from './locales/ja/nav.json'
 import jaTopbar from './locales/ja/topbar.json'
@@ -92,6 +96,8 @@ import jaError from './locales/ja/error.json'
 import jaFooter from './locales/ja/footer.json'
 import jaLocale from './locales/ja/locale.json'
 import jaAi from './locales/ja/ai.json'
+import jaSettings from './locales/ja/settings.json'
+import jaBookstore from './locales/ja/bookstore.json'
 
 const en = {
   nav: enNav, topbar: enTopbar, auth: enAuth, profile: enProfile, home: enHome,
@@ -101,7 +107,7 @@ const en = {
   novel: enNovel, dashboard: enDashboard, report: enReport, favorites: enFavorites,
   bookmarks: enBookmarks, browseHistory: enBrowseHistory, follow: enFollow,
   page: enPage, plan: enPlan, error: enError, footer: enFooter, locale: enLocale,
-  ai: enAi,
+  ai: enAi, settings: enSettings, bookstore: enBookstore,
 }
 
 const vi = {
@@ -112,7 +118,7 @@ const vi = {
   novel: viNovel, dashboard: viDashboard, report: viReport, favorites: viFavorites,
   bookmarks: viBookmarks, browseHistory: viBrowseHistory, follow: viFollow,
   page: viPage, plan: viPlan, error: viError, footer: viFooter, locale: viLocale,
-  ai: viAi,
+  ai: viAi, settings: viSettings, bookstore: viBookstore,
 }
 
 const ja = {
@@ -123,7 +129,7 @@ const ja = {
   novel: jaNovel, dashboard: jaDashboard, report: jaReport, favorites: jaFavorites,
   bookmarks: jaBookmarks, browseHistory: jaBrowseHistory, follow: jaFollow,
   page: jaPage, plan: jaPlan, error: jaError, footer: jaFooter, locale: jaLocale,
-  ai: jaAi,
+  ai: jaAi, settings: jaSettings, bookstore: jaBookstore,
 }
 
 /**

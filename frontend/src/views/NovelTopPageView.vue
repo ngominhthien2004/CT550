@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { NovelSection, NovelCreators } from '@/components/novel'
 import { HomeTabs, HomeHeroBanner, HomeTagStrip } from '@/components/home'
@@ -13,6 +14,7 @@ import { formatShortDate } from '../utils/date.js'
 
 const DEFAULT_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
+const { t } = useI18n()
 const isNavCollapsed = ref(true)
 const loading = ref(false)
 const loadError = ref('')
@@ -23,7 +25,7 @@ const followStore = useFollowStore()
 const router = useRouter()
 
 const heroSlide = ref({
-  title: 'Explore the novel top page',
+  title: t('novel.title'),
   image: '',
 })
 const bannerLink = ref(null)
@@ -73,7 +75,7 @@ function normalizeNovel(item) {
   return {
     ...item,
     image: buildNovelImage(item),
-    authorName: author.displayName || author.username || 'Unknown writer',
+    authorName: author.displayName || author.username || t('common.unknown'),
     authorAvatar: author.avatar || DEFAULT_AVATAR,
     excerpt: clipText(item?.description || item?.novelContent || '', 168),
     userId: author._id || '',
@@ -150,7 +152,7 @@ const creatorRows = computed(() => {
     acc[author._id] = {
       _id: author._id,
       username: existing?.username || author.username || '',
-      displayName: existing?.displayName || author.displayName || author.username || 'Unknown writer',
+      displayName: existing?.displayName || author.displayName || author.username || t('common.unknown'),
       avatar: existing?.avatar || author.avatar || DEFAULT_AVATAR,
       workCount: (existing?.workCount || 0) + 1,
       totalViews: (existing?.totalViews || 0) + toNumber(item.viewCount),
@@ -177,17 +179,17 @@ const heroDescription = computed(() => {
 
 const sectionTabs = computed(() => [
   { id: 'top', label: 'Top', href: '#top' },
-  { id: 'popular-original', label: 'Popular original novels', href: '#popular-original' },
-  { id: 'recommended-works', label: 'Recommended works', href: '#recommended-works' },
-  { id: 'series-highlights', label: 'Series highlights', href: '#series-highlights' },
-  { id: 'fresh-picks', label: 'Fresh picks', href: '#fresh-picks' },
-  { id: 'creators', label: 'Creators', href: '#creators' },
+  { id: 'popular-original', label: t('novel.popularOriginal'), href: '#popular-original' },
+  { id: 'recommended-works', label: t('novel.recommendedWorks'), href: '#recommended-works' },
+  { id: 'series-highlights', label: t('novel.seriesSpotlight'), href: '#series-highlights' },
+  { id: 'fresh-picks', label: t('novel.newestPosts'), href: '#fresh-picks' },
+  { id: 'creators', label: t('novel.writersToFollow'), href: '#creators' },
 ])
 
 const editorialSections = computed(() => [
   {
     id: 'popular-original',
-    title: 'Popular original novels',
+    title: t('novel.popularOriginal'),
     subtitle: 'High-engagement one-shot and original story posts surfaced from the current novel catalog.',
     linkTo: { path: '/search', query: { type: 'novel', order: 'popular' } },
     items: popularOriginalNovels.value,
@@ -195,7 +197,7 @@ const editorialSections = computed(() => [
   },
   {
     id: 'recommended-works',
-    title: 'Recommended works',
+    title: t('novel.recommendedWorks'),
     subtitle: 'A broader mix of recent novels with strong engagement and active readership.',
     linkTo: { path: '/search', query: { type: 'novel', order: 'newest' } },
     items: recommendedWorks.value,
@@ -203,16 +205,16 @@ const editorialSections = computed(() => [
   },
   {
     id: 'series-highlights',
-    title: 'Series highlights',
+    title: t('novel.seriesSpotlight'),
     subtitle: 'Longer-running novels and chapter-based stories with a more editorial feel.',
     linkTo: { path: '/search', query: { type: 'novel', order: 'popular' } },
     items: seriesHighlights.value,
-    emptyText: 'No series novels are available yet.',
+    emptyText: t('novel.noSeriesAvailable'),
   },
   {
     id: 'fresh-picks',
-    title: 'Fresh picks',
-    subtitle: 'The newest novel posts currently available in the app.',
+    title: t('novel.newestPosts'),
+    subtitle: t('novel.newestPosts'),
     linkTo: { path: '/search', query: { type: 'novel', order: 'newest' } },
     items: freshPicks.value,
     emptyText: 'No fresh novel posts are available yet.',
@@ -238,7 +240,7 @@ async function loadNovelTopPage() {
   } catch (_error) {
     novelItems.value = []
     liveTags.value = []
-    loadError.value = 'Failed to load novel top page.'
+    loadError.value = t('novel.loadFailed')
   } finally {
     loading.value = false
   }
@@ -263,20 +265,20 @@ async function loadBanners() {
     if (Array.isArray(data) && data.length > 0) {
       const active = data[0]
       heroSlide.value = {
-        title: active.title || featuredNovel.value?.title || 'Explore the novel top page',
+        title: active.title || featuredNovel.value?.title || t('novel.title'),
         image: active.image || featuredNovel.value?.image || '',
       }
       bannerLink.value = active.link || null
     } else {
       heroSlide.value = {
-        title: featuredNovel.value?.title || 'Explore the novel top page',
+        title: featuredNovel.value?.title || t('novel.title'),
         image: featuredNovel.value?.image || '',
       }
       bannerLink.value = null
     }
   } catch (_error) {
     heroSlide.value = {
-      title: featuredNovel.value?.title || 'Explore the novel top page',
+      title: featuredNovel.value?.title || t('novel.title'),
       image: featuredNovel.value?.image || '',
     }
     bannerLink.value = null
@@ -302,7 +304,7 @@ onMounted(async () => {
       />
 
       <p v-if="loadError" class="novel-page-state novel-page-state--error">{{ loadError }}</p>
-      <p v-else-if="loading && !normalizedNovels.length" class="novel-page-state">Loading novels...</p>
+      <p v-else-if="loading && !normalizedNovels.length" class="novel-page-state">{{ $t('common.loading') }}</p>
 
       <section v-else class="novel-editorial-stack">
         <NovelSection

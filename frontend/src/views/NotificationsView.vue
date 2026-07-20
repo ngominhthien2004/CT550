@@ -1,5 +1,6 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
@@ -9,6 +10,7 @@ import { formatRelativeTime } from '../utils/date'
 
 const POLL_INTERVAL = 30000
 
+const { t } = useI18n()
 const isNavCollapsed = ref(true)
 const unreadOnly = ref(false)
 const sentinelRef = ref(null)
@@ -100,7 +102,7 @@ onBeforeUnmount(() => {
     <section v-if="authStore.isAuthenticated" class="page-block p-3 p-md-4 d-grid gap-3">
       <header class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>
-          <h1 class="h4 mb-1">Notifications</h1>
+          <h1 class="h4 mb-1">{{ $t('notification.title') }}</h1>
           <p class="text-secondary mb-0">Unread: {{ notificationStore.unreadCount }}</p>
         </div>
         <div class="d-flex align-items-center gap-2">
@@ -114,13 +116,13 @@ onBeforeUnmount(() => {
             class="action-pill action-pill--small"
             @click="markAllAsRead"
           >
-            Mark all read
+            {{ $t('notification.markAllRead') }}
           </button>
-          <button type="button" class="action-pill action-pill--small" @click="loadNotifications">Refresh</button>
+          <button type="button" class="action-pill action-pill--small" @click="loadNotifications">{{ $t('notification.refresh') }}</button>
         </div>
       </header>
 
-      <p v-if="notificationStore.loading" class="text-secondary mb-0">Loading notifications...</p>
+      <p v-if="notificationStore.loading" class="text-secondary mb-0">{{ $t('common.loading') }}...</p>
       <p v-else-if="notificationStore.error" class="text-danger mb-0">{{ notificationStore.error }}</p>
 
       <div v-else-if="notifications.length" class="d-grid gap-2">
@@ -153,18 +155,18 @@ onBeforeUnmount(() => {
         </article>
 
         <div ref="sentinelRef" class="scroll-sentinel">
-          <p v-if="notificationStore.loadingMore" class="text-secondary mb-0">Loading more...</p>
+          <p v-if="notificationStore.loadingMore" class="text-secondary mb-0">{{ $t('common.loading') }}...</p>
           <p v-else-if="!notificationStore.hasMore" class="text-secondary mb-0">No more notifications.</p>
         </div>
       </div>
 
-      <p v-else class="text-secondary mb-0">No notifications yet.</p>
+      <p v-else class="text-secondary mb-0">{{ $t('notification.noNotifications') }}</p>
     </section>
 
     <section v-else class="page-block p-3 p-md-4 d-grid gap-2">
-      <h1 class="h4 mb-0">Notifications</h1>
+      <h1 class="h4 mb-0">{{ $t('notification.title') }}</h1>
       <p class="text-secondary mb-0">You are not logged in.</p>
-      <button type="button" class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
+      <button type="button" class="btn btn-primary btn-sm justify-self-start" @click="goLogin">{{ $t('auth.logInLink') }}</button>
     </section>
   </MainLayoutTemplate>
 </template>

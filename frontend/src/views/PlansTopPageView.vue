@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeTabs } from '@/components/home'
 import PlansHero from '../components/plans/PlansHero.vue'
@@ -10,6 +11,7 @@ import { requestApi } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useFollowStore } from '../stores/follow.store'
 
+const { t } = useI18n()
 const isNavCollapsed = ref(true)
 const loading = ref(false)
 const loadError = ref('')
@@ -74,7 +76,7 @@ async function loadPlans() {
   } catch (e) {
     console.error('loadPlans error:', e)
     plans.value = []
-    loadError.value = 'Failed to load plans.'
+    loadError.value = t('plan.loadFailed')
   } finally {
     loading.value = false
   }
@@ -99,7 +101,7 @@ onMounted(async () => {
     }
   } catch (e) {
     console.error('PlansTopPageView onMounted error:', e)
-    loadError.value = e?.message || 'Failed to load'
+    loadError.value = e?.message || t('plan.loadFailed')
   }
 })
 </script>
@@ -112,20 +114,20 @@ onMounted(async () => {
       <PlansHero :plan-count="plans.length" :creator-count="creators.length" />
 
       <p v-if="loadError" class="plans-state plans-state--error">{{ loadError }}</p>
-      <p v-else-if="loading && !plans.length" class="plans-state">Loading plans...</p>
+      <p v-else-if="loading && !plans.length" class="plans-state">{{ $t('common.loading') }}</p>
 
       <template v-else-if="plans.length">
         <CreatorsStrip :creators="creators" @toggle-follow="handleToggleFollow" />
 
         <section class="plans-section">
-          <h2 class="section-heading">Top plans by price</h2>
+          <h2 class="section-heading">{{ $t('plan.topByPrice') }}</h2>
           <div class="plans-grid">
             <PlanCard v-for="plan in topPlans" :key="plan._id" :plan="plan" show-accepting show-slots />
           </div>
         </section>
 
         <section class="plans-section">
-          <h2 class="section-heading">Newest plans</h2>
+          <h2 class="section-heading">{{ $t('plan.newestPlans') }}</h2>
           <div class="plans-grid plans-grid--wide">
             <PlanCard v-for="plan in newestPlans" :key="plan._id" :plan="plan" show-meta />
           </div>

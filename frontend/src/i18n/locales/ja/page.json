@@ -1,6 +1,6 @@
 {
   "notFound": "ページが見つかりません",
-  "notFoundDesc": "ルート ... は存在しません。",
+  "notFoundDesc": "ルート {path} は存在しません。",
   "backToHome": "ホームに戻る",
   "explore": "探索"
 }

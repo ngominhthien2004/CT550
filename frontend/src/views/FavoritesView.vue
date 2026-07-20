@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
 import { useAuthStore } from '../stores/auth.store'
@@ -9,6 +10,7 @@ import { useLikeStore } from '../stores/like.store'
 const objectIdPattern = /^[0-9a-fA-F]{24}$/
 
 const router = useRouter()
+const { t } = useI18n()
 const authStore = useAuthStore()
 const likeStore = useLikeStore()
 
@@ -79,7 +81,7 @@ async function goLogin() {
 
 async function removeLatestLike() {
   if (!likeStore.items.length) {
-    likeStore.error = 'No favorite item available to delete'
+    likeStore.error = t('favorites.noFavorites')
     return
   }
 
@@ -118,10 +120,10 @@ watch(
       <div class="favorites-wrap">
         <header class="favorites-head">
           <div>
-            <h1>My Favorite</h1>
+            <h1>{{ $t('favorites.title') }}</h1>
             <p>All artworks you liked, organized with the same profile template layout.</p>
           </div>
-          <button type="button" class="btn btn-outline-secondary btn-sm" @click="removeLatestLike">Delete latest</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" @click="removeLatestLike">{{ $t('favorites.deleteLatest') }}</button>
         </header>
 
         <div class="favorites-overview">
@@ -145,7 +147,7 @@ watch(
           </button>
         </div>
 
-        <p v-if="likeStore.loading" class="state-note">Loading favorite works...</p>
+        <p v-if="likeStore.loading" class="state-note">{{ $t('common.loading') }}...</p>
         <p v-else-if="likeStore.error" class="state-note error">{{ likeStore.error }}</p>
 
         <section v-else-if="visibleFavorites.length" class="favorites-grid" aria-label="Favorite artworks list">
@@ -165,10 +167,10 @@ watch(
             />
 
             <router-link v-if="entry._hasArtworkRoute" :to="`/artworks/${entry.artwork._id}`" class="favorite-title">
-              {{ entry.artwork?.title || 'Untitled artwork' }}
+              {{ entry.artwork?.title || $t('common.unknown') }}
             </router-link>
             <p class="favorite-meta">{{ entry.artwork?.type || 'illust' }} · {{ entry.artwork?.ageRating || 'all' }}</p>
-            <p class="favorite-author">{{ entry.artwork?.user?.username || entry.artwork?.user?.displayName || 'Unknown author' }}</p>
+            <p class="favorite-author">{{ entry.artwork?.user?.username || entry.artwork?.user?.displayName || $t('common.unknown') }}</p>
 
             <div class="favorite-foot">
               <span>
@@ -179,10 +181,10 @@ watch(
                 type="button"
                 class="btn btn-sm btn-light"
                 :disabled="likeStore.loading"
-                :aria-label="`Remove ${entry.artwork?.title || 'artwork'} from favorites`"
+                :aria-label="$t('common.delete') + ' ' + (entry.artwork?.title || $t('common.unknown'))"
                 @click="removeLike(entry._id)"
               >
-                Remove
+{{ $t('common.delete') }}
               </button>
             </div>
           </article>
@@ -190,13 +192,13 @@ watch(
 
         <section v-else class="favorites-empty" aria-label="Favorites list empty state">
           <i class="fa-regular fa-heart" aria-hidden="true"></i>
-          <p>No favorite works yet.</p>
+          <p>{{ $t('favorites.noFavorites') }}</p>
         </section>
       </div>
     </section>
 
     <section v-else class="page-block p-3 p-md-4 d-grid gap-2">
-      <h1 class="h4 mb-0">My Favorite</h1>
+      <h1 class="h4 mb-0">{{ $t('favorites.title') }}</h1>
       <p class="text-secondary mb-0">You are not logged in.</p>
       <button type="button" class="btn btn-primary btn-sm justify-self-start" @click="goLogin">Go to login</button>
     </section>

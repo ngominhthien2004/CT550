@@ -1,10 +1,12 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import CartItem from '@/components/bookstore/CartItem.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
 
+const { t } = useI18n()
 const bookStore = useBookStore()
 const { showSuccess, showError } = useToast()
 const checkingOut = ref(false)
@@ -21,9 +23,9 @@ async function handleCheckout() {
       window.location.href = url
       return
     }
-    showError('Checkout is not available')
+    showError(t('bookstore.loadFailed'))
   } catch (error) {
-    showError(error?.response?.data?.message || 'Checkout failed')
+    showError(error?.response?.data?.message || t('bookstore.loadFailed'))
   } finally {
     checkingOut.value = false
   }
@@ -32,9 +34,9 @@ async function handleCheckout() {
 async function clearCart() {
   try {
     await bookStore.emptyCart()
-    showSuccess('Cart cleared')
+    showSuccess(t('bookstore.clearCart'))
   } catch (error) {
-    showError(error?.response?.data?.message || 'Failed to clear cart')
+    showError(error?.response?.data?.message || t('bookstore.loadFailed'))
   }
 }
 
@@ -46,7 +48,7 @@ onMounted(() => {
 <template>
   <BookstoreLayout>
     <section class="bookstore-page page-block p-3 p-md-4">
-      <h1 class="page-title">Shopping Cart</h1>
+      <h1 class="page-title">{{ $t('bookstore.cart') }}</h1>
 
       <div v-if="loading && items.length === 0" class="text-center py-5">
         <div class="spinner-border text-primary" role="status"></div>
@@ -54,8 +56,8 @@ onMounted(() => {
 
       <div v-else-if="items.length === 0" class="empty-state">
         <i class="fa-solid fa-cart-shopping empty-icon"></i>
-        <p>Your cart is empty.</p>
-        <router-link to="/bookstore" class="btn btn-primary">Browse books</router-link>
+        <p>{{ $t('bookstore.emptyCart') }}</p>
+        <router-link to="/bookstore" class="btn btn-primary">{{ $t('bookstore.browseBooks') }}</router-link>
       </div>
 
       <template v-else>
@@ -65,13 +67,13 @@ onMounted(() => {
 
         <div class="cart-summary">
           <div class="summary-row">
-            <span>Total ({{ bookStore.cartItemCount }} items)</span>
+            <span>{{ $t('bookstore.totalItems', { count: bookStore.cartItemCount }) }}</span>
             <span class="summary-total">${{ total.toFixed(2) }}</span>
           </div>
           <div class="summary-actions">
-            <button type="button" class="btn btn-outline-danger" @click="clearCart">Clear cart</button>
+            <button type="button" class="btn btn-outline-danger" @click="clearCart">{{ $t('bookstore.clearCart') }}</button>
             <button type="button" class="btn btn-primary" :disabled="checkingOut" @click="handleCheckout">
-              {{ checkingOut ? 'Redirecting...' : 'Checkout' }}
+              {{ checkingOut ? $t('bookstore.redirecting') : $t('bookstore.checkout') }}
             </button>
           </div>
         </div>

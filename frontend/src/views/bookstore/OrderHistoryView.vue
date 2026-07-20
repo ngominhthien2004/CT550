@@ -1,11 +1,13 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import OrderItem from '@/components/bookstore/OrderItem.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { formatShortDate } from '@/utils/date.js'
 
+const { t } = useI18n()
 const router = useRouter()
 const bookStore = useBookStore()
 const expandedOrderId = ref('')
@@ -19,13 +21,13 @@ function toggleOrder(orderId) {
 
 function formatStatus(status) {
   const map = {
-    pending: 'Pending',
-    paid: 'Paid',
-    processing: 'Processing',
-    shipped: 'Shipped',
-    completed: 'Completed',
-    cancelled: 'Cancelled',
-    refunded: 'Refunded',
+    pending: t('bookstore.pending'),
+    paid: t('bookstore.paid'),
+    processing: t('bookstore.processing'),
+    shipped: t('bookstore.shipped'),
+    completed: t('bookstore.completed'),
+    cancelled: t('bookstore.cancelled'),
+    refunded: t('bookstore.refunded'),
   }
   return map[status] || status
 }
@@ -55,7 +57,7 @@ onMounted(() => {
 <template>
   <BookstoreLayout>
     <section class="bookstore-page page-block p-3 p-md-4">
-      <h1 class="page-title">Order History</h1>
+      <h1 class="page-title">{{ $t('bookstore.orderHistory') }}</h1>
 
       <div v-if="bookStore.ordersError" class="alert alert-danger" role="alert">
         {{ bookStore.ordersError }}
@@ -67,8 +69,8 @@ onMounted(() => {
 
       <div v-else-if="orders.length === 0" class="empty-state">
         <i class="fa-solid fa-receipt empty-icon"></i>
-        <p>You haven't placed any orders yet.</p>
-        <router-link to="/bookstore" class="btn btn-primary">Browse books</router-link>
+        <p>{{ $t('bookstore.noOrdersYet') }}</p>
+        <router-link to="/bookstore" class="btn btn-primary">{{ $t('bookstore.browseBooks') }}</router-link>
       </div>
 
       <div v-else class="order-list">
