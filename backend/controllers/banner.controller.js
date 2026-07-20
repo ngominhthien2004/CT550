@@ -2,7 +2,7 @@ const Banner = require('../models/Banner');
 const cloudinary = require('cloudinary').v2;
 const path = require('path');
 const fs = require('fs');
-const { getOrSet, delByPrefix, TTL, buildKey } = require('../utils/cache');
+const { getOrSetWithL2, delByPrefix, TTL, buildKey } = require('../utils/cache');
 
 const CACHE_PREFIX = 'banners';
 
@@ -11,7 +11,7 @@ const CACHE_PREFIX = 'banners';
 const getActiveBanners = async (req, res, next) => {
   try {
     const cacheKey = buildKey(CACHE_PREFIX, req.query);
-    const banners = await getOrSet(cacheKey, async () => {
+    const banners = await getOrSetWithL2(cacheKey, async () => {
       const filter = { isActive: true };
       if (req.query.type) {
         filter.type = req.query.type;

@@ -1,6 +1,7 @@
 /**
- * In-memory cache utility using node-cache.
- * Provides a singleton cache instance + helpers for TTL management.
+ * Two-tier caching: L1 (node-cache in-memory) + L2 (MongoDB TTL collection).
+ * L1 is always the primary — fastest reads.
+ * L2 is optional — for data that should survive server restart.
  */
 const NodeCache = require('node-cache');
 
@@ -31,6 +32,15 @@ const TTL = {
   PUBLIC_PROFILE: 120,
 };
 
+// ── Lazy Cache model loader (avoids circular require at startup) ──
+let CacheModel = null;
+function getCacheModel() {
+  if (!CacheModel) {
+    CacheModel = require('../models/Cache');
+  }
+  return CacheModel;
+}
+
 // ── Helpers ──────────────────────────────────────────────────
 
 /**
@@ -48,10 +58,29 @@ function buildKey(prefix, query = {}) {
 }
 
 /**
- * Get a value from cache, or call fetchFn to populate it.
+ * Get value from L1 (node-cache) only — fastest, no async overhead.
+ * Used for short-TTL data that doesn't need to survive restart.
+ */
+function get(key) {
+  return cache.get(key);
+}
+
+/**
+ * Set value in L1 (node-cache) only.
+ * @param {string} key
+ * @param {any} value
+ * @param {number} [ttl]
+ */
+function set(key, value, ttl) {
+  cache.set(key, value, ttl);
+}
+
+/**
+ * Get or fetch via L1 only (no MongoDB persistence).
+ * Best for short-lived or frequently-invalidated data.
  * @param {string} key
  * @param {() => Promise<any>} fetchFn
- * @param {number} [ttl] – overrides default TTL
+ * @param {number} [ttl]
  */
 async function getOrSet(key, fetchFn, ttl) {
   const cached = cache.get(key);
@@ -63,29 +92,103 @@ async function getOrSet(key, fetchFn, ttl) {
 }
 
 /**
+ * Get or fetch with TWO-tier: L1 → L2 → fetchFn.
+ * Populates both L1 and L2 on miss.
+ * Best for expensive, slow-changing data that should survive restart.
+ * @param {string} key
+ * @param {() => Promise<any>} fetchFn
+ * @param {number} [ttl]
+ */
+async function getOrSetWithL2(key, fetchFn, ttl) {
+  // 1. Try L1 (in-memory) — fastest path
+  const l1 = cache.get(key);
+  if (l1 !== undefined) return l1;
+
+  // 2. Try L2 (MongoDB) — persistent cache
+  try {
+    const Model = getCacheModel();
+    const doc = await Model.findOne({ key }).lean();
+    if (doc && doc.expiresAt > new Date()) {
+      // Found valid L2 entry — promote to L1 and return
+      cache.set(key, doc.data, ttl);
+      return doc.data;
+    }
+  } catch (err) {
+    // L2 failure is non-blocking — fall through to fetchFn
+    console.warn(`[cache] L2 miss for "${key}":`, err.message);
+  }
+
+  // 3. Miss in both — execute fetchFn
+  const data = await fetchFn();
+
+  // 4. Store in L1
+  cache.set(key, data, ttl);
+
+  // 5. Store in L2 (fire-and-forget — never block on DB)
+  try {
+    const Model = getCacheModel();
+    const expiresAt = new Date(Date.now() + (ttl || 60) * 1000);
+    await Model.updateOne(
+      { key },
+      { $set: { key, data, expiresAt } },
+      { upsert: true }
+    );
+  } catch (err) {
+    // L2 write failure is non-blocking
+    console.warn(`[cache] L2 write failed for "${key}":`, err.message);
+  }
+
+  return data;
+}
+
+/**
  * Delete one or more cache keys.
+ * Clears from both L1 and L2.
  * @param {string|string[]} keys
  */
 function del(keys) {
-  if (Array.isArray(keys)) cache.del(keys);
-  else cache.del(keys);
+  const keyList = Array.isArray(keys) ? keys : [keys];
+  // Clear L1
+  cache.del(keyList);
+  // Clear L2 (fire-and-forget)
+  try {
+    const Model = getCacheModel();
+    Model.deleteMany({ key: { $in: keyList } }).catch(() => {});
+  } catch (err) {
+    // ignore
+  }
 }
 
 /**
  * Delete all keys starting with a given prefix.
+ * Clears from both L1 and L2.
  * @param {string} prefix
  */
 function delByPrefix(prefix) {
+  // Clear L1
   const matched = cache.keys().filter((k) => k.startsWith(prefix));
   if (matched.length) cache.del(matched);
+  // Clear L2 (fire-and-forget with regex)
+  try {
+    const Model = getCacheModel();
+    Model.deleteMany({ key: { $regex: `^${prefix}` } }).catch(() => {});
+  } catch (err) {
+    // ignore
+  }
 }
 
-/** Empty the entire cache. */
+/** Empty the entire cache (L1 + L2). */
 function flushAll() {
   cache.flushAll();
+  try {
+    const Model = getCacheModel();
+    Model.deleteMany({}).catch(() => {});
+  } catch (err) {
+    // ignore
+  }
 }
 
-/** Return cache stats (keys, hits, misses, etc.). */
+/** Return L1 cache stats (keys, hits, misses, etc.). */
 function stats() {
   return cache.getStats();
 }
@@ -94,7 +197,10 @@ module.exports = {
   cache,
   TTL,
   buildKey,
+  get,
+  set,
   getOrSet,
+  getOrSetWithL2,
   del,
   delByPrefix,
   flushAll,

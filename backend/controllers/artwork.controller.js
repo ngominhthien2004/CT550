@@ -14,7 +14,7 @@ const { getSimilarArtworks: getSimilarArtworksService } = require('../services/s
 const fs = require('fs');
 const path = require('path');
 const cloudinary = require('cloudinary').v2;
-const { getOrSet, delByPrefix, TTL, buildKey } = require('../utils/cache');
+const { getOrSet, getOrSetWithL2, delByPrefix, TTL, buildKey } = require('../utils/cache');
 
 const normalizeTagName = (rawTagName = '') =>
     String(rawTagName)
@@ -831,7 +831,7 @@ const getSimilarArtworks = async (req, res, next) => {
         const { id } = req.params;
         const limit = parseInt(req.query.limit, 10) || 24;
         const cacheKey = `artworks:similar:${id}:${limit}`;
-        const results = await getOrSet(cacheKey, async () => {
+        const results = await getOrSetWithL2(cacheKey, async () => {
             return await getSimilarArtworksService(id, limit);
         }, TTL.SIMILAR_ARTWORKS);
         res.json(results);

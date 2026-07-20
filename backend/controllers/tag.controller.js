@@ -1,7 +1,7 @@
 const Artwork = require('../models/Artwork');
 const Tag = require('../models/Tag');
 const mongoose = require('mongoose');
-const { getOrSet, delByPrefix, TTL, buildKey } = require('../utils/cache');
+const { getOrSetWithL2, delByPrefix, TTL, buildKey } = require('../utils/cache');
 
 const normalizeTagName = (rawTagName = '') =>
     String(rawTagName)
@@ -222,7 +222,7 @@ const adminDeleteTag = async (req, res, next) => {
 const getPopularSuggestions = async (req, res, next) => {
   try {
     const cacheKey = buildKey('tags:popular', req.query);
-    const result = await getOrSet(cacheKey, async () => {
+    const result = await getOrSetWithL2(cacheKey, async () => {
       const limit = Math.min(parseInt(req.query.limit, 10) || 5, 20);
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
@@ -275,7 +275,7 @@ const getPopularSuggestions = async (req, res, next) => {
 const getPopularIllustSuggestions = async (req, res, next) => {
   try {
     const cacheKey = buildKey('tags:popular-illust', req.query);
-    const result = await getOrSet(cacheKey, async () => {
+    const result = await getOrSetWithL2(cacheKey, async () => {
       const limit = Math.min(parseInt(req.query.limit, 10) || 4, 20);
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
