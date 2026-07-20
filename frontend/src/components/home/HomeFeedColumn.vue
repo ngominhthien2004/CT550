@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import SkeletonLoader from '../common/SkeletonLoader.vue'
 import R18BlurOverlay from '../common/R18BlurOverlay.vue'
 import CardMenuDropdown from '../common/CardMenuDropdown.vue'
 import { formatShortDate } from '../../utils/date.js'
@@ -17,6 +18,10 @@ const props = defineProps({
   works: {
     type: Array,
     default: () => [],
+  },
+  loading: {
+    type: Boolean,
+    default: false,
   },
 })
 
@@ -148,7 +153,9 @@ async function handleLike(e, work) {
       <router-link to="/discovery">See more</router-link>
     </header>
 
-    <p v-if="!works.length" class="empty-state">
+    <SkeletonLoader v-if="loading" type="feed-card" :count="3" />
+
+    <p v-else-if="!works.length" class="empty-state">
       No recent works are available yet. Upload more content to build the home feed.
     </p>
 

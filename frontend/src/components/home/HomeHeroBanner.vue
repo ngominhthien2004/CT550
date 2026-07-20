@@ -1,4 +1,6 @@
 <script setup>
+import SkeletonLoader from '../common/SkeletonLoader.vue'
+
 defineProps({
   slide: {
     type: Object,
@@ -12,11 +14,16 @@ defineProps({
     type: [String, Object],
     default: null,
   },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
 })
 </script>
 
 <template>
-  <a v-if="bannerLink" :href="bannerLink" class="banner-link-wrapper">
+  <SkeletonLoader v-if="loading" type="banner" />
+  <a v-else-if="bannerLink" :href="bannerLink" class="banner-link-wrapper">
     <article class="banner">
       <img :src="slide.image" :alt="slide.title" loading="lazy" />
       <div class="banner-overlay">

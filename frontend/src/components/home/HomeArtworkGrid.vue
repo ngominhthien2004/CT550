@@ -1,11 +1,16 @@
 <script setup>
 import { computed } from 'vue'
 import ArtworkCard from '../artwork/ArtworkCard.vue'
+import SkeletonLoader from '../common/SkeletonLoader.vue'
 
 const props = defineProps({
   works: {
     type: Array,
     default: () => [],
+  },
+  loading: {
+    type: Boolean,
+    default: false,
   },
 })
 
@@ -31,7 +36,9 @@ const processedWorks = computed(() =>
       <router-link to="/discovery">View all</router-link>
     </header>
 
-    <p v-if="!works.length" class="empty-state mb-0">
+    <SkeletonLoader v-if="loading" type="artwork-card" :count="12" />
+
+    <p v-else-if="!works.length" class="empty-state mb-0">
       No latest works to display yet. Upload your first artwork to fill the homepage with content.
     </p>
 

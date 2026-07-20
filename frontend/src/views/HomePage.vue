@@ -13,6 +13,7 @@ import { useLikeStore } from '../stores/like.store'
 
 const { t } = useI18n()
 const isNavCollapsed = ref(true)
+const isLoading = ref(true)
 const liveWorks = ref([])
 const liveTags = ref([])
 const recommendedUsers = ref([])
@@ -158,11 +159,13 @@ async function loadForYou() {
 }
 
 onMounted(async () => {
+  isLoading.value = true
   await Promise.all([loadHomeArtworks(), loadHomeTags(), loadBanners()])
   if (authStore.isAuthenticated) {
     likeStore.fetchMyLikes({ limit: 120 })
   }
   await loadForYou()
+  isLoading.value = false
 })
 
 async function toggleFollowFromHome(userId) {
@@ -180,15 +183,16 @@ async function toggleFollowFromHome(userId) {
       <div class="home-main-column">
         <HomeTabs />
         <HomeTagStrip :tags="liveTags" />
-        <HomeHeroBanner :slide="heroSlide" :banner-link="bannerLink" />
-        <HomeArtworkGrid :works="spotlightWorks" />
+        <HomeHeroBanner :slide="heroSlide" :banner-link="bannerLink" :loading="isLoading" />
+        <HomeArtworkGrid :works="spotlightWorks" :loading="isLoading" />
 
         <div class="home-feed-layout">
-          <HomeFeedColumn :works="displayFeedWorks" />
+          <HomeFeedColumn :works="displayFeedWorks" :loading="isLoading" />
 
           <aside class="home-feed-sidebar">
             <HomeRecommendedUsers
               :users="recommendedUsers"
+              :loading="isLoading"
               :is-authenticated="authStore.isAuthenticated"
               :is-following-user="followStore.isFollowingUser"
               :is-toggling-follow="followStore.isTogglingFollow"

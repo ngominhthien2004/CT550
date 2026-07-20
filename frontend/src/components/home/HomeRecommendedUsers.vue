@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import SkeletonLoader from '../common/SkeletonLoader.vue'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
@@ -7,6 +8,10 @@ const props = defineProps({
   users: {
     type: Array,
     default: () => [],
+  },
+  loading: {
+    type: Boolean,
+    default: false,
   },
   isAuthenticated: {
     type: Boolean,
@@ -71,7 +76,9 @@ function handleAvatarError(event) {
       </div>
     </header>
 
-    <p v-if="!users.length" class="empty-state mb-0">No recommended users available yet.</p>
+    <SkeletonLoader v-if="loading" type="user-card" :count="4" />
+
+    <p v-else-if="!users.length" class="empty-state mb-0">No recommended users available yet.</p>
 
     <div v-else class="user-grid">
       <article v-for="item in processedUsers" :key="item._id" class="user-card">
