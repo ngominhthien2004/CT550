@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const { getJwtSecret } = require('../config/env');
+const { delByPrefix } = require('../utils/cache');
 
 const generateToken = (id) => {
     return jwt.sign({ id }, getJwtSecret(), {
@@ -25,6 +26,8 @@ const registerUser = async (req, res, next) => {
         const user = await User.create({ username, email, password });
 
         if (user) {
+            // Invalidate admin overview cache
+            delByPrefix('admin:overview');
             res.status(201).json({
                 _id: user._id,
                 username: user.username,

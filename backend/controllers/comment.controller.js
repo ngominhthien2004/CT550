@@ -5,6 +5,7 @@ const User = require('../models/User');
 const UserBlock = require('../models/UserBlock');
 const { createNotification } = require('../utils/notification');
 const { buildDateFilter } = require('../utils/dateFilter');
+const { getOrSet, del, delByPrefix, TTL, buildKey } = require('../utils/cache');
 
 const createComment = async (req, res, next) => {
     try {
@@ -84,6 +85,9 @@ const createComment = async (req, res, next) => {
 
         await Artwork.findByIdAndUpdate(artworkId, { $inc: { commentCount: 1 } });
 
+        // Invalidate admin overview cache
+        delByPrefix('admin:overview');
+
         const notificationUserId = parentComment ? parentComment.user : artwork.user;
         const notificationMessage = parentComment
             ? `${req.user.username || req.user.displayName || 'Someone'} replied to your comment.`
@@ -96,6 +100,9 @@ const createComment = async (req, res, next) => {
             type: 'comment',
             message: notificationMessage
         });
+
+        // Invalidate comments cache for this artwork
+        del(`comments:${artworkId}:`);
 
         const populated = await Comment.findById(comment._id).populate('user', 'username displayName avatar');
         res.status(201).json(populated);
@@ -115,49 +122,45 @@ const getComments = async (req, res, next) => {
             return next(new Error('artworkId query is required'));
         }
 
-        const skip = (page - 1) * limit;
-        const filter = { artwork: artworkId, parentComment: null };
+        const cacheKey = `comments:${artworkId}:${page}:${limit}`;
+        const data = await getOrSet(cacheKey, async () => {
+            const skip = (page - 1) * limit;
+            const filter = { artwork: artworkId, parentComment: null };
 
-        const [comments, total] = await Promise.all([
-            Comment.find(filter)
-                .populate('user', 'username displayName avatar')
-                .sort({ createdAt: 1 })
-                .skip(skip)
-                .limit(limit)
-                .lean(),
-            Comment.countDocuments(filter)
-        ]);
-
-        const commentIds = comments.map((comment) => comment._id);
-        let replyCountMap = new Map();
-
-        if (commentIds.length > 0) {
-            const replyCounts = await Comment.aggregate([
-                {
-                    $match: {
-                        parentComment: { $in: commentIds }
-                    }
-                },
-                {
-                    $group: {
-                        _id: '$parentComment',
-                        count: { $sum: 1 }
-                    }
-                }
+            const [comments, total] = await Promise.all([
+                Comment.find(filter)
+                    .populate('user', 'username displayName avatar')
+                    .sort({ createdAt: 1 })
+                    .skip(skip)
+                    .limit(limit)
+                    .lean(),
+                Comment.countDocuments(filter)
             ]);
-            replyCountMap = new Map(replyCounts.map((item) => [item._id.toString(), item.count]));
-        }
 
-        const commentsWithReplyCount = comments.map((comment) => ({
-            ...comment,
-            replyCount: replyCountMap.get(comment._id.toString()) || 0
-        }));
+            const commentIds = comments.map((comment) => comment._id);
+            let replyCountMap = new Map();
+
+            if (commentIds.length > 0) {
+                const replyCounts = await Comment.aggregate([
+                    { $match: { parentComment: { $in: commentIds } } },
+                    { $group: { _id: '$parentComment', count: { $sum: 1 } } }
+                ]);
+                replyCountMap = new Map(replyCounts.map((item) => [item._id.toString(), item.count]));
+            }
+
+            const commentsWithReplyCount = comments.map((comment) => ({
+                ...comment,
+                replyCount: replyCountMap.get(comment._id.toString()) || 0
+            }));
+
+            return { comments: commentsWithReplyCount, total };
+        }, 30); // 30s TTL — comments are dynamic
 
         res.json({
-            comments: commentsWithReplyCount,
-            total,
+            comments: data.comments,
+            total: data.total,
             page,
-            pages: Math.ceil(total / limit)
+            pages: Math.ceil(data.total / limit)
         });
     } catch (error) {
         next(error);
@@ -232,6 +235,13 @@ const deleteComment = async (req, res, next) => {
         await Artwork.findByIdAndUpdate(comment.artwork, {
             $inc: { commentCount: -deletedCount }
         });
+
+        // Invalidate admin overview cache
+        delByPrefix('admin:overview');
+
+        // Invalidate comments cache for the artwork
+        const artworkId = comment.artwork;
+        del(`comments:${artworkId}:`);
 
         res.json({ message: 'Comment removed' });
     } catch (error) {

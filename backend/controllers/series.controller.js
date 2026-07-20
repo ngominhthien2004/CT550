@@ -3,6 +3,7 @@ const Artwork = require('../models/Artwork');
 
 const cloudinary = require('cloudinary').v2;
 const mongoose = require('mongoose');
+const { getOrSet, getOrSetWithL2, delByPrefix, TTL, buildKey } = require('../utils/cache');
 
 function validateObjectId(id, name = 'ID') {
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -97,32 +98,40 @@ const getMySeries = async (req, res, next) => {
 const getSeriesById = async (req, res, next) => {
   try {
     validateObjectId(req.params.id, 'series ID');
-    const series = await Series.findById(req.params.id)
-      .populate('user', 'username avatar')
-      .populate('tags', 'name')
-      .populate('artworks', 'title images type viewCount likeCount commentCount');
 
-    if (!series) {
+    const cacheKey = `series:detail:${req.params.id}`;
+    const seriesData = await getOrSetWithL2(cacheKey, async () => {
+      const series = await Series.findById(req.params.id)
+        .populate('user', 'username avatar')
+        .populate('tags', 'name')
+        .populate('artworks', 'title images type viewCount likeCount commentCount');
+
+      if (!series) return null;
+
+      // Compute aggregated stats
+      const doc = series.toObject();
+      if ((doc.type === 'manga' || doc.type === 'illust' || doc.type === 'novel') && doc.artworks?.length > 0) {
+        doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0);
+        doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);
+        doc.totalComments = doc.artworks.reduce((sum, a) => sum + (a.commentCount || 0), 0);
+      }
+
+      return doc;
+    }, TTL.PUBLIC_PROFILE);
+
+    if (!seriesData) {
       res.status(404);
       return next(new Error('Series not found'));
     }
 
-    // Increment view count (skip for owner)
-    const isOwner = req.user && String(series.user._id || series.user) === String(req.user._id);
+    // Increment view count (skip for owner) — NOT cached, always happens
+    const isOwner = req.user && String(seriesData.user?._id || seriesData.user) === String(req.user._id);
     if (!isOwner) {
-      series.totalViews += 1;
-      await series.save({ validateBeforeSave: false });
+      await Series.findByIdAndUpdate(req.params.id, { $inc: { totalViews: 1 } });
+      seriesData.totalViews = (seriesData.totalViews || 0) + 1;
     }
 
-    // Compute aggregated stats
-    const doc = series.toObject();
-    if ((doc.type === 'manga' || doc.type === 'illust' || doc.type === 'novel') && doc.artworks?.length > 0) {
-      doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0) + (isOwner ? 0 : 1);
-      doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);
-      doc.totalComments = doc.artworks.reduce((sum, a) => sum + (a.commentCount || 0), 0);
-    }
-
-    res.json(doc);
+    res.json(seriesData);
   } catch (error) {
     next(error);
   }
@@ -166,6 +175,9 @@ const updateSeries = async (req, res, next) => {
       .populate('user', 'username avatar')
       .populate('tags', 'name');
 
+    // Invalidate series cache
+    delByPrefix(`series:detail:${req.params.id}`);
+
     res.json(populated);
   } catch (error) {
     next(error);
@@ -199,6 +211,9 @@ const deleteSeries = async (req, res, next) => {
     }
 
     await Series.findByIdAndDelete(req.params.id);
+
+    // Invalidate series cache
+    delByPrefix('series:detail:');
 
     res.json({ message: 'Series deleted' });
   } catch (error) {
@@ -277,6 +292,9 @@ const addArtworkToSeries = async (req, res, next) => {
       .populate('tags', 'name')
       .populate('artworks', 'title images type');
 
+    // Invalidate series cache
+    delByPrefix(`series:detail:${req.params.id}`);
+
     res.json(populated);
   } catch (error) {
     next(error);
@@ -329,6 +347,9 @@ const removeArtworkFromSeries = async (req, res, next) => {
       .populate('user', 'username avatar')
       .populate('tags', 'name')
       .populate('artworks', 'title images type');
+
+    // Invalidate series cache
+    delByPrefix(`series:detail:${req.params.id}`);
 
     res.json(populated);
   } catch (error) {
@@ -384,6 +405,9 @@ const reorderSeriesArtworks = async (req, res, next) => {
       .populate('tags', 'name')
       .populate('artworks', 'title images type');
 
+    // Invalidate series cache
+    delByPrefix(`series:detail:${req.params.id}`);
+
     res.json(populated);
   } catch (error) {
     next(error);
@@ -431,6 +455,9 @@ const uploadSeriesCover = async (req, res, next) => {
       .populate('user', 'username avatar')
       .populate('tags', 'name')
       .populate('artworks', 'title images type');
+
+    // Invalidate series cache
+    delByPrefix(`series:detail:${req.params.id}`);
 
     res.json(populated);
   } catch (error) {

@@ -10,11 +10,15 @@ const BrowseHistory = require('../models/BrowseHistory');
 const { createNotification } = require('../utils/notification');
 const Series = require('../models/Series');
 const { buildDateFilter } = require('../utils/dateFilter');
-const { getOrSet, delByPrefix, TTL, buildKey } = require('../utils/cache');
+const { getOrSet, getOrSetWithL2, get, set, delByPrefix, TTL, buildKey } = require('../utils/cache');
 
 const getUserProfile = async (req, res, next) => {
     try {
-        const user = await User.findById(req.params.id).select('-password');
+        const cacheKey = `user:profile:${req.params.id}`;
+        const user = await getOrSetWithL2(cacheKey, async () => {
+            return await User.findById(req.params.id).select('-password').lean();
+        }, TTL.PUBLIC_PROFILE);
+
         if (user) {
             res.json(user);
         } else {
@@ -76,6 +80,9 @@ const updateUserProfile = async (req, res, next) => {
             }
 
             const updatedUser = await user.save();
+
+            // Invalidate user profile cache
+            delByPrefix(`user:profile:${req.user._id}`);
 
             res.json({
                 _id: updatedUser._id,
@@ -423,49 +430,47 @@ const getPresenceHandler = async (req, res, next) => {
 
 const searchUsers = async (req, res, next) => {
     try {
-        const rawPage = parseInt(req.query.page, 10);
-        const rawLimit = parseInt(req.query.limit, 10);
-        const page = Number.isNaN(rawPage) ? 1 : Math.max(rawPage, 1);
-        const limit = Number.isNaN(rawLimit) ? 20 : Math.min(Math.max(rawLimit, 1), 50);
-        const skip = (page - 1) * limit;
-        const q = typeof req.query.q === 'string' ? req.query.q.trim() : '';
-        const sort = req.query.sort === 'popular' ? 'popular' : 'newest';
-        const role = req.query.role === 'all' ? 'all' : 'creator';
+        const cacheKey = buildKey('users:search', req.query);
+        const result = await getOrSet(cacheKey, async () => {
+            const rawPage = parseInt(req.query.page, 10);
+            const rawLimit = parseInt(req.query.limit, 10);
+            const page = Number.isNaN(rawPage) ? 1 : Math.max(rawPage, 1);
+            const limit = Number.isNaN(rawLimit) ? 20 : Math.min(Math.max(rawLimit, 1), 50);
+            const skip = (page - 1) * limit;
+            const q = typeof req.query.q === 'string' ? req.query.q.trim() : '';
+            const sort = req.query.sort === 'popular' ? 'popular' : 'newest';
+            const role = req.query.role === 'all' ? 'all' : 'creator';
 
-        const filter = {};
-        if (q) {
-            filter.$or = [
-                { username: { $regex: q, $options: 'i' } },
-                { displayName: { $regex: q, $options: 'i' } },
-            ];
-        }
-        if (role !== 'all') {
-            filter.role = 'user';
-        }
+            const filter = {};
+            if (q) {
+                filter.$or = [
+                    { username: { $regex: q, $options: 'i' } },
+                    { displayName: { $regex: q, $options: 'i' } },
+                ];
+            }
+            if (role !== 'all') {
+                filter.role = 'user';
+            }
 
-        let sortOption = { createdAt: -1 };
-        if (sort === 'popular') {
-            // Artists with more artworks appear first; fallback to newest
-            sortOption = { createdAt: -1 };
-        }
+            let sortOption = { createdAt: -1 };
+            if (sort === 'popular') {
+                sortOption = { createdAt: -1 };
+            }
 
-        const [users, total] = await Promise.all([
-            User.find(filter)
-                .select('_id username displayName avatar bio role createdAt')
-                .sort(sortOption)
-                .skip(skip)
-                .limit(limit)
-                .lean(),
-            User.countDocuments(filter),
-        ]);
+            const [users, total] = await Promise.all([
+                User.find(filter)
+                    .select('_id username displayName avatar bio role createdAt')
+                    .sort(sortOption)
+                    .skip(skip)
+                    .limit(limit)
+                    .lean(),
+                User.countDocuments(filter),
+            ]);
 
-        res.json({
-            users,
-            total,
-            page,
-            pages: Math.ceil(total / limit),
-            limit,
-        });
+            return { users, total, page, pages: Math.ceil(total / limit), limit };
+        }, TTL.ARTWORK_LIST); // 60s TTL
+
+        res.json(result);
     } catch (error) {
         next(error);
     }
@@ -531,35 +536,38 @@ const deleteAdminUser = async (req, res, next) => {
 // @access  Public
 const getUserSeries = async (req, res, next) => {
     try {
-        const { type } = req.query;
+        const cacheKey = buildKey(`user:series:${req.params.id}`, req.query);
+        const enriched = await getOrSetWithL2(cacheKey, async () => {
+            const { type } = req.query;
 
-        const filter = { user: req.params.id };
-        if (type && ['manga', 'novel', 'illust'].includes(type)) {
-            filter.type = type;
-        }
-
-        const series = await Series.find(filter)
-            .populate('user', 'username avatar')
-            .populate('tags', 'name')
-            .populate('artworks', 'title images type viewCount likeCount commentCount')
-            .sort({ createdAt: -1 });
-
-        // Compute aggregated stats from artworks for all types
-        const enriched = series.map((s) => {
-            const doc = s.toObject();
-            if (doc.artworks?.length > 0) {
-                doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0);
-                doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);
-                doc.totalComments = doc.artworks.reduce((sum, a) => sum + (a.commentCount || 0), 0);
-                doc.episodeCount = doc.artworks.length;
-            } else {
-                doc.totalViews = 0;
-                doc.totalLikes = 0;
-                doc.totalComments = 0;
-                doc.episodeCount = 0;
+            const filter = { user: req.params.id };
+            if (type && ['manga', 'novel', 'illust'].includes(type)) {
+                filter.type = type;
             }
-            return doc;
-        });
+
+            const series = await Series.find(filter)
+                .populate('user', 'username avatar')
+                .populate('tags', 'name')
+                .populate('artworks', 'title images type viewCount likeCount commentCount')
+                .sort({ createdAt: -1 });
+
+            // Compute aggregated stats from artworks for all types
+            return series.map((s) => {
+                const doc = s.toObject();
+                if (doc.artworks?.length > 0) {
+                    doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0);
+                    doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);
+                    doc.totalComments = doc.artworks.reduce((sum, a) => sum + (a.commentCount || 0), 0);
+                    doc.episodeCount = doc.artworks.length;
+                } else {
+                    doc.totalViews = 0;
+                    doc.totalLikes = 0;
+                    doc.totalComments = 0;
+                    doc.episodeCount = 0;
+                }
+                return doc;
+            });
+        }, TTL.PUBLIC_PROFILE);
 
         res.json(enriched);
     } catch (error) {
