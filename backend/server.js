@@ -15,6 +15,7 @@ const {
   globalLimiter, authLimiter, aiLimiter,
   uploadLimiter, generalLimiter
 } = require('./middlewares/rateLimit.middleware');
+const { cacheControl, noCache } = require('./middlewares/cacheHeaders.middleware');
 
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
@@ -144,6 +145,34 @@ app.use('/api/series', seriesRoutes);
 app.use('/api/user-reports', userReportRoutes);
 app.use('/api/banners', bannerRoutes);
 app.use('/api/users/dashboard/analytics', analyticsRoutes);
+
+// ── Cache-Control headers for public GET endpoints ───────────
+// Public artwork listing – 1 min browser cache, CDN ok
+app.use('/api/artworks', cacheControl(60, true));
+// Feed endpoints – rankings change slowly, discovery pages
+app.use('/api/feed/rankings', cacheControl(30, true));
+app.use('/api/feed/discovery', cacheControl(30, true));
+// Banners – rarely change
+app.use('/api/banners', cacheControl(120, true));
+// Tag suggestions – aggregation results
+app.use('/api/tags/popular-suggestions', cacheControl(120, true));
+app.use('/api/tags/popular-illust-suggestions', cacheControl(120, true));
+// Static uploads – long-lived (hash-based filenames preferred, but this helps)
+app.use('/uploads', cacheControl(86400, true));
+
+// No-cache for user-specific and write-heavy endpoints
+app.use('/api/auth', noCache);
+app.use('/api/users', noCache);
+app.use('/api/messages', noCache);
+app.use('/api/notifications', noCache);
+app.use('/api/bookmarks', noCache);
+app.use('/api/likes', noCache);
+app.use('/api/comments', noCache);
+app.use('/api/requests', noCache);
+app.use('/api/chat-sessions', noCache);
+app.use('/api/user-reports', noCache);
+app.use('/api/ai', noCache);
+app.use('/api/settings', noCache);
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 

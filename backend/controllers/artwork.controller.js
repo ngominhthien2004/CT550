@@ -14,6 +14,7 @@ const { getSimilarArtworks: getSimilarArtworksService } = require('../services/s
 const fs = require('fs');
 const path = require('path');
 const cloudinary = require('cloudinary').v2;
+const { getOrSet, delByPrefix, TTL, buildKey } = require('../utils/cache');
 
 const normalizeTagName = (rawTagName = '') =>
     String(rawTagName)
@@ -192,6 +193,11 @@ const createArtwork = async (req, res, next) => {
             message: `Artwork "${artwork.title}" posted successfully.`
         });
 
+        // Invalidate cached listings
+        delByPrefix('artworks:list');
+        delByPrefix('rankings:');
+        delByPrefix('discovery:');
+
         res.status(201).json({
             ...artwork.toObject(),
             aiDetection,
@@ -203,88 +209,102 @@ const createArtwork = async (req, res, next) => {
 
 // Get All Artworks (with basic filtering)
 const getArtworks = async (req, res, next) => {
-    try {
-        const {
-            type, ageRating, user, tag, q, limit: rawLimit,
-            sortBy, minWords, maxWords, series, from, to,
-            unassigned, includeSeries,
-        } = req.query;
-        const query = { isHidden: { $ne: true } };
-        const parsedLimit = Number.parseInt(rawLimit, 10);
-        const limit = Number.isNaN(parsedLimit) ? 48 : Math.min(Math.max(parsedLimit, 1), 200);
+  try {
+    const {
+      type, ageRating, user, tag, q, limit: rawLimit,
+      sortBy, minWords, maxWords, series, from, to,
+      unassigned, includeSeries,
+    } = req.query;
 
-        if (type) query.type = type;
-        if (ageRating) query.ageRating = ageRating;
-        if (user) query.user = user;
-        if (series) query.series = series;
-        // When unassigned=true, only show artworks not in any series
-        // (optionally including artworks from a specific series for edit mode)
-        if (unassigned === 'true') {
-            query.series = includeSeries ? { $in: [null, includeSeries] } : null;
+    // Only cache public, non-user-specific queries
+    const isCacheable = !user && !tag && !q;
+    const cacheKey = isCacheable ? buildKey('artworks:list', req.query) : null;
+
+    const fetchArtworks = async () => {
+      const query = { isHidden: { $ne: true } };
+      const parsedLimit = Number.parseInt(rawLimit, 10);
+      const limit = Number.isNaN(parsedLimit) ? 48 : Math.min(Math.max(parsedLimit, 1), 200);
+
+      if (type) query.type = type;
+      if (ageRating) query.ageRating = ageRating;
+      if (user) query.user = user;
+      if (series) query.series = series;
+      if (unassigned === 'true') {
+        query.series = includeSeries ? { $in: [null, includeSeries] } : null;
+      }
+      if (tag) {
+        const foundTag = await Tag.findOne({ name: normalizeTagName(tag) });
+        if (foundTag) query.tags = foundTag._id;
+      }
+      if (q) {
+        const keyword = q.trim();
+        if (keyword) {
+          const matchingTags = await Tag.find({ name: { $regex: keyword, $options: 'i' } }).select('_id');
+          const tagIds = matchingTags.map(t => t._id);
+          const orConditions = [
+            { title: { $regex: keyword, $options: 'i' } },
+            { description: { $regex: keyword, $options: 'i' } },
+          ];
+          if (tagIds.length > 0) {
+            orConditions.push({ tags: { $in: tagIds } });
+          }
+          query.$or = orConditions;
         }
-        if (tag) {
-            const foundTag = await Tag.findOne({ name: normalizeTagName(tag) });
-            if (foundTag) query.tags = foundTag._id;
+      }
+
+      if ((minWords || maxWords) && (!type || type === 'novel')) {
+        query.wordCount = {};
+        const minW = Number.parseInt(minWords, 10);
+        const maxW = Number.parseInt(maxWords, 10);
+        if (!Number.isNaN(minW)) query.wordCount.$gte = minW;
+        if (!Number.isNaN(maxW)) query.wordCount.$lte = maxW;
+      }
+
+      // Date range filter
+      Object.assign(query, buildDateFilter(req.query));
+
+      // Determine sort order
+      let sortOption = { createdAt: -1 };
+      if (sortBy) {
+        switch (sortBy) {
+          case 'views':
+            sortOption = { viewCount: -1 };
+            break;
+          case 'likes':
+            sortOption = { likeCount: -1 };
+            break;
+          case 'longest':
+            sortOption = { wordCount: -1 };
+            break;
+          case 'shortest':
+            sortOption = { wordCount: 1 };
+            break;
+          default:
+            sortOption = { createdAt: -1 };
         }
-        if (q) {
-            const keyword = q.trim();
-            if (keyword) {
-                const matchingTags = await Tag.find({ name: { $regex: keyword, $options: 'i' } }).select('_id');
-                const tagIds = matchingTags.map(t => t._id);
-                const orConditions = [
-                    { title: { $regex: keyword, $options: 'i' } },
-                    { description: { $regex: keyword, $options: 'i' } },
-                ];
-                if (tagIds.length > 0) {
-                    orConditions.push({ tags: { $in: tagIds } });
-                }
-                query.$or = orConditions;
-            }
-        }
+      }
 
-        if ((minWords || maxWords) && (!type || type === 'novel')) {
-            query.wordCount = {};
-            const minW = Number.parseInt(minWords, 10);
-            const maxW = Number.parseInt(maxWords, 10);
-            if (!Number.isNaN(minW)) query.wordCount.$gte = minW;
-            if (!Number.isNaN(maxW)) query.wordCount.$lte = maxW;
-        }
+      const artworks = await Artwork.find(query)
+        .select('-novelContent')
+        .populate('user', 'username displayName avatar')
+        .populate('tags', 'name')
+        .sort(sortOption)
+        .limit(parsedLimit || 48);
 
-        // Date range filter
-        Object.assign(query, buildDateFilter(req.query));
+      return artworks;
+    };
 
-        // Determine sort order
-        let sortOption = { createdAt: -1 };
-        if (sortBy) {
-            switch (sortBy) {
-                case 'views':
-                    sortOption = { viewCount: -1 };
-                    break;
-                case 'likes':
-                    sortOption = { likeCount: -1 };
-                    break;
-                case 'longest':
-                    sortOption = { wordCount: -1 };
-                    break;
-                case 'shortest':
-                    sortOption = { wordCount: 1 };
-                    break;
-                default:
-                    sortOption = { createdAt: -1 };
-            }
-        }
-
-        const artworks = await Artwork.find(query)
-            .select('-novelContent')
-            .populate('user', 'username displayName avatar')
-            .populate('tags', 'name')
-            .sort(sortOption)
-            .limit(limit);
-
-        res.json(artworks);
-    } catch (error) {
-        next(error);
+    let artworks;
+    if (isCacheable) {
+      artworks = await getOrSet(cacheKey, fetchArtworks, TTL.ARTWORK_LIST);
+    } else {
+      artworks = await fetchArtworks();
     }
+
+    res.json(artworks);
+  } catch (error) {
+    next(error);
+  }
 };
 
 // Get Artwork By ID
@@ -432,6 +452,11 @@ const deleteArtwork = async (req, res, next) => {
         }
 
         await artwork.deleteOne();
+        // Invalidate cached listings
+        delByPrefix('artworks:list');
+        delByPrefix('artworks:similar');
+        delByPrefix('rankings:');
+        delByPrefix('discovery:');
         res.json({ message: 'Artwork removed' });
     } catch (error) {
         next(error);
@@ -500,6 +525,9 @@ const updateArtwork = async (req, res, next) => {
         }
 
         await artwork.save();
+
+        // Invalidate cached listings
+        delByPrefix('artworks:list');
 
         const updated = await Artwork.findById(artwork._id)
             .populate('user', 'username displayName avatar')
@@ -802,7 +830,10 @@ const getSimilarArtworks = async (req, res, next) => {
     try {
         const { id } = req.params;
         const limit = parseInt(req.query.limit, 10) || 24;
-        const results = await getSimilarArtworksService(id, limit);
+        const cacheKey = `artworks:similar:${id}:${limit}`;
+        const results = await getOrSet(cacheKey, async () => {
+            return await getSimilarArtworksService(id, limit);
+        }, TTL.SIMILAR_ARTWORKS);
         res.json(results);
     } catch (error) {
         next(error);

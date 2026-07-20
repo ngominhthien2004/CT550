@@ -1,15 +1,23 @@
 const Banner = require('../models/Banner');
 const cloudinary = require('cloudinary').v2;
+const path = require('path');
+const fs = require('fs');
+const { getOrSet, delByPrefix, TTL, buildKey } = require('../utils/cache');
+
+const CACHE_PREFIX = 'banners';
 
 // @desc    Get active banners (public)
 // @route   GET /api/banners
 const getActiveBanners = async (req, res, next) => {
   try {
-    const filter = { isActive: true };
-    if (req.query.type) {
-      filter.type = req.query.type;
-    }
-    const banners = await Banner.find(filter).sort({ sortOrder: 1, createdAt: -1 });
+    const cacheKey = buildKey(CACHE_PREFIX, req.query);
+    const banners = await getOrSet(cacheKey, async () => {
+      const filter = { isActive: true };
+      if (req.query.type) {
+        filter.type = req.query.type;
+      }
+      return await Banner.find(filter).sort({ sortOrder: 1, createdAt: -1 });
+    }, TTL.BANNERS);
     res.json(banners);
   } catch (error) {
     next(error);
@@ -59,6 +67,10 @@ const createBanner = async (req, res, next) => {
     }
 
     const banner = await Banner.create(bannerData);
+
+    // Invalidate banner cache
+    delByPrefix(CACHE_PREFIX);
+
     res.status(201).json(banner);
   } catch (error) {
     next(error);
@@ -93,6 +105,10 @@ const updateBanner = async (req, res, next) => {
     }
 
     const updated = await banner.save();
+
+    // Invalidate banner cache
+    delByPrefix(CACHE_PREFIX);
+
     res.json(updated);
   } catch (error) {
     next(error);
@@ -120,6 +136,10 @@ const deleteBanner = async (req, res, next) => {
     }
 
     await Banner.findByIdAndDelete(req.params.id);
+
+    // Invalidate banner cache
+    delByPrefix(CACHE_PREFIX);
+
     res.json({ message: 'Banner removed' });
   } catch (error) {
     next(error);

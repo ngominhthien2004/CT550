@@ -10,6 +10,7 @@ const BrowseHistory = require('../models/BrowseHistory');
 const { createNotification } = require('../utils/notification');
 const Series = require('../models/Series');
 const { buildDateFilter } = require('../utils/dateFilter');
+const { getOrSet, delByPrefix, TTL, buildKey } = require('../utils/cache');
 
 const getUserProfile = async (req, res, next) => {
     try {
@@ -321,28 +322,27 @@ const getBlockStatus = async (req, res, next) => {
 };
 
 const getAdminOverview = async (req, res, next) => {
-    try {
-        const [
-            totalUsers,
-            totalAdmins,
-            totalArtworks,
-            totalComments,
-        ] = await Promise.all([
-            User.countDocuments(),
-            User.countDocuments({ role: 'admin' }),
-            Artwork.countDocuments(),
-            Comment.countDocuments(),
-        ]);
+  try {
+    const data = await getOrSet('admin:overview', async () => {
+      const [
+        totalUsers,
+        totalAdmins,
+        totalArtworks,
+        totalComments,
+      ] = await Promise.all([
+        User.countDocuments(),
+        User.countDocuments({ role: 'admin' }),
+        Artwork.countDocuments(),
+        Comment.countDocuments(),
+      ]);
 
-        res.json({
-            totalUsers,
-            totalAdmins,
-            totalArtworks,
-            totalComments,
-        });
-    } catch (error) {
-        next(error);
-    }
+      return { totalUsers, totalAdmins, totalArtworks, totalComments };
+    }, TTL.ADMIN_OVERVIEW);
+
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const getAdminUsers = async (req, res, next) => {

@@ -1,6 +1,7 @@
 const Artwork = require('../models/Artwork');
 const Tag = require('../models/Tag');
 const mongoose = require('mongoose');
+const { getOrSet, delByPrefix, TTL, buildKey } = require('../utils/cache');
 
 const normalizeTagName = (rawTagName = '') =>
     String(rawTagName)
@@ -219,119 +220,125 @@ const adminDeleteTag = async (req, res, next) => {
 };
 
 const getPopularSuggestions = async (req, res, next) => {
-    try {
-        const limit = Math.min(parseInt(req.query.limit, 10) || 5, 20);
-        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  try {
+    const cacheKey = buildKey('tags:popular', req.query);
+    const result = await getOrSet(cacheKey, async () => {
+      const limit = Math.min(parseInt(req.query.limit, 10) || 5, 20);
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-        // Optional artwork type filter (e.g. 'illust', 'novel')
-        const typeFilter = {};
-        if (req.query.type) {
-            typeFilter.type = req.query.type;
-        }
+      // Optional artwork type filter (e.g. 'illust', 'novel')
+      const typeFilter = {};
+      if (req.query.type) {
+        typeFilter.type = req.query.type;
+      }
 
-        // 1️⃣ Top tags from artworks created in the last 30 days
-        const recent = await Artwork.aggregate([
-            { $match: { createdAt: { $gte: thirtyDaysAgo }, ...typeFilter } },
-            { $unwind: { path: '$tags', preserveNullAndEmptyArrays: false } },
-            { $group: { _id: '$tags', count: { $sum: 1 } } },
-            { $sort: { count: -1 } },
-            { $limit: limit },
+      // 1️⃣ Top tags from artworks created in the last 30 days
+      const recent = await Artwork.aggregate([
+        { $match: { createdAt: { $gte: thirtyDaysAgo }, ...typeFilter } },
+        { $unwind: { path: '$tags', preserveNullAndEmptyArrays: false } },
+        { $group: { _id: '$tags', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: limit },
+      ]);
+
+      const recentIds = recent.map(r => r._id);
+
+      // 2️⃣ If not enough, fallback to all-time top tags (excluding recent ones)
+      let allTime = [];
+      if (recentIds.length < limit) {
+        allTime = await Artwork.aggregate([
+          { $match: { tags: { $nin: recentIds }, ...typeFilter } },
+          { $unwind: { path: '$tags', preserveNullAndEmptyArrays: false } },
+          { $group: { _id: '$tags', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: limit - recentIds.length },
         ]);
+      }
 
-        const recentIds = recent.map(r => r._id);
+      // 3️⃣ Fetch tag names for all collected IDs
+      const allIds = [...recentIds, ...allTime.map(r => r._id)];
+      const tags = await Tag.find({ _id: { $in: allIds } }).select('name').lean();
+      const tagMap = Object.fromEntries(tags.map(t => [t._id.toString(), t.name]));
 
-        // 2️⃣ If not enough, fallback to all-time top tags (excluding recent ones)
-        let allTime = [];
-        if (recentIds.length < limit) {
-            allTime = await Artwork.aggregate([
-                { $match: { tags: { $nin: recentIds }, ...typeFilter } },
-                { $unwind: { path: '$tags', preserveNullAndEmptyArrays: false } },
-                { $group: { _id: '$tags', count: { $sum: 1 } } },
-                { $sort: { count: -1 } },
-                { $limit: limit - recentIds.length },
-            ]);
-        }
+      return [
+        ...recentIds.map(id => tagMap[id.toString()]),
+        ...allTime.map(r => tagMap[r._id.toString()]),
+      ].filter(Boolean);
+    }, TTL.TAGS_POPULAR);
 
-        // 3️⃣ Fetch tag names for all collected IDs
-        const allIds = [...recentIds, ...allTime.map(r => r._id)];
-        const tags = await Tag.find({ _id: { $in: allIds } }).select('name').lean();
-        const tagMap = Object.fromEntries(tags.map(t => [t._id.toString(), t.name]));
-
-        const result = [
-            ...recentIds.map(id => tagMap[id.toString()]),
-            ...allTime.map(r => tagMap[r._id.toString()]),
-        ].filter(Boolean);
-
-        res.json(result);
-    } catch (error) {
-        next(error);
-    }
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const getPopularIllustSuggestions = async (req, res, next) => {
-    try {
-        const limit = Math.min(parseInt(req.query.limit, 10) || 4, 20);
-        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  try {
+    const cacheKey = buildKey('tags:popular-illust', req.query);
+    const result = await getOrSet(cacheKey, async () => {
+      const limit = Math.min(parseInt(req.query.limit, 10) || 4, 20);
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-        // Helper: get top tag IDs from a date filter
-        async function getTopTagIds(sinceDate, max) {
-            const match = { type: { $ne: 'novel' } };
-            if (sinceDate) match.createdAt = { $gte: sinceDate };
+      // Helper: get top tag IDs from a date filter
+      async function getTopTagIds(sinceDate, max) {
+        const match = { type: { $ne: 'novel' } };
+        if (sinceDate) match.createdAt = { $gte: sinceDate };
 
-            const results = await Artwork.aggregate([
-                { $match: match },
-                { $unwind: { path: '$tags', preserveNullAndEmptyArrays: false } },
-                { $group: { _id: '$tags', count: { $sum: 1 } } },
-                { $sort: { count: -1 } },
-                { $limit: max },
-            ]);
-            return results.map(r => r._id);
-        }
+        const results = await Artwork.aggregate([
+          { $match: match },
+          { $unwind: { path: '$tags', preserveNullAndEmptyArrays: false } },
+          { $group: { _id: '$tags', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: max },
+        ]);
+        return results.map(r => r._id);
+      }
 
-        // 1️⃣ Top tags from last 30 days (non-novel artworks)
-        let tagIds = await getTopTagIds(thirtyDaysAgo, limit);
+      // 1️⃣ Top tags from last 30 days (non-novel artworks)
+      let tagIds = await getTopTagIds(thirtyDaysAgo, limit);
 
-        // 2️⃣ Fallback: if not enough, get all-time (exclude 30-day IDs)
-        if (tagIds.length < limit) {
-            const existingIds = tagIds;
-            const allTime = await Artwork.aggregate([
-                { $match: { type: { $ne: 'novel' }, tags: { $nin: existingIds } } },
-                { $unwind: { path: '$tags', preserveNullAndEmptyArrays: false } },
-                { $group: { _id: '$tags', count: { $sum: 1 } } },
-                { $sort: { count: -1 } },
-                { $limit: limit - tagIds.length },
-            ]);
-            tagIds = [...tagIds, ...allTime.map(r => r._id)];
-        }
+      // 2️⃣ Fallback: if not enough, get all-time (exclude 30-day IDs)
+      if (tagIds.length < limit) {
+        const existingIds = tagIds;
+        const allTime = await Artwork.aggregate([
+          { $match: { type: { $ne: 'novel' }, tags: { $nin: existingIds } } },
+          { $unwind: { path: '$tags', preserveNullAndEmptyArrays: false } },
+          { $group: { _id: '$tags', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: limit - tagIds.length },
+        ]);
+        tagIds = [...tagIds, ...allTime.map(r => r._id)];
+      }
 
-        if (!tagIds.length) {
-            return res.json([]);
-        }
+      if (!tagIds.length) return [];
 
-        // 3️⃣ Get tag names
-        const tags = await Tag.find({ _id: { $in: tagIds } }).select('name').lean();
-        const tagMap = Object.fromEntries(tags.map(t => [t._id.toString(), t]));
+      // 3️⃣ Get tag names
+      const tags = await Tag.find({ _id: { $in: tagIds } }).select('name').lean();
+      const tagMap = Object.fromEntries(tags.map(t => [t._id.toString(), t]));
 
-        // 4️⃣ For each tag, find the most recent non-novel artwork image
-        const result = await Promise.all(tagIds.map(async (id) => {
-            const tag = tagMap[id.toString()];
-            if (!tag) return null;
+      // 4️⃣ For each tag, find the most recent non-novel artwork image
+      const result = await Promise.all(tagIds.map(async (id) => {
+        const tag = tagMap[id.toString()];
+        if (!tag) return null;
 
-            const artwork = await Artwork.findOne({ tags: id, type: { $ne: 'novel' } })
-                .sort({ createdAt: -1 })
-                .select('images')
-                .lean();
+        const artwork = await Artwork.findOne({ tags: id, type: { $ne: 'novel' } })
+          .sort({ createdAt: -1 })
+          .select('images')
+          .lean();
 
-            return {
-                label: `#${tag.name}`,
-                image: artwork?.images?.[0] || '',
-            };
-        }));
+        return {
+          label: `#${tag.name}`,
+          image: artwork?.images?.[0] || '',
+        };
+      }));
 
-        res.json(result.filter(Boolean));
-    } catch (error) {
-        next(error);
-    }
+      return result.filter(Boolean);
+    }, TTL.TAGS_POPULAR);
+
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
 };
 
 module.exports = {
