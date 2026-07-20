@@ -186,7 +186,7 @@ async function toggleFollowFromHome(userId) {
         <HomeHeroBanner :slide="heroSlide" :banner-link="bannerLink" :loading="isLoading" />
         <HomeArtworkGrid :works="spotlightWorks" :loading="isLoading" />
 
-        <div class="home-feed-layout">
+        <div v-if="authStore.isAuthenticated" class="home-feed-layout">
           <HomeFeedColumn :works="displayFeedWorks" :loading="isLoading" />
 
           <aside class="home-feed-sidebar">
