@@ -1,3 +1,4 @@
+const AppError = require('../utils/AppError');
 const Artwork = require('../models/Artwork');
 const ArtworkReport = require('../models/ArtworkReport');
 const User = require('../models/User');
@@ -62,7 +63,7 @@ const createArtwork = async (req, res, next) => {
 
         if (!req.files || req.files.length === 0) {
             res.status(400);
-            return next(new Error('Please upload at least one image'));
+            return next(new AppError('Please upload at least one image', 'UPLOAD_FAILED', 400));
         }
 
         if (req.files.length > MAX_ARTWORK_IMAGES) {
@@ -357,7 +358,7 @@ const getArtworkById = async (req, res, next) => {
             res.json(result);
         } else {
             res.status(404);
-            next(new Error('Artwork not found'));
+            next(new AppError('Artwork not found', 'ARTWORK_NOT_FOUND', 404));
         }
     } catch (error) {
         next(error);
@@ -412,13 +413,13 @@ const deleteArtwork = async (req, res, next) => {
 
         if (!artwork) {
             res.status(404);
-            return next(new Error('Artwork not found'));
+            return next(new AppError('Artwork not found', 'ARTWORK_NOT_FOUND', 404));
         }
 
         // Check if user owns the artwork
         if (artwork.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
             res.status(401);
-            return next(new Error('User not authorized to delete this artwork'));
+            return next(new AppError('Not authorized to delete this artwork', 'FORBIDDEN', 403));
         }
 
         // Delete files from storage (Cloudinary or local)
@@ -470,12 +471,12 @@ const updateArtwork = async (req, res, next) => {
 
         if (!artwork) {
             res.status(404);
-            return next(new Error('Artwork not found'));
+            return next(new AppError('Artwork not found', 'ARTWORK_NOT_FOUND', 404));
         }
 
         if (artwork.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
             res.status(401);
-            return next(new Error('User not authorized to update this artwork'));
+            return next(new AppError('Not authorized to update this artwork', 'FORBIDDEN', 403));
         }
 
         const { title, description, ageRating, tags, commentsEnabled } = req.body;
@@ -547,12 +548,12 @@ const updateNovelContent = async (req, res, next) => {
 
         if (!artwork) {
             res.status(404);
-            return next(new Error('Artwork not found'));
+            return next(new AppError('Artwork not found', 'ARTWORK_NOT_FOUND', 404));
         }
 
         if (artwork.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
             res.status(401);
-            return next(new Error('Not authorized'));
+            return next(new AppError('Not authorized', 'FORBIDDEN', 403));
         }
 
         if (artwork.type !== 'novel') {
@@ -615,7 +616,7 @@ const reportArtwork = async (req, res, next) => {
         const artwork = await Artwork.findById(req.params.id);
         if (!artwork) {
             res.status(404);
-            return next(new Error('Artwork not found'));
+            return next(new AppError('Artwork not found', 'ARTWORK_NOT_FOUND', 404));
         }
 
         // Check if user already reported this artwork
@@ -626,7 +627,7 @@ const reportArtwork = async (req, res, next) => {
         });
         if (existingReport) {
             res.status(400);
-            return next(new Error('You have already reported this artwork'));
+            return next(new AppError('You have already reported this artwork', 'NOT_ALLOWED', 409));
         }
 
         const report = await ArtworkReport.create({
@@ -733,7 +734,7 @@ const hideArtwork = async (req, res, next) => {
         );
         if (!artwork) {
             res.status(404);
-            return next(new Error('Artwork not found'));
+            return next(new AppError('Artwork not found', 'ARTWORK_NOT_FOUND', 404));
         }
 
         // Auto-resolve all pending reports for this artwork
@@ -771,7 +772,7 @@ const unhideArtwork = async (req, res, next) => {
         );
         if (!artwork) {
             res.status(404);
-            return next(new Error('Artwork not found'));
+            return next(new AppError('Artwork not found', 'ARTWORK_NOT_FOUND', 404));
         }
 
         await createNotification({

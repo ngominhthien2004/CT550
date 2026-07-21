@@ -8,5 +8,24 @@
   "unauthorized": "このアクションを実行する権限がありません。",
   "notFound": "要求されたリソースが見つかりませんでした。",
   "tooManyTags": "最大10個のタグを使用できます。",
-  "titleRequired": "タイトルが必要です。"
+  "titleRequired": "タイトルが必要です。",
+
+  "TAG_NAME_REQUIRED": "タグ名が必要です",
+  "COMMENT_NOT_FOUND": "コメントが見つかりません",
+  "ARTWORK_NOT_FOUND": "作品が見つかりません",
+  "USER_NOT_FOUND": "ユーザーが見つかりません",
+  "VALIDATION_ERROR": "入力内容を確認してください。",
+  "INVALID_ID": "IDの形式が無効です",
+  "DUPLICATE_VALUE": "この値は既に存在します",
+  "RATE_LIMITED": "リクエストが多すぎます。しばらく待ってから再試行してください。",
+  "FILE_TOO_LARGE": "アップロードファイルのサイズが上限を超えています。",
+  "INTERNAL_ERROR": "サーバーエラーが発生しました。後でもう一度お試しください。",
+  "UNKNOWN_ERROR": "予期しないエラーが発生しました",
+  "FORBIDDEN": "この操作を実行する権限がありません",
+  "SESSION_EXPIRED": "セッションの有効期限が切れました。もう一度ログインしてください。",
+  "UPLOAD_FAILED": "ファイルのアップロードに失敗しました",
+  "INVALID_CREDENTIALS": "メールアドレスまたはパスワードが正しくありません",
+  "EMAIL_EXISTS": "このメールアドレスは既に登録されています",
+  "USERNAME_TAKEN": "このユーザー名は既に使用されています",
+  "NOT_ALLOWED": "この操作は許可されていません"
 }

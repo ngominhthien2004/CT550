@@ -4,6 +4,7 @@ import { getCreatorReactions } from '../../services/api'
 import { useToast } from '../../composables/useToast'
 import { formatShortDate } from '../../utils/date.js'
 import { useI18n } from 'vue-i18n'
+import { translateError } from '../../utils/translateError.js'
 
 const currentTab = ref('comments') // 'comments' | 'likes' | 'bookmarks'
 const reactions = ref([])
@@ -36,7 +37,7 @@ async function fetchReactions() {
     totalItems.value = data.total || 0
   } catch (err) {
     if (id !== requestId.value) return  // stale error ignored
-    error.value = err?.response?.data?.message || t('dashboard.reactionsLoadFailed')
+    error.value = translateError(err, t, 'dashboard.reactionsLoadFailed')
     showError(error.value)
     reactions.value = []
   } finally {

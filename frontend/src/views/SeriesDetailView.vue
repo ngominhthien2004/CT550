@@ -8,6 +8,7 @@ import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import SeriesHero from '@/components/series/SeriesHero.vue'
 import SeriesArtworksGrid from '@/components/series/SeriesArtworksGrid.vue'
 import { useI18n } from 'vue-i18n'
+import { translateError } from '../utils/translateError.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -73,7 +74,7 @@ onMounted(async () => {
   try {
     await seriesStore.fetchSeriesById(route.params.id)
   } catch (err) {
-    seriesLoadError.value = err?.response?.data?.message || t('artwork.noData')
+    seriesLoadError.value = translateError(err, t, 'artwork.noData')
   }
 })
 </script>

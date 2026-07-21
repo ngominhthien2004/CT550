@@ -1,3 +1,4 @@
+const AppError = require('../utils/AppError');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const { getJwtSecret } = require('../config/env');
@@ -20,7 +21,7 @@ const registerUser = async (req, res, next) => {
 
         if (userExists) {
             res.status(400);
-            return next(new Error('User already exists'));
+            return next(new AppError('User already exists', 'EMAIL_EXISTS', 409));
         }
 
         const user = await User.create({ username, email, password });
@@ -40,7 +41,7 @@ const registerUser = async (req, res, next) => {
             });
         } else {
             res.status(400);
-            next(new Error('Invalid user data'));
+            next(new AppError('Invalid user data', 'VALIDATION_ERROR', 400));
         }
     } catch (error) {
         next(error);
@@ -65,7 +66,7 @@ const loginUser = async (req, res, next) => {
             });
         } else {
             res.status(401);
-            next(new Error('Invalid email or password'));
+            next(new AppError('Invalid email or password', 'INVALID_CREDENTIALS', 401));
         }
     } catch (error) {
         next(error);

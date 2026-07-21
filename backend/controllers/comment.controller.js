@@ -1,3 +1,4 @@
+const AppError = require('../utils/AppError');
 const Comment = require('../models/Comment');
 const CommentReport = require('../models/CommentReport');
 const Artwork = require('../models/Artwork');
@@ -15,18 +16,18 @@ const createComment = async (req, res, next) => {
 
         if (!artworkId) {
             res.status(400);
-            return next(new Error('artworkId is required'));
+            return next(new AppError('artworkId is required', 'VALIDATION_ERROR', 400));
         }
 
         if (!normalizedContent && !normalizedEmoji) {
             res.status(400);
-            return next(new Error('At least one of content or emoji is required'));
+            return next(new AppError('At least one of content or emoji is required', 'VALIDATION_ERROR', 400));
         }
 
         const artwork = await Artwork.findById(artworkId).select('user');
         if (!artwork) {
             res.status(404);
-            return next(new Error('Artwork not found'));
+            return next(new AppError('Artwork not found', 'ARTWORK_NOT_FOUND', 404));
         }
 
         // Check block relationships with artwork owner
@@ -51,7 +52,7 @@ const createComment = async (req, res, next) => {
             parentComment = await Comment.findById(parentCommentId).select('_id artwork user');
             if (!parentComment) {
                 res.status(404);
-                return next(new Error('Parent comment not found'));
+                return next(new AppError('Parent comment not found', 'COMMENT_NOT_FOUND', 404));
             }
 
             if (parentComment.artwork.toString() !== artworkId.toString()) {
@@ -124,7 +125,7 @@ const getComments = async (req, res, next) => {
 
         if (!artworkId) {
             res.status(400);
-            return next(new Error('artworkId query is required'));
+            return next(new AppError('artworkId query is required', 'VALIDATION_ERROR', 400));
         }
 
         const cacheKey = `comments:${artworkId}:${page}:${limit}`;
@@ -180,13 +181,13 @@ const getReplies = async (req, res, next) => {
 
         if (!commentId) {
             res.status(400);
-            return next(new Error('commentId query is required'));
+            return next(new AppError('commentId query is required', 'VALIDATION_ERROR', 400));
         }
 
         const parentComment = await Comment.findById(commentId).select('_id artwork');
         if (!parentComment) {
             res.status(404);
-            return next(new Error('Comment not found'));
+            return next(new AppError('Comment not found', 'COMMENT_NOT_FOUND', 404));
         }
 
         const cacheKey = `replies:${commentId}:${page}:${limit}`;
@@ -223,13 +224,13 @@ const deleteComment = async (req, res, next) => {
 
         if (!comment) {
             res.status(404);
-            return next(new Error('Comment not found'));
+            return next(new AppError('Comment not found', 'COMMENT_NOT_FOUND', 404));
         }
 
         const isOwner = comment.user.toString() === req.user._id.toString();
         if (!isOwner && req.user.role !== 'admin') {
             res.status(403);
-            return next(new Error('Not authorized to delete this comment'));
+            return next(new AppError('Not authorized to delete this comment', 'FORBIDDEN', 403));
         }
 
         let deletedCount = 1;
@@ -317,7 +318,7 @@ const reportComment = async (req, res, next) => {
         const comment = await Comment.findById(req.params.id);
         if (!comment) {
             res.status(404);
-            return next(new Error('Comment not found'));
+            return next(new AppError('Comment not found', 'COMMENT_NOT_FOUND', 404));
         }
 
         // Check existing pending report from the same user

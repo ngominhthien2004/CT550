@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '../stores/auth.store'
 import { useLanguageStore } from '../stores/language.store'
 import { useI18n } from 'vue-i18n'
+import { translateError } from '../utils/translateError.js'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import api from '../services/api'
 import { getApiErrorMessage } from '../utils/apiErrors'
@@ -99,7 +100,7 @@ async function loadBlockedUsers() {
     const { data } = await api.get('/users/blocked')
     blockedUsers.value = data
   } catch (err) {
-    blockedError.value = err?.response?.data?.message || t('settings.loadFailedBlocked')
+    blockedError.value = translateError(err, t, 'settings.loadFailedBlocked')
   } finally {
     blockedLoading.value = false
   }

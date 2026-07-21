@@ -111,6 +111,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { translateError } from '../utils/translateError.js'
 import api from '../services/api'
 
 const { t } = useI18n()
@@ -204,7 +205,7 @@ async function analyzeImage() {
 
     result.value = data
   } catch (err) {
-    error.value = err.response?.data?.message || t('ai.analysisError')
+    error.value = translateError(err, t, 'ai.analysisError')
     console.error(err)
   } finally {
     isAnalyzing.value = false

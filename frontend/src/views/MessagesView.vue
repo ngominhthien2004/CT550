@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { translateError } from '../utils/translateError.js'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import ThreadListPane from '../components/messages/ThreadListPane.vue'
@@ -231,7 +232,7 @@ async function loadMessages() {
     }
     lastPolledAt.value = new Date().toISOString()
   } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || t('chat.loadFailed')
+    error.value = translateError(fetchError, t, 'chat.loadFailed')
     inboxMessages.value = []
     sentMessages.value = []
   } finally {
@@ -401,7 +402,7 @@ async function sendMessage() {
     content.value = ''; selectedImages.value = []; selectedImageFiles.value = []; replyingTo.value = null; showEmojiPicker.value = false
     nextTick(() => { scrollChatToBottom() })
   } catch (sendError) {
-    error.value = sendError?.response?.data?.message || t('chat.sendFailed')
+    error.value = translateError(sendError, t, 'chat.sendFailed')
   } finally { sending.value = false }
 }
 

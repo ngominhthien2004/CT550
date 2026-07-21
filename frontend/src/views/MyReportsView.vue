@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { translateError } from '../utils/translateError.js'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 
 import { useAuthStore } from '@/stores/auth.store'
@@ -31,7 +32,7 @@ async function loadReports(nextPage = 1) {
     totalPages.value = data?.pages || 1
     total.value = data?.total || reports.value.length
   } catch (err) {
-    error.value = err?.response?.data?.message || t('report.loadFailed')
+    error.value = translateError(err, t, 'report.loadFailed')
     reports.value = []
   } finally {
     loading.value = false

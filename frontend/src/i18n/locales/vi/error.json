@@ -8,5 +8,24 @@
   "unauthorized": "Bạn không được phép thực hiện hành động này.",
   "notFound": "Tài nguyên được yêu cầu không tìm thấy.",
   "tooManyTags": "Bạn có thể sử dụng tối đa 10 thẻ.",
-  "titleRequired": "Vui lòng nhập tiêu đề."
+  "titleRequired": "Vui lòng nhập tiêu đề.",
+
+  "TAG_NAME_REQUIRED": "Vui lòng nhập tên thẻ",
+  "COMMENT_NOT_FOUND": "Không tìm thấy bình luận",
+  "ARTWORK_NOT_FOUND": "Không tìm thấy tác phẩm",
+  "USER_NOT_FOUND": "Không tìm thấy người dùng",
+  "VALIDATION_ERROR": "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.",
+  "INVALID_ID": "ID không hợp lệ",
+  "DUPLICATE_VALUE": "Giá trị này đã tồn tại",
+  "RATE_LIMITED": "Quá nhiều yêu cầu. Vui lòng thử lại sau.",
+  "FILE_TOO_LARGE": "Tệp tải lên vượt quá kích thước tối đa cho phép.",
+  "INTERNAL_ERROR": "Lỗi máy chủ. Vui lòng thử lại sau.",
+  "UNKNOWN_ERROR": "Đã xảy ra lỗi không mong muốn",
+  "FORBIDDEN": "Bạn không có quyền thực hiện hành động này",
+  "SESSION_EXPIRED": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+  "UPLOAD_FAILED": "Tải tệp lên thất bại",
+  "INVALID_CREDENTIALS": "Email hoặc mật khẩu không đúng",
+  "EMAIL_EXISTS": "Email này đã được đăng ký",
+  "USERNAME_TAKEN": "Tên người dùng này đã được sử dụng",
+  "NOT_ALLOWED": "Hành động này không được phép"
 }

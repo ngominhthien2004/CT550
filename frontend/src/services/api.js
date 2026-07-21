@@ -1,4 +1,6 @@
 import axios from 'axios'
+import { translateError } from '../utils/translateError.js'
+import i18n from '../i18n'
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
 
@@ -60,6 +62,13 @@ api.interceptors.response.use((response) => {
   response.data = normalizeResponseData(response.data)
   return response
 }, (error) => {
+  // Translate backend error code to localized message
+  const code = error?.response?.data?.code
+  if (code) {
+    error.translatedCode = code
+    error.translatedMessage = translateError(error, null, 'error.general')
+  }
+
   if (error.response?.status === 401 && error.config?.url !== '/auth/login' && error.config?.url !== '/auth/register') {
     localStorage.removeItem('token')
     localStorage.removeItem('authUser')

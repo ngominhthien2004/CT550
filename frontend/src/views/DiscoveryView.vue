@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { translateError } from '../utils/translateError.js'
 import { useRoute, useRouter } from 'vue-router'
 import { getDiscovery } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
@@ -68,7 +69,7 @@ async function loadArtworks() {
     totalPages.value = data.pages || 1
     currentPage.value = data.page || activePage.value
   } catch (err) {
-    error.value = err?.response?.data?.message || t('error.loadFailed')
+    error.value = translateError(err, t)
     artworks.value = []
   } finally {
     loading.value = false

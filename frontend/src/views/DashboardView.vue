@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { translateError } from '../utils/translateError.js'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { CreatorDashboardTabs, CreatorRecentlyUploadedPanel, CreatorReactionsCard, DashboardReactionsPanel } from '@/components/dashboard'
 import DashboardWorksPanel from '@/components/dashboard/DashboardWorksPanel.vue'
@@ -67,7 +68,7 @@ async function loadDashboard() {
     const { data } = await getArtworks({ user: user.value._id, limit: 120 })
     artworks.value = Array.isArray(data) ? data.map(normalizeArtwork) : []
   } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || t('dashboard.loadFailed')
+    error.value = translateError(fetchError, t, 'dashboard.loadFailed')
     artworks.value = []
   } finally {
     loading.value = false

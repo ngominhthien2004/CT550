@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { translateError } from '../utils/translateError.js'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import FollowUserCard from '../components/follow/FollowUserCard.vue'
@@ -129,7 +130,7 @@ async function loadFollowUsers() {
       )
     }
   } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || t('follow.loadFailed')
+    error.value = translateError(fetchError, t, 'follow.loadFailed')
   } finally {
     loading.value = false
   }

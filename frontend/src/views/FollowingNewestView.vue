@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { translateError } from '../utils/translateError.js'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid, HomeFeedColumn, HomeTagStrip, HomeTabs } from '@/components/home'
 import { getFeed, getTags } from '../services/api'
@@ -38,7 +39,7 @@ async function loadFollowingWorks() {
     const items = Array.isArray(data.artworks) ? data.artworks : []
     liveWorks.value = items
   } catch (err) {
-    error.value = err?.response?.data?.message || t('error.loadFailed')
+    error.value = translateError(err, t)
     liveWorks.value = []
   } finally {
     loading.value = false

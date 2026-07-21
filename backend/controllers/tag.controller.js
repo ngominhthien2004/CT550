@@ -1,3 +1,4 @@
+const AppError = require('../utils/AppError');
 const Artwork = require('../models/Artwork');
 const Tag = require('../models/Tag');
 const mongoose = require('mongoose');
@@ -42,7 +43,7 @@ const getTagDetail = async (req, res, next) => {
 
         if (!normalizedTagName) {
             res.status(400);
-            return next(new Error('Tag name is required'));
+            return next(new AppError('Tag name is required', 'TAG_NAME_REQUIRED', 400));
         }
 
         const cacheKey = `tags:detail:${normalizedTagName}`;
@@ -61,7 +62,7 @@ const getTagDetail = async (req, res, next) => {
 
         if (!data) {
             res.status(404);
-            return next(new Error('Tag not found'));
+            return next(new AppError('Tag not found', 'TAG_NOT_FOUND', 404));
         }
 
         res.json(data);
@@ -111,20 +112,20 @@ const adminUpdateTag = async (req, res, next) => {
         const tag = await Tag.findById(id);
         if (!tag) {
             res.status(404);
-            return next(new Error('Tag not found'));
+            return next(new AppError('Tag not found', 'TAG_NOT_FOUND', 404));
         }
 
         if (name !== undefined) {
             const normalized = String(name).trim().toLowerCase().replace(/\s+/g, '_').replace(/^#+/, '');
             if (!normalized) {
                 res.status(400);
-                return next(new Error('Tag name cannot be empty'));
+                return next(new AppError('Tag name cannot be empty', 'VALIDATION_ERROR', 400));
             }
             // Check for uniqueness
             const existing = await Tag.findOne({ name: normalized, _id: { $ne: id } });
             if (existing) {
                 res.status(409);
-                return next(new Error('A tag with this name already exists'));
+                return next(new AppError('A tag with this name already exists', 'DUPLICATE_VALUE', 409));
             }
             tag.name = normalized;
         }
@@ -154,7 +155,7 @@ const adminMergeTags = async (req, res, next) => {
 
         if (!sourceId || !targetId) {
             res.status(400);
-            return next(new Error('Both sourceId and targetId are required'));
+            return next(new AppError('Both sourceId and targetId are required', 'VALIDATION_ERROR', 400));
         }
 
         if (sourceId === targetId) {
@@ -217,7 +218,7 @@ const adminDeleteTag = async (req, res, next) => {
         const tag = await Tag.findById(id);
         if (!tag) {
             res.status(404);
-            return next(new Error('Tag not found'));
+            return next(new AppError('Tag not found', 'TAG_NOT_FOUND', 404));
         }
 
         // Remove tag from all artworks

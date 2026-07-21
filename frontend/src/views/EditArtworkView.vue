@@ -3,6 +3,7 @@ import { computed, onMounted, onBeforeUnmount, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { useI18n } from 'vue-i18n'
+import { translateError } from '../utils/translateError.js'
 import UploadTagSelector from '../components/upload/UploadTagSelector.vue'
 import api, { getArtworkById, getTags } from '../services/api'
 import { useArtworkStore } from '../stores/artwork.store'
@@ -151,7 +152,7 @@ async function loadArtwork() {
       .map((t) => (typeof t === 'string' ? t : t.name || ''))
       .filter(Boolean)
   } catch (err) {
-    error.value = err?.response?.data?.message || t('artwork.noData')
+    error.value = translateError(err, t, 'artwork.noData')
   } finally {
     loading.value = false
   }

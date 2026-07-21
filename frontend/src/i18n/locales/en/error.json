@@ -8,5 +8,24 @@
   "unauthorized": "You are not authorized to perform this action.",
   "notFound": "The requested resource was not found.",
   "tooManyTags": "You can use up to 10 tags.",
-  "titleRequired": "Title is required."
+  "titleRequired": "Title is required.",
+
+  "TAG_NAME_REQUIRED": "Tag name is required",
+  "COMMENT_NOT_FOUND": "Comment not found",
+  "ARTWORK_NOT_FOUND": "Artwork not found",
+  "USER_NOT_FOUND": "User not found",
+  "VALIDATION_ERROR": "Validation failed. Please check your input.",
+  "INVALID_ID": "Invalid ID format",
+  "DUPLICATE_VALUE": "This value already exists",
+  "RATE_LIMITED": "Too many requests. Please slow down.",
+  "FILE_TOO_LARGE": "Uploaded file exceeds the maximum allowed size.",
+  "INTERNAL_ERROR": "Internal server error. Please try again later.",
+  "UNKNOWN_ERROR": "An unexpected error occurred",
+  "FORBIDDEN": "You do not have permission to perform this action",
+  "SESSION_EXPIRED": "Your session has expired. Please log in again.",
+  "UPLOAD_FAILED": "Failed to upload file",
+  "INVALID_CREDENTIALS": "Invalid email or password",
+  "EMAIL_EXISTS": "An account with this email already exists",
+  "USERNAME_TAKEN": "This username is already taken",
+  "NOT_ALLOWED": "This action is not allowed"
 }

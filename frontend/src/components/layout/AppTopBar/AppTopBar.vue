@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { translateError } from '../../../utils/translateError.js'
 import SearchOptionsModal from '../../search/SearchOptionsModal.vue'
 import { useAuthStore } from '../../../stores/auth.store'
 import { useFollowStore } from '../../../stores/follow.store'
@@ -266,7 +267,7 @@ async function loadNotificationPreview() {
     notificationUnreadCount.value = Number(data?.unreadCount || 0)
     notificationPreviewHasMore.value = notificationPreviewItems.value.length < (data?.total || 0)
   } catch (error) {
-    notificationPreviewError.value = error?.response?.data?.message || t('notification.loadFailed')
+    notificationPreviewError.value = translateError(error, t, 'notification.loadFailed')
     notificationPreviewItems.value = []
   } finally {
     notificationPreviewLoading.value = false
@@ -289,7 +290,7 @@ async function loadMoreNotificationPreview() {
     notificationPreviewPage.value = nextPage
     notificationPreviewHasMore.value = notificationPreviewItems.value.length < (data?.total || 0)
   } catch (error) {
-    notificationPreviewError.value = error?.response?.data?.message || t('notification.loadMoreFailed')
+    notificationPreviewError.value = translateError(error, t, 'notification.loadMoreFailed')
   } finally {
     notificationPreviewLoadingMore.value = false
   }
@@ -337,7 +338,7 @@ async function handleMarkAllNotificationsRead() {
     }))
     notificationUnreadCount.value = 0
   } catch (error) {
-    notificationPreviewError.value = error?.response?.data?.message || t('notification.markAllReadFailed')
+    notificationPreviewError.value = translateError(error, t, 'notification.markAllReadFailed')
   }
 }
 
