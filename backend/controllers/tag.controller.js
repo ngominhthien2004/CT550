@@ -1,7 +1,7 @@
 const Artwork = require('../models/Artwork');
 const Tag = require('../models/Tag');
 const mongoose = require('mongoose');
-const { getOrSetWithL2, delByPrefix, TTL, buildKey } = require('../utils/cache');
+const { getOrSet, getOrSetWithL2, delByPrefix, TTL, buildKey } = require('../utils/cache');
 
 const normalizeTagName = (rawTagName = '') =>
     String(rawTagName)
@@ -12,19 +12,22 @@ const normalizeTagName = (rawTagName = '') =>
 
 const listTags = async (req, res, next) => {
     try {
-        const parsedLimit = Number.parseInt(req.query.limit, 10);
-        const limit = Number.isNaN(parsedLimit) ? 20 : Math.min(Math.max(parsedLimit, 1), 100);
-        const keyword = String(req.query.q || '').trim();
+        const cacheKey = buildKey('tags:list', req.query);
+        const tags = await getOrSet(cacheKey, async () => {
+            const parsedLimit = Number.parseInt(req.query.limit, 10);
+            const limit = Number.isNaN(parsedLimit) ? 20 : Math.min(Math.max(parsedLimit, 1), 100);
+            const keyword = String(req.query.q || '').trim();
 
-        const query = { usageCount: { $gt: 0 } };
-        if (keyword) {
-            query.name = { $regex: normalizeTagName(keyword), $options: 'i' };
-        }
+            const query = { usageCount: { $gt: 0 } };
+            if (keyword) {
+                query.name = { $regex: normalizeTagName(keyword), $options: 'i' };
+            }
 
-        const tags = await Tag.find(query)
-            .select('name usageCount')
-            .sort({ usageCount: -1, name: 1 })
-            .limit(limit);
+            return await Tag.find(query)
+                .select('name usageCount')
+                .sort({ usageCount: -1, name: 1 })
+                .limit(limit);
+        }, TTL.ARTWORK_LIST);
 
         res.json(tags);
     } catch (error) {
@@ -42,22 +45,26 @@ const getTagDetail = async (req, res, next) => {
             return next(new Error('Tag name is required'));
         }
 
-        const tag = await Tag.findOne({ name: normalizedTagName });
+        const cacheKey = `tags:detail:${normalizedTagName}`;
+        const data = await getOrSetWithL2(cacheKey, async () => {
+            const tag = await Tag.findOne({ name: normalizedTagName });
 
-        if (!tag) {
+            if (!tag) return null;
+
+            const artworks = await Artwork.find({ tags: tag._id })
+                .populate('user', 'username displayName avatar')
+                .populate('tags', 'name')
+                .sort({ createdAt: -1 });
+
+            return { tag, artworks };
+        }, TTL.TAGS_POPULAR);
+
+        if (!data) {
             res.status(404);
             return next(new Error('Tag not found'));
         }
 
-        const artworks = await Artwork.find({ tags: tag._id })
-            .populate('user', 'username displayName avatar')
-            .populate('tags', 'name')
-            .sort({ createdAt: -1 });
-
-        res.json({
-            tag,
-            artworks,
-        });
+        res.json(data);
     } catch (error) {
         next(error);
     }
@@ -132,6 +139,9 @@ const adminUpdateTag = async (req, res, next) => {
         }
 
         await tag.save();
+        // Invalidate tag caches
+        delByPrefix('tags:detail:');
+        delByPrefix('tags:list:');
         res.json(tag);
     } catch (error) {
         next(error);
@@ -186,6 +196,11 @@ const adminMergeTags = async (req, res, next) => {
         // Delete source tag
         await Tag.findByIdAndDelete(sourceId);
 
+        // Invalidate tag caches
+        delByPrefix('tags:detail:');
+        delByPrefix('tags:list:');
+        delByPrefix('tags:popular');
+
         res.json({
             message: `Merged "${sourceTag.name}" into "${targetTag.name}"`,
             targetTag,
@@ -212,6 +227,10 @@ const adminDeleteTag = async (req, res, next) => {
         );
 
         await Tag.findByIdAndDelete(id);
+
+        // Invalidate tag caches
+        delByPrefix('tags:detail:');
+        delByPrefix('tags:list:');
 
         res.json({ message: `Tag "${tag.name}" deleted successfully` });
     } catch (error) {

@@ -104,6 +104,11 @@ const createComment = async (req, res, next) => {
         // Invalidate comments cache for this artwork
         del(`comments:${artworkId}:`);
 
+        // Invalidate replies cache for the parent comment
+        if (parentCommentId) {
+            del(`replies:${parentCommentId}:`);
+        }
+
         const populated = await Comment.findById(comment._id).populate('user', 'username displayName avatar');
         res.status(201).json(populated);
     } catch (error) {
@@ -184,23 +189,28 @@ const getReplies = async (req, res, next) => {
             return next(new Error('Comment not found'));
         }
 
-        const skip = (page - 1) * limit;
-        const filter = { artwork: parentComment.artwork, parentComment: parentComment._id };
+        const cacheKey = `replies:${commentId}:${page}:${limit}`;
+        const data = await getOrSet(cacheKey, async () => {
+            const skip = (page - 1) * limit;
+            const filter = { artwork: parentComment.artwork, parentComment: parentComment._id };
 
-        const [replies, total] = await Promise.all([
-            Comment.find(filter)
-                .populate('user', 'username displayName avatar')
-                .sort({ createdAt: 1 })
-                .skip(skip)
-                .limit(limit),
-            Comment.countDocuments(filter)
-        ]);
+            const [replies, total] = await Promise.all([
+                Comment.find(filter)
+                    .populate('user', 'username displayName avatar')
+                    .sort({ createdAt: 1 })
+                    .skip(skip)
+                    .limit(limit),
+                Comment.countDocuments(filter)
+            ]);
+
+            return { replies, total };
+        }, 30); // 30s TTL — same as getComments
 
         res.json({
-            replies,
-            total,
+            replies: data.replies,
+            total: data.total,
             page,
-            pages: Math.ceil(total / limit)
+            pages: Math.ceil(data.total / limit)
         });
     } catch (error) {
         next(error);
@@ -242,6 +252,14 @@ const deleteComment = async (req, res, next) => {
         // Invalidate comments cache for the artwork
         const artworkId = comment.artwork;
         del(`comments:${artworkId}:`);
+
+        // Invalidate replies cache
+        if (comment.parentComment) {
+            del(`replies:${comment.parentComment}:`);
+        } else {
+            // If it's a top-level comment being deleted, also invalidate all replies to it
+            del(`replies:${comment._id}:`);
+        }
 
         res.json({ message: 'Comment removed' });
     } catch (error) {
