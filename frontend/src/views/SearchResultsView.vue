@@ -18,6 +18,7 @@ import { useFollowStore } from '../stores/follow.store'
 import { useLikeStore } from '../stores/like.store'
 
 import { formatShortDate } from '../utils/date.js'
+import { translateError } from '../utils/translateError.js'
 import { useTagStore } from '../stores/tag.store'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
@@ -440,7 +441,7 @@ async function blockSearchUser(user) {
     await userApi.block(user._id)
     blockedUserIds.value = [...new Set([...blockedUserIds.value, user._id])]
   } catch (blockError) {
-    userError.value = blockError?.response?.data?.message || 'Failed to block user'
+    userError.value = translateError(blockError, t, 'error.saveFailed')
   } finally {
     blockSubmittingId.value = ''
     closeUserMenu()
@@ -531,7 +532,7 @@ async function loadSearchItems() {
       return matchesAll && matchesAny && matchesExclude && seriesMatch
     })
   } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || 'Failed to fetch artworks'
+    error.value = translateError(fetchError, t, 'error.loadFailed')
     searchItems.value = []
   } finally {
     loading.value = false
@@ -582,7 +583,7 @@ async function loadUserResults(loadMore) {
     }
     await loadUserArtworkPreviews(users)
   } catch (fetchError) {
-    userError.value = fetchError?.response?.data?.message || 'Failed to fetch users'
+    userError.value = translateError(fetchError, t, 'error.loadFailed')
     if (!loadMore) {
       userResults.value = []
       userTotal.value = 0

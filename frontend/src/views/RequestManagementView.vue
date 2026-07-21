@@ -6,6 +6,7 @@ import RequestListSection from '../components/request/RequestListSection.vue'
 import PlansSection from '../components/request/PlansSection.vue'
 import CreatePlanForm from '../components/request/CreatePlanForm.vue'
 import RequestDetailPanel from '../components/request/RequestDetailPanel.vue'
+import { translateError } from '../utils/translateError.js'
 
 import { useAuthStore } from '../stores/auth.store'
 import { useRequestStore } from '../stores/request.store'
@@ -58,7 +59,7 @@ async function runAction(requestId, action, payload = {}) {
       selectedRequestDetail.value = await requestStore.fetchById(requestId)
     }
   } catch (error) {
-    actionError.value = error?.response?.data?.message || `Failed to ${action} request`
+    actionError.value = translateError(error, null, 'error.saveFailed')
   }
 }
 
@@ -69,7 +70,7 @@ async function handleDraftSubmission(formData) {
     await requestStore.submitDraft(selectedRequestId.value, formData)
     selectedRequestDetail.value = await requestStore.fetchById(selectedRequestId.value)
   } catch (e) {
-    actionError.value = e?.response?.data?.message || 'Failed to submit draft'
+    actionError.value = translateError(e, null, 'error.saveFailed')
   }
 }
 
@@ -93,7 +94,7 @@ async function handleChatMessage(formData) {
     const messages = await requestStore.getChat(selectedRequestId.value)
     detailPanelRef.value?.updateChatMessages(messages)
   } catch (e) {
-    actionError.value = e?.response?.data?.message || 'Failed to send chat message'
+    actionError.value = translateError(e, null, 'error.saveFailed')
   } finally { detailPanelRef.value?.setChatLoading(false) }
 }
 

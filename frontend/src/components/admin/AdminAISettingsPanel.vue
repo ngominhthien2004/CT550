@@ -1,10 +1,14 @@
 <script setup>
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { adminApi } from '../../services/api'
+import { translateError } from '../../utils/translateError.js'
 
 const props = defineProps({
   activeTab: { type: String, required: true },
 })
+
+const { t } = useI18n()
 
 const aiDetectionEnabled = ref(true)
 const autoTaggingEnabled = ref(false)
@@ -22,7 +26,7 @@ async function loadSettings() {
     aiDetectionEnabled.value = data.aiDetectionEnabled
     autoTaggingEnabled.value = data.autoTaggingEnabled
   } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || 'Failed to load AI settings'
+    error.value = translateError(fetchError, t, 'error.loadFailed')
   } finally {
     loading.value = false
   }
@@ -39,7 +43,7 @@ async function toggleAiDetection() {
     successMsg.value = `AI detection ${data.aiDetectionEnabled ? 'enabled' : 'disabled'}`
     setTimeout(() => { successMsg.value = '' }, 3000)
   } catch (toggleError) {
-    error.value = toggleError?.response?.data?.message || 'Failed to update AI settings'
+    error.value = translateError(toggleError, t, 'error.saveFailed')
     // revert on error
     aiDetectionEnabled.value = !aiDetectionEnabled.value
   } finally {
@@ -58,7 +62,7 @@ async function toggleAutoTagging() {
     successMsg.value = `Auto-tagging ${data.autoTaggingEnabled ? 'enabled' : 'disabled'}`
     setTimeout(() => { successMsg.value = '' }, 3000)
   } catch (toggleError) {
-    error.value = toggleError?.response?.data?.message || 'Failed to update auto-tagging settings'
+    error.value = translateError(toggleError, t, 'error.saveFailed')
     // revert on error
     autoTaggingEnabled.value = !autoTaggingEnabled.value
   } finally {

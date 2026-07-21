@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { userApi } from '../../services/api'
+import { translateError } from '../../utils/translateError.js'
 
 const { t } = useI18n()
 
@@ -17,7 +18,7 @@ async function loadBlocked() {
     const { data } = await userApi.getBlockedUsers()
     blockedUsers.value = data
   } catch (err) {
-    error.value = err?.response?.data?.message || 'Failed to load blocked users'
+    error.value = translateError(err, t, 'error.loadFailed')
   } finally {
     loading.value = false
   }
@@ -29,7 +30,7 @@ async function handleUnblock(userId) {
     await userApi.unblock(userId)
     blockedUsers.value = blockedUsers.value.filter((b) => b.blocked?._id !== userId)
   } catch (err) {
-    error.value = err?.response?.data?.message || 'Failed to unblock user'
+    error.value = translateError(err, t, 'error.saveFailed')
   } finally {
     unblockingId.value = ''
   }

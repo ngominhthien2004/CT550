@@ -6,6 +6,7 @@ import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import BookUploadForm from '@/components/bookstore/BookUploadForm.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
+import { translateError } from '../../utils/translateError.js'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -36,7 +37,7 @@ async function handleSubmit(formPayload) {
       router.push('/bookstore/manage')
     }
   } catch (error) {
-    showError(error?.response?.data?.message || error?.message || t('bookstore.saveFailed'))
+    showError(translateError(error, t, 'bookstore.saveFailed'))
   }
 }
 

@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
+import { translateError } from '../../utils/translateError.js'
 
 const props = defineProps({
   item: {
@@ -36,7 +37,7 @@ async function download() {
     await bookStore.downloadPaidBook(props.orderId, props.item._id)
     showSuccess('Download started')
   } catch (error) {
-    showError(error?.response?.data?.message || 'Failed to download')
+    showError(translateError(error, null, 'error.loadFailed'))
   }
 }
 </script>

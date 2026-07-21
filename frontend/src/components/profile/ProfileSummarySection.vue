@@ -3,6 +3,7 @@ import { computed, ref, watch, onUnmounted, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { userApi } from '../../services/api'
 import { useAuthStore } from '../../stores/auth.store'
+import { translateError } from '../../utils/translateError.js'
 import ReportModal from '@/components/common/ReportModal.vue'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
@@ -86,7 +87,7 @@ async function handleBlockToggle() {
       blockedByMe.value = true
     }
   } catch (err) {
-    blockError.value = err?.response?.data?.message || 'Failed to update block status'
+    blockError.value = translateError(err, t, 'error.saveFailed')
   } finally {
     blockLoading.value = false
   }

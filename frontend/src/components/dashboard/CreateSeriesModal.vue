@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth.store'
 import { seriesApi } from '@/services/api'
 import ArtworkPickerModal from './ArtworkPickerModal.vue'
 import { useI18n } from 'vue-i18n'
+import { translateError } from '../../utils/translateError.js'
 
 const props = defineProps({
   type: { type: String, default: 'manga' },
@@ -170,8 +171,7 @@ async function handleSubmit() {
       }
     }
   } catch (err) {
-    errorMsg.value =
-      err?.response?.data?.message || err?.message || 'Failed to save series'
+    errorMsg.value = translateError(err, t, 'error.saveFailed')
   } finally {
     submitting.value = false
   }

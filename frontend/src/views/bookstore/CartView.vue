@@ -5,6 +5,7 @@ import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import CartItem from '@/components/bookstore/CartItem.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
+import { translateError } from '../../utils/translateError.js'
 
 const { t } = useI18n()
 const bookStore = useBookStore()
@@ -25,7 +26,7 @@ async function handleCheckout() {
     }
     showError(t('bookstore.loadFailed'))
   } catch (error) {
-    showError(error?.response?.data?.message || t('bookstore.loadFailed'))
+    showError(translateError(error, t, 'bookstore.loadFailed'))
   } finally {
     checkingOut.value = false
   }
@@ -36,7 +37,7 @@ async function clearCart() {
     await bookStore.emptyCart()
     showSuccess(t('bookstore.clearCart'))
   } catch (error) {
-    showError(error?.response?.data?.message || t('bookstore.loadFailed'))
+    showError(translateError(error, t, 'bookstore.loadFailed'))
   }
 }
 

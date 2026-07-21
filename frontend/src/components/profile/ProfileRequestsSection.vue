@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../../stores/auth.store'
 import { useRequestStore } from '../../stores/request.store'
+import { translateError } from '../../utils/translateError.js'
 
 const { t } = useI18n()
 
@@ -129,7 +130,7 @@ async function submitRequest() {
     form.angle = ''
     referenceFiles.value = []
   } catch (error) {
-    submitError.value = error?.response?.data?.message || 'Failed to submit request'
+    submitError.value = translateError(error, t, 'error.saveFailed')
   } finally {
     submitting.value = false
   }

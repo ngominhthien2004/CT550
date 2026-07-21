@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
+import { translateError } from '../../utils/translateError.js'
 
 const props = defineProps({
   book: {
@@ -47,7 +48,7 @@ async function toggleStatus() {
     showSuccess(`Book ${nextStatus === 'published' ? 'published' : 'unpublished'}`)
     emit('updated')
   } catch (error) {
-    showError(error?.response?.data?.message || 'Failed to update status')
+    showError(translateError(error, null, 'error.saveFailed'))
   } finally {
     toggling.value = false
   }
@@ -62,7 +63,7 @@ async function removeBook() {
     showSuccess('Book deleted')
     emit('deleted')
   } catch (error) {
-    showError(error?.response?.data?.message || 'Failed to delete book')
+    showError(translateError(error, null, 'error.deleteFailed'))
   } finally {
     deleting.value = false
   }

@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
+import { translateError } from '../../utils/translateError.js'
 
 const props = defineProps({
   bookId: {
@@ -46,7 +47,7 @@ async function addToCart() {
     showSuccess('Added to cart')
     quantity.value = 1
   } catch (error) {
-    showError(error?.response?.data?.message || 'Failed to add to cart')
+    showError(translateError(error, null, 'error.saveFailed'))
   } finally {
     adding.value = false
   }

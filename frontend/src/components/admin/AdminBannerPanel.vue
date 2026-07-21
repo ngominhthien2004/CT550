@@ -1,10 +1,14 @@
 <script setup>
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { bannerApi } from '../../services/api'
+import { translateError } from '../../utils/translateError.js'
 
 const props = defineProps({
   activeTab: { type: String, required: true },
 })
+
+const { t } = useI18n()
 
 const banners = ref([])
 const loading = ref(false)
@@ -30,7 +34,7 @@ async function loadBanners() {
     const { data } = await bannerApi.getAll()
     banners.value = Array.isArray(data) ? data : []
   } catch (fetchError) {
-    error.value = fetchError?.response?.data?.message || 'Failed to load banners'
+    error.value = translateError(fetchError, t, 'error.loadFailed')
   } finally {
     loading.value = false
   }
@@ -124,7 +128,7 @@ async function saveBanner() {
     setTimeout(() => { successMsg.value = '' }, 3000)
     await loadBanners()
   } catch (saveError) {
-    error.value = saveError?.response?.data?.message || 'Failed to save banner'
+    error.value = translateError(saveError, t, 'error.saveFailed')
   } finally {
     saving.value = false
   }
@@ -141,7 +145,7 @@ async function confirmDelete(banner) {
     setTimeout(() => { successMsg.value = '' }, 3000)
     await loadBanners()
   } catch (deleteError) {
-    error.value = deleteError?.response?.data?.message || 'Failed to delete banner'
+    error.value = translateError(deleteError, t, 'error.deleteFailed')
   } finally {
     saving.value = false
   }

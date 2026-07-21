@@ -6,6 +6,7 @@ import OrderItem from '@/components/bookstore/OrderItem.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
 import { formatShortDate } from '@/utils/date.js'
+import { translateError } from '../../utils/translateError.js'
 
 const { t } = useI18n()
 const bookStore = useBookStore()
@@ -26,7 +27,7 @@ async function becomeSeller() {
     await bookStore.ensureSeller()
     showSuccess(t('bookstore.save'))
   } catch (error) {
-    showError(error?.response?.data?.message || t('bookstore.loadFailed'))
+    showError(translateError(error, t, 'bookstore.loadFailed'))
   } finally {
     becomingSeller.value = false
   }
@@ -38,7 +39,7 @@ async function updateStatus(orderId, status) {
     showSuccess(t('bookstore.save'))
     await bookStore.fetchSellerOrders()
   } catch (error) {
-    showError(error?.response?.data?.message || t('bookstore.loadFailed'))
+    showError(translateError(error, t, 'bookstore.loadFailed'))
   }
 }
 

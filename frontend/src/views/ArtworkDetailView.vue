@@ -12,6 +12,7 @@ import { useBookmarkStore } from '../stores/bookmark.store'
 import { useLikeStore } from '../stores/like.store'
 import { useFollowStore } from '../stores/follow.store'
 import { useI18n } from 'vue-i18n'
+import { translateError } from '../utils/translateError.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -121,7 +122,7 @@ async function loadBookmarkStatus() {
     isBookmarked.value = Boolean(data?.isBookmarked)
   } catch (error) {
     isBookmarked.value = false
-    bookmarkError.value = error?.response?.data?.message || 'Could not load bookmark status'
+    bookmarkError.value = translateError(error, t, 'error.loadFailed')
   }
 }
 
@@ -138,7 +139,7 @@ async function loadLikeStatus() {
     isLiked.value = Boolean(data?.isLiked)
   } catch (error) {
     isLiked.value = false
-    likeError.value = error?.response?.data?.message || 'Could not load like status'
+    likeError.value = translateError(error, t, 'error.loadFailed')
   }
 }
 
@@ -152,7 +153,7 @@ async function loadFollowStatus() {
   try {
     await followStore.fetchFollowStatus(artistId.value)
   } catch (error) {
-    followError.value = error?.response?.data?.message || 'Could not load follow status'
+    followError.value = translateError(error, t, 'error.loadFailed')
   }
 }
 
@@ -317,7 +318,7 @@ async function handleLikeToggle() {
   } catch (error) {
     isLiked.value = previousStatus
     localLikeCount.value = previousCount
-    likeError.value = error?.response?.data?.message || 'Failed to update like'
+    likeError.value = translateError(error, t, 'error.saveFailed')
   }
 }
 
@@ -362,7 +363,7 @@ async function handleBookmarkToggle() {
   } catch (error) {
     isBookmarked.value = previousStatus
     localBookmarkCount.value = previousCount
-    bookmarkError.value = error?.response?.data?.message || 'Failed to update bookmark'
+    bookmarkError.value = translateError(error, t, 'error.saveFailed')
   }
 }
 
@@ -394,7 +395,7 @@ async function handleFollowToggle() {
       artistFollowersCount.value = Math.max(0, artistFollowersCount.value + (nowFollowing ? 1 : -1))
     }
   } catch (error) {
-    followError.value = error?.response?.data?.message || 'Failed to update follow status'
+    followError.value = translateError(error, t, 'error.saveFailed')
   }
 }
 

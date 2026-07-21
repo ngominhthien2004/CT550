@@ -38,6 +38,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { reportArtwork, reportComment, reportApi } from '@/services/api'
+import { translateError } from '../../utils/translateError.js'
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -114,7 +115,7 @@ async function submitReport() {
       emit('close')
     }, 1500)
   } catch (err) {
-    error.value = err?.response?.data?.message || err?.message || 'Failed to submit report'
+    error.value = translateError(err, null, 'error.saveFailed')
   } finally {
     submitting.value = false
   }

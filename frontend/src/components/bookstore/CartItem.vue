@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
+import { translateError } from '../../utils/translateError.js'
 
 const props = defineProps({
   item: {
@@ -32,7 +33,7 @@ async function updateQuantity(delta) {
   try {
     await bookStore.updateCartItemQuantity(props.item._id, newQty)
   } catch (error) {
-    showError(error?.response?.data?.message || 'Failed to update quantity')
+    showError(translateError(error, null, 'error.saveFailed'))
   } finally {
     updating.value = false
   }
@@ -43,7 +44,7 @@ async function remove() {
   try {
     await bookStore.removeFromCart(props.item._id)
   } catch (error) {
-    showError(error?.response?.data?.message || 'Failed to remove item')
+    showError(translateError(error, null, 'error.deleteFailed'))
   } finally {
     removing.value = false
   }
