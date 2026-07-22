@@ -123,5 +123,6 @@
   "sortHighest": "評価が高い順",
   "sortLowest": "評価が低い順",
   "outOf5": "/5",
-  "basedOnReviews": "{count}件のレビューに基づく"
+  "basedOnReviews": "{count}件のレビューに基づく",
+  "quantityLabel": "数量"
 }

@@ -23,7 +23,12 @@ const currentUserId = computed(() => {
   try {
     const token = localStorage.getItem('token')
     if (!token) return null
-    const payload = JSON.parse(atob(token.split('.')[1]))
+    // UTF-8 safe base64 decode (handles non-ASCII user data)
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+    const json = decodeURIComponent(
+      atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')
+    )
+    const payload = JSON.parse(json)
     return payload.id || payload._id
   } catch { return null }
 })
@@ -122,18 +127,32 @@ onMounted(() => {
         <!-- Star Picker -->
         <div class="star-picker">
           <span class="star-label">{{ t('bookstore.yourRating') }}:</span>
-          <span
-            v-for="n in 5"
-            :key="n"
-            class="star"
-            :class="{
-              'filled': n <= (hoverRating || starRating),
-              'hoverable': !isEditing
-            }"
-            @mouseenter="hoverRating = n"
+          <div
+            class="star-picker-group"
+            role="radiogroup"
+            :aria-label="t('bookstore.yourRating')"
             @mouseleave="hoverRating = 0"
-            @click="setRating(n)"
-          >★</span>
+          >
+            <button
+              v-for="n in 5"
+              :key="n"
+              type="button"
+              class="star star-button"
+              :class="{
+                'filled': n <= (hoverRating || starRating),
+                'hoverable': !isEditing
+              }"
+              :aria-label="`${n} ${n === 1 ? 'star' : 'stars'}`"
+              :aria-checked="n === starRating"
+              :aria-pressed="n === starRating"
+              :disabled="isEditing"
+              :tabindex="isEditing ? -1 : (n === 1 ? 0 : -1)"
+              @mouseenter="hoverRating = n"
+              @focus="hoverRating = n"
+              @blur="hoverRating = 0"
+              @click="setRating(n)"
+            >★</button>
+          </div>
           <span v-if="starRating" class="star-value">({{ starRating }}/5)</span>
         </div>
 
@@ -165,15 +184,27 @@ onMounted(() => {
         
         <div class="star-picker">
           <span class="star-label">{{ t('bookstore.yourRating') }}:</span>
-          <span
-            v-for="n in 5"
-            :key="n"
-            class="star filled"
-            :class="{ 'hoverable': true }"
-            @mouseenter="hoverRating = n"
+          <div
+            class="star-picker-group"
+            role="radiogroup"
+            :aria-label="t('bookstore.yourRating')"
             @mouseleave="hoverRating = 0"
-            @click="starRating = n"
-          >★</span>
+          >
+            <button
+              v-for="n in 5"
+              :key="n"
+              type="button"
+              class="star star-button filled hoverable"
+              :aria-label="`${n} ${n === 1 ? 'star' : 'stars'}`"
+              :aria-checked="n === starRating"
+              :aria-pressed="n === starRating"
+              :tabindex="n === 1 ? 0 : -1"
+              @mouseenter="hoverRating = n"
+              @focus="hoverRating = n"
+              @blur="hoverRating = 0"
+              @click="starRating = n"
+            >★</button>
+          </div>
           <span class="star-value">({{ starRating }}/5)</span>
         </div>
 
@@ -337,6 +368,49 @@ onMounted(() => {
 
 .star.filled {
   color: #f59e0b;
+}
+
+.star-picker-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.star-button {
+  background: transparent;
+  border: none;
+  padding: 0.1rem;
+  font-size: 1.5rem;
+  color: var(--line);
+  cursor: default;
+  transition: color 0.15s, transform 0.15s;
+  user-select: none;
+  line-height: 1;
+}
+
+.star-button.hoverable {
+  cursor: pointer;
+}
+
+.star-button.hoverable:hover:not(:disabled),
+.star-button.hoverable:focus-visible:not(:disabled) {
+  transform: scale(1.2);
+  outline: none;
+}
+
+.star-button:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.star-button.filled {
+  color: #f59e0b;
+}
+
+.star-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .star-value {

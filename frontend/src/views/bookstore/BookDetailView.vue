@@ -30,8 +30,23 @@ const isUnlimited = computed(() => book.value?.stock === -1)
 const avgRating = computed(() => Number(book.value?.rating || 0))
 const reviewCount = computed(() => Number(book.value?.reviewCount || 0))
 
+const sellerInfo = computed(() => {
+  const s = book.value?.seller
+  if (!s) return null
+  // If it's a populated object
+  if (typeof s === 'object') {
+    return {
+      id: s._id,
+      name: s.displayName || s.username || 'Unknown',
+      avatar: s.avatar || '/default-avatar.png',
+    }
+  }
+  // If it's a string (ObjectId), we don't have name/avatar info
+  return { id: s, name: 'Seller', avatar: '/default-avatar.png' }
+})
+
 function visitSeller() {
-  const sellerId = book.value?.seller?._id
+  const sellerId = sellerInfo.value?.id
   if (!sellerId) return
   router.push(`/users/${sellerId}`)
 }
@@ -62,9 +77,9 @@ onMounted(() => {
         <div class="detail-info">
           <h1 class="detail-title">{{ book.title }}</h1>
           <div class="detail-meta">
-            <button type="button" class="seller-pill" @click="visitSeller">
-              <img :src="book.seller?.avatar || '/default-avatar.png'" alt="" class="seller-avatar" />
-              <span>{{ book.seller?.displayName || book.seller?.username }}</span>
+            <button v-if="sellerInfo" type="button" class="seller-pill" @click="visitSeller">
+              <img :src="sellerInfo.avatar" alt="" class="seller-avatar" />
+              <span>{{ sellerInfo.name }}</span>
             </button>
           </div>
 
@@ -74,12 +89,17 @@ onMounted(() => {
               <span class="detail-price">${{ price.toFixed(2) }}</span>
               <span v-if="hasDiscount" class="detail-original-price">${{ originalPrice.toFixed(2) }}</span>
             </div>
-            <div v-if="avgRating > 0 && reviewCount > 0" class="detail-rating">
-              <span class="rating-stars">
+            <div
+              v-if="avgRating > 0 && reviewCount > 0"
+              class="detail-rating"
+              :aria-label="`${avgRating.toFixed(1)} ${t('bookstore.outOf5')} — ${reviewCount} ${t('bookstore.reviews')}`"
+              role="img"
+            >
+              <span class="rating-stars" aria-hidden="true">
                 <span v-for="n in 5" :key="n" class="rstar" :class="{ filled: n <= Math.round(avgRating) }">★</span>
               </span>
-              <span class="rating-value">{{ avgRating.toFixed(1) }}</span>
-              <span class="rating-count">({{ reviewCount }} {{ $t('bookstore.reviews') }})</span>
+              <span class="rating-value" aria-hidden="true">{{ avgRating.toFixed(1) }}</span>
+              <span class="rating-count" aria-hidden="true">({{ reviewCount }} {{ $t('bookstore.reviews') }})</span>
             </div>
           </div>
 

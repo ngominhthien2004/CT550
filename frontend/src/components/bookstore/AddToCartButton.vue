@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
 import { translateError } from '../../utils/translateError.js'
@@ -19,6 +20,7 @@ const props = defineProps({
   },
 })
 
+const { t } = useI18n()
 const bookStore = useBookStore()
 const { showSuccess, showError } = useToast()
 const quantity = ref(1)
@@ -56,17 +58,29 @@ async function addToCart() {
 
 <template>
   <div class="add-to-cart">
-    <div class="qty-control">
-      <button type="button" class="qty-btn" :disabled="quantity <= 1 || isDisabled" @click="decrease">
-        <i class="fa-solid fa-minus"></i>
+    <div class="qty-control" role="group" :aria-label="t('bookstore.quantityLabel')">
+      <button
+        type="button"
+        class="qty-btn"
+        :disabled="quantity <= 1 || isDisabled"
+        :aria-label="`Decrease ${t('bookstore.quantityLabel')}`"
+        @click="decrease"
+      >
+        <i class="fa-solid fa-minus" aria-hidden="true"></i>
       </button>
-      <span class="qty-value">{{ quantity }}</span>
-      <button type="button" class="qty-btn" :disabled="quantity >= maxQuantity || isDisabled" @click="increase">
-        <i class="fa-solid fa-plus"></i>
+      <span class="qty-value" :aria-label="`${t('bookstore.quantityLabel')}: ${quantity}`">{{ quantity }}</span>
+      <button
+        type="button"
+        class="qty-btn"
+        :disabled="quantity >= maxQuantity || isDisabled"
+        :aria-label="`Increase ${t('bookstore.quantityLabel')}`"
+        @click="increase"
+      >
+        <i class="fa-solid fa-plus" aria-hidden="true"></i>
       </button>
     </div>
     <button type="button" class="btn btn-primary add-btn" :disabled="isDisabled" @click="addToCart">
-      <i class="fa-solid fa-cart-plus me-1"></i>
+      <i class="fa-solid fa-cart-plus me-1" aria-hidden="true"></i>
       {{ adding ? 'Adding...' : 'Add to Cart' }}
     </button>
   </div>

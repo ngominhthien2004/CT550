@@ -123,5 +123,6 @@
   "sortHighest": "Highest Rating",
   "sortLowest": "Lowest Rating",
   "outOf5": "out of 5",
-  "basedOnReviews": "Based on {count} review(s)"
+  "basedOnReviews": "Based on {count} review(s)",
+  "quantityLabel": "Quantity"
 }

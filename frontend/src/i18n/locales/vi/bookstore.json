@@ -123,5 +123,6 @@
   "sortHighest": "Xếp hạng cao nhất",
   "sortLowest": "Xếp hạng thấp nhất",
   "outOf5": "trên 5",
-  "basedOnReviews": "Dựa trên {count} đánh giá"
+  "basedOnReviews": "Dựa trên {count} đánh giá",
+  "quantityLabel": "Số lượng"
 }
