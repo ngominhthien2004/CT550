@@ -21,6 +21,10 @@ import {
   becomeSeller,
   getSellerProfile,
   updateSellerProfile,
+  getBookReviews,
+  createReview,
+  updateReview,
+  deleteReview,
 } from '../services/book.api.js'
 import { getApiErrorMessage } from '../utils/apiErrors.js'
 
@@ -103,6 +107,15 @@ export const useBookStore = defineStore('book', {
     sellerLoading: false,
     sellerError: '',
     isSeller: false,
+
+    // Reviews
+    reviews: [],
+    reviewsLoading: false,
+    reviewsError: '',
+    reviewsPagination: { page: 1, limit: 10, total: 0, pages: 1 },
+    reviewSubmitLoading: false,
+    reviewSubmitError: '',
+    userReview: null, // current user's review for this book (if any)
   }),
 
   getters: {
@@ -134,6 +147,7 @@ export const useBookStore = defineStore('book', {
         .slice(0, 24)
         .map(([name, count]) => ({ name, count }))
     },
+    // No additional getters needed for now
   },
 
   actions: {
@@ -315,9 +329,9 @@ export const useBookStore = defineStore('book', {
       }
     },
 
-    async checkout() {
+    async checkout(orderId) {
       try {
-        const { data } = await createCheckoutSession({})
+        const { data } = await createCheckoutSession({ orderId })
         return data?.url
       } catch (error) {
         throw error
@@ -339,7 +353,7 @@ export const useBookStore = defineStore('book', {
 
       try {
         const { data } = await getMyOrders(params)
-        const list = data?.data ?? data?.orders ?? []
+        const list = Array.isArray(data) ? data : (data?.data ?? data?.orders ?? [])
         this.orders = Array.isArray(list) ? list : []
       } catch (error) {
         this.ordersError = getApiErrorMessage(error, 'Failed to load orders')
@@ -370,7 +384,7 @@ export const useBookStore = defineStore('book', {
 
       try {
         const { data } = await getSellerOrders(params)
-        const list = data?.data ?? data?.orders ?? []
+        const list = Array.isArray(data) ? data : (data?.data ?? data?.orders ?? [])
         this.sellerOrders = Array.isArray(list) ? list : []
       } catch (error) {
         this.sellerOrdersError = getApiErrorMessage(error, 'Failed to load seller orders')
@@ -451,6 +465,93 @@ export const useBookStore = defineStore('book', {
         throw error
       } finally {
         this.sellerLoading = false
+      }
+    },
+
+    // ── Reviews ──────────────────────────────────────────────────────
+    async fetchReviews(bookId, page = 1) {
+      this.reviewsLoading = true
+      this.reviewsError = ''
+
+      try {
+        const { data } = await getBookReviews(bookId, { page, limit: this.reviewsPagination.limit })
+        this.reviews = data?.data ?? []
+        this.reviewsPagination = data?.pagination ?? { page: 1, limit: 10, total: 0, pages: 1 }
+        
+        // Check if current user has a review in the list
+        const token = localStorage.getItem('token')
+        if (token) {
+          // Decode JWT to get user id (simple parse without library)
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]))
+            const currentUserId = payload.id || payload._id
+            const found = this.reviews.find(r => r.user?._id === currentUserId)
+            this.userReview = found || null
+          } catch (e) {
+            // If token parsing fails, ignore
+          }
+        }
+      } catch (error) {
+        this.reviewsError = getApiErrorMessage(error, 'Failed to load reviews')
+        this.reviews = []
+      } finally {
+        this.reviewsLoading = false
+      }
+    },
+
+    async submitReview(bookId, payload) {
+      this.reviewSubmitLoading = true
+      this.reviewSubmitError = ''
+
+      try {
+        const { data } = await createReview(bookId, payload)
+        // Prepend new review to list
+        this.reviews.unshift(data)
+        this.reviewsPagination.total += 1
+        this.userReview = data
+        // Update currentBook rating
+        if (this.currentBook) {
+          // Refetch to get updated rating
+          await this.fetchBookDetail(bookId)
+        }
+        return data
+      } catch (error) {
+        this.reviewSubmitError = getApiErrorMessage(error, 'Failed to submit review')
+        throw error
+      } finally {
+        this.reviewSubmitLoading = false
+      }
+    },
+
+    async updateUserReview(reviewId, payload) {
+      this.reviewSubmitLoading = true
+      this.reviewSubmitError = ''
+
+      try {
+        const { data } = await updateReview(reviewId, payload)
+        // Update in list
+        const idx = this.reviews.findIndex(r => r._id === reviewId)
+        if (idx !== -1) {
+          this.reviews[idx] = data
+        }
+        this.userReview = data
+        return data
+      } catch (error) {
+        this.reviewSubmitError = getApiErrorMessage(error, 'Failed to update review')
+        throw error
+      } finally {
+        this.reviewSubmitLoading = false
+      }
+    },
+
+    async removeReview(reviewId) {
+      try {
+        await deleteReview(reviewId)
+        this.reviews = this.reviews.filter(r => r._id !== reviewId)
+        this.reviewsPagination.total -= 1
+        this.userReview = null
+      } catch (error) {
+        throw error
       }
     },
   },

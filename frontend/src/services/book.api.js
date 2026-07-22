@@ -133,5 +133,22 @@ export function updateSellerProfile(payload) {
   return bookServiceApi.put('/seller/profile', payload)
 }
 
+// ── Reviews ────────────────────────────────────────────────────────
+export function getBookReviews(bookId, params = {}) {
+  return bookServiceApi.get(`/books/${bookId}/reviews`, { params })
+}
+
+export function createReview(bookId, payload) {
+  return bookServiceApi.post(`/books/${bookId}/reviews`, payload)
+}
+
+export function updateReview(reviewId, payload) {
+  return bookServiceApi.put(`/reviews/${reviewId}`, payload)
+}
+
+export function deleteReview(reviewId) {
+  return bookServiceApi.delete(`/reviews/${reviewId}`)
+}
+
 // Exposed for diagnostics / tests.
 export { useDirectBookService, DIRECT_BOOK_SERVICE_URL }

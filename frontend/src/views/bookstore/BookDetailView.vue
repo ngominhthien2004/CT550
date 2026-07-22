@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import AddToCartButton from '@/components/bookstore/AddToCartButton.vue'
+import ReviewSection from '@/components/bookstore/ReviewSection.vue'
 import { useBookStore } from '@/stores/book.store.js'
 
 const { t } = useI18n()
@@ -25,6 +26,9 @@ const price = computed(() => Number(book.value?.price || 0))
 const originalPrice = computed(() => Number(book.value?.originalPrice || 0))
 const hasDiscount = computed(() => originalPrice.value > 0 && originalPrice.value > price.value)
 const isUnlimited = computed(() => book.value?.stock === -1)
+
+const avgRating = computed(() => Number(book.value?.rating || 0))
+const reviewCount = computed(() => Number(book.value?.reviewCount || 0))
 
 function visitSeller() {
   const sellerId = book.value?.seller?._id
@@ -69,6 +73,15 @@ onMounted(() => {
             <span v-if="hasDiscount" class="detail-original-price">${{ originalPrice.toFixed(2) }}</span>
           </div>
 
+          <!-- Rating display -->
+          <div v-if="avgRating > 0" class="detail-rating">
+            <span class="rating-stars">
+              <span v-for="n in 5" :key="n" class="rstar" :class="{ filled: n <= Math.round(avgRating) }">★</span>
+            </span>
+            <span class="rating-value">{{ avgRating.toFixed(1) }}</span>
+            <span class="rating-count">({{ reviewCount }} {{ $t('bookstore.reviews') }})</span>
+          </div>
+
           <p class="detail-stock">
             {{ $t('bookstore.stock') }}
             <strong>{{ isUnlimited ? $t('bookstore.unlimited') : book.stock }}</strong>
@@ -89,6 +102,9 @@ onMounted(() => {
         </div>
       </div>
     </section>
+
+      <!-- Reviews Section -->
+      <ReviewSection v-if="book" :book-id="book._id" />
   </BookstoreLayout>
 </template>
 
@@ -209,6 +225,38 @@ onMounted(() => {
   padding: 0.3rem 0.65rem;
   border-radius: 999px;
   font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.detail-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.rating-stars {
+  display: flex;
+  gap: 0.1rem;
+}
+
+.rstar {
+  font-size: 1.2rem;
+  color: var(--line);
+}
+
+.rstar.filled {
+  color: #f59e0b;
+}
+
+.rating-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.rating-count {
+  font-size: 0.85rem;
   color: var(--muted);
 }
 

@@ -44,10 +44,10 @@ Monorepo with two packages:
 
 Use pre-created test accounts from `docs/reports/auth-test-accounts-2026-04-05.md` instead of creating new ones for ad-hoc testing.
 
-| Account | Username | Password | Role |
-|---------|----------|----------|------|
-| Admin | `qa_admin_20260417` | `QaAdmin!2026` | admin |
-| Human-style (30 accs) | e.g. `johnny.brooks`, `goku.tanaka` | `Test12345!` | user |
+| Account | Email | Password | Role |
+|---------|-------|----------|------|
+| Admin | `qa_admin_20260417@example.com` | `QaAdmin!2026` | admin |
+| Human-style (30 accs) | e.g. `johnny.brooks@gmail.com`, `goku.tanaka@gmail.com` | `Test12345!` | user |
 
 All 30 human-style accounts share password `Test12345!`. See `docs/reports/auth-test-accounts-2026-04-05.md` for the full list.
 

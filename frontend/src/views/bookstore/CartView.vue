@@ -19,7 +19,16 @@ const total = computed(() => bookStore.cartTotal)
 async function handleCheckout() {
   checkingOut.value = true
   try {
-    const url = await bookStore.checkout()
+    // Step 1: Create order from cart
+    const order = await bookStore.placeOrder()
+    if (!order || !order._id) {
+      showError(t('bookstore.loadFailed'))
+      checkingOut.value = false
+      return
+    }
+
+    // Step 2: Get Stripe checkout URL
+    const url = await bookStore.checkout(order._id)
     if (url) {
       window.location.href = url
       return

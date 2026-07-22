@@ -20,6 +20,7 @@ const coverUrl = computed(() => {
 const price = computed(() => Number(props.book?.price || 0))
 const originalPrice = computed(() => Number(props.book?.originalPrice || 0))
 const hasDiscount = computed(() => originalPrice.value > 0 && originalPrice.value > price.value)
+const avgRating = computed(() => Number(props.book?.rating || 0))
 
 function navigateToDetail() {
   const id = props.book?._id || props.book?.id
@@ -37,6 +38,10 @@ function navigateToDetail() {
     <div class="book-meta">
       <h3 class="book-title">{{ book.title }}</h3>
       <p class="book-seller">{{ book.seller?.displayName || book.seller?.username || 'Unknown seller' }}</p>
+      <div v-if="avgRating > 0" class="book-rating">
+        <span class="mini-star filled">★</span>
+        <span>{{ avgRating.toFixed(1) }}</span>
+      </div>
       <div class="book-price-row">
         <span class="book-price">${{ price.toFixed(2) }}</span>
         <span v-if="hasDiscount" class="book-original-price">${{ originalPrice.toFixed(2) }}</span>
@@ -131,5 +136,23 @@ function navigateToDetail() {
   font-size: 0.8rem;
   color: var(--muted);
   text-decoration: line-through;
+}
+
+.book-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+.mini-star {
+  color: var(--line);
+  font-size: 0.85rem;
+}
+
+.mini-star.filled {
+  color: #f59e0b;
 }
 </style>
