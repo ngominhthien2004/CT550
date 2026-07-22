@@ -104,6 +104,8 @@
   "yourRating": "Đánh giá của bạn",
   "submitReview": "Gửi đánh giá",
   "updateReview": "Cập nhật đánh giá",
+  "editReview": "Chỉnh sửa Đánh giá",
+  "cancelEdit": "Hủy",
   "deleteReview": "Xóa đánh giá",
   "noReviews": "Chưa có đánh giá nào.",
   "reviewDeleted": "Đã xóa đánh giá",

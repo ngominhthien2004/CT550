@@ -104,6 +104,8 @@
   "yourRating": "あなたの評価",
   "submitReview": "レビューを送信",
   "updateReview": "レビューを更新",
+  "editReview": "レビューを編集",
+  "cancelEdit": "キャンセル",
   "deleteReview": "レビューを削除",
   "noReviews": "まだレビューはありません。",
   "reviewDeleted": "レビューを削除しました",

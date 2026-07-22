@@ -104,6 +104,8 @@
   "yourRating": "Your Rating",
   "submitReview": "Submit Review",
   "updateReview": "Update Review",
+  "editReview": "Edit Review",
+  "cancelEdit": "Cancel",
   "deleteReview": "Delete Review",
   "noReviews": "No reviews yet.",
   "reviewDeleted": "Review deleted successfully",

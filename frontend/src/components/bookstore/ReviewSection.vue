@@ -185,7 +185,7 @@ onMounted(() => {
             {{ t('bookstore.updateReview') }}
           </button>
           <button class="btn btn-outline-secondary" @click="cancelEdit">
-            {{ t('bookstore.cancelOrder') }}
+            {{ t('bookstore.cancelEdit') }}
           </button>
         </div>
       </div>
@@ -235,14 +235,14 @@ onMounted(() => {
           <!-- Own review actions -->
           <div v-if="review.user?._id === currentUserId" class="review-actions mt-2">
             <button class="btn btn-sm btn-outline-primary me-1" @click="startEdit(review)">
-              {{ t('bookstore.editBook') }}
+              {{ t('bookstore.editReview') }}
             </button>
             <button
               class="btn btn-sm"
               :class="deleteConfirmId === review._id ? 'btn-danger' : 'btn-outline-danger'"
               @click="toggleDeleteConfirm(review._id)"
             >
-              {{ deleteConfirmId === review._id ? t('bookstore.deleteConfirm') : t('bookstore.deleteReview') }}
+              {{ deleteConfirmId === review._id ? t('bookstore.reviewDeleteConfirm') : t('bookstore.deleteReview') }}
             </button>
           </div>
         </div>
