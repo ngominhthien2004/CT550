@@ -62,6 +62,15 @@ exports.createReview = async (req, res, next) => {
             return next(new Error('Rating must be a number between 1 and 5'));
         }
 
+        // Validate content length (optional field, but bounded)
+        if (content !== undefined && content !== null) {
+            const contentStr = String(content).trim();
+            if (contentStr.length > 2000) {
+                res.status(400);
+                return next(new Error('Review content must be 2000 characters or fewer'));
+            }
+        }
+
         // Check book exists
         const book = await Book.findById(bookId);
         if (!book || !book.isActive) {
@@ -76,15 +85,21 @@ exports.createReview = async (req, res, next) => {
             return next(new Error('You have already reviewed this book'));
         }
 
-        // Check user has purchased this book
-        const hasPurchased = await Order.findOne({
-            buyer: req.user._id,
-            status: 'paid',
-            'items.book': bookId
-        });
-        if (!hasPurchased) {
-            res.status(403);
-            return next(new Error('You must purchase this book before reviewing'));
+        // Admins and the book's own seller can review without purchasing.
+        // Everyone else needs a paid order containing this book.
+        const isAdmin = req.user.role === 'admin';
+        const isOwnBook = String(book.seller) === String(req.user._id);
+
+        if (!isAdmin && !isOwnBook) {
+            const hasPurchased = await Order.findOne({
+                buyer: req.user._id,
+                status: 'paid',
+                'items.book': bookId
+            });
+            if (!hasPurchased) {
+                res.status(403);
+                return next(new Error('You must purchase this book before reviewing'));
+            }
         }
 
         const review = await Review.create({
@@ -103,6 +118,11 @@ exports.createReview = async (req, res, next) => {
 
         res.status(201).json(populated);
     } catch (error) {
+        // Unique index on (user, book) can race two simultaneous POSTs through.
+        if (error && error.code === 11000) {
+            res.status(400);
+            return next(new Error('You have already reviewed this book'));
+        }
         next(error);
     }
 };

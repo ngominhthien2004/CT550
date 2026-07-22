@@ -43,6 +43,11 @@ function decrease() {
 async function addToCart() {
   if (isDisabled.value) return
 
+  if (quantity.value > props.maxQuantity) {
+    showError(t('bookstore.notEnoughStock'))
+    return
+  }
+
   adding.value = true
   try {
     await bookStore.addBookToCart(props.bookId, quantity.value)

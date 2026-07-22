@@ -128,7 +128,11 @@ onMounted(() => {
               {{ $t('bookstore.stock') }} <strong>{{ stockText }}</strong>
             </p>
             <div class="detail-actions">
-              <AddToCartButton :book-id="book._id" :disabled="book.status !== 'published'" />
+              <AddToCartButton
+                :book-id="book._id"
+                :disabled="book.status !== 'published' || (!isUnlimited && book.stock === 0)"
+                :max-quantity="isUnlimited ? 99 : (book.stock || 0)"
+              />
             </div>
           </div>
 

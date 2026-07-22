@@ -87,13 +87,16 @@ function scrollToSection(selector) {
   el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
+// React to browser back/forward navigation by re-syncing filters from
+// the URL. The initial load is handled in onMounted, so skip the
+// first invocation (when oldQuery is undefined).
 watch(
   () => route.query,
-  () => {
+  (newQuery, oldQuery) => {
+    if (!oldQuery) return
     syncFiltersFromQuery()
-    bookStore.fetchBooks(pagination.value.page)
-  },
-  { once: true },
+    bookStore.fetchBooks(1)
+  }
 )
 
 onMounted(async () => {

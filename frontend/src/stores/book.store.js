@@ -27,6 +27,7 @@ import {
   deleteReview,
 } from '../services/book.api.js'
 import { getApiErrorMessage } from '../utils/apiErrors.js'
+import { getCurrentUserIdFromToken } from '@/utils/jwt.js'
 
 function buildBookFormData(payload) {
   const formData = new FormData()
@@ -477,19 +478,12 @@ export const useBookStore = defineStore('book', {
         const { data } = await getBookReviews(bookId, { page, limit: this.reviewsPagination.limit })
         this.reviews = data?.data ?? []
         this.reviewsPagination = data?.pagination ?? { page: 1, limit: 10, total: 0, pages: 1 }
-        
+
         // Check if current user has a review in the list
-        const token = localStorage.getItem('token')
-        if (token) {
-          // Decode JWT to get user id (simple parse without library)
-          try {
-            const payload = JSON.parse(atob(token.split('.')[1]))
-            const currentUserId = payload.id || payload._id
-            const found = this.reviews.find(r => r.user?._id === currentUserId)
-            this.userReview = found || null
-          } catch (e) {
-            // If token parsing fails, ignore
-          }
+        const currentUserId = getCurrentUserIdFromToken()
+        if (currentUserId) {
+          const found = this.reviews.find(r => r.user?._id === currentUserId)
+          this.userReview = found || null
         }
       } catch (error) {
         this.reviewsError = getApiErrorMessage(error, 'Failed to load reviews')
@@ -509,11 +503,9 @@ export const useBookStore = defineStore('book', {
         this.reviews.unshift(data)
         this.reviewsPagination.total += 1
         this.userReview = data
-        // Update currentBook rating
-        if (this.currentBook) {
-          // Refetch to get updated rating
-          await this.fetchBookDetail(bookId)
-        }
+        // Recompute the book's aggregate rating locally so the header updates
+        // without a second network round-trip.
+        this._recomputeBookRating(bookId)
         return data
       } catch (error) {
         this.reviewSubmitError = getApiErrorMessage(error, 'Failed to submit review')
@@ -535,6 +527,9 @@ export const useBookStore = defineStore('book', {
           this.reviews[idx] = data
         }
         this.userReview = data
+        // Keep the book's aggregate rating in sync with the local reviews list.
+        const target = this.reviews.find(r => r._id === reviewId)
+        if (target) this._recomputeBookRating(target.book)
         return data
       } catch (error) {
         this.reviewSubmitError = getApiErrorMessage(error, 'Failed to update review')
@@ -547,12 +542,31 @@ export const useBookStore = defineStore('book', {
     async removeReview(reviewId) {
       try {
         await deleteReview(reviewId)
+        const target = this.reviews.find(r => r._id === reviewId)
         this.reviews = this.reviews.filter(r => r._id !== reviewId)
         this.reviewsPagination.total -= 1
         this.userReview = null
+        if (target) this._recomputeBookRating(target.book)
       } catch (error) {
         throw error
       }
+    },
+
+    // Recompute the rating aggregate on the current book from the local
+    // reviews list. Avoids a second network round-trip on every review CRUD.
+    _recomputeBookRating(bookId) {
+      if (!this.currentBook || String(this.currentBook._id) !== String(bookId)) return
+      const ratings = this.reviews
+        .map((r) => Number(r.rating))
+        .filter((r) => Number.isFinite(r) && r > 0)
+      if (ratings.length === 0) {
+        this.currentBook.rating = 0
+        this.currentBook.reviewCount = 0
+        return
+      }
+      const avg = ratings.reduce((a, b) => a + b, 0) / ratings.length
+      this.currentBook.rating = Math.round(avg * 10) / 10
+      this.currentBook.reviewCount = ratings.length
     },
   },
 })

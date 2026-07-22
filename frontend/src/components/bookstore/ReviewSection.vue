@@ -1,8 +1,9 @@
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useBookStore } from '@/stores/book.store.js'
 import { formatShortDate } from '@/utils/date.js'
+import { getCurrentUserIdFromToken } from '@/utils/jwt.js'
 import StarRating from '@/components/bookstore/StarRating.vue'
 
 const props = defineProps({
@@ -20,19 +21,7 @@ const editReviewId = ref(null)
 const deleteConfirmId = ref(null)
 
 const isAuthenticated = computed(() => !!localStorage.getItem('token'))
-const currentUserId = computed(() => {
-  try {
-    const token = localStorage.getItem('token')
-    if (!token) return null
-    // UTF-8 safe base64 decode (handles non-ASCII user data)
-    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
-    const json = decodeURIComponent(
-      atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')
-    )
-    const payload = JSON.parse(json)
-    return payload.id || payload._id
-  } catch { return null }
-})
+const currentUserId = computed(() => getCurrentUserIdFromToken())
 
 const reviews = computed(() => bookStore.reviews)
 const loading = computed(() => bookStore.reviewsLoading)
@@ -47,6 +36,29 @@ const hasUserReviewed = computed(() => !!userReview.value)
 function setRating(val) {
   if (isEditing.value) return
   starRating.value = val
+}
+
+function onStarKeydown(e, n) {
+  let target = n
+  if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+    target = Math.min(5, n + 1)
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+    target = Math.max(1, n - 1)
+  } else if (e.key === 'Home') {
+    target = 1
+  } else if (e.key === 'End') {
+    target = 5
+  } else {
+    return  // not a key we handle
+  }
+  e.preventDefault()
+  setRating(target)
+  // Move focus to the new target (roving tabindex pattern).
+  // Use nextTick to wait for the rating update to render before focusing.
+  nextTick(() => {
+    const el = document.querySelector(`.star-picker-group [aria-label="${target} ${target === 1 ? 'star' : 'stars'}"]`)
+    if (el) el.focus()
+  })
 }
 
 function startEdit(review) {
@@ -90,18 +102,37 @@ async function handleDelete(reviewId) {
 
 function toggleDeleteConfirm(reviewId) {
   if (deleteConfirmId.value === reviewId) {
+    // Second click on the same (red) button — actually delete.
     handleDelete(reviewId)
   } else {
+    // First click — arm the button. Clear any other armed state.
     deleteConfirmId.value = reviewId
   }
+}
+
+function cancelDeleteConfirm() {
+  deleteConfirmId.value = null
 }
 
 function loadPage(page) {
   bookStore.fetchReviews(props.bookId, page)
 }
 
+function onDocumentClick(e) {
+  if (!deleteConfirmId.value) return
+  // If the click is inside the armed review-actions, ignore.
+  const actions = e.target.closest('.review-actions')
+  if (actions && actions.querySelector('.btn-danger')) return
+  deleteConfirmId.value = null
+}
+
 onMounted(() => {
   bookStore.fetchReviews(props.bookId)
+  document.addEventListener('click', onDocumentClick)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', onDocumentClick)
 })
 </script>
 
@@ -152,6 +183,7 @@ onMounted(() => {
               @focus="hoverRating = n"
               @blur="hoverRating = 0"
               @click="setRating(n)"
+              @keydown="onStarKeydown($event, n)"
             >★</button>
           </div>
           <span v-if="starRating" class="star-value">({{ starRating }}/5)</span>
@@ -165,7 +197,7 @@ onMounted(() => {
           maxlength="2000"
         ></textarea>
 
-        <p v-if="submitError" class="text-danger mt-2 small">{{ submitError }}</p>
+        <p v-if="submitError" class="text-danger mt-2 small" role="alert">{{ submitError }}</p>
 
         <button
           class="btn btn-primary mt-2"
@@ -204,6 +236,7 @@ onMounted(() => {
               @focus="hoverRating = n"
               @blur="hoverRating = 0"
               @click="starRating = n"
+              @keydown="onStarKeydown($event, n)"
             >★</button>
           </div>
           <span class="star-value">({{ starRating }}/5)</span>
@@ -216,7 +249,7 @@ onMounted(() => {
           maxlength="2000"
         ></textarea>
 
-        <p v-if="submitError" class="text-danger mt-2 small">{{ submitError }}</p>
+        <p v-if="submitError" class="text-danger mt-2 small" role="alert">{{ submitError }}</p>
 
         <div class="d-flex gap-2 mt-2">
           <button
@@ -296,15 +329,40 @@ onMounted(() => {
       </div>
 
       <!-- Pagination -->
-      <nav v-if="pagination.pages > 1" class="mt-3">
+      <nav v-if="pagination.pages > 1" class="mt-3" :aria-label="t('bookstore.pagination')">
         <ul class="pagination justify-content-center pagination-sm">
+          <li class="page-item" :class="{ disabled: pagination.page <= 1 }">
+            <button
+              class="page-link"
+              :disabled="pagination.page <= 1"
+              :aria-label="t('bookstore.previous')"
+              @click="loadPage(pagination.page - 1)"
+            >
+              &laquo;
+            </button>
+          </li>
           <li
             v-for="p in pagination.pages"
             :key="p"
             class="page-item"
             :class="{ active: p === pagination.page }"
           >
-            <button class="page-link" @click="loadPage(p)">{{ p }}</button>
+            <button
+              class="page-link"
+              :aria-current="p === pagination.page ? 'page' : undefined"
+              :aria-label="t('bookstore.goToPage', { page: p })"
+              @click="loadPage(p)"
+            >{{ p }}</button>
+          </li>
+          <li class="page-item" :class="{ disabled: pagination.page >= pagination.pages }">
+            <button
+              class="page-link"
+              :disabled="pagination.page >= pagination.pages"
+              :aria-label="t('bookstore.next')"
+              @click="loadPage(pagination.page + 1)"
+            >
+              &raquo;
+            </button>
           </li>
         </ul>
       </nav>
