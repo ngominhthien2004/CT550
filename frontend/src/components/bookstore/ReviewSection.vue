@@ -104,7 +104,18 @@ onMounted(() => {
     <h2 class="review-heading">{{ t('bookstore.reviews') }}</h2>
 
     <!-- Review Form (only for authenticated users who haven't reviewed) -->
-    <div v-if="isAuthenticated && !hasUserReviewed" class="review-form card">
+    <div v-if="!isAuthenticated" class="review-empty-state">
+      <i class="fa-solid fa-lock"></i>
+      <p>{{ t('bookstore.loginToReview') }}</p>
+      <router-link to="/login" class="btn btn-primary btn-sm">
+        {{ t('auth.loginButton') }}
+      </router-link>
+    </div>
+    <div v-else-if="hasUserReviewed && !isEditing" class="review-already-reviewed alert alert-info">
+      <i class="fa-solid fa-circle-check me-1"></i>
+      {{ t('bookstore.alreadyReviewed') }}
+    </div>
+    <div v-else-if="!hasUserReviewed" class="review-form card">
       <div class="card-body">
         <h3 class="review-form-title">{{ t('bookstore.writeReview') }}</h3>
         
@@ -210,6 +221,10 @@ onMounted(() => {
         :class="{ 'own-review': review.user?._id === currentUserId }"
       >
         <div class="card-body">
+          <div v-if="review.user?._id === currentUserId" class="review-your-label">
+            <i class="fa-solid fa-user-pen"></i>
+            {{ t('bookstore.yourReview') }}
+          </div>
           <div class="review-header">
             <div class="review-user">
               <img
@@ -404,5 +419,43 @@ onMounted(() => {
 .review-actions {
   display: flex;
   gap: 0.35rem;
+}
+
+.review-empty-state {
+  text-align: center;
+  padding: 1.5rem;
+  background: var(--surface-alt);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  color: var(--muted);
+}
+
+.review-empty-state i {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  display: block;
+  color: var(--line);
+}
+
+.review-already-reviewed {
+  margin-bottom: 1.5rem;
+  border-color: var(--brand);
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+.review-your-label {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--brand);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.review-your-label i {
+  margin-right: 0.25rem;
 }
 </style>

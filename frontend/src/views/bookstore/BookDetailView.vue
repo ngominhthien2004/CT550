@@ -68,36 +68,40 @@ onMounted(() => {
             </button>
           </div>
 
-          <div class="detail-price-row">
-            <span class="detail-price">${{ price.toFixed(2) }}</span>
-            <span v-if="hasDiscount" class="detail-original-price">${{ originalPrice.toFixed(2) }}</span>
+          <!-- BLOCK 1: Price & Rating (info to view) -->
+          <div class="detail-summary">
+            <div class="detail-price-row">
+              <span class="detail-price">${{ price.toFixed(2) }}</span>
+              <span v-if="hasDiscount" class="detail-original-price">${{ originalPrice.toFixed(2) }}</span>
+            </div>
+            <div v-if="avgRating > 0 && reviewCount > 0" class="detail-rating">
+              <span class="rating-stars">
+                <span v-for="n in 5" :key="n" class="rstar" :class="{ filled: n <= Math.round(avgRating) }">★</span>
+              </span>
+              <span class="rating-value">{{ avgRating.toFixed(1) }}</span>
+              <span class="rating-count">({{ reviewCount }} {{ $t('bookstore.reviews') }})</span>
+            </div>
           </div>
 
-          <!-- Rating display -->
-          <div v-if="avgRating > 0" class="detail-rating">
-            <span class="rating-stars">
-              <span v-for="n in 5" :key="n" class="rstar" :class="{ filled: n <= Math.round(avgRating) }">★</span>
-            </span>
-            <span class="rating-value">{{ avgRating.toFixed(1) }}</span>
-            <span class="rating-count">({{ reviewCount }} {{ $t('bookstore.reviews') }})</span>
+          <!-- BLOCK 2: Stock & Add to Cart (action) -->
+          <div class="detail-purchase">
+            <p class="detail-stock">
+              {{ $t('bookstore.stock') }}
+              <strong>{{ isUnlimited ? $t('bookstore.unlimited') : book.stock }}</strong>
+            </p>
+            <div class="detail-actions">
+              <AddToCartButton :book-id="book._id" :disabled="book.status !== 'published'" />
+            </div>
           </div>
 
-          <p class="detail-stock">
-            {{ $t('bookstore.stock') }}
-            <strong>{{ isUnlimited ? $t('bookstore.unlimited') : book.stock }}</strong>
-          </p>
-
-          <div class="detail-actions">
-            <AddToCartButton :book-id="book._id" :disabled="book.status !== 'published'" />
-          </div>
-
-          <div class="detail-description">
-            <h2>{{ $t('bookstore.description') }}</h2>
+          <!-- BLOCK 3: Description & Tags (info) -->
+          <div class="detail-content">
+            <h3 class="detail-section-title">{{ $t('bookstore.description') }}</h3>
             <p>{{ book.description || $t('bookstore.noDescription') }}</p>
-          </div>
 
-          <div v-if="book.tags?.length" class="detail-tags">
-            <span v-for="tag in book.tags" :key="tag" class="tag-chip">{{ tag }}</span>
+            <div v-if="book.tags?.length" class="detail-tags">
+              <span v-for="tag in book.tags" :key="tag" class="tag-chip">{{ tag }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -110,14 +114,15 @@ onMounted(() => {
 
 <style scoped>
 .bookstore-page {
-  max-width: 1000px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
 .detail-grid {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 320px minmax(0, 1fr);
   gap: 2rem;
+  max-width: 800px;
 }
 
 .detail-cover-wrap {
@@ -196,18 +201,30 @@ onMounted(() => {
   margin-bottom: 1.5rem;
 }
 
-.detail-description {
+.detail-summary {
   margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
 }
 
-.detail-description h2 {
+.detail-purchase {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.detail-content {
+  /* content block, no special styles needed */
+}
+
+.detail-section-title {
   font-size: 1.1rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
   color: var(--brand);
 }
 
-.detail-description p {
+.detail-content p {
   color: var(--text);
   line-height: 1.6;
   white-space: pre-line;
