@@ -40,6 +40,37 @@ crawled_images/
 backend/.env
 frontend/.env
 book-service/.env
+
+# Root-level env (Stripe keys, etc.) — catch-all for top-level .env
+.env
+.env.*
+!.env.example
+!.env.production
+
+# Backend runtime log artifacts (catch-all for any err/output logs)
+backend/*.err
+backend/*.err.txt
+backend/*.out.txt
+backend/*-err.txt
+backend/*-out.txt
+backend/*-errors.txt
+backend/*-output.txt
+backend/*-stderr.txt
+backend/*-stdout.txt
+backend/*_err.txt
+backend/*_out.txt
+backend/*_errors.txt
+backend/*_output.txt
+backend/*_stderr.txt
+backend/*_stdout.txt
+
+# Frontend dev server log artifacts
+frontend/vite-err.txt
+frontend/vite-out.txt
+frontend/*.err
+frontend/*-err.txt
+frontend/*-out.txt
+
 backend/public/uploads/
 frontend/temp_*
 frontend/playwright_check.spec.js

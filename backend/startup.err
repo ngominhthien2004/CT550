@@ -1,4 +1,0 @@
-Error caught in middleware: TypeError: next is not a function
-    at model.<anonymous> (E:\HocTap\CT550\backend\models\ChatSession.js:27:3)
-    at Kareem.execPre (E:\HocTap\CT550\backend\node_modules\kareem\index.js:68:39)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
