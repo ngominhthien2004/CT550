@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import StarRating from '@/components/bookstore/StarRating.vue'
 
 const props = defineProps({
   book: {
@@ -39,7 +40,7 @@ function navigateToDetail() {
       <h3 class="book-title">{{ book.title }}</h3>
       <p class="book-seller">{{ book.seller?.displayName || book.seller?.username || 'Unknown seller' }}</p>
       <div v-if="avgRating > 0" class="book-rating">
-        <span class="mini-star filled">★</span>
+        <StarRating :value="avgRating" :max="5" size="small" />
         <span>{{ avgRating.toFixed(1) }}</span>
       </div>
       <div class="book-price-row">
@@ -145,14 +146,5 @@ function navigateToDetail() {
   font-size: 0.8rem;
   color: var(--muted);
   margin-bottom: 0.35rem;
-}
-
-.mini-star {
-  color: var(--line);
-  font-size: 0.85rem;
-}
-
-.mini-star.filled {
-  color: #f59e0b;
 }
 </style>

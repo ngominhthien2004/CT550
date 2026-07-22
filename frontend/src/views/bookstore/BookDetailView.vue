@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import AddToCartButton from '@/components/bookstore/AddToCartButton.vue'
 import ReviewSection from '@/components/bookstore/ReviewSection.vue'
+import StarRating from '@/components/bookstore/StarRating.vue'
 import { useBookStore } from '@/stores/book.store.js'
 
 const { t } = useI18n()
@@ -25,7 +26,19 @@ const coverUrl = computed(() => {
 const price = computed(() => Number(book.value?.price || 0))
 const originalPrice = computed(() => Number(book.value?.originalPrice || 0))
 const hasDiscount = computed(() => originalPrice.value > 0 && originalPrice.value > price.value)
+const discountPercent = computed(() => {
+  if (!hasDiscount.value) return 0
+  return Math.round((1 - price.value / originalPrice.value) * 100)
+})
 const isUnlimited = computed(() => book.value?.stock === -1)
+
+const stockText = computed(() => {
+  if (isUnlimited.value) return t('bookstore.unlimited')
+  const n = book.value?.stock
+  if (n === undefined || n === null) return ''
+  if (n === 1) return `1 ${t('bookstore.book')}`     // singular
+  return `${n} ${t('bookstore.books')}`               // plural
+})
 
 const avgRating = computed(() => Number(book.value?.rating || 0))
 const reviewCount = computed(() => Number(book.value?.reviewCount || 0))
@@ -51,6 +64,13 @@ function visitSeller() {
   router.push(`/users/${sellerId}`)
 }
 
+function onCoverError(e) {
+  // If the image fails to load, swap to the default cover
+  if (e?.target && e.target.src !== '/default-book-cover.png') {
+    e.target.src = '/default-book-cover.png'
+  }
+}
+
 onMounted(() => {
   if (bookId.value) {
     bookStore.fetchBookDetail(bookId.value)
@@ -71,7 +91,13 @@ onMounted(() => {
 
       <div v-else-if="book" class="detail-grid">
         <div class="detail-cover-wrap">
-          <img :src="coverUrl" :alt="book.title" class="detail-cover" />
+          <img
+            :src="coverUrl"
+            :alt="book.title"
+            class="detail-cover"
+            loading="lazy"
+            @error="onCoverError"
+          />
         </div>
 
         <div class="detail-info">
@@ -88,26 +114,18 @@ onMounted(() => {
             <div class="detail-price-row">
               <span class="detail-price">${{ price.toFixed(2) }}</span>
               <span v-if="hasDiscount" class="detail-original-price">${{ originalPrice.toFixed(2) }}</span>
+              <span v-if="hasDiscount" class="detail-discount-badge">-{{ discountPercent }}%</span>
             </div>
-            <div
-              v-if="avgRating > 0 && reviewCount > 0"
-              class="detail-rating"
-              :aria-label="`${avgRating.toFixed(1)} ${t('bookstore.outOf5')} — ${reviewCount} ${t('bookstore.reviews')}`"
-              role="img"
-            >
-              <span class="rating-stars" aria-hidden="true">
-                <span v-for="n in 5" :key="n" class="rstar" :class="{ filled: n <= Math.round(avgRating) }">★</span>
-              </span>
-              <span class="rating-value" aria-hidden="true">{{ avgRating.toFixed(1) }}</span>
-              <span class="rating-count" aria-hidden="true">({{ reviewCount }} {{ $t('bookstore.reviews') }})</span>
+            <div v-if="avgRating > 0 && reviewCount > 0" class="detail-rating">
+              <StarRating :value="avgRating" :max="5" size="medium" />
+              <span class="rating-value-text">({{ reviewCount }} {{ reviewCount === 1 ? $t('bookstore.review') : $t('bookstore.reviews') }})</span>
             </div>
           </div>
 
           <!-- BLOCK 2: Stock & Add to Cart (action) -->
           <div class="detail-purchase">
             <p class="detail-stock">
-              {{ $t('bookstore.stock') }}
-              <strong>{{ isUnlimited ? $t('bookstore.unlimited') : book.stock }}</strong>
+              {{ $t('bookstore.stock') }} <strong>{{ stockText }}</strong>
             </p>
             <div class="detail-actions">
               <AddToCartButton :book-id="book._id" :disabled="book.status !== 'published'" />
@@ -120,7 +138,12 @@ onMounted(() => {
             <p>{{ book.description || $t('bookstore.noDescription') }}</p>
 
             <div v-if="book.tags?.length" class="detail-tags">
-              <span v-for="tag in book.tags" :key="tag" class="tag-chip">{{ tag }}</span>
+              <router-link
+                v-for="tag in book.tags"
+                :key="tag"
+                :to="{ path: '/bookstore', query: { tag } }"
+                class="tag-chip tag-chip-link"
+              >{{ tag }}</router-link>
             </div>
           </div>
         </div>
@@ -148,7 +171,7 @@ onMounted(() => {
 .detail-cover-wrap {
   border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 .detail-cover {
@@ -212,6 +235,16 @@ onMounted(() => {
   text-decoration: line-through;
 }
 
+.detail-discount-badge {
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+}
+
 .detail-stock {
   color: var(--muted);
   margin-bottom: 1rem;
@@ -265,34 +298,28 @@ onMounted(() => {
   color: var(--muted);
 }
 
+.tag-chip-link {
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--muted);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.tag-chip-link:hover {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+  text-decoration: none;
+}
+
 .detail-rating {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   margin-bottom: 0.75rem;
 }
 
-.rating-stars {
-  display: flex;
-  gap: 0.1rem;
-}
-
-.rstar {
-  font-size: 1.2rem;
-  color: var(--line);
-}
-
-.rstar.filled {
-  color: #f59e0b;
-}
-
-.rating-value {
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--text);
-}
-
-.rating-count {
+.rating-value-text {
   font-size: 0.85rem;
   color: var(--muted);
 }

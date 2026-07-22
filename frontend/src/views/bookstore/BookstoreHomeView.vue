@@ -51,8 +51,11 @@ function goToPage(page) {
 
 function syncFiltersFromQuery() {
   const query = route.query
+  // `?tag=<name>` is a convenience shortcut equivalent to searching by tag name.
+  // Prefer the explicit `search` param when both are present.
+  const searchFromQuery = query.search || (query.tag ? String(query.tag) : '')
   bookStore.setFilters({
-    search: query.search || '',
+    search: searchFromQuery,
     sort: query.sort || 'newest',
     minPrice: query.minPrice || '',
     maxPrice: query.maxPrice || '',

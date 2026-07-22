@@ -3,6 +3,7 @@ import { computed, ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useBookStore } from '@/stores/book.store.js'
 import { formatShortDate } from '@/utils/date.js'
+import StarRating from '@/components/bookstore/StarRating.vue'
 
 const props = defineProps({
   bookId: { type: String, required: true },
@@ -269,7 +270,7 @@ onMounted(() => {
               </div>
             </div>
             <div class="review-stars">
-              <span v-for="n in 5" :key="n" class="star small" :class="{ filled: n <= review.rating }">★</span>
+              <StarRating :value="review.rating" :max="5" size="small" />
               <span class="star-text">{{ review.rating }}/5</span>
             </div>
           </div>
