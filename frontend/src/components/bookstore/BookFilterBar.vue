@@ -1,4 +1,6 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
 const props = defineProps({
   filters: {
     type: Object,
@@ -12,11 +14,15 @@ const props = defineProps({
 
 const emit = defineEmits(['update:filters', 'search'])
 
+const { t } = useI18n()
+
+// Store the option keys; resolve the label at render time so the
+// select reflects the current locale when the user switches language.
 const sortOptions = [
-  { value: 'newest', label: 'Newest' },
-  { value: 'priceAsc', label: 'Price: Low to High' },
-  { value: 'priceDesc', label: 'Price: High to Low' },
-  { value: 'popular', label: 'Popular' },
+  { value: 'newest', labelKey: 'bookstore.sortLatest' },
+  { value: 'priceAsc', labelKey: 'bookstore.sortPriceAsc' },
+  { value: 'priceDesc', labelKey: 'bookstore.sortPriceDesc' },
+  { value: 'popular', labelKey: 'bookstore.sortPopular' },
 ]
 
 function updateField(field, value) {
@@ -37,7 +43,7 @@ function submitSearch() {
           <input
             type="search"
             class="form-control"
-            placeholder="Search books..."
+            :placeholder="t('bookstore.searchBooks')"
             :value="filters.search"
             @input="updateField('search', $event.target.value)"
             @keydown.enter.prevent="submitSearch"
@@ -47,17 +53,17 @@ function submitSearch() {
 
       <select class="form-select filter-select" :value="filters.sort" @change="updateField('sort', $event.target.value)">
         <option v-for="option in sortOptions" :key="option.value" :value="option.value">
-          {{ option.label }}
+          {{ t(option.labelKey) }}
         </option>
       </select>
     </div>
 
     <div class="filter-row price-row">
-      <span class="price-label">Price:</span>
+      <span class="price-label">{{ t('bookstore.price') }}:</span>
       <input
         type="number"
         class="form-control price-input"
-        placeholder="Min"
+        :placeholder="t('bookstore.minPrice')"
         min="0"
         :value="filters.minPrice"
         @input="updateField('minPrice', $event.target.value)"
@@ -66,13 +72,13 @@ function submitSearch() {
       <input
         type="number"
         class="form-control price-input"
-        placeholder="Max"
+        :placeholder="t('bookstore.maxPrice')"
         min="0"
         :value="filters.maxPrice"
         @input="updateField('maxPrice', $event.target.value)"
       />
       <button type="button" class="btn btn-primary btn-sm" :disabled="loading" @click="submitSearch">
-        <i class="fa-solid fa-filter me-1"></i> Apply
+        <i class="fa-solid fa-filter me-1"></i> {{ t('bookstore.apply') }}
       </button>
     </div>
   </div>

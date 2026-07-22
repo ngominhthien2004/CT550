@@ -16,6 +16,8 @@
   "noOrders": "Không có đơn hàng nào.",
   "noItemsInCart": "Giỏ hàng của bạn đang trống.",
   "addToCart": "Thêm vào Giỏ hàng",
+  "addedToCart": "Đã thêm vào giỏ hàng",
+  "adding": "Đang thêm...",
   "removeFromCart": "Xóa khỏi Giỏ hàng",
   "buyNow": "Mua ngay",
   "checkout": "Thanh toán",
@@ -132,5 +134,16 @@
   "sortLowest": "Xếp hạng thấp nhất",
   "outOf5": "trên 5",
   "basedOnReviews": "Dựa trên {count} đánh giá",
-  "quantityLabel": "Số lượng"
+  "quantityLabel": "Số lượng",
+  "sortPriceAsc": "Giá: Thấp đến Cao",
+  "sortPriceDesc": "Giá: Cao đến Thấp",
+  "sortPopular": "Phổ biến",
+  "minPrice": "Tối thiểu",
+  "maxPrice": "Tối đa",
+  "apply": "Áp dụng",
+  "sale": "Giảm giá",
+  "unknownSeller": "Người bán ẩn danh",
+  "unknownUser": "Người dùng ẩn danh",
+  "outOfStock": "Hết hàng",
+  "ratedOutOf": "{rating} trên {max}"
 }

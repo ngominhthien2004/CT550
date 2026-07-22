@@ -51,7 +51,7 @@ async function addToCart() {
   adding.value = true
   try {
     await bookStore.addBookToCart(props.bookId, quantity.value)
-    showSuccess('Added to cart')
+    showSuccess(t('bookstore.addedToCart'))
     quantity.value = 1
   } catch (error) {
     showError(translateError(error, null, 'error.saveFailed'))
@@ -86,7 +86,7 @@ async function addToCart() {
     </div>
     <button type="button" class="btn btn-primary add-btn" :disabled="isDisabled" @click="addToCart">
       <i class="fa-solid fa-cart-plus me-1" aria-hidden="true"></i>
-      {{ adding ? 'Adding...' : 'Add to Cart' }}
+      {{ adding ? t('bookstore.adding') : t('bookstore.addToCart') }}
     </button>
   </div>
 </template>

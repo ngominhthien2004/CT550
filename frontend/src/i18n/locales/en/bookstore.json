@@ -16,6 +16,8 @@
   "noOrders": "No orders found.",
   "noItemsInCart": "Your cart is empty.",
   "addToCart": "Add to Cart",
+  "addedToCart": "Added to cart",
+  "adding": "Adding...",
   "removeFromCart": "Remove from Cart",
   "buyNow": "Buy Now",
   "checkout": "Checkout",
@@ -132,5 +134,16 @@
   "sortLowest": "Lowest Rating",
   "outOf5": "out of 5",
   "basedOnReviews": "Based on {count} review(s)",
-  "quantityLabel": "Quantity"
+  "quantityLabel": "Quantity",
+  "sortPriceAsc": "Price: Low to High",
+  "sortPriceDesc": "Price: High to Low",
+  "sortPopular": "Popular",
+  "minPrice": "Min",
+  "maxPrice": "Max",
+  "apply": "Apply",
+  "sale": "Sale",
+  "unknownSeller": "Unknown seller",
+  "unknownUser": "Unknown user",
+  "outOfStock": "Out of stock",
+  "ratedOutOf": "{rating} out of {max}"
 }

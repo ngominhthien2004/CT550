@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   value: { type: Number, default: 0 },
@@ -8,6 +9,8 @@ const props = defineProps({
   showValue: { type: Boolean, default: false },
   ariaLabel: { type: String, default: '' },
 })
+
+const { t } = useI18n()
 
 const sizeMap = {
   small: '0.9rem',
@@ -35,7 +38,8 @@ const displayValue = computed(() => {
 
 const autoLabel = computed(() => {
   if (props.ariaLabel) return props.ariaLabel
-  return `${displayValue.value} out of ${props.max}`
+  // Localized "5.0 out of 5" / "5.0 trên 5" / "5.0/5"
+  return t('bookstore.ratedOutOf', { rating: displayValue.value, max: props.max })
 })
 </script>
 

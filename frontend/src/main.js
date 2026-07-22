@@ -11,6 +11,12 @@ import VueKonva from 'vue-konva'
 import i18n from './i18n'
 
 const app = createApp(App)
+app.config.errorHandler = (err, instance, info) => {
+  // Log to console for now. A future enhancement could surface these via
+  // a global toast.
+  // eslint-disable-next-line no-console
+  console.error('[Vue error]', err, info)
+}
 app.use(createPinia())
 app.use(router)
 app.use(VueKonva)

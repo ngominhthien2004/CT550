@@ -8,7 +8,7 @@ import ReviewSection from '@/components/bookstore/ReviewSection.vue'
 import StarRating from '@/components/bookstore/StarRating.vue'
 import { useBookStore } from '@/stores/book.store.js'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const bookStore = useBookStore()
@@ -36,9 +36,29 @@ const stockText = computed(() => {
   if (isUnlimited.value) return t('bookstore.unlimited')
   const n = book.value?.stock
   if (n === undefined || n === null) return ''
+  if (n === 0) return t('bookstore.outOfStock')
   if (n === 1) return `1 ${t('bookstore.book')}`     // singular
   return `${n} ${t('bookstore.books')}`               // plural
 })
+
+// Format prices using the current locale + book currency so the UI
+// reads naturally across en/vi/ja and respects non-USD currencies.
+function formatPrice(value) {
+  if (!Number.isFinite(value)) return ''
+  const currency = book.value?.currency || 'USD'
+  try {
+    return new Intl.NumberFormat(locale.value, {
+      style: 'currency',
+      currency,
+    }).format(value)
+  } catch {
+    return `$${value.toFixed(2)}`
+  }
+}
+
+const priceFormatted = computed(() => formatPrice(price.value))
+const originalPriceFormatted = computed(() => formatPrice(originalPrice.value))
+const discountPercentFormatted = computed(() => `${discountPercent.value}%`)
 
 const avgRating = computed(() => Number(book.value?.rating || 0))
 const reviewCount = computed(() => Number(book.value?.reviewCount || 0))
@@ -50,12 +70,12 @@ const sellerInfo = computed(() => {
   if (typeof s === 'object') {
     return {
       id: s._id,
-      name: s.displayName || s.username || 'Unknown',
+      name: s.displayName || s.username || t('bookstore.unknownSeller'),
       avatar: s.avatar || '/default-avatar.png',
     }
   }
   // If it's a string (ObjectId), we don't have name/avatar info
-  return { id: s, name: 'Seller', avatar: '/default-avatar.png' }
+  return { id: s, name: t('bookstore.unknownSeller'), avatar: '/default-avatar.png' }
 })
 
 function visitSeller() {
@@ -112,9 +132,9 @@ onMounted(() => {
           <!-- BLOCK 1: Price & Rating (info to view) -->
           <div class="detail-summary">
             <div class="detail-price-row">
-              <span class="detail-price">${{ price.toFixed(2) }}</span>
-              <span v-if="hasDiscount" class="detail-original-price">${{ originalPrice.toFixed(2) }}</span>
-              <span v-if="hasDiscount" class="detail-discount-badge">-{{ discountPercent }}%</span>
+              <span class="detail-price">{{ priceFormatted }}</span>
+              <span v-if="hasDiscount" class="detail-original-price">{{ originalPriceFormatted }}</span>
+              <span v-if="hasDiscount" class="detail-discount-badge">-{{ discountPercentFormatted }}</span>
             </div>
             <div v-if="avgRating > 0 && reviewCount > 0" class="detail-rating">
               <StarRating :value="avgRating" :max="5" size="medium" />
@@ -124,7 +144,7 @@ onMounted(() => {
 
           <!-- BLOCK 2: Stock & Add to Cart (action) -->
           <div class="detail-purchase">
-            <p class="detail-stock">
+            <p class="detail-stock" :class="{ 'detail-stock--empty': !isUnlimited && book.stock === 0 }">
               {{ $t('bookstore.stock') }} <strong>{{ stockText }}</strong>
             </p>
             <div class="detail-actions">
@@ -252,6 +272,10 @@ onMounted(() => {
 .detail-stock {
   color: var(--muted);
   margin-bottom: 1rem;
+}
+
+.detail-stock--empty strong {
+  color: #ef4444;
 }
 
 .detail-actions {

@@ -298,7 +298,7 @@ onUnmounted(() => {
                 class="review-avatar"
               />
               <div>
-                <strong>{{ review.user?.displayName || review.user?.username || 'Unknown' }}</strong>
+                <strong>{{ review.user?.displayName || review.user?.username || t('bookstore.unknownUser') }}</strong>
                 <span class="review-date">{{ formatShortDate(review.createdAt) }}</span>
               </div>
             </div>

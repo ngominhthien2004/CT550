@@ -16,6 +16,8 @@
   "noOrders": "注文が見つかりません。",
   "noItemsInCart": "カートは空です。",
   "addToCart": "カートに追加",
+  "addedToCart": "カートに追加しました",
+  "adding": "追加中...",
   "removeFromCart": "カートから削除",
   "buyNow": "今すぐ購入",
   "checkout": "チェックアウト",
@@ -132,5 +134,16 @@
   "sortLowest": "評価が低い順",
   "outOf5": "/5",
   "basedOnReviews": "{count}件のレビューに基づく",
-  "quantityLabel": "数量"
+  "quantityLabel": "数量",
+  "sortPriceAsc": "価格: 安い順",
+  "sortPriceDesc": "価格: 高い順",
+  "sortPopular": "人気",
+  "minPrice": "最小",
+  "maxPrice": "最大",
+  "apply": "適用",
+  "sale": "セール",
+  "unknownSeller": "不明な売り手",
+  "unknownUser": "不明なユーザー",
+  "outOfStock": "在庫切れ",
+  "ratedOutOf": "{rating}/{max}"
 }

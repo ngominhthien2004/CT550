@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import StarRating from '@/components/bookstore/StarRating.vue'
 
 const props = defineProps({
@@ -11,6 +12,7 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const { locale, t } = useI18n()
 
 const coverUrl = computed(() => {
   const images = props.book?.coverImages
@@ -23,6 +25,24 @@ const originalPrice = computed(() => Number(props.book?.originalPrice || 0))
 const hasDiscount = computed(() => originalPrice.value > 0 && originalPrice.value > price.value)
 const avgRating = computed(() => Number(props.book?.rating || 0))
 
+// Format prices using the current locale + book currency so the UI
+// reads naturally across en/vi/ja and respects non-USD currencies.
+function formatPrice(value) {
+  if (!Number.isFinite(value)) return ''
+  const currency = props.book?.currency || 'USD'
+  try {
+    return new Intl.NumberFormat(locale.value, {
+      style: 'currency',
+      currency,
+    }).format(value)
+  } catch {
+    return `$${value.toFixed(2)}`
+  }
+}
+
+const priceFormatted = computed(() => formatPrice(price.value))
+const originalPriceFormatted = computed(() => formatPrice(originalPrice.value))
+
 function navigateToDetail() {
   const id = props.book?._id || props.book?.id
   if (!id) return
@@ -34,18 +54,18 @@ function navigateToDetail() {
   <article class="book-card" @click="navigateToDetail">
     <div class="book-cover-wrap">
       <img :src="coverUrl" :alt="book.title" class="book-cover" loading="lazy" />
-      <span v-if="hasDiscount" class="book-badge">Sale</span>
+      <span v-if="hasDiscount" class="book-badge">{{ t('bookstore.sale') }}</span>
     </div>
     <div class="book-meta">
       <h3 class="book-title">{{ book.title }}</h3>
-      <p class="book-seller">{{ book.seller?.displayName || book.seller?.username || 'Unknown seller' }}</p>
+      <p class="book-seller">{{ book.seller?.displayName || book.seller?.username || t('bookstore.unknownSeller') }}</p>
       <div v-if="avgRating > 0" class="book-rating">
         <StarRating :value="avgRating" :max="5" size="small" />
         <span>{{ avgRating.toFixed(1) }}</span>
       </div>
       <div class="book-price-row">
-        <span class="book-price">${{ price.toFixed(2) }}</span>
-        <span v-if="hasDiscount" class="book-original-price">${{ originalPrice.toFixed(2) }}</span>
+        <span class="book-price">{{ priceFormatted }}</span>
+        <span v-if="hasDiscount" class="book-original-price">{{ originalPriceFormatted }}</span>
       </div>
     </div>
   </article>
