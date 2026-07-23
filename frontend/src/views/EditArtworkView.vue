@@ -231,7 +231,7 @@ onBeforeUnmount(() => {
             <div class="preview-strip">
               <img
                 v-for="(img, idx) in artwork.images.slice(0, 5)"
-                :key="idx"
+                :key="img"
                 :src="img"
                 :alt="`${artwork.title} image ${idx + 1}`"
                 class="preview-thumb"

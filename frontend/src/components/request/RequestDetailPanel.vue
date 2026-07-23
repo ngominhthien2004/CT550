@@ -185,11 +185,11 @@ defineExpose({ updateChatMessages, setChatLoading })
           <h4>{{ group.label }} ({{ group.files.length }})</h4>
           <div class="file-grid">
             <template v-for="(file, idx) in group.files" :key="file._id || file.url || idx">
-              <a v-if="isImage(file.mimeType)" :href="file.url" target="_blank" class="file-thumb" :title="file.originalName || file.url">
+              <a v-if="isImage(file.mimeType)" :href="file.url" target="_blank" rel="noopener noreferrer" class="file-thumb" :title="file.originalName || file.url">
                 <img :src="file.url" :alt="file.originalName || 'Reference image'" loading="lazy" />
                 <span class="file-name">{{ file.originalName || 'Image' }}</span>
               </a>
-              <a v-else :href="file.url" target="_blank" class="file-link" download>
+              <a v-else :href="file.url" target="_blank" rel="noopener noreferrer" class="file-link" download>
                 <i :class="fileIcon(file.mimeType)"></i>
                 <span class="file-name">{{ file.originalName || 'File' }}</span>
                 <span v-if="file.size" class="file-size">{{ formatFileSize(file.size) }}</span>
@@ -256,6 +256,7 @@ defineExpose({ updateChatMessages, setChatLoading })
                 :key="attIdx"
                 :href="att.url"
                 target="_blank"
+                rel="noopener noreferrer"
                 class="att-link"
               >
                 <i :class="fileIcon(att.mimeType)"></i>

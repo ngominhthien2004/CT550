@@ -16,9 +16,12 @@ const form = reactive({
 })
 
 const formError = ref('')
-const suspendedMessage = computed(() => route.query.reason === 'suspended'
-  ? t('auth.suspended')
-  : '')
+const loginNotice = computed(() => {
+  const reason = route.query.reason
+  if (reason === 'suspended') return t('auth.suspended')
+  if (reason === 'session_expired') return t('auth.sessionExpired')
+  return ''
+})
 
 async function submitLogin() {
   formError.value = ''
@@ -78,8 +81,8 @@ function facebookLogin() {
           <input v-model="form.password" type="password" class="form-control auth-control" :placeholder="$t('auth.passwordPlaceholder')" :aria-label="$t('auth.password')" />
         </label>
 
-        <p v-if="suspendedMessage" class="text-warning mb-0" style="background: rgba(251, 191, 36, 0.1); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.3);">
-          <i class="fa-solid fa-triangle-exclamation me-1"></i>{{ suspendedMessage }}
+        <p v-if="loginNotice" class="text-warning mb-0" style="background: rgba(251, 191, 36, 0.1); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.3);">
+          <i class="fa-solid fa-triangle-exclamation me-1"></i>{{ loginNotice }}
         </p>
 
         <p v-if="formError" class="text-danger mb-0">{{ formError }}</p>

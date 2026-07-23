@@ -185,7 +185,7 @@ watch(dateRange, () => {
           >
             <i class="fa-solid fa-chevron-left"></i>
           </button>
-          <template v-for="(p, idx) in pageNumbers" :key="idx">
+          <template v-for="(p, idx) in pageNumbers" :key="`${p}-${idx}`">
             <span v-if="p === '...'" class="page-ellipsis">...</span>
             <button
               v-else

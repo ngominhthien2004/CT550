@@ -85,7 +85,7 @@ defineExpose({ scrollToBottom })
         <button v-if="selectedThreadId" type="button" class="icon-btn ghost mobile-back" @click="emit('back')">
           <i class="fa-solid fa-arrow-left"></i>
         </button>
-        <img v-if="headerAvatar" class="thread-head-avatar" :src="headerAvatar" alt="" @error="(e) => e.target.style.display = 'none'" />
+        <img v-if="headerAvatar" class="thread-head-avatar" :src="headerAvatar" :alt="headerTitle || 'Conversation partner'" @error="(e) => e.target.style.display = 'none'" />
         <h2 class="h6 mb-0 thread-head-title">
           {{ headerTitle }}
           <span v-if="selectedThreadId && presenceState.online" class="presence-indicator">

@@ -11,14 +11,11 @@ async function detectAIWithHuggingFace(imageBase64) {
     if (!hfToken || hfToken === 'your_huggingface_token_here') {
         fallbackNeeded = true;
         originalError = 'HF_TOKEN not configured';
-        console.log('HF_TOKEN not configured, skipping HuggingFace API call');
     } else {
         const model = 'umm-maybe/AI-image-detector';
         
         // Try JSON format first
         try {
-            console.log(`Calling HuggingFace API with model: ${model}`);
-            
             const response = await axios.post(
                 `${HF_API_URL}/${model}`,
                 { inputs: imageBase64 },
@@ -31,20 +28,14 @@ async function detectAIWithHuggingFace(imageBase64) {
                 }
             );
 
-            console.log('HF Response status:', response.status);
-            console.log('HF Response data:', JSON.stringify(response.data).substring(0, 500));
-
             if (response.data && Array.isArray(response.data) && response.data.length > 0) {
                 const results = response.data;
-                console.log('HF API success, processing results');
                 return processHFResults(results);
             } else if (response.data && response.data.error) {
                 // Model is loading or other API error
-                console.log('HF API returned error in response:', response.data.error);
                 fallbackNeeded = true;
                 originalError = response.data.error;
             } else {
-                console.log('HF API returned unexpected response format', typeof response.data);
                 fallbackNeeded = true;
                 originalError = 'Invalid response format from HF API';
             }
@@ -61,7 +52,6 @@ async function detectAIWithHuggingFace(imageBase64) {
 
     if (fallbackNeeded) {
         try {
-            console.log('Triggering local metadata analysis fallback due to:', originalError);
             const imageBuffer = Buffer.from(imageBase64, 'base64');
             const fallbackResult = await detectWithMetadataAnalysis(imageBuffer);
             return {

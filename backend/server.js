@@ -206,35 +206,28 @@ io.use(async (socket, next) => {
     try {
         const token = socket.handshake.auth?.token || socket.handshake.query?.token;
         if (!token) {
-            console.log('[Socket] No token provided');
             return next(new Error('Authentication required'));
         }
 
         const jwt = require('jsonwebtoken');
         const JWT_SECRET = getJwtSecret();
         const decoded = jwt.verify(token, JWT_SECRET);
-        console.log('[Socket] Token decoded:', decoded.id);
 
         const User = require('./models/User');
         const user = await User.findById(decoded.id).select('_id username role');
         if (!user) {
-            console.log('[Socket] User not found');
             return next(new Error('User not found'));
         }
 
         socket.userId = user._id.toString();
         socket.userRole = user.role;
-        console.log('[Socket] Authenticated user:', socket.userId);
         next();
     } catch (error) {
-        console.log('[Socket] Auth error:', error.message);
         next(new Error('Invalid token'));
     }
 });
 
 io.on('connection', (socket) => {
-    console.log(`User connected: ${socket.userId}`);
-
     // Join user's personal room
     socket.join(`user:${socket.userId}`);
 
@@ -242,10 +235,6 @@ io.on('connection', (socket) => {
     if (socket.userRole === 'admin') {
         socket.join('admins');
     }
-
-    socket.on('disconnect', () => {
-        console.log(`User disconnected: ${socket.userId}`);
-    });
 });
 
 // Make io accessible throughout the app

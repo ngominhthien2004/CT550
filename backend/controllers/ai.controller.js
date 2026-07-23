@@ -64,25 +64,21 @@ const agentChatStream = asyncHandler(async (req, res) => {
 
     // Detect intent
     const intent = detectIntent(message);
-    console.log(`Agent intent detected: "${intent}" for message: "${message.substring(0, 50)}..."`);
 
     let toolResult = null;
     let toolUsed = false;
 
     if (intent === 'search') {
         const query = extractSearchQuery(message);
-        console.log(`Agent executing SEARCH tool with query: "${query}"`);
         toolResult = await executeSearchTool(query || message, req.user._id);
         toolUsed = true;
     } else if (intent === 'recommend') {
         const description = extractRecommendQuery(message);
-        console.log(`Agent executing RECOMMEND tool with: "${description}"`);
         toolResult = await executeRecommendTool(description || message, req.user._id);
         toolUsed = true;
     } else if (intent === 'summarize') {
         const idMatch = message.match(/[a-fA-F0-9]{24}/);
         const artworkId = idMatch ? idMatch[0] : null;
-        console.log(`Agent executing SUMMARIZE tool for ID: "${artworkId || 'unknown'}"`);
         toolResult = await executeSummarizeTool(artworkId);
         toolUsed = true;
     }
@@ -195,26 +191,22 @@ const agentChat = asyncHandler(async (req, res) => {
 
     // Detect intent
     const intent = detectIntent(message);
-    console.log(`Agent intent detected: "${intent}" for message: "${message.substring(0, 50)}..."`);
 
     let toolResult = null;
     let toolUsed = false;
 
     if (intent === 'search') {
         const query = extractSearchQuery(message);
-        console.log(`Agent executing SEARCH tool with query: "${query}"`);
         toolResult = await executeSearchTool(query || message, req.user._id);
         toolUsed = true;
     } else if (intent === 'recommend') {
         const description = extractRecommendQuery(message);
-        console.log(`Agent executing RECOMMEND tool with: "${description}"`);
         toolResult = await executeRecommendTool(description || message, req.user._id);
         toolUsed = true;
     } else if (intent === 'summarize') {
         // Try to extract artwork ID from message (24-char hex)
         const idMatch = message.match(/[a-fA-F0-9]{24}/);
         const artworkId = idMatch ? idMatch[0] : null;
-        console.log(`Agent executing SUMMARIZE tool for ID: "${artworkId || 'unknown'}"`);
         toolResult = await executeSummarizeTool(artworkId);
         toolUsed = true;
     }

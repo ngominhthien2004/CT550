@@ -55,12 +55,10 @@ export function useSocket() {
 
     socket.value.on('connect', () => {
       isConnected.value = true
-      console.log('[Socket] Connected')
     })
 
     socket.value.on('disconnect', (reason) => {
       isConnected.value = false
-      console.log('[Socket] Disconnected:', reason)
     })
 
     socket.value.on('connect_error', (error) => {

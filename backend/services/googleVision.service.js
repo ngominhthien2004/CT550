@@ -12,7 +12,6 @@ async function detectLabels(imageBase64) {
     const apiKey = process.env.GOOGLE_VISION_API_KEY;
 
     if (!apiKey || apiKey === 'your_google_vision_api_key_here') {
-        console.log('GOOGLE_VISION_API_KEY not configured — Google Vision service skipped');
         return [];
     }
 
@@ -20,8 +19,6 @@ async function detectLabels(imageBase64) {
     const minConfidence = parseFloat(process.env.GOOGLE_VISION_CONFIDENCE || '0.6');
 
     try {
-        console.log('Calling Google Cloud Vision API for label detection');
-
         const response = await axios.post(
             `${VISION_API_URL}?key=${apiKey}`,
             {
@@ -43,8 +40,6 @@ async function detectLabels(imageBase64) {
             }
         );
 
-        console.log('Google Vision response status:', response.status);
-
         // Check for errors in the response
         if (response.data?.responses?.[0]?.error) {
             console.error('Google Vision API error:', response.data.responses[0].error.message);
@@ -55,7 +50,6 @@ async function detectLabels(imageBase64) {
         const labels = response.data?.responses?.[0]?.labelAnnotations || [];
         
         if (labels.length === 0) {
-            console.log('Google Vision: no labels detected');
             return [];
         }
 
@@ -71,7 +65,6 @@ async function detectLabels(imageBase64) {
             if (tags.length >= maxResults) break;
         }
 
-        console.log(`Google Vision generated ${tags.length} tags:`, tags);
         return tags;
     } catch (error) {
         console.error('Google Vision API error:', error.message);

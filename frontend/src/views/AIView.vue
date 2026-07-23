@@ -113,8 +113,10 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { translateError } from '../utils/translateError.js'
 import api from '../services/api'
+import { useToast } from '../composables/useToast.js'
 
 const { t } = useI18n()
+const toast = useToast()
 
 const activeTab = ref('detect')
 
@@ -136,7 +138,7 @@ async function sendMessage() {
     messages.value.push({ role: 'assistant', content: data.reply })
   } catch (err) {
     messages.value.push({ role: 'assistant', content: t('ai.errorOccurred') })
-    console.error(err)
+    toast.showError(t('ai.errorOccurred'))
   } finally {
     loading.value = false
   }
@@ -206,7 +208,7 @@ async function analyzeImage() {
     result.value = data
   } catch (err) {
     error.value = translateError(err, t, 'ai.analysisError')
-    console.error(err)
+    toast.showError(error.value)
   } finally {
     isAnalyzing.value = false
   }

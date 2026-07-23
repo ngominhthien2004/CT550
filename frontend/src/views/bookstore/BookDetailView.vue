@@ -124,7 +124,7 @@ onMounted(() => {
           <h1 class="detail-title">{{ book.title }}</h1>
           <div class="detail-meta">
             <button v-if="sellerInfo" type="button" class="seller-pill" @click="visitSeller">
-              <img :src="sellerInfo.avatar" alt="" class="seller-avatar" />
+              <img :src="sellerInfo.avatar" :alt="sellerInfo.name || 'Seller avatar'" class="seller-avatar" />
               <span>{{ sellerInfo.name }}</span>
             </button>
           </div>

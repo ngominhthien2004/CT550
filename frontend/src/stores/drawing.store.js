@@ -475,7 +475,7 @@ export const useDrawingStore = defineStore('drawing', () => {
         })
       }
       img.onerror = () => {
-        console.warn('Failed to load image')
+        // Silent — the post-drawing modal surfaces its own upload errors.
       }
       img.src = evt.target.result
     }
