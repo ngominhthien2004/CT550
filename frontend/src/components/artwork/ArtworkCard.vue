@@ -200,40 +200,44 @@ function getImageCount(item) {
    cover, with the lower-left tail intentionally extending beyond the cover
    boundary so the ribbon looks "pinned" to the corner.
 
-   Geometry: rectangle (180 × 34) positioned so its center sits slightly
+   Geometry: rectangle (180 × 38) positioned so its center sits slightly
    below-and-left of the cover's top-left corner, then rotated -45° so the
    long axis reads from bottom-left → top-right. Negative left offset puts
-   the lower-left tail outside the cover's left edge. */
+   the lower-left tail outside the cover's left edge.
+
+   Text is "Series" (capital S only) in italic, matching the Pixiv style
+   rather than all-caps signage. */
 .card-series-badge {
   position: absolute;
   top: 28px;
-  left: -40px;
+  left: -45px;
   z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 180px;
-  height: 34px;
+  height: 38px;
 
-  /* Solid amber — no gradient. */
-  background: #fbbf24;
-  color: #111;
+  /* Slightly lighter amber than before — matches the reference yellow. */
+  background: #facc15;
+  color: #1a1a1a;
 
   /* Pure rotation — the negative left offset already places the sash
      diagonally across the top-left corner. */
   transform: rotate(-45deg);
   transform-origin: center;
 
-  font-size: 0.85rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  text-transform: none;
   text-decoration: none;
   white-space: nowrap;
   line-height: 1;
 
   /* Subtle drop shadow for depth. */
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 
   transition: filter 0.15s;
   cursor: pointer;
