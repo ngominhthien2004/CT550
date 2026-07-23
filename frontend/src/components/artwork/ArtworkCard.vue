@@ -222,14 +222,14 @@ function getImageCount(item) {
 
 .card-series-badge-text {
   position: absolute;
-  top: 34px;
-  left: 13px;
+  top: 30px;
+  left: 30px;
   color: #fff;
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.5px;
-  transform: rotate(-45deg);
-  transform-origin: left top;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  transform-origin: center center;
   white-space: nowrap;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
   text-decoration: none;
