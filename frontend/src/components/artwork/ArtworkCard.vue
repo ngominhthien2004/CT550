@@ -195,39 +195,36 @@ function getImageCount(item) {
 }
 
 /* Japanese Pixiv-style "Series" ribbon.
-   A solid-yellow diagonal sash pinned to the top-left corner of the cover.
-   The banner's two short ends cross the top edge and the left edge of the
-   cover, with the lower-left tail intentionally extending beyond the cover
-   boundary so the ribbon looks "pinned" to the corner.
+   A solid-yellow diagonal sash pinned inside the top-left corner of the
+   cover. The banner stays inside the cover boundary (not bleeding off
+   the left edge) but is rotated so it reads as a corner banner.
 
-   Geometry: rectangle (180 × 38) positioned so its center sits slightly
-   below-and-left of the cover's top-left corner, then rotated -45° so the
-   long axis reads from bottom-left → top-right. Negative left offset puts
-   the lower-left tail outside the cover's left edge.
-
-   Text is "Series" (capital S only) in italic, matching the Pixiv style
-   rather than all-caps signage. */
+   Geometry: rectangle (150 × 36) anchored at the cover's top-left corner
+   (top:0, left:0, transform-origin: top left) and rotated -45°. A small
+   translate(-15%, 30%) shifts the banner slightly down-and-left of the
+   anchor so the rotated rectangle sits inside the corner with both ends
+   visible. */
 .card-series-badge {
   position: absolute;
-  top: 28px;
-  left: -45px;
+  top: 0;
+  left: 0;
   z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 180px;
-  height: 38px;
+  width: 150px;
+  height: 36px;
 
-  /* Slightly lighter amber than before — matches the reference yellow. */
+  /* Lighter amber — matches the reference yellow. */
   background: #facc15;
   color: #1a1a1a;
 
-  /* Pure rotation — the negative left offset already places the sash
-     diagonally across the top-left corner. */
-  transform: rotate(-45deg);
-  transform-origin: center;
+  /* Anchor at top-left so the banner extends down-and-right inside the
+     cover after rotation, rather than bleeding off the left edge. */
+  transform: rotate(-45deg) translate(-15%, 30%);
+  transform-origin: top left;
 
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
   font-style: italic;
   letter-spacing: 0.02em;
