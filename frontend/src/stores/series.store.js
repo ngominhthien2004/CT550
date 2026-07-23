@@ -46,6 +46,7 @@ export const useSeriesStore = defineStore('series', () => {
   }
 
   async function fetchSeriesById(seriesId) {
+    currentSeries.value = null
     detailLoading.value = true
     error.value = ''
     try {

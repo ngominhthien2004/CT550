@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSeriesStore } from '@/stores/series.store'
 import { useAuthStore } from '@/stores/auth.store'
@@ -28,6 +28,7 @@ function showSuccess(msg) {
   successTimeout = setTimeout(() => { successMsg.value = '' }, 3000)
 }
 
+const seriesId = computed(() => route.params.id)
 const series = computed(() => seriesStore.currentSeries)
 
 const processedArtworks = computed(() => {
@@ -69,19 +70,22 @@ function goBack() {
   router.back()
 }
 
-onMounted(async () => {
+async function loadSeries() {
+  seriesLoadError.value = ''
   try {
-    await seriesStore.fetchSeriesById(route.params.id)
+    await seriesStore.fetchSeriesById(seriesId.value)
   } catch (err) {
     seriesLoadError.value = translateError(err, t, 'artwork.noData')
   }
-})
+}
+
+watch(seriesId, loadSeries, { immediate: true })
 </script>
 
 <template>
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="isNavCollapsed = !isNavCollapsed">
-    <div class="series-detail-page" v-if="!seriesStore.detailLoading || series">
-      <div v-if="!series && seriesStore.detailLoading" class="state-loading">
+    <div class="series-detail-page">
+      <div v-if="seriesStore.detailLoading && !series" class="state-loading">
         <p>{{ $t('artwork.loadingSeries') }}</p>
       </div>
 
