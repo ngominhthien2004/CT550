@@ -443,17 +443,42 @@ const getPresenceHandler = async (req, res, next) => {
 
 const searchUsers = async (req, res, next) => {
     try {
-        const cacheKey = buildKey('users:search', req.query);
-        const result = await getOrSet(cacheKey, async () => {
-            const rawPage = parseInt(req.query.page, 10);
-            const rawLimit = parseInt(req.query.limit, 10);
-            const page = Number.isNaN(rawPage) ? 1 : Math.max(rawPage, 1);
-            const limit = Number.isNaN(rawLimit) ? 20 : Math.min(Math.max(rawLimit, 1), 50);
-            const skip = (page - 1) * limit;
-            const q = typeof req.query.q === 'string' ? req.query.q.trim() : '';
-            const sort = req.query.sort === 'popular' ? 'popular' : 'newest';
-            const role = req.query.role === 'all' ? 'all' : 'creator';
+        // ── Boundary parsing: parse all untrusted inputs at the top ──
+        const rawPage = parseInt(req.query.page, 10);
+        const rawLimit = parseInt(req.query.limit, 10);
+        const page = Number.isNaN(rawPage) ? 1 : Math.max(rawPage, 1);
+        const limit = Number.isNaN(rawLimit) ? 20 : Math.min(Math.max(rawLimit, 1), 50);
+        const skip = (page - 1) * limit;
+        const q = typeof req.query.q === 'string' ? req.query.q.trim() : '';
+        const sort = req.query.sort === 'popular' ? 'popular' : 'newest';
 
+        // Caller identity — drives both the filter and the cache key.
+        // Including it in the cache key prevents an admin's results
+        // (which may include admin accounts) from being served to a
+        // non-admin who happens to send the same query within the TTL.
+        const isAdminCaller = !!(req.user && req.user.role === 'admin');
+        const callerId = req.user && req.user._id ? req.user._id.toString() : 'anon';
+
+        // Normalize role request into a single canonical decision BEFORE
+        // building the filter, so the filter is constructed correctly
+        // on the first pass (no later mutation, no spread-on-string).
+        const requestedRole = (typeof req.query.role === 'string' ? req.query.role : 'all').toLowerCase();
+        let effectiveRole;
+        if (isAdminCaller) {
+            // Admin may ask for 'all' or a specific role; anything else falls back to 'all'.
+            effectiveRole = ['all', 'user', 'creator', 'admin'].includes(requestedRole)
+                ? requestedRole
+                : 'all';
+        } else {
+            // Non-admin: forced to 'user' — admins are never enumerable.
+            effectiveRole = 'user';
+        }
+
+        // Cache key MUST include caller identity + role scope, otherwise
+        // the 60s TTL re-opens the admin-enumeration hole.
+        const cacheKey = buildKey('users:search', callerId, isAdminCaller ? 'admin' : 'user', req.query);
+
+        const result = await getOrSet(cacheKey, async () => {
             const filter = {};
             if (q) {
                 filter.$or = [
@@ -461,25 +486,21 @@ const searchUsers = async (req, res, next) => {
                     { displayName: { $regex: q, $options: 'i' } },
                 ];
             }
-            if (role !== 'all') {
+
+            // Apply role filter exactly once, based on the normalized
+            // effectiveRole — no mutation, no spread, no surprises.
+            if (effectiveRole === 'user') {
                 filter.role = 'user';
+            } else if (effectiveRole === 'creator') {
+                filter.role = 'creator';
+            } else if (effectiveRole === 'admin') {
+                filter.role = 'admin';
+            } else {
+                // 'all' for an admin caller — no role filter, show everyone.
+                // (Non-admin callers never reach this branch.)
             }
 
-            // Hide admin accounts from non-admin callers. Even when
-            // the caller passes role=all, only admins may enumerate
-            // admin users — otherwise this would leak the admin list
-            // to anyone with a valid auth token.
-            const isAdminCaller = req.user && req.user.role === 'admin';
-            if (!isAdminCaller) {
-                filter.role = filter.role
-                    ? { ...filter.role, $ne: 'admin' }
-                    : { $ne: 'admin' };
-            }
-
-            let sortOption = { createdAt: -1 };
-            if (sort === 'popular') {
-                sortOption = { createdAt: -1 };
-            }
+            const sortOption = { createdAt: -1 }; // 'popular' falls back to newest for users
 
             const [users, total] = await Promise.all([
                 User.find(filter)
