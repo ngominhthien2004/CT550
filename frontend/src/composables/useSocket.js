@@ -1,9 +1,11 @@
-import { ref, onUnmounted } from 'vue'
+import { ref } from 'vue'
 import { io } from 'socket.io-client'
 import { useAuthStore } from '../stores/auth.store'
 
 const socket = ref(null)
 const isConnected = ref(false)
+let refCount = 0
+let currentToken = null
 
 function getBackendUrl() {
   const uploadsUrl = import.meta.env.VITE_UPLOADS_BASE_URL || ''
@@ -14,15 +16,35 @@ function getBackendUrl() {
   return window.location.origin
 }
 
+function teardownSocket() {
+  if (!socket.value) return
+  socket.value.removeAllListeners()
+  socket.value.disconnect()
+  socket.value = null
+  isConnected.value = false
+  currentToken = null
+}
+
 export function useSocket() {
   const authStore = useAuthStore()
 
   function connect() {
-    if (socket.value?.connected) return
-
     const token = localStorage.getItem('token')
-    if (!token || !authStore.isAuthenticated) return
+    if (!token || !authStore.isAuthenticated) return null
 
+    refCount++
+
+    // Reuse the existing socket when the same token is already connected
+    if (socket.value && currentToken === token && socket.value.connected) {
+      return socket.value
+    }
+
+    // Token changed or socket is stale — tear down before reconnecting
+    if (socket.value) {
+      teardownSocket()
+    }
+
+    currentToken = token
     socket.value = io(getBackendUrl(), {
       auth: { token },
       transports: ['websocket', 'polling'],
@@ -44,14 +66,22 @@ export function useSocket() {
     socket.value.on('connect_error', (error) => {
       console.warn('[Socket] Connection error:', error.message)
     })
+
+    return socket.value
   }
 
   function disconnect() {
-    if (socket.value) {
-      socket.value.disconnect()
-      socket.value = null
-      isConnected.value = false
-    }
+    if (refCount <= 0) return
+    refCount--
+    if (refCount > 0) return // other consumers still need the socket
+    teardownSocket()
+  }
+
+  // Explicit teardown — used on logout so the socket dies even if a
+  // component forgot to release its reference.
+  function disconnectAll() {
+    refCount = 0
+    teardownSocket()
   }
 
   function on(event, callback) {
@@ -67,7 +97,16 @@ export function useSocket() {
     isConnected,
     connect,
     disconnect,
+    disconnectAll,
     on,
     off,
   }
+}
+
+// Standalone teardown helper for use outside a component setup context
+// (e.g. inside a Pinia action on logout). Forces the socket to close
+// regardless of outstanding references.
+export function disconnectSocketNow() {
+  refCount = 0
+  teardownSocket()
 }

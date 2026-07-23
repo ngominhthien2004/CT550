@@ -4,10 +4,21 @@ const path = require('path');
 const { getSocketIO } = require('../utils/socket');
 const { createNotification } = require('../utils/notification');
 
+// Hard cap on any single message response — prevents unbounded queries
+// when the caller polls with an old `since` timestamp.
+const HARD_MESSAGE_LIMIT = 1000;
+// `since` polls are limited to the most recent 7 days; older timestamps
+// are clamped forward so a buggy or hostile client cannot drain the
+// entire inbox in one request.
+const MAX_SINCE_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
 const getMyMessages = async (req, res, next) => {
     try {
-        const page = parseInt(req.query.page, 10) || 1;
-        const limit = parseInt(req.query.limit, 10) || 20;
+        const rawPage = parseInt(req.query.page, 10);
+        const rawLimit = parseInt(req.query.limit, 10);
+        const page = Number.isNaN(rawPage) ? 1 : Math.max(rawPage, 1);
+        const requestedLimit = Number.isNaN(rawLimit) ? 20 : Math.max(rawLimit, 1);
+        const limit = Math.min(requestedLimit, HARD_MESSAGE_LIMIT);
         const skip = (page - 1) * limit;
         const box = req.query.box === 'sent' ? 'sent' : 'inbox';
 
@@ -18,12 +29,16 @@ const getMyMessages = async (req, res, next) => {
         // Exclude messages soft-deleted for the requesting user
         filter.deletedFor = { $ne: req.user._id };
 
-        // Support ?since=<ISO timestamp> for polling new messages only
+        // Support ?since=<ISO timestamp> for polling new messages only.
+        // Clamp the timestamp to a 7-day window so callers cannot request
+        // arbitrarily old history in a single request.
         const since = req.query.since;
         if (since) {
             const sinceDate = new Date(since);
             if (!isNaN(sinceDate.getTime())) {
-                filter.createdAt = { $gt: sinceDate };
+                const earliestAllowed = new Date(Date.now() - MAX_SINCE_AGE_MS);
+                const effectiveSince = sinceDate < earliestAllowed ? earliestAllowed : sinceDate;
+                filter.createdAt = { $gt: effectiveSince };
             }
         }
 
@@ -32,8 +47,12 @@ const getMyMessages = async (req, res, next) => {
             .populate('recipient', 'username displayName avatar')
             .sort({ createdAt: -1 });
 
-        // When since is provided, skip pagination (fetch all new since timestamp)
-        if (!since) {
+        // Always apply a hard upper bound on rows returned. When `since`
+        // is set we also skip client-side pagination because the query
+        // is already capped to a sliding 7-day window.
+        if (since) {
+            query.limit(HARD_MESSAGE_LIMIT);
+        } else {
             query.skip(skip).limit(limit);
         }
 

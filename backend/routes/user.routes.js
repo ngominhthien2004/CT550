@@ -31,6 +31,7 @@ const {
     changePassword,
 } = require('../controllers/user.controller');
 const { protect, admin } = require('../middlewares/auth.middleware');
+const { passwordChangeLimiter } = require('../middlewares/rateLimit.middleware');
 
 const storage = multer.diskStorage({
     destination(req, file, cb) {
@@ -78,7 +79,7 @@ router.get('/admin/list', protect, admin, getAdminUsers);
 router.patch('/admin/:id', protect, admin, updateAdminUser);
 router.delete('/admin/:id', protect, admin, deleteAdminUser);
 
-router.get('/search', searchUsers);
+router.get('/search', protect, searchUsers);
 router.get('/dashboard/reactions', protect, getCreatorReactions);
 router.get('/recommended', protect, getRecommendedUsers);
 router.get('/:id/series', getUserSeries);
@@ -102,6 +103,6 @@ router.delete('/me/history', protect, clearBrowseHistory);
 router.post('/:id/presence', protect, postPresence);
 router.get('/:id/presence', protect, getPresenceHandler);
 
-router.put('/profile/password', protect, changePassword);
+router.put('/profile/password', protect, passwordChangeLimiter, changePassword);
 
 module.exports = router;

@@ -51,7 +51,18 @@ const generalLimiter = rateLimit({
   message: { message: 'Too many requests, please try again later.' },
 });
 
+// 6. Password change: 5 req/hour/IP — protects the change-password
+// route from brute-force / credential-stuffing attempts without
+// blocking legitimate users who occasionally retype wrong.
+const passwordChangeLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: getEnvInt('RATE_LIMIT_PASSWORD_CHANGE_MAX', 5),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many password change attempts, please try again later.' },
+});
+
 module.exports = {
   globalLimiter, authLimiter, aiLimiter,
-  uploadLimiter, generalLimiter,
+  uploadLimiter, generalLimiter, passwordChangeLimiter,
 };

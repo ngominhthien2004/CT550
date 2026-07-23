@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { loginAuthUser, registerAuthUser } from '../services/api.js'
+import { disconnectSocketNow } from '../composables/useSocket.js'
 
 const TOKEN_KEY = 'token'
 const USER_KEY = 'authUser'
@@ -47,6 +48,9 @@ export const useAuthStore = defineStore('auth', {
       this.token = ''
       localStorage.removeItem(TOKEN_KEY)
       localStorage.removeItem(USER_KEY)
+      // Ensure any open socket is torn down on logout, even if a
+      // component forgot to release its reference.
+      disconnectSocketNow()
     },
     async register(payload) {
       this.loading = true

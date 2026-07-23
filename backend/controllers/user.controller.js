@@ -465,6 +465,17 @@ const searchUsers = async (req, res, next) => {
                 filter.role = 'user';
             }
 
+            // Hide admin accounts from non-admin callers. Even when
+            // the caller passes role=all, only admins may enumerate
+            // admin users — otherwise this would leak the admin list
+            // to anyone with a valid auth token.
+            const isAdminCaller = req.user && req.user.role === 'admin';
+            if (!isAdminCaller) {
+                filter.role = filter.role
+                    ? { ...filter.role, $ne: 'admin' }
+                    : { $ne: 'admin' };
+            }
+
             let sortOption = { createdAt: -1 };
             if (sort === 'popular') {
                 sortOption = { createdAt: -1 };
