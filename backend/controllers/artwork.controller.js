@@ -427,7 +427,6 @@ const deleteArtwork = async (req, res, next) => {
 
         // Check if user owns the artwork
         if (artwork.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-            res.status(401);
             return next(new AppError('Not authorized to delete this artwork', 'FORBIDDEN', 403));
         }
 
@@ -484,7 +483,6 @@ const updateArtwork = async (req, res, next) => {
         }
 
         if (artwork.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-            res.status(401);
             return next(new AppError('Not authorized to update this artwork', 'FORBIDDEN', 403));
         }
 
@@ -561,7 +559,6 @@ const updateNovelContent = async (req, res, next) => {
         }
 
         if (artwork.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-            res.status(401);
             return next(new AppError('Not authorized', 'FORBIDDEN', 403));
         }
 

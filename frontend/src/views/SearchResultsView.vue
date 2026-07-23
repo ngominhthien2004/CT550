@@ -634,21 +634,38 @@ onMounted(() => {
   }
 })
 
-watch(
-  () => ({ ...route.query }),
-  () => {
-    dateRange.value = {
-      from: typeof route.query.dateFrom === 'string' ? route.query.dateFrom : '',
-      to: typeof route.query.dateTo === 'string' ? route.query.dateTo : '',
-    }
-    loadSearchItems()
-    loadUserResults()
-    if (searchKeyword.value) {
-      tagStore.fetchTagDetail(searchKeyword.value)
-      loadFavoriteTagStatus()
-    }
-  },
-)
+// Build a stable string from search-relevant query keys so the watcher fires
+// only when the actual search criteria change (not on tab/sort/pagination-only
+// updates, and not on every render where the spread creates a new object ref).
+const searchKey = computed(() => {
+  return [
+    route.query.q,
+    route.query.nick,
+    route.query.qall,
+    route.query.qany,
+    route.query.qnot,
+    route.query.target,
+    route.query.type,
+    route.query.age,
+    route.query.series,
+    route.query.s_mode,
+    route.query.dateFrom,
+    route.query.dateTo,
+  ].join('|')
+})
+
+watch(searchKey, () => {
+  dateRange.value = {
+    from: typeof route.query.dateFrom === 'string' ? route.query.dateFrom : '',
+    to: typeof route.query.dateTo === 'string' ? route.query.dateTo : '',
+  }
+  loadSearchItems()
+  loadUserResults()
+  if (searchKeyword.value) {
+    tagStore.fetchTagDetail(searchKeyword.value)
+    loadFavoriteTagStatus()
+  }
+})
 
 watch(dateRange, () => {
   loadSearchItems()

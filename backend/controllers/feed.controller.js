@@ -47,7 +47,14 @@ const getFeed = async (req, res, next) => {
 const getRankings = async (req, res, next) => {
   try {
     const period = req.query.period || 'daily';
-    const type = req.query.type || 'all';
+    const rawType = (req.query.type || 'all').toString().toLowerCase();
+    const ALLOWED_FEED_TYPES = ['all', 'illust', 'manga', 'gif', 'novel'];
+    if (!ALLOWED_FEED_TYPES.includes(rawType)) {
+      return res.status(400).json({
+        message: `Invalid type. Allowed: ${ALLOWED_FEED_TYPES.join(', ')}`,
+      });
+    }
+    const type = rawType;
     const limit = parseInt(req.query.limit, 10) || 50;
     const page = parseInt(req.query.page, 10) || 1;
     const skip = (page - 1) * limit;

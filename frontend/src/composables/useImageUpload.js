@@ -42,6 +42,12 @@ export function useImageUpload(opts = {}) {
    * Validates format, size, and optionally resolution.
    */
   function selectFile(event) {
+    // Revoke any previous preview blob URL before creating a new one (prevents memory leak)
+    if (preview.value && preview.value.startsWith('blob:')) {
+      URL.revokeObjectURL(preview.value)
+    }
+    preview.value = ''
+
     const rawFile = event.target.files?.[0]
     if (!rawFile) return
 

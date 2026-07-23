@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { watch as vueWatch } from 'vue'
 import HomePage from '../views/HomePage.vue'
 import TypedHomeFeedView from '../views/TypedHomeFeedView.vue'
 import NovelTopPageView from '../views/NovelTopPageView.vue'
@@ -204,5 +205,39 @@ router.beforeEach((to) => {
     query: { redirect: to.fullPath },
   }
 })
+
+/**
+ * Install side-effects on the router that must run exactly once at app boot:
+ *   - watch `authStore.isAuthenticated` so a mid-session logout (expired JWT,
+ *     suspension, 401 from another tab) forces re-evaluation of the current
+ *     route and redirects to /login with a `reason=session_expired` query.
+ *
+ * Call from main.js AFTER `app.use(router)`.
+ */
+export function setupRouterGuards() {
+  const authStore = useAuthStore()
+  vueWatch(
+    () => authStore.isAuthenticated,
+    (isAuth, wasAuth) => {
+      if (wasAuth && !isAuth) {
+        const currentRoute = router.currentRoute.value
+        // Only force-redirect if the user is currently on a protected route.
+        if (currentRoute.meta?.requiresAuth) {
+          router
+            .replace({
+              path: '/login',
+              query: {
+                reason: 'session_expired',
+                redirect: currentRoute.fullPath,
+              },
+            })
+            .catch(() => {
+              // NavigationDuplicated or in-flight navigation — safe to ignore.
+            })
+        }
+      }
+    },
+  )
+}
 
 export default router

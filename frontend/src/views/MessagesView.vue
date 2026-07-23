@@ -316,7 +316,6 @@ async function pollNewMessages() {
       getMyMessages({ box: 'inbox', since: lastPolledAt.value, limit: 50 }),
       getMyMessages({ box: 'sent', since: lastPolledAt.value, limit: 50 }),
     ])
-    lastPolledAt.value = new Date().toISOString()
     const newInbox = Array.isArray(inboxRes.data?.messages) ? inboxRes.data.messages : []
     const newSent = Array.isArray(sentRes.data?.messages) ? sentRes.data.messages : []
     const existingInboxIds = new Set(inboxMessages.value.map(m => m._id))
@@ -325,7 +324,13 @@ async function pollNewMessages() {
     const freshSent = newSent.filter(m => !existingSentIds.has(m._id))
     if (freshInbox.length > 0) inboxMessages.value = [...freshInbox, ...inboxMessages.value]
     if (freshSent.length > 0) sentMessages.value = [...freshSent, ...sentMessages.value]
-  } catch {}
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn('[MessagesView] pollNewMessages failed:', e?.message || e)
+  } finally {
+    // Always advance so transient errors don't trap us in an infinite re-fetch of the same window.
+    lastPolledAt.value = new Date().toISOString()
+  }
 }
 
 function onUserTyping() {

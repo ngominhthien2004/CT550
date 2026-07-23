@@ -7,6 +7,11 @@ const Comment = require('../models/Comment');
 const Like = require('../models/Like');
 const Bookmark = require('../models/Bookmark');
 const BrowseHistory = require('../models/BrowseHistory');
+const Notification = require('../models/Notification');
+const ViewEvent = require('../models/ViewEvent');
+const ReadingProgress = require('../models/ReadingProgress');
+const RequestChatMessage = require('../models/RequestChatMessage');
+const Request = require('../models/Request');
 const { createNotification } = require('../utils/notification');
 const Series = require('../models/Series');
 const { buildDateFilter } = require('../utils/dateFilter');
@@ -555,6 +560,10 @@ const updateAdminUser = async (req, res, next) => {
 // @desc    Delete a user (admin)
 // @route   DELETE /api/users/admin/:id
 // @access  Admin
+// Cascade-deletes every collection that references the user so we don't leave
+// orphan rows. We run sequentially (no transaction) because the project's
+// MongoDB deployment is a standalone — transactions require a replica set.
+// Order matters: delete dependents before the user record itself.
 const deleteAdminUser = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id);
@@ -568,9 +577,39 @@ const deleteAdminUser = async (req, res, next) => {
             return next(new Error('Cannot delete your own account'));
         }
 
-        await User.findByIdAndDelete(req.params.id);
+        const userId = user._id;
 
-        res.json({ message: 'User deleted', _id: req.params.id });
+        // Engagement / activity data referencing the user
+        await ViewEvent.deleteMany({ user: userId });
+        await BrowseHistory.deleteMany({ user: userId });
+        await ReadingProgress.deleteMany({ user: userId });
+        await Notification.deleteMany({ $or: [{ recipient: userId }, { sender: userId }] });
+
+        // Request / chat data
+        await RequestChatMessage.deleteMany({ sender: userId });
+        await Request.deleteMany({ $or: [{ requester: userId }, { creator: userId }] });
+
+        // Artwork-interaction data
+        await Comment.deleteMany({ user: userId });
+        await Like.deleteMany({ user: userId });
+        await Bookmark.deleteMany({ user: userId });
+        await Follow.deleteMany({ $or: [{ follower: userId }, { following: userId }] });
+
+        // Artworks owned by the user (note: image files on disk / Cloudinary need
+        // a separate sweep — this only removes the database records).
+        await Artwork.deleteMany({ user: userId });
+
+        // User-level blocks
+        await UserBlock.deleteMany({ $or: [{ blocker: userId }, { blocked: userId }] });
+
+        // Finally, the user record itself
+        await User.findByIdAndDelete(userId);
+
+        // Invalidate caches keyed on the user
+        await delByPrefix(`user:profile:${userId}`);
+        await delByPrefix(`user:series:${userId}`);
+
+        res.json({ message: 'User and all related data deleted', _id: userId });
     } catch (error) {
         next(error);
     }

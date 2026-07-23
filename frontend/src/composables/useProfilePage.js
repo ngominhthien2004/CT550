@@ -1,4 +1,4 @@
-import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
+import { computed, ref, watch, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
@@ -455,23 +455,32 @@ export function useProfilePage() {
   }
 
   function loadAllProfileData() {
-    loadProfile()
-    loadUserArtworks()
-    loadBookmarks()
-    loadLikes()
-    loadFollowStats()
-    loadRequestTerms()
-    loadSeries()
+    if (profileLoading.value) return
+    profileLoading.value = true
+    try {
+      loadProfile()
+      loadUserArtworks()
+      loadBookmarks()
+      loadLikes()
+      loadFollowStats()
+      loadRequestTerms()
+      loadSeries()
+    } finally {
+      profileLoading.value = false
+    }
   }
 
-  onMounted(() => {
-    setActiveTabFromRoute()
-    loadAllProfileData()
-  })
-
-  watch(() => viewingUserId.value, () => {
-    loadAllProfileData()
-  })
+  // Single source of truth for profile-data loading — fires on mount (immediate) and on
+  // route changes. Replaces the previous onMounted + watch pair that double-fired on mount.
+  watch(
+    () => viewingUserId.value,
+    (newId) => {
+      if (!newId) return
+      setActiveTabFromRoute()
+      loadAllProfileData()
+    },
+    { immediate: true },
+  )
 
   function syncBodyOverflow(val) {
     if (val) {

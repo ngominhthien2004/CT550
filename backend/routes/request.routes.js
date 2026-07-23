@@ -49,16 +49,23 @@ const storage = multer.diskStorage({
     },
 });
 
+// Restrict request-chat / draft / final file attachments to images and PDF
+// only. Mirrors the artwork-upload policy in routes/artwork.routes.js (which
+// explicitly rejects .zip and application/octet-stream to prevent malware
+// hosting). PSD/clip source files are not allowed here either because request
+// attachments are reviewer-visible and should not bundle project sources.
 function checkFileType(file, cb) {
-    const filetypes = /jpg|jpeg|png|webp|gif|pdf|psd|clip|zip/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = /image\/|application\/pdf|application\/zip|octet-stream/.test(file.mimetype);
+    const extname = path.extname(file.originalname).toLowerCase();
+    const allowedExt = /\.(jpg|jpeg|png|webp|gif|pdf)$/i;
+    const allowedMime = /image\/(jpeg|png|webp|gif)|application\/pdf/;
 
-    if (extname && mimetype) {
+    if (allowedExt.test(extname) && allowedMime.test(file.mimetype)) {
         return cb(null, true);
     }
 
-    return cb(new Error('Unsupported request file type'));
+    return cb(new Error(
+        'Unsupported request file type. Allowed: images (jpg, jpeg, png, webp, gif) and PDF.'
+    ));
 }
 
 const upload = multer({
