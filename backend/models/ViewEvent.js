@@ -9,4 +9,10 @@ const viewEventSchema = new mongoose.Schema({
 viewEventSchema.index({ artwork: 1, createdAt: -1 });
 viewEventSchema.index({ createdAt: -1 });
 
+// TTL: drop view-event documents 90 days after creation. View counts are
+// already aggregated onto the Artwork document, so retaining individual
+// events longer has no product value and would grow the collection
+// unbounded.
+viewEventSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 90 });
+
 module.exports = mongoose.model('ViewEvent', viewEventSchema);

@@ -23,7 +23,7 @@ const props = defineProps({
 
 const emit = defineEmits([
   'back', 'search', 'clear-search', 'update:threadSearchQuery',
-  'reply', 'delete', 'mark-read', 'scroll-images',
+  'reply', 'delete', 'mark-read', 'scroll-images', 'scroll',
   'update:content', 'send', 'typing', 'image-select', 'clear-images',
   'dragover', 'dragleave', 'drop',
   'report', 'block',
@@ -38,6 +38,16 @@ function scrollToBottom() {
   if (chatBodyRef.value) {
     chatBodyRef.value.scrollTop = chatBodyRef.value.scrollHeight
   }
+}
+
+function onBodyScroll() {
+  if (!chatBodyRef.value) return
+  const el = chatBodyRef.value
+  emit('scroll', {
+    scrollTop: el.scrollTop,
+    scrollHeight: el.scrollHeight,
+    clientHeight: el.clientHeight,
+  })
 }
 
 function onSearchInput(value) {
@@ -125,7 +135,7 @@ defineExpose({ scrollToBottom })
       </div>
     </div>
 
-    <div class="thread-body" ref="chatBodyRef">
+    <div class="thread-body" ref="chatBodyRef" @scroll="onBodyScroll">
       <div v-if="loading" class="skeleton-flow" aria-hidden="true">
         <div v-for="i in 4" :key="'sk-bubble-' + i" class="skeleton-bubble-wrap" :class="i % 2 === 0 ? 'outgoing' : 'incoming'">
           <div class="skeleton-bubble shimmer"></div>

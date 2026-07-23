@@ -317,19 +317,27 @@ const getArtworkById = async (req, res, next) => {
             .populate('tags', 'name translations');
 
         if (artwork) {
-            // Increment view count atomically
-            await Artwork.findByIdAndUpdate(req.params.id, { $inc: { viewCount: 1 } });
-            artwork.viewCount = (artwork.viewCount || 0) + 1;
+            // Owner-view guard: don't inflate view count or record a view event
+            // when the viewer is the artwork's own author.
+            const isOwnerView = Boolean(
+                req.user && artwork.user && artwork.user.toString() === req.user._id.toString()
+            );
 
-            // Track view event for analytics (append-only log)
-            try {
-                await ViewEvent.create({
-                    artwork: req.params.id,
-                    user: req.user?._id || null,
-                });
-            } catch (err) {
-                console.error('Failed to record view event:', err.message);
-                // Non-blocking — don't fail the request
+            if (!isOwnerView) {
+                // Increment view count atomically
+                await Artwork.findByIdAndUpdate(req.params.id, { $inc: { viewCount: 1 } });
+                artwork.viewCount = (artwork.viewCount || 0) + 1;
+
+                // Track view event for analytics (append-only log)
+                try {
+                    await ViewEvent.create({
+                        artwork: req.params.id,
+                        user: req.user?._id || null,
+                    });
+                } catch (err) {
+                    console.error('Failed to record view event:', err.message);
+                    // Non-blocking — don't fail the request
+                }
             }
 
             // Track browse history for authenticated users

@@ -1,10 +1,10 @@
 <template>
   <Teleport to="body">
-    <div v-if="store.showPostDialog" class="modal-overlay" @click.self="store.showPostDialog = false" @keydown.esc="store.showPostDialog = false" tabindex="0" role="dialog" aria-modal="true">
+    <div v-if="store.showPostDialog" class="modal-overlay" @click.self="store.closePostDialog" @keydown.esc="store.closePostDialog" tabindex="0" role="dialog" aria-modal="true">
       <div class="modal-content">
         <div class="modal-header">
           <h2>Post Drawing</h2>
-          <button type="button" class="modal-close-btn" @click="store.showPostDialog = false">&times;</button>
+          <button type="button" class="modal-close-btn" @click="store.closePostDialog">&times;</button>
         </div>
         <div class="modal-body">
           <div v-if="store.postPreviewUrl" class="post-preview">
@@ -38,7 +38,7 @@
           <p v-if="store.postError" class="form-error">{{ store.postError }}</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="modal-btn cancel" @click="store.showPostDialog = false">Cancel</button>
+          <button type="button" class="modal-btn cancel" @click="store.closePostDialog">Cancel</button>
           <button type="button" class="modal-btn submit" :disabled="store.postSubmitting" @click="submit">
             {{ store.postSubmitting ? 'Posting...' : 'Post' }}
           </button>

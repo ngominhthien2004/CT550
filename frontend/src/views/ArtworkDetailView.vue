@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArtworkDetailCard, ArtworkDetailSidebar, ArtworkDetailCommentsCard, ArtworkDetailRelatedGrid } from '@/components/artwork'
 import { NovelReader } from '@/components/novel'
@@ -184,6 +184,7 @@ async function loadArtwork() {
     seriesArtworkIds.value = []
     seriesInfo.value = null
     await artworkStore.fetchArtworkDetail(artworkId.value)
+    if (!artworkStore.detail) return
     syncBookmarkCountFromArtwork()
     syncLikeCountFromArtwork()
     await loadNovelData()
@@ -399,8 +400,7 @@ async function handleFollowToggle() {
   }
 }
 
-onMounted(loadArtwork)
-watch(artworkId, loadArtwork)
+watch(artworkId, loadArtwork, { immediate: true })
 watch(artwork, syncBookmarkCountFromArtwork)
 watch(artwork, syncLikeCountFromArtwork)
 watch(artistId, async () => {

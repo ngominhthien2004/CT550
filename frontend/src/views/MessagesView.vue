@@ -31,10 +31,14 @@ const threadListRef = ref(null)
 const textareaRef = ref(null)
 const presenceState = ref({ online: false, typing: false, lastSeen: null })
 let presenceInterval = null
-let typingInterval = null
 let typingTimeout = null
 let newMessageInterval = null
 const lastPolledAt = ref('')
+
+// Chat scroll guard: only auto-scroll on new messages when the user
+// is already at (or near) the bottom of the thread.
+const isAtBottom = ref(true)
+const AT_BOTTOM_THRESHOLD_PX = 50
 
 const inboxMessages = ref([])
 const sentMessages = ref([])
@@ -271,14 +275,11 @@ function startPresencePolling(peerId) {
   }
   pollPresence()
   presenceInterval = setInterval(pollPresence, 30 * 1000)
-  typingInterval = setInterval(pollPresence, 5 * 1000)
 }
 
 function stopPresencePolling() {
   if (presenceInterval) clearInterval(presenceInterval)
-  if (typingInterval) clearInterval(typingInterval)
   presenceInterval = null
-  typingInterval = null
   presenceState.value = { online: false, typing: false }
 }
 
@@ -451,6 +452,17 @@ function scrollChatToBottom() {
   nextTick(() => { chatPaneRef.value?.scrollToBottom?.() })
 }
 
+function handleChatScroll(scrollState) {
+  if (!scrollState) {
+    // Fallback when child cannot supply metrics: assume at-bottom so we
+    // keep current auto-scroll behavior rather than silently breaking it.
+    isAtBottom.value = true
+    return
+  }
+  const { scrollTop, scrollHeight, clientHeight } = scrollState
+  isAtBottom.value = (scrollHeight - scrollTop - clientHeight) < AT_BOTTOM_THRESHOLD_PX
+}
+
 function scrollThreadListToTop() {
   if (threadListRef.value) threadListRef.value.scrollTop = 0
 }
@@ -463,7 +475,11 @@ onMounted(() => {
   socketOn('message:new', handleIncomingMessage)
 })
 watch(threads, () => { scrollThreadListToTop() })
-watch(threadMessages, () => { scrollChatToBottom() })
+watch(threadMessages, () => {
+  // Only auto-scroll when the user is already at the bottom. If they have
+  // scrolled up to read history, leave their viewport alone.
+  if (isAtBottom.value) scrollChatToBottom()
+})
 watch(() => inboxMessages.value.length, (newCount, oldCount) => {
   if (oldCount !== undefined && newCount > oldCount) {
     const latestInboxMsg = inboxMessages.value[0]
@@ -526,6 +542,7 @@ onUnmounted(() => {
         @delete="deleteMessage"
         @mark-read="markAsRead"
         @scroll-images="scrollChatToBottom"
+        @scroll="handleChatScroll"
         @report="reportUser"
         @block="blockUser"
         @update:content="content = $event"

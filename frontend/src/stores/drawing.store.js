@@ -887,8 +887,16 @@ export const useDrawingStore = defineStore('drawing', () => {
   }
 
   // ─── Post to Upload ──────────────────────────────────────────────────
+  function revokePostPreview() {
+    if (postPreviewUrl.value) {
+      URL.revokeObjectURL(postPreviewUrl.value)
+      postPreviewUrl.value = ''
+    }
+  }
+
   async function openPostDialog() {
-    postPreviewUrl.value = ''
+    // Revoke previous preview URL if any to avoid blob memory leaks
+    revokePostPreview()
     postTitle.value = ''
     postType.value = 'illust'
     postAgeRating.value = 'all-ages'
@@ -899,6 +907,11 @@ export const useDrawingStore = defineStore('drawing', () => {
       postPreviewUrl.value = URL.createObjectURL(blob)
     }
     showPostDialog.value = true
+  }
+
+  function closePostDialog() {
+    revokePostPreview()
+    showPostDialog.value = false
   }
 
   async function submitPost(router) {
@@ -924,7 +937,7 @@ export const useDrawingStore = defineStore('drawing', () => {
       const res = await createArtwork(fd)
       const artworkId = res.data?.artwork?._id || res.data?._id
       if (artworkId) {
-        showPostDialog.value = false
+        closePostDialog()
         router.push('/artworks/' + artworkId)
       }
     } catch (err) {
@@ -1003,6 +1016,6 @@ export const useDrawingStore = defineStore('drawing', () => {
     removeSlotFromStorage, triggerAutoSave, restoreFromData,
     restoreAutosave, executeRestoreAutosave,
     openSlotsDialog,
-    openPostDialog, submitPost, exportToBlob,
+    openPostDialog, closePostDialog, submitPost, exportToBlob,
   }
 })

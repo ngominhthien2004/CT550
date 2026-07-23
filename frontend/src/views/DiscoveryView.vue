@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { translateError } from '../utils/translateError.js'
 import { useRoute, useRouter } from 'vue-router'
@@ -51,6 +51,10 @@ function buildTypeRoute(type, page = 1) {
 }
 
 async function loadArtworks() {
+  // Idempotency guard: skip if an in-flight load is already running.
+  // The route-query watcher fires `immediate: true` on mount, so without
+  // this guard we'd also run via onMounted — a duplicate fetch.
+  if (loading.value) return
   loading.value = true
   error.value = ''
   try {
@@ -114,13 +118,10 @@ watch(
   () => {
     loadArtworks()
   },
+  { immediate: true },
 )
 
 watch(dateRange, () => {
-  loadArtworks()
-})
-
-onMounted(() => {
   loadArtworks()
 })
 </script>

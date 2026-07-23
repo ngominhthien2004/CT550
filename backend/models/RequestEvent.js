@@ -37,6 +37,10 @@ const requestEventSchema = mongoose.Schema({
 
 requestEventSchema.index({ request: 1, createdAt: -1 });
 
+// TTL: keep request audit events for 1 year. Long enough for dispute
+// resolution and trend analysis, short enough to bound the collection.
+requestEventSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 365 });
+
 const RequestEvent = mongoose.model('RequestEvent', requestEventSchema);
 
 module.exports = RequestEvent;
