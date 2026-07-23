@@ -149,6 +149,7 @@
 <script setup>
 import { ref } from 'vue'
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 
 marked.setOptions({
   breaks: true,
@@ -177,7 +178,12 @@ const suggestedPrompts = [
 
 function renderMarkdown(text) {
   if (!text) return ''
-  return marked.parse(text)
+  const rawHtml = marked.parse(text)
+  return DOMPurify.sanitize(rawHtml, {
+    USE_PROFILES: { html: true },
+    FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed'],
+    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover'],
+  })
 }
 
 defineExpose({ chatBodyRef })

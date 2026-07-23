@@ -620,6 +620,15 @@ const requestExtension = async (req, res, next) => {
         const request = await findRequestOrFail(req.params.id);
         authorizeOrFail(ensureCreator(request, req.user._id), 'Only the creator can request an extension');
 
+        // Guard clause: extension is only valid for active, in-flight requests.
+        // Terminal states (completed/rejected/cancelled) and pre-acceptance (pending)
+        // are not eligible — the contract is between creator and requester only
+        // while work is in progress or being revised.
+        if (!ACTIVE_REQUEST_STATUSES.includes(request.status)) {
+            res.status(400);
+            return next(new Error(`Cannot request extension in status: ${request.status}`));
+        }
+
         if (request.extensionDays > 0) {
             res.status(400);
             return next(new Error('Extension has already been used'));

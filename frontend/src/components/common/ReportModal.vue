@@ -8,7 +8,9 @@
         </div>
         <form @submit.prevent="submitReport">
           <div class="report-modal-body">
-            <p class="report-modal-desc" v-html="config.description"></p>
+            <p class="report-modal-desc">
+              {{ config.description }}<strong>{{ config.targetName }}</strong>{{ config.suffix }}
+            </p>
             <div class="report-modal-field">
               <label>Reason</label>
               <select v-model="reason" class="form-select" required aria-label="Report reason">
@@ -59,7 +61,9 @@ const config = computed(() => {
   const configs = {
     artwork: {
       title: 'Report Artwork',
-      description: 'Why are you reporting "' + (props.target?.title || '') + '"?',
+      description: 'Why are you reporting "',
+      targetName: props.target?.title || '',
+      suffix: '"?',
       reasonOptions: [
         { value: 'spam', label: 'Spam' },
         { value: 'inappropriate', label: 'Inappropriate content' },
@@ -72,7 +76,9 @@ const config = computed(() => {
     },
     comment: {
       title: 'Report Comment',
-      description: 'Why are you reporting this comment by "' + (props.target?.user?.displayName || props.target?.user?.username || '') + '"?',
+      description: 'Why are you reporting this comment by "',
+      targetName: props.target?.user?.displayName || props.target?.user?.username || '',
+      suffix: '"?',
       reasonOptions: [
         { value: 'spam', label: 'Spam' },
         { value: 'inappropriate', label: 'Inappropriate content' },
@@ -83,7 +89,9 @@ const config = computed(() => {
     },
     user: {
       title: 'Report User',
-      description: 'Why are you reporting "' + (props.target?.displayName || props.target?.username || '') + '"?',
+      description: 'Why are you reporting "',
+      targetName: props.target?.displayName || props.target?.username || '',
+      suffix: '"?',
       reasonOptions: [
         { value: 'spam', label: 'Spam' },
         { value: 'inappropriate', label: 'Inappropriate content' },

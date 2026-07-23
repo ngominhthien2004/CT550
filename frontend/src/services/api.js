@@ -1,4 +1,6 @@
 import axios from 'axios'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth.store.js'
 import { translateError } from '../utils/translateError.js'
 import i18n from '../i18n'
 
@@ -61,7 +63,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use((response) => {
   response.data = normalizeResponseData(response.data)
   return response
-}, (error) => {
+}, async (error) => {
   // Translate backend error code to localized message
   const code = error?.response?.data?.code
   if (code) {
@@ -70,15 +72,28 @@ api.interceptors.response.use((response) => {
   }
 
   if (error.response?.status === 401 && error.config?.url !== '/auth/login' && error.config?.url !== '/auth/register') {
-    localStorage.removeItem('token')
-    localStorage.removeItem('authUser')
-    if (!window.location.pathname.startsWith('/login')) {
-      window.location.href = '/login?reason=session_expired'
+    try {
+      const authStore = useAuthStore()
+      const router = useRouter()
+      authStore.clearSession()
+      if (router.currentRoute.value.path !== '/login') {
+        await router.push({ path: '/login', query: { reason: 'session_expired' } })
+      }
+    } catch (redirectError) {
+      // Fallback: still ensure storage is cleared even if router/store are unavailable
+      localStorage.removeItem('token')
+      localStorage.removeItem('authUser')
     }
   }
   if (error.response?.status === 403 && error.response?.data?.message?.includes('suspended')) {
-    localStorage.removeItem('token')
-    window.location.href = '/login?reason=suspended'
+    try {
+      const authStore = useAuthStore()
+      const router = useRouter()
+      authStore.clearSession()
+      await router.push({ path: '/login', query: { reason: 'suspended' } })
+    } catch (redirectError) {
+      localStorage.removeItem('token')
+    }
   }
   if (error.response?.status === 429) {
     const retryAfter = error.response?.data?.retryAfter;

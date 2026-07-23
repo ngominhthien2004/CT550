@@ -13,6 +13,7 @@
     "axios": "^1.13.1",
     "bootstrap": "^5.3.8",
     "chart.js": "^4.5.1",
+    "dompurify": "^3.4.12",
     "konva": "^10.3.0",
     "marked": "^18.0.6",
     "pinia": "^3.0.3",

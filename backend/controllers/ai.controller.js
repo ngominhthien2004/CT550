@@ -9,6 +9,7 @@ const Request = require('../models/Request');
 const Setting = require('../models/Setting');
 const ChatMessage = require('../models/ChatMessage');
 const ChatSession = require('../models/ChatSession');
+const Bookmark = require('../models/Bookmark');
 const { buildAgentActions } = require('../services/agent-tools.js');
 
 // ── Existing Chat (backward compatible) ──
@@ -369,14 +370,17 @@ async function executeSearchTool(query, userId) {
  */
 async function executeRecommendTool(description, userId) {
     try {
-        // Get user's favorited/bookmarked artworks to find similar tags
-        const userFavorites = await Artwork.find({
-            bookmarks: userId
-        })
-        .populate('tags', 'name')
-        .select('tags')
-        .limit(20)
-        .lean();
+        // Get user's bookmarked artworks (via the Bookmark collection) to find similar tags.
+        // Note: bookmarks are stored in a separate collection, not on the Artwork document.
+        const userBookmarks = await Bookmark.find({ user: userId })
+            .populate({ path: 'artwork', populate: { path: 'tags', select: 'name' } })
+            .limit(20)
+            .lean();
+
+        // Flatten to just the artwork documents, skipping any orphaned references
+        const userFavorites = userBookmarks
+            .map((bookmark) => bookmark.artwork)
+            .filter((artwork) => artwork != null);
 
         // Collect tag frequencies from user's favorites
         const tagCounts = {};

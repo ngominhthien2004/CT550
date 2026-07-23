@@ -12,11 +12,24 @@ const Series = require('../models/Series');
 const { buildDateFilter } = require('../utils/dateFilter');
 const { getOrSet, getOrSetWithL2, get, set, delByPrefix, TTL, buildKey } = require('../utils/cache');
 
+const PUBLIC_PROFILE_FIELDS = '_id username displayName avatar coverImage bio gender location website socialLinks createdAt';
+const OWNER_ONLY_FIELDS = 'email birthYear birthdayMonth birthdayDay isSuspended role updatedAt';
+
 const getUserProfile = async (req, res, next) => {
     try {
-        const cacheKey = `user:profile:${req.params.id}`;
+        const targetUserId = req.params.id;
+        // req.user may be undefined because this route is public (no `protect` middleware).
+        // Owners see their own private fields; everyone else sees only the public whitelist.
+        const isOwner = req.user && req.user._id.toString() === targetUserId.toString();
+        const requestedFields = isOwner
+            ? `${PUBLIC_PROFILE_FIELDS} ${OWNER_ONLY_FIELDS}`
+            : PUBLIC_PROFILE_FIELDS;
+
+        // Cache key must include the ownership view — otherwise a public response
+        // could be served back to the owner (or vice versa) on a cache hit.
+        const cacheKey = `user:profile:${targetUserId}:${isOwner ? 'owner' : 'public'}`;
         const user = await getOrSetWithL2(cacheKey, async () => {
-            return await User.findById(req.params.id).select('-password').lean();
+            return await User.findById(targetUserId).select(requestedFields).lean();
         }, TTL.PUBLIC_PROFILE);
 
         if (user) {
