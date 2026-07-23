@@ -79,7 +79,7 @@ const formattedArtworks = computed(() =>
 <template>
   <section v-show="activeTab === 'artworks'" id="admin-artwork-panel" class="panel" role="tabpanel">
     <div class="panel-head">
-      <h2>Artwork Management</h2>
+      <h2>{{ $t('admin.artworkManagement') }}</h2>
       <button
         class="btn btn-sm btn-outline-secondary"
         type="button"
@@ -87,7 +87,7 @@ const formattedArtworks = computed(() =>
         aria-controls="admin-artwork-filters"
         @click="emit('toggle-filters')"
       >
-        {{ artworkPanelFiltersOpen ? 'Hide filters' : 'Show filters' }}
+        {{ artworkPanelFiltersOpen ? $t('admin.hideFilters') : $t('admin.showFilters') }}
       </button>
     </div>
 
@@ -96,21 +96,21 @@ const formattedArtworks = computed(() =>
         :value="artworkQuery"
         type="text"
         class="form-control form-control-sm search-input"
-        placeholder="Search by title"
-        aria-label="Search artworks by title"
+        :placeholder="$t('admin.searchTitle')"
+        :aria-label="$t('admin.searchTitle')"
         @input="onQueryInput"
         @keyup.enter="emit('apply-filters')"
       />
       <AdminPillSelect
         :model-value="artworkTypeFilter"
         :options="[
-          { value: 'all', label: 'All types' },
-          { value: 'illust', label: 'Illustration' },
+          { value: 'all', label: $t('admin.allTypes') },
+          { value: 'illust', label: $t('admin.illustration') },
           { value: 'manga', label: 'Manga' },
           { value: 'gif', label: 'GIF' },
           { value: 'novel', label: 'Novel' },
         ]"
-        label="Filter artworks by type"
+        :label="$t('admin.filterArtworksByType')"
         @update:model-value="onTypeFilterChange"
       />
       <DateRangeFilter
@@ -118,25 +118,25 @@ const formattedArtworks = computed(() =>
         compact
         @update:model-value="emit('update:artworkDateRange', $event)"
       />
-      <button type="button" class="btn btn-sm btn-primary apply-btn" :disabled="loadingArtworks" @click="emit('apply-filters')">Apply</button>
+      <button type="button" class="btn btn-sm btn-primary apply-btn" :disabled="loadingArtworks" @click="emit('apply-filters')">{{ $t('admin.apply') }}</button>
     </div>
 
-    <p v-if="loadingArtworks" class="state-note">Loading artworks...</p>
+    <p v-if="loadingArtworks" class="state-note">{{ $t('admin.loadingArtworks') }}</p>
     <div v-else class="table-wrap">
       <table class="table table-sm align-middle mb-0">
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Owner</th>
-            <th>Type</th>
-            <th>Created</th>
+            <th>{{ $t('admin.tableTitle') }}</th>
+            <th>{{ $t('admin.tableOwner') }}</th>
+            <th>{{ $t('admin.tableType') }}</th>
+            <th>{{ $t('admin.tableCreated') }}</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="row in formattedArtworks" :key="row._id">
             <td>
-              <router-link :to="`/artworks/${row._id}`" class="artwork-link">{{ row.title || 'Untitled' }}</router-link>
+              <router-link :to="`/artworks/${row._id}`" class="artwork-link">{{ row.title || $t('admin.untitled') }}</router-link>
             </td>
             <td>{{ row._owner }}</td>
             <td>{{ row._type }}</td>
@@ -147,11 +147,11 @@ const formattedArtworks = computed(() =>
                 class="btn btn-sm btn-outline-danger"
                 :disabled="mutating"
                 @click="emit('delete-artwork', row)"
-              >Delete</button>
+              >{{ $t('admin.delete') }}</button>
             </td>
           </tr>
           <tr v-if="artworks.length === 0">
-            <td colspan="5" class="text-center text-muted py-3">No artworks found.</td>
+            <td colspan="5" class="text-center text-muted py-3">{{ $t('admin.noArtworks') }}</td>
           </tr>
         </tbody>
       </table>
@@ -161,7 +161,7 @@ const formattedArtworks = computed(() =>
       :page="artworkPagination.page"
       :pages="artworkPagination.pages"
       :total="artworkPagination.total"
-      total-label="artworks"
+      :total-label="$t('admin.artworksCount')"
       :loading="loadingArtworks"
       @go-page="(p) => emit('go-page', p)"
     />

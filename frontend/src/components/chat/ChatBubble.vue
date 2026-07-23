@@ -233,6 +233,12 @@ async function openChat() {
   }
 }
 
+async function retryChatLoad() {
+  await chatStore.retryLoad()
+  await nextTick()
+  scrollToBottom()
+}
+
 function closeChat() {
   chatStore.closeBubble()
 }
@@ -336,6 +342,14 @@ watch(
               />
 
               <div class="panel-chat">
+                <div v-if="chatStore.loadError" class="chat-error-banner" role="alert">
+                  <span class="chat-error-banner-text">{{ chatStore.loadError }}</span>
+                  <button type="button" class="chat-error-banner-retry" @click="retryChatLoad">
+                    <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+                    Retry
+                  </button>
+                </div>
+
                 <ChatMessageList
                   ref="messageListRef"
                   :messages="groupedMessages"
@@ -449,6 +463,57 @@ watch(
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
+}
+
+/* Error banner: surfaces load failures so the user can retry. */
+.chat-error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  margin: 0.5rem 0.75rem 0;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #b91c1c;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+:root.dark-theme .chat-error-banner {
+  background: rgba(248, 113, 113, 0.15);
+  border-color: rgba(248, 113, 113, 0.4);
+  color: #fca5a5;
+}
+
+.chat-error-banner-text {
+  flex: 1;
+  word-break: break-word;
+}
+
+.chat-error-banner-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.chat-error-banner-retry:hover {
+  background: currentColor;
+}
+
+.chat-error-banner-retry:hover > * {
+  color: var(--surface);
 }
 
 /* ═══════════════════════════════════════

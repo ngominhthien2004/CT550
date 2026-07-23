@@ -35,7 +35,7 @@ function onQueryInput(event) {
 <template>
   <section v-show="activeTab === 'comments'" :id="'admin-panel-comments'" class="panel" role="tabpanel">
     <div class="panel-head">
-      <h2>Comment Moderation</h2>
+      <h2>{{ $t('admin.commentModeration') }}</h2>
       <button
         class="btn btn-sm btn-outline-secondary"
         type="button"
@@ -43,7 +43,7 @@ function onQueryInput(event) {
         aria-controls="admin-comment-filters"
         @click="emit('toggle-filters')"
       >
-        {{ commentPanelFiltersOpen ? 'Hide filters' : 'Show filters' }}
+        {{ commentPanelFiltersOpen ? $t('admin.hideFilters') : $t('admin.showFilters') }}
       </button>
     </div>
 
@@ -53,12 +53,12 @@ function onQueryInput(event) {
           :value="commentQuery"
           type="text"
           class="form-control form-control-sm"
-          placeholder="Search by content..."
-          aria-label="Search comments by content"
+          :placeholder="$t('admin.searchContent')"
+          :aria-label="$t('admin.searchContent')"
           @input="onQueryInput"
           @keyup.enter="emit('apply-filters')"
         />
-        <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingComments" @click="emit('apply-filters')">Apply</button>
+        <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingComments" @click="emit('apply-filters')">{{ $t('admin.apply') }}</button>
       </div>
       <div class="filter-row-dates">
         <DateRangeFilter
@@ -69,16 +69,16 @@ function onQueryInput(event) {
       </div>
     </div>
 
-    <p v-if="loadingComments" class="state-note">Loading comments...</p>
+    <p v-if="loadingComments" class="state-note">{{ $t('admin.loadingComments') }}</p>
     <div v-else class="table-wrap">
       <table class="table table-sm align-middle mb-0">
         <thead>
           <tr>
-            <th>Content</th>
-            <th>User</th>
-            <th>Artwork</th>
-            <th>Created</th>
-            <th>Action</th>
+            <th>{{ $t('admin.tableContent') }}</th>
+            <th>{{ $t('admin.tableUser') }}</th>
+            <th>{{ $t('admin.tableArtwork') }}</th>
+            <th>{{ $t('admin.tableCreated') }}</th>
+            <th>{{ $t('admin.tableAction') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -93,22 +93,22 @@ function onQueryInput(event) {
                 :disabled="mutating"
                 @click="emit('delete-comment', row._id)"
               >
-                Delete
+                {{ $t('admin.delete') }}
               </button>
             </td>
           </tr>
           <tr v-if="comments.length === 0">
-            <td colspan="5" class="text-center text-muted py-3">No comments found.</td>
+            <td colspan="5" class="text-center text-muted py-3">{{ $t('admin.noComments') }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <footer class="panel-footer" aria-label="Comment pagination">
-      <span>Page {{ commentPagination.page }} / {{ commentPagination.pages }} &bull; {{ commentPagination.total }} comments</span>
+      <span>{{ $t('admin.pageOfLabel', { page: commentPagination.page, pages: commentPagination.pages, total: commentPagination.total, label: $t('admin.commentsCount') }) }}</span>
       <div class="pager-actions">
-        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="commentPagination.page <= 1 || loadingComments" @click="emit('go-page', commentPagination.page - 1)">Previous</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="commentPagination.page >= commentPagination.pages || loadingComments" @click="emit('go-page', commentPagination.page + 1)">Next</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="commentPagination.page <= 1 || loadingComments" @click="emit('go-page', commentPagination.page - 1)">{{ $t('admin.previous') }}</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="commentPagination.page >= commentPagination.pages || loadingComments" @click="emit('go-page', commentPagination.page + 1)">{{ $t('admin.next') }}</button>
       </div>
     </footer>
   </section>

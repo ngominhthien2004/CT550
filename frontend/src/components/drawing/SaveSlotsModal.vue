@@ -3,12 +3,12 @@
     <div v-if="store.showSlotsDialog" class="modal-overlay" @click.self="store.showSlotsDialog = false" @keydown.enter.prevent="store.showSlotsDialog = false" @keydown.space.prevent="store.showSlotsDialog = false" tabindex="0" role="button">
       <div class="modal-content modal-content--wide">
         <div class="modal-header">
-          <h2>Saved Drawings</h2>
+          <h2>{{ $t('drawing.savedDrawings') }}</h2>
           <button type="button" class="modal-close-btn" @click="store.showSlotsDialog = false">&times;</button>
         </div>
         <div class="modal-body">
           <div v-if="store.savedSlots.length === 0" class="empty-state">
-            <p>No saved drawings yet.</p>
+            <p>{{ $t('drawing.noSavedDrawings') }}</p>
           </div>
           <div v-else class="slots-grid">
             <div v-for="slot in store.savedSlots" :key="slot.id" class="slot-card">
@@ -18,8 +18,8 @@
                 <span class="slot-date">{{ store.formatDate(slot.timestamp) }}</span>
               </div>
               <div class="slot-actions">
-                <button type="button" class="slot-btn load" @click="store.requestLoadSlot(slot)">Load</button>
-                <button type="button" class="slot-btn delete" @click="store.requestDeleteSlot(slot.id)">Delete</button>
+                <button type="button" class="slot-btn load" @click="store.requestLoadSlot(slot)">{{ $t('drawing.load') }}</button>
+                <button type="button" class="slot-btn delete" @click="store.requestDeleteSlot(slot.id)">{{ $t('drawing.delete') }}</button>
               </div>
             </div>
           </div>
@@ -33,15 +33,15 @@
     <div v-if="store.showLoadSlotConfirm" class="confirm-overlay" @click.self="store.showLoadSlotConfirm = false" @keydown.enter.prevent="store.showLoadSlotConfirm = false" @keydown.space.prevent="store.showLoadSlotConfirm = false" tabindex="0" role="button">
       <div class="confirm-modal">
         <div class="confirm-header">
-          <h3>Load Drawing</h3>
+          <h3>{{ $t('drawing.loadDrawing') }}</h3>
           <button type="button" class="confirm-close-btn" @click="store.showLoadSlotConfirm = false">&times;</button>
         </div>
         <div class="confirm-body">
-          <p>Load this drawing? Current drawing will be replaced.</p>
+          <p>{{ $t('drawing.loadDrawingDesc') }}</p>
         </div>
         <div class="confirm-footer">
-          <button type="button" class="confirm-btn cancel" @click="store.showLoadSlotConfirm = false">Cancel</button>
-          <button type="button" class="confirm-btn danger" @click="store.executeLoadSlot">Load</button>
+          <button type="button" class="confirm-btn cancel" @click="store.showLoadSlotConfirm = false">{{ $t('drawing.cancel') }}</button>
+          <button type="button" class="confirm-btn danger" @click="store.executeLoadSlot">{{ $t('drawing.load') }}</button>
         </div>
       </div>
     </div>
@@ -52,15 +52,15 @@
     <div v-if="store.showDeleteSlotConfirm" class="confirm-overlay" @click.self="store.showDeleteSlotConfirm = false" @keydown.enter.prevent="store.showDeleteSlotConfirm = false" @keydown.space.prevent="store.showDeleteSlotConfirm = false" tabindex="0" role="button">
       <div class="confirm-modal">
         <div class="confirm-header">
-          <h3>Delete Drawing</h3>
+          <h3>{{ $t('drawing.deleteDrawing') }}</h3>
           <button type="button" class="confirm-close-btn" @click="store.showDeleteSlotConfirm = false">&times;</button>
         </div>
         <div class="confirm-body">
-          <p>Delete this saved drawing?</p>
+          <p>{{ $t('drawing.deleteDrawingDesc') }}</p>
         </div>
         <div class="confirm-footer">
-          <button type="button" class="confirm-btn cancel" @click="store.showDeleteSlotConfirm = false">Cancel</button>
-          <button type="button" class="confirm-btn danger" @click="store.executeDeleteSlot">Delete</button>
+          <button type="button" class="confirm-btn cancel" @click="store.showDeleteSlotConfirm = false">{{ $t('drawing.cancel') }}</button>
+          <button type="button" class="confirm-btn danger" @click="store.executeDeleteSlot">{{ $t('drawing.delete') }}</button>
         </div>
       </div>
     </div>

@@ -84,12 +84,12 @@ function handleFileSelect(event) {
 
 async function saveBanner() {
   if (!formLink.value.trim()) {
-    error.value = 'Link is required'
+    error.value = t('admin.linkRequired')
     return
   }
 
   if ((!editMode.value || editMode.value === 'new') && !formImage.value) {
-    error.value = 'Banner image is required'
+    error.value = t('admin.bannerImageRequired')
     return
   }
 
@@ -116,10 +116,10 @@ async function saveBanner() {
 
     if (editMode.value && editMode.value !== 'new') {
       await bannerApi.update(editMode.value, formData)
-      successMsg.value = 'Banner updated successfully'
+      successMsg.value = t('admin.bannerUpdated')
     } else {
       await bannerApi.create(formData)
-      successMsg.value = 'Banner created successfully'
+      successMsg.value = t('admin.bannerCreated')
     }
 
   editMode.value = false
@@ -135,13 +135,13 @@ async function saveBanner() {
 }
 
 async function confirmDelete(banner) {
-  if (!window.confirm(`Delete banner "${banner.title || 'Untitled'}"? This cannot be undone.`)) return
+  if (!window.confirm(t('admin.deleteBannerConfirm', { title: banner.title || t('admin.untitled') }))) return
 
   saving.value = true
   error.value = ''
   try {
     await bannerApi.delete(banner._id)
-    successMsg.value = 'Banner deleted'
+    successMsg.value = t('admin.bannerDeleted')
     setTimeout(() => { successMsg.value = '' }, 3000)
     await loadBanners()
   } catch (deleteError) {
@@ -160,12 +160,12 @@ watch(() => props.activeTab, (tab) => {
 
 <template>
   <section v-if="activeTab === 'banners'" id="admin-panel-banners" role="tabpanel" class="admin-panel">
-    <div v-if="loading && !banners.length" class="admin-panel-loading">Loading banners...</div>
+    <div v-if="loading && !banners.length" class="admin-panel-loading">{{ $t('admin.loadingBanners') }}</div>
 
     <template v-else>
       <div class="banners-header">
-        <h2>Banner Management</h2>
-        <p class="text-secondary">Manage homepage hero banners — add, edit, reorder, or remove promotional banners.</p>
+        <h2>{{ $t('admin.bannerManagement') }}</h2>
+        <p class="text-secondary">{{ $t('admin.bannerManagementDesc') }}</p>
       </div>
 
       <p v-if="error" class="error-note">{{ error }}</p>
@@ -174,43 +174,43 @@ watch(() => props.activeTab, (tab) => {
       <!-- List view -->
       <div v-if="!editMode">
         <button type="button" class="btn btn-sm btn-primary mb-3" @click="startCreate" :disabled="saving">
-          + Add Banner
+          + {{ $t('admin.addBanner') }}
         </button>
 
         <div v-if="banners.length === 0" class="text-secondary py-4 text-center">
-          No banners yet. Click "Add Banner" to create one.
+          {{ $t('admin.noBanners') }}
         </div>
 
         <table v-else class="banners-table">
           <thead>
             <tr>
-              <th>Preview</th>
-              <th>Title</th>
-              <th>Link</th>
-              <th>Type</th>
-              <th>Active</th>
-              <th>Order</th>
-              <th>Actions</th>
+              <th>{{ $t('admin.tablePreview') }}</th>
+              <th>{{ $t('admin.tableTitle') }}</th>
+              <th>{{ $t('admin.tableLink') }}</th>
+              <th>{{ $t('admin.tableType') }}</th>
+              <th>{{ $t('admin.tableActive') }}</th>
+              <th>{{ $t('admin.tableOrder') }}</th>
+              <th>{{ $t('admin.tableActions') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="banner in banners" :key="banner._id">
               <td class="banner-preview-cell">
                 <span v-if="banner.image" class="banner-filename" :title="banner.image">{{ banner.image.split('/').pop() }}</span>
-                <span v-else class="text-muted small">No image</span>
+                <span v-else class="text-muted small">{{ $t('admin.noImage') }}</span>
               </td>
-              <td>{{ banner.title || '(untitled)' }}</td>
+              <td>{{ banner.title || $t('admin.untitled') }}</td>
               <td class="banner-link-cell">{{ banner.link }}</td>
               <td>{{ banner.type || 'home' }}</td>
               <td>
                 <span :class="banner.isActive ? 'status-active' : 'status-inactive'">
-                  {{ banner.isActive ? 'Yes' : 'No' }}
+                  {{ banner.isActive ? $t('admin.yes') : $t('admin.no') }}
                 </span>
               </td>
               <td>{{ banner.sortOrder }}</td>
               <td class="banner-actions-cell">
-                <button type="button" class="btn btn-sm btn-outline-secondary" @click="startEdit(banner)" :disabled="saving">Edit</button>
-                <button type="button" class="btn btn-sm btn-outline-danger" @click="confirmDelete(banner)" :disabled="saving">Delete</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @click="startEdit(banner)" :disabled="saving">{{ $t('admin.edit') }}</button>
+                <button type="button" class="btn btn-sm btn-outline-danger" @click="confirmDelete(banner)" :disabled="saving">{{ $t('admin.delete') }}</button>
               </td>
             </tr>
           </tbody>
@@ -219,29 +219,29 @@ watch(() => props.activeTab, (tab) => {
 
       <!-- Form view -->
       <div v-else class="banner-form">
-        <h3>{{ editMode === 'new' ? 'Add New Banner' : 'Edit Banner' }}</h3>
+        <h3>{{ editMode === 'new' ? $t('admin.addBanner') : $t('admin.editBanner') }}</h3>
 
         <div class="banner-form-group">
-          <label>Banner Image</label>
+          <label>{{ $t('admin.bannerImage') }}</label>
           <div v-if="previewImage" class="banner-preview-wrapper">
             <img :src="previewImage" alt="Banner preview" class="banner-preview-img" />
           </div>
           <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" @change="handleFileSelect" class="form-control" />
-          <span class="text-secondary small">Recommended: wide landscape (e.g., 1400×400). Max 10MB.</span>
+          <span class="text-secondary small">{{ $t('admin.bannerImageHint') }}</span>
         </div>
 
         <div class="banner-form-group">
-          <label for="banner-title">Title</label>
+          <label for="banner-title">{{ $t('admin.tableTitle') }}</label>
           <input id="banner-title" v-model="formTitle" type="text" class="form-control" placeholder="e.g. Featured Gallery" />
         </div>
 
         <div class="banner-form-group">
-          <label for="banner-link">Link <span class="text-danger">*</span></label>
+          <label for="banner-link">{{ $t('admin.tableLink') }} <span class="text-danger">*</span></label>
           <input id="banner-link" v-model="formLink" type="text" class="form-control" placeholder="e.g. /discovery or https://example.com" />
         </div>
 
         <div class="banner-form-group">
-          <label for="banner-type">Page</label>
+          <label for="banner-type">{{ $t('admin.tableType') }}</label>
           <select id="banner-type" v-model="formType" class="form-control">
             <option value="home">Home</option>
             <option value="illust">Illustrations</option>
@@ -253,22 +253,22 @@ watch(() => props.activeTab, (tab) => {
 
         <div class="banner-form-row">
           <div class="banner-form-group">
-            <label for="banner-order">Sort Order</label>
+            <label for="banner-order">{{ $t('admin.sortOrder') }}</label>
             <input id="banner-order" v-model.number="formSortOrder" type="number" class="form-control" min="0" />
           </div>
           <div class="banner-form-group">
             <label class="d-flex align-items-center gap-2">
               <input type="checkbox" v-model="formIsActive" class="form-check-input" />
-              <span>Active</span>
+              <span>{{ $t('admin.tableActive') }}</span>
             </label>
           </div>
         </div>
 
         <div class="banner-form-actions">
           <button type="button" class="btn btn-primary" @click="saveBanner" :disabled="saving">
-            {{ saving ? 'Saving...' : 'Save Banner' }}
+            {{ saving ? $t('admin.saving') : $t('admin.saveBanner') }}
           </button>
-          <button type="button" class="btn btn-secondary" @click="cancelForm" :disabled="saving">Cancel</button>
+          <button type="button" class="btn btn-secondary" @click="cancelForm" :disabled="saving">{{ $t('admin.cancel') }}</button>
         </div>
       </div>
     </template>

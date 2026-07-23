@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { translateError } from '../utils/translateError.js'
+import { formatDateOnly, formatShortDate } from '../utils/date.js'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 
 import { useAuthStore } from '@/stores/auth.store'
@@ -56,17 +57,12 @@ function timeAgo(dateStr) {
   if (hours < 24) return `${hours}h ago`
   const days = Math.floor(hours / 24)
   if (days < 7) return `${days}d ago`
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    year: 'numeric', month: 'short', day: 'numeric',
-  })
+  return formatDateOnly(dateStr)
 }
 
 function formatDate(dateStr) {
   if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    year: 'numeric', month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit',
-  })
+  return formatShortDate(dateStr)
 }
 
 function getTargetLabel(report) {

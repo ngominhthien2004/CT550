@@ -20,25 +20,25 @@ const formattedHidden = computed(() =>
 <template>
   <section v-show="activeTab === 'hidden'" :id="'admin-panel-hidden-artworks'" class="panel" role="tabpanel">
     <div class="panel-head">
-      <h2>Hidden Artworks</h2>
+      <h2>{{ $t('admin.hiddenArtworks') }}</h2>
     </div>
 
-    <p v-if="loadingHidden" class="state-note">Loading hidden artworks...</p>
+    <p v-if="loadingHidden" class="state-note">{{ $t('admin.loadingHidden') }}</p>
 
     <div v-else-if="hiddenArtworks.length === 0" class="state-note">
-      No hidden artworks.
+      {{ $t('admin.noHiddenArtworks') }}
     </div>
 
     <div v-else class="table-wrap">
       <table class="table table-sm align-middle mb-0">
         <thead>
           <tr>
-            <th>Artwork</th>
-            <th>Author</th>
-            <th>Hidden By</th>
-            <th>Reason</th>
-            <th>Hidden At</th>
-            <th>Actions</th>
+            <th>{{ $t('admin.tableArtwork') }}</th>
+            <th>{{ $t('admin.tableAuthor') }}</th>
+            <th>{{ $t('admin.tableHiddenBy') }}</th>
+            <th>{{ $t('admin.tableReason') }}</th>
+            <th>{{ $t('admin.tableHiddenAt') }}</th>
+            <th>{{ $t('admin.tableActions') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -57,7 +57,7 @@ const formattedHidden = computed(() =>
                 class="btn btn-sm btn-outline-success"
                 :disabled="mutating"
                 @click="emit('unhide-artwork', art._id)"
-              >Unhide</button>
+              >{{ $t('admin.unhide') }}</button>
             </td>
           </tr>
         </tbody>
@@ -69,7 +69,7 @@ const formattedHidden = computed(() =>
       :page="hiddenPagination.page"
       :pages="hiddenPagination.pages"
       :total="hiddenPagination.total"
-      total-label="hidden"
+      :total-label="$t('admin.hiddenCount')"
       :loading="loadingHidden"
       @go-page="(p) => emit('go-page', p)"
     />

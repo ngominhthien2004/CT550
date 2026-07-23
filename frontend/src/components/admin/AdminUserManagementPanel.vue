@@ -97,7 +97,7 @@ const formattedUsers = computed(() =>
 <template>
   <section v-show="activeTab === 'users'" id="admin-user-panel" class="panel" role="tabpanel">
     <div class="panel-head">
-      <h2>User Management</h2>
+      <h2>{{ $t('admin.userManagement') }}</h2>
       <button
         class="btn btn-sm btn-outline-secondary"
         type="button"
@@ -105,7 +105,7 @@ const formattedUsers = computed(() =>
         aria-controls="admin-user-filters"
         @click="emit('toggle-filters')"
       >
-        {{ userPanelFiltersOpen ? 'Hide filters' : 'Show filters' }}
+        {{ userPanelFiltersOpen ? $t('admin.hideFilters') : $t('admin.showFilters') }}
       </button>
     </div>
 
@@ -114,19 +114,19 @@ const formattedUsers = computed(() =>
         :value="userQuery"
         type="text"
         class="form-control form-control-sm search-input"
-        placeholder="Search by username/email"
-        aria-label="Search users by username or email"
+        :placeholder="$t('admin.searchUser')"
+        :aria-label="$t('admin.searchUser')"
         @input="onQueryInput"
         @keyup.enter="emit('apply-filters')"
       />
       <AdminPillSelect
         :model-value="userRoleFilter"
         :options="[
-          { value: 'all', label: 'All roles' },
-          { value: 'user', label: 'User' },
-          { value: 'admin', label: 'Admin' },
+          { value: 'all', label: $t('admin.allRoles') },
+          { value: 'user', label: $t('admin.user') },
+          { value: 'admin', label: $t('admin.admin') },
         ]"
-        label="Filter users by role"
+        :label="$t('admin.filterUsersByRole')"
         @update:model-value="onRoleFilterChange"
       />
       <DateRangeFilter
@@ -134,18 +134,18 @@ const formattedUsers = computed(() =>
         compact
         @update:model-value="emit('update:userDateRange', $event)"
       />
-      <button type="button" class="btn btn-sm btn-primary apply-btn" :disabled="loadingUsers" @click="emit('apply-filters')">Apply</button>
+      <button type="button" class="btn btn-sm btn-primary apply-btn" :disabled="loadingUsers" @click="emit('apply-filters')">{{ $t('admin.apply') }}</button>
     </div>
 
-    <p v-if="loadingUsers" class="state-note">Loading users...</p>
+    <p v-if="loadingUsers" class="state-note">{{ $t('admin.loadingUsers') }}</p>
     <div v-else class="table-wrap">
       <table class="table table-sm align-middle mb-0">
         <thead>
           <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Created</th>
+            <th>{{ $t('admin.tableUsername') }}</th>
+            <th>{{ $t('admin.tableEmail') }}</th>
+            <th>{{ $t('admin.tableRole') }}</th>
+            <th>{{ $t('admin.tableCreated') }}</th>
             <th></th>
           </tr>
         </thead>
@@ -194,11 +194,11 @@ const formattedUsers = computed(() =>
                 class="btn btn-sm btn-outline-danger"
                 :disabled="mutating"
                 @click="emit('delete-user', row)"
-              >Delete</button>
+              >{{ $t('admin.delete') }}</button>
             </td>
           </tr>
           <tr v-if="users.length === 0">
-            <td colspan="5" class="text-center text-muted py-3">No users found.</td>
+            <td colspan="5" class="text-center text-muted py-3">{{ $t('admin.noUsers') }}</td>
           </tr>
         </tbody>
       </table>
@@ -208,7 +208,7 @@ const formattedUsers = computed(() =>
       :page="userPagination.page"
       :pages="userPagination.pages"
       :total="userPagination.total"
-      total-label="users"
+      :total-label="$t('admin.usersCount')"
       :loading="loadingUsers"
       @go-page="(p) => emit('go-page', p)"
     />

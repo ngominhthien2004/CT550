@@ -9,6 +9,7 @@ export const useChatStore = defineStore('chat', {
     isLoading: false,
     isSessionsLoading: false,
     error: null,
+    loadError: null,
     streamingMessage: '',
     isStreaming: false,
     abortController: null,
@@ -41,8 +42,9 @@ export const useChatStore = defineStore('chat', {
       try {
         const { data } = await api.get('/chat-sessions')
         this.sessions = data
+        this.loadError = null
       } catch (err) {
-        console.error('Failed to load sessions:', err)
+        this.loadError = err?.message || 'Failed to load chat'
       } finally {
         this.isSessionsLoading = false
       }
@@ -58,11 +60,12 @@ export const useChatStore = defineStore('chat', {
         this.sessions.unshift(data)
         this.currentSessionId = data._id
         this.messages = []
+        this.loadError = null
         // Load messages (will include welcome message from backend)
         await this.loadSessionMessages(data._id)
         return data
       } catch (err) {
-        console.error('Failed to create session:', err)
+        this.loadError = err?.message || 'Failed to load chat'
         return null
       }
     },
@@ -78,8 +81,9 @@ export const useChatStore = defineStore('chat', {
           this.currentSessionId = null
           this.messages = []
         }
+        this.loadError = null
       } catch (err) {
-        console.error('Failed to delete session:', err)
+        this.loadError = err?.message || 'Failed to load chat'
       }
     },
 
@@ -101,8 +105,9 @@ export const useChatStore = defineStore('chat', {
       try {
         const { data } = await api.get(`/chat-sessions/${sessionId}/messages`)
         this.messages = data
+        this.loadError = null
       } catch (err) {
-        console.error('Failed to load messages:', err)
+        this.loadError = err?.message || 'Failed to load chat'
         this.error = 'Không thể tải tin nhắn'
       }
     },
@@ -333,6 +338,18 @@ export const useChatStore = defineStore('chat', {
      * Initialize: load sessions, create first if none exist.
      */
     async initialize() {
+      await this.initializeInternal()
+    },
+
+    /**
+     * Re-run the initial fetch after a load failure. Used by the UI banner
+     * so the user can recover from a transient network blip or expired token.
+     */
+    async retryLoad() {
+      await this.initializeInternal()
+    },
+
+    async initializeInternal() {
       await this.loadSessions()
       if (this.sessions.length === 0) {
         await this.createSession()

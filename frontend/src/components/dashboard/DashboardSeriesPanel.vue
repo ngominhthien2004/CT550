@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSeriesStore } from '@/stores/series.store'
 import { useI18n } from 'vue-i18n'
+import { formatLongDate } from '../../utils/date.js'
 import CreateSeriesModal from './CreateSeriesModal.vue'
 
 const router = useRouter()
@@ -82,9 +83,7 @@ function goToSeriesDetail(seriesId) {
 }
 
 function formatDate(dateStr) {
-  if (!dateStr) return ''
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  return formatLongDate(dateStr)
 }
 
 function getSeriesIcon(type) {

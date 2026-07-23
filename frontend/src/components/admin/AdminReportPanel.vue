@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AdminPagination from './AdminPagination.vue'
 import AdminPillSelect from './AdminPillSelect.vue'
 import DateRangeFilter from '@/components/common/DateRangeFilter.vue'
@@ -17,31 +18,34 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['resolve-report', 'hide-artwork', 'go-page', 'update:report-status-filter', 'update:reportDateRange'])
+const { t } = useI18n()
 
 const tabValue = computed(() => props.reportType)
 
 const config = computed(() => {
   const configs = {
     artwork: {
-      title: 'Artwork Reports',
-      filterLabel: 'Filter artwork reports by status',
-      emptyText: 'No artwork reports found.',
-      emptySlot: false,
+      titleKey: 'admin.artworkReports',
+      filterLabelKey: 'admin.filterArtworkReportsByStatus',
+      emptyTextKey: 'admin.noArtworkReports',
     },
     comment: {
-      title: 'Comment Reports',
-      filterLabel: 'Filter comment reports by status',
-      emptyText: 'No comment reports found.',
-      emptySlot: false,
+      titleKey: 'admin.commentReports',
+      filterLabelKey: 'admin.filterCommentReportsByStatus',
+      emptyTextKey: 'admin.noCommentReports',
     },
     user: {
-      title: 'User Reports',
-      filterLabel: 'Filter user reports by status',
-      emptyText: 'No user reports found.',
-      emptySlot: false,
+      titleKey: 'admin.userReports',
+      filterLabelKey: 'admin.filterUserReportsByStatus',
+      emptyTextKey: 'admin.noUserReports',
     },
   }
-  return configs[props.reportType] || configs.artwork
+  const c = configs[props.reportType] || configs.artwork
+  return {
+    title: t(c.titleKey),
+    filterLabel: t(c.filterLabelKey),
+    emptyText: t(c.emptyTextKey),
+  }
 })
 
 const formattedReports = computed(() =>
@@ -69,10 +73,10 @@ function onStatusFilterChange(value) {
       <AdminPillSelect
         :model-value="reportStatusFilter"
         :options="[
-          { value: 'pending', label: 'Pending' },
-          { value: 'resolved', label: 'Resolved' },
-          { value: 'dismissed', label: 'Dismissed' },
-          { value: '', label: 'All' },
+          { value: 'pending', label: $t('admin.statusPending') },
+          { value: 'resolved', label: $t('admin.statusResolved') },
+          { value: 'dismissed', label: $t('admin.statusDismissed') },
+          { value: '', label: $t('admin.statusAll') },
         ]"
         :label="config.filterLabel"
         @update:model-value="onStatusFilterChange"
@@ -86,7 +90,7 @@ function onStatusFilterChange(value) {
       />
     </div>
 
-    <p v-if="loadingReports" class="state-note">Loading reports...</p>
+    <p v-if="loadingReports" class="state-note">{{ $t('admin.loadingReports') }}</p>
 
     <div v-else-if="reports.length === 0" class="state-note">
       {{ config.emptyText }}
@@ -98,23 +102,23 @@ function onStatusFilterChange(value) {
           <tr>
             <!-- Artwork columns -->
             <template v-if="reportType === 'artwork'">
-              <th>Artwork</th>
+              <th>{{ $t('admin.tableArtwork') }}</th>
             </template>
             <!-- Comment columns -->
             <template v-if="reportType === 'comment'">
-              <th>Comment</th>
-              <th>Artwork</th>
+              <th>{{ $t('admin.tableComment') }}</th>
+              <th>{{ $t('admin.tableArtwork') }}</th>
             </template>
             <!-- User columns -->
             <template v-if="reportType === 'user'">
-              <th>Reported User</th>
+              <th>{{ $t('admin.tableReportedUser') }}</th>
             </template>
-            <th>Reason</th>
-            <th>Reported By</th>
-            <th>Date</th>
-            <th>Resolved By</th>
-            <th>Note</th>
-            <th>Actions</th>
+            <th>{{ $t('admin.tableReason') }}</th>
+            <th>{{ $t('admin.tableReportedBy') }}</th>
+            <th>{{ $t('admin.tableDate') }}</th>
+            <th>{{ $t('admin.tableResolvedBy') }}</th>
+            <th>{{ $t('admin.tableNote') }}</th>
+            <th>{{ $t('admin.tableActions') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -122,7 +126,7 @@ function onStatusFilterChange(value) {
             <!-- Artwork: title column -->
             <td v-if="reportType === 'artwork'">
               <router-link :to="'/artworks/' + (report.artwork?._id)" class="artwork-link">
-                {{ report.artwork?.title || 'Unknown' }}
+                {{ report.artwork?.title || $t('admin.unknown') }}
               </router-link>
             </td>
 
@@ -132,7 +136,7 @@ function onStatusFilterChange(value) {
             </td>
             <td v-if="reportType === 'comment'">
               <router-link :to="'/artworks/' + (report.target?.artwork?._id || report.comment?.artwork?._id)" class="artwork-link">
-                {{ report.target?.artwork?.title || report.comment?.artwork?.title || 'Unknown' }}
+                {{ report.target?.artwork?.title || report.comment?.artwork?.title || $t('admin.unknown') }}
               </router-link>
             </td>
 
@@ -154,14 +158,14 @@ function onStatusFilterChange(value) {
                   class="btn btn-sm btn-outline-danger"
                   :disabled="mutating"
                   @click="emit('hide-artwork', report.artwork?._id, report._id)"
-                  title="Hide artwork"
-                >Hide</button>
+                  :title="$t('admin.hide')"
+                >{{ $t('admin.hide') }}</button>
                 <button type="button"
                   class="btn btn-sm btn-outline-secondary"
                   :disabled="mutating"
                   @click="emit('resolve-report', report._id)"
-                  title="Dismiss report"
-                >Dismiss</button>
+                  :title="$t('admin.dismiss')"
+                >{{ $t('admin.dismiss') }}</button>
               </template>
 
               <!-- Comment actions -->
@@ -170,14 +174,14 @@ function onStatusFilterChange(value) {
                   class="btn btn-sm btn-outline-danger"
                   :disabled="mutating"
                   @click="emit('resolve-report', report._id, 'delete')"
-                  title="Delete comment and resolve report"
-                >Resolve</button>
+                  :title="$t('admin.deleteCommentResolveFailed')"
+                >{{ $t('admin.resolve') }}</button>
                 <button type="button"
                   class="btn btn-sm btn-outline-secondary"
                   :disabled="mutating"
                   @click="emit('resolve-report', report._id, 'dismiss')"
-                  title="Dismiss report"
-                >Dismiss</button>
+                  :title="$t('admin.dismiss')"
+                >{{ $t('admin.dismiss') }}</button>
               </template>
 
               <!-- User actions -->
@@ -186,20 +190,20 @@ function onStatusFilterChange(value) {
                   class="btn btn-sm btn-outline-warning"
                   :disabled="mutating"
                   @click="emit('resolve-report', report._id, 'warn')"
-                  title="Send warning to the reported user"
-                >Warn</button>
+                  :title="$t('admin.warn')"
+                >{{ $t('admin.warn') }}</button>
                 <button type="button"
                   class="btn btn-sm btn-outline-danger"
                   :disabled="mutating"
                   @click="emit('resolve-report', report._id, 'ban')"
-                  title="Suspend the reported user"
-                >Suspend</button>
+                  :title="$t('admin.suspend')"
+                >{{ $t('admin.suspend') }}</button>
                 <button type="button"
                   class="btn btn-sm btn-outline-secondary"
                   :disabled="mutating"
                   @click="emit('resolve-report', report._id, 'dismiss')"
-                  title="Dismiss report"
-                >Dismiss</button>
+                  :title="$t('admin.dismiss')"
+                >{{ $t('admin.dismiss') }}</button>
               </template>
 
               <span v-else-if="report.status !== 'pending'" class="badge" :class="report.status === 'resolved' ? 'bg-success-subtle text-success-emphasis' : 'bg-secondary-subtle text-secondary-emphasis'">
@@ -216,7 +220,7 @@ function onStatusFilterChange(value) {
       :page="reportPagination.page"
       :pages="reportPagination.pages"
       :total="reportPagination.total"
-      total-label="reports"
+      :total-label="$t('admin.reportsCount')"
       :loading="loadingReports"
       @go-page="(p) => emit('go-page', p)"
     />

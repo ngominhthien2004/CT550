@@ -3,44 +3,44 @@
     <div v-if="store.showPostDialog" class="modal-overlay" @click.self="store.closePostDialog" @keydown.esc="store.closePostDialog" tabindex="0" role="dialog" aria-modal="true">
       <div class="modal-content">
         <div class="modal-header">
-          <h2>Post Drawing</h2>
+          <h2>{{ $t('drawing.postDrawing') }}</h2>
           <button type="button" class="modal-close-btn" @click="store.closePostDialog">&times;</button>
         </div>
         <div class="modal-body">
           <div v-if="store.postPreviewUrl" class="post-preview">
-            <img :src="store.postPreviewUrl" alt="Drawing preview" />
+            <img :src="store.postPreviewUrl" :alt="$t('drawing.drawingPreview')" />
           </div>
           <div class="form-group">
-            <label>Title *</label>
-            <input v-model="store.postTitle" type="text" placeholder="Enter title" class="form-input" maxlength="100" aria-label="Drawing title" />
+            <label>{{ $t('drawing.title') }} *</label>
+            <input v-model="store.postTitle" type="text" :placeholder="$t('drawing.enterTitle')" class="form-input" maxlength="100" :aria-label="$t('drawing.title')" />
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Type</label>
-              <select v-model="store.postType" class="form-select" aria-label="Post type">
-                <option value="illust">Illustration</option>
+              <label>{{ $t('drawing.type') }}</label>
+              <select v-model="store.postType" class="form-select" :aria-label="$t('drawing.type')">
+                <option value="illust">{{ $t('drawing.illustration') }}</option>
                 <option value="manga">Manga</option>
                 <option value="novel">Novel</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Age Rating</label>
-              <select v-model="store.postAgeRating" class="form-select" aria-label="Age rating">
-                <option value="all-ages">All Ages</option>
-                <option value="r-18">R-18</option>
+              <label>{{ $t('drawing.ageRating') }}</label>
+              <select v-model="store.postAgeRating" class="form-select" :aria-label="$t('drawing.ageRating')">
+                <option value="all-ages">{{ $t('drawing.allAges') }}</option>
+                <option value="r-18">{{ $t('drawing.r18') }}</option>
               </select>
             </div>
           </div>
           <div class="form-group">
-            <label>Tags (comma-separated)</label>
-            <input v-model="store.postTags" type="text" placeholder="e.g. fanart, original character" class="form-input" aria-label="Tags" />
+            <label>{{ $t('drawing.tagsCommaSeparated') }}</label>
+            <input v-model="store.postTags" type="text" :placeholder="$t('drawing.tagHint')" class="form-input" :aria-label="$t('drawing.tags')" />
           </div>
           <p v-if="store.postError" class="form-error">{{ store.postError }}</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="modal-btn cancel" @click="store.closePostDialog">Cancel</button>
+          <button type="button" class="modal-btn cancel" @click="store.closePostDialog">{{ $t('drawing.cancel') }}</button>
           <button type="button" class="modal-btn submit" :disabled="store.postSubmitting" @click="submit">
-            {{ store.postSubmitting ? 'Posting...' : 'Post' }}
+            {{ store.postSubmitting ? $t('drawing.posting') : $t('drawing.post') }}
           </button>
         </div>
       </div>

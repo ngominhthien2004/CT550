@@ -9,6 +9,7 @@ import SeriesHero from '@/components/series/SeriesHero.vue'
 import SeriesArtworksGrid from '@/components/series/SeriesArtworksGrid.vue'
 import { useI18n } from 'vue-i18n'
 import { translateError } from '../utils/translateError.js'
+import { formatLongDate } from '../utils/date.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -44,9 +45,7 @@ const isOwner = computed(() => {
 })
 
 function formatDate(dateStr) {
-  if (!dateStr) return ''
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  return formatLongDate(dateStr)
 }
 
 function getSeriesIcon(type) {

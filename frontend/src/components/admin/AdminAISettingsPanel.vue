@@ -79,21 +79,20 @@ watch(() => props.activeTab, (tab) => {
 
 <template>
   <section v-if="activeTab === 'ai'" id="admin-panel-ai" role="tabpanel" class="admin-panel">
-    <div v-if="loading" class="admin-panel-loading">Loading AI settings...</div>
+    <div v-if="loading" class="admin-panel-loading">{{ $t('admin.loadingAiSettings') }}</div>
 
     <div v-else class="ai-settings-content">
-      <h2>AI Feature Settings</h2>
-      <p class="text-secondary">Control the availability of AI-powered features and automation on the platform.</p>
+      <h2>{{ $t('admin.aiFeatureSettings') }}</h2>
+      <p class="text-secondary">{{ $t('admin.aiFeatureSettingsDesc') }}</p>
 
       <p v-if="error" class="error-note">{{ error }}</p>
       <p v-if="successMsg" class="success-note">{{ successMsg }}</p>
 
       <div class="ai-toggle-card">
         <div class="ai-toggle-info">
-          <strong>AI Image Detection</strong>
+          <strong>{{ $t('admin.aiImageDetection') }}</strong>
           <span class="text-secondary small">
-            When disabled, users cannot submit images for AI detection analysis.
-            Detect requests will return a 403 error.
+            {{ $t('admin.aiImageDetectionDesc') }}
           </span>
         </div>
         <label class="toggle-switch" :class="{ 'is-disabled': saving }">
@@ -102,19 +101,18 @@ watch(() => props.activeTab, (tab) => {
             :checked="aiDetectionEnabled"
             :disabled="saving"
             @change="toggleAiDetection"
-            aria-label="Toggle AI image detection"
+            :aria-label="$t('admin.aiImageDetection')"
           />
           <span class="toggle-slider"></span>
-          <span class="toggle-label">{{ aiDetectionEnabled ? 'Enabled' : 'Disabled' }}</span>
+          <span class="toggle-label">{{ aiDetectionEnabled ? $t('admin.enabled') : $t('admin.disabled') }}</span>
         </label>
       </div>
 
       <div class="ai-toggle-card">
         <div class="ai-toggle-info">
-          <strong>Auto Image Tagging</strong>
+          <strong>{{ $t('admin.autoImageTagging') }}</strong>
           <span class="text-secondary small">
-            When enabled, uploaded images will be automatically analyzed to suggest relevant tags.
-            Users will see auto-generated tag suggestions during upload.
+            {{ $t('admin.autoImageTaggingDesc') }}
           </span>
         </div>
         <label class="toggle-switch" :class="{ 'is-disabled': autoTagSaving }">
@@ -123,10 +121,10 @@ watch(() => props.activeTab, (tab) => {
             :checked="autoTaggingEnabled"
             :disabled="autoTagSaving"
             @change="toggleAutoTagging"
-            aria-label="Toggle auto image tagging"
+            :aria-label="$t('admin.autoImageTagging')"
           />
           <span class="toggle-slider"></span>
-          <span class="toggle-label">{{ autoTaggingEnabled ? 'Enabled' : 'Disabled' }}</span>
+          <span class="toggle-label">{{ autoTaggingEnabled ? $t('admin.enabled') : $t('admin.disabled') }}</span>
         </label>
       </div>
 

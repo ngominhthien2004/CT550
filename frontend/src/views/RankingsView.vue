@@ -11,6 +11,7 @@ import { useFeedStore } from '../stores/feed.store'
 import { useLikeStore } from '../stores/like.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
 import { useAuthStore } from '../stores/auth.store'
+import { formatLongDate, formatDateOnly } from '../utils/date.js'
 
 const { t } = useI18n()
 
@@ -82,15 +83,15 @@ const periodLabel = computed(() => {
   switch (period.value) {
     case 'daily': {
       const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1)
-      return yesterday.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })
+      return formatLongDate(yesterday)
     }
     case 'weekly': {
       const weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate() - 7)
-      return `${weekAgo.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+      return `${formatDateOnly(weekAgo)} - ${formatLongDate(now)}`
     }
     case 'monthly': {
       const monthAgo = new Date(now); monthAgo.setMonth(monthAgo.getMonth() - 1)
-      return `${monthAgo.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} - ${now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+      return `${formatLongDate(monthAgo)} - ${formatLongDate(now)}`
     }
     case 'rookie': return 'All-time rookie artworks'
     default: return ''

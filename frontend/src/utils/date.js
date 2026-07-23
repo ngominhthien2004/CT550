@@ -18,6 +18,31 @@ export function formatShortDate(value) {
 }
 
 /**
+ * Date-only format (no time). Uses the viewer's locale so Japanese/Vietnamese
+ * users see native month names instead of English. Returns an empty string for
+ * null/undefined/invalid input.
+ * Example: "Jun 29, 2026" (en) / "2026年6月29日" (ja) / "29 thg 6, 2026" (vi)
+ */
+export function formatDateOnly(value) {
+  if (!value) return ''
+  const d = new Date(value)
+  if (isNaN(d.getTime())) return ''
+  return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+}
+
+/**
+ * Long date format with full month name. Useful for hero sections and
+ * detail pages that want a more readable presentation.
+ * Example: "June 29, 2026" (en) / "2026年6月29日" (ja)
+ */
+export function formatLongDate(value) {
+  if (!value) return ''
+  const d = new Date(value)
+  if (isNaN(d.getTime())) return ''
+  return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+}
+
+/**
  * Relative time format (e.g., "2 hours ago", "Yesterday", "3 days ago").
  * Falls back to short date for dates older than 7 days.
  */

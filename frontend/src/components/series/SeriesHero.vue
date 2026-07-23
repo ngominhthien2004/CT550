@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { formatLongDate } from '../../utils/date.js'
 
 const props = defineProps({
   series: { type: Object, required: true },
@@ -17,9 +18,7 @@ const coverUrl = computed(() => {
 })
 
 function formatDate(dateStr) {
-  if (!dateStr) return ''
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  return formatLongDate(dateStr)
 }
 
 function getSeriesIcon(type) {

@@ -23,21 +23,21 @@ const formattedReports = computed(() =>
 <template>
   <section v-show="activeTab === 'request'" :id="'admin-panel-reports'" class="panel" role="tabpanel">
     <div class="panel-head">
-      <h2>Report Review</h2>
+      <h2>{{ $t('admin.reportReview') }}</h2>
     </div>
 
-    <p v-if="loadingReports" class="state-note">Loading reports...</p>
+    <p v-if="loadingReports" class="state-note">{{ $t('admin.loadingReports') }}</p>
     <div v-else class="table-wrap">
       <table class="table table-sm align-middle mb-0">
         <thead>
           <tr>
-            <th>Request ID</th>
-            <th>Requester</th>
-            <th>Creator</th>
-            <th>Reported By</th>
-            <th>Reports</th>
-            <th>Last Reported</th>
-            <th>Action</th>
+            <th>{{ $t('admin.tableRequestId') }}</th>
+            <th>{{ $t('admin.tableRequester') }}</th>
+            <th>{{ $t('admin.tableCreator') }}</th>
+            <th>{{ $t('admin.tableReportedBy') }}</th>
+            <th>{{ $t('admin.tableReports') }}</th>
+            <th>{{ $t('admin.tableLastReported') }}</th>
+            <th>{{ $t('admin.tableAction') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -54,22 +54,22 @@ const formattedReports = computed(() =>
                 :disabled="mutating"
                 @click="emit('resolve-report', row.request?._id)"
               >
-                Dismiss
+                {{ $t('admin.dismiss') }}
               </button>
             </td>
           </tr>
           <tr v-if="reports.length === 0">
-            <td colspan="7" class="text-center text-muted py-3">No pending reports.</td>
+            <td colspan="7" class="text-center text-muted py-3">{{ $t('admin.noPendingReports') }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <footer class="panel-footer" aria-label="Report pagination">
-      <span>Page {{ reportPagination.page }} / {{ reportPagination.pages }} &bull; {{ reportPagination.total }} reports</span>
+      <span>{{ $t('admin.pageOfLabel', { page: reportPagination.page, pages: reportPagination.pages, total: reportPagination.total, label: $t('admin.reportsCount') }) }}</span>
       <div class="pager-actions">
-        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="reportPagination.page <= 1 || loadingReports" @click="emit('go-page', reportPagination.page - 1)">Previous</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="reportPagination.page >= reportPagination.pages || loadingReports" @click="emit('go-page', reportPagination.page + 1)">Next</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="reportPagination.page <= 1 || loadingReports" @click="emit('go-page', reportPagination.page - 1)">{{ $t('admin.previous') }}</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="reportPagination.page >= reportPagination.pages || loadingReports" @click="emit('go-page', reportPagination.page + 1)">{{ $t('admin.next') }}</button>
       </div>
     </footer>
   </section>

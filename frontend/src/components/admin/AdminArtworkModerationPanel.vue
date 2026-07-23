@@ -76,7 +76,7 @@ const formattedArtworks = computed(() => {
 <template>
   <section v-show="activeTab === 'artworks'" id="admin-artwork-panel" class="panel" role="tabpanel">
     <div class="panel-head">
-      <h2>Artwork Moderation</h2>
+      <h2>{{ $t('admin.artworkModeration') }}</h2>
       <button
         class="btn btn-sm btn-outline-secondary"
         type="button"
@@ -84,7 +84,7 @@ const formattedArtworks = computed(() => {
         aria-controls="admin-artwork-filters"
         @click="emit('toggle-filters')"
       >
-        {{ artworkPanelFiltersOpen ? 'Hide filters' : 'Show filters' }}
+        {{ artworkPanelFiltersOpen ? $t('admin.hideFilters') : $t('admin.showFilters') }}
       </button>
     </div>
 
@@ -94,12 +94,12 @@ const formattedArtworks = computed(() => {
           :value="artworkQuery"
           type="text"
           class="form-control form-control-sm"
-          placeholder="Search by title"
-          aria-label="Search artworks by title"
+          :placeholder="$t('admin.searchTitle')"
+          :aria-label="$t('admin.searchTitle')"
           @input="onQueryInput"
           @keyup.enter="emit('apply-filters')"
         />
-        <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingArtworks" @click="emit('apply-filters')">Apply</button>
+        <button type="button" class="btn btn-sm btn-outline-primary" :disabled="loadingArtworks" @click="emit('apply-filters')">{{ $t('admin.apply') }}</button>
       </div>
       <div class="filter-row-dates">
         <DateRangeFilter
@@ -110,17 +110,17 @@ const formattedArtworks = computed(() => {
       </div>
     </div>
 
-    <p v-if="loadingArtworks" class="state-note">Loading artworks...</p>
+    <p v-if="loadingArtworks" class="state-note">{{ $t('admin.loadingArtworks') }}</p>
     <div v-else class="table-wrap">
       <table class="table table-sm align-middle mb-0">
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Type</th>
-            <th>Age Rating</th>
-            <th>Created</th>
-            <th>Action</th>
+            <th>{{ $t('admin.tableTitle') }}</th>
+            <th>{{ $t('admin.tableAuthor') }}</th>
+            <th>{{ $t('admin.tableType') }}</th>
+            <th>{{ $t('admin.tableAgeRating') }}</th>
+            <th>{{ $t('admin.tableCreated') }}</th>
+            <th>{{ $t('admin.tableAction') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -134,27 +134,27 @@ const formattedArtworks = computed(() => {
               <AdminActionsDropdown>
                 <template #default="{ close: closeMenu }">
                   <button type="button" class="dropdown-danger" :disabled="mutating" @click="emit('remove-artwork', row._id); closeMenu()">
-                    Delete
+                    {{ $t('admin.delete') }}
                   </button>
                 </template>
               </AdminActionsDropdown>
             </td>
           </tr>
           <tr v-if="formattedArtworks.length === 0">
-            <td colspan="6" class="text-center text-muted py-3">No artworks found.</td>
+            <td colspan="6" class="text-center text-muted py-3">{{ $t('admin.noArtworks') }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <footer class="panel-footer" aria-label="Artwork pagination">
-      <span>Page {{ artworkPagination.page }} / {{ artworkPagination.pages }} • {{ artworkPagination.total }} artworks</span>
+      <span>{{ $t('admin.pageOfLabel', { page: artworkPagination.page, pages: artworkPagination.pages, total: artworkPagination.total, label: $t('admin.artworksCount') }) }}</span>
       <div class="pager-actions">
         <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="artworkPagination.page <= 1 || loadingArtworks" @click="emit('go-page', artworkPagination.page - 1)">
-          Previous
+          {{ $t('admin.previous') }}
         </button>
         <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="artworkPagination.page >= artworkPagination.pages || loadingArtworks" @click="emit('go-page', artworkPagination.page + 1)">
-          Next
+          {{ $t('admin.next') }}
         </button>
       </div>
     </footer>

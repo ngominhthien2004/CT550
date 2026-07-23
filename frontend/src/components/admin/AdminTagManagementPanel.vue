@@ -93,7 +93,7 @@ const formattedTags = computed(() =>
 <template>
   <section v-show="activeTab === 'tags'" :id="'admin-panel-tags'" class="panel" role="tabpanel">
     <div class="panel-head">
-      <h2>Tag Management</h2>
+      <h2>{{ $t('admin.tagManagement') }}</h2>
       <div class="d-flex gap-2">
         <button
           class="btn btn-sm btn-outline-secondary"
@@ -102,10 +102,10 @@ const formattedTags = computed(() =>
           aria-controls="admin-tag-filters"
           @click="emit('toggle-filters')"
         >
-          {{ tagPanelFiltersOpen ? 'Hide filters' : 'Show filters' }}
+          {{ tagPanelFiltersOpen ? $t('admin.hideFilters') : $t('admin.showFilters') }}
         </button>
         <button class="btn btn-sm btn-outline-info" type="button" @click="startMerge">
-          Merge tags
+          {{ $t('admin.mergeTags') }}
         </button>
       </div>
     </div>
@@ -115,12 +115,12 @@ const formattedTags = computed(() =>
         :value="tagQuery"
         type="text"
         class="form-control form-control-sm search-input"
-        placeholder="Search tag name..."
-        aria-label="Search tags by name"
+        :placeholder="$t('admin.searchTag')"
+        :aria-label="$t('admin.searchTag')"
         @input="onQueryInput"
         @keyup.enter="emit('apply-filters')"
       />
-      <button type="button" class="btn btn-sm btn-primary apply-btn" :disabled="loadingTags" @click="emit('apply-filters')">Apply</button>
+      <button type="button" class="btn btn-sm btn-primary apply-btn" :disabled="loadingTags" @click="emit('apply-filters')">{{ $t('admin.apply') }}</button>
     </div>
 
     <!-- Merge form -->
@@ -129,52 +129,52 @@ const formattedTags = computed(() =>
         <AdminPillSelect
           v-model="mergeSourceId"
           :options="mergeTagOptions"
-          label="Select source tag"
+          :label="$t('admin.selectSourceTag')"
         />
         <span class="text-muted">&rarr;</span>
         <AdminPillSelect
           v-model="mergeTargetId"
           :options="mergeTagOptions"
-          label="Select target tag"
+          :label="$t('admin.selectTargetTag')"
         />
-        <button type="button" class="btn btn-sm btn-success" :disabled="!mergeSourceId || !mergeTargetId || mutating" @click="doMerge">Merge</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" @click="cancelMerge">Cancel</button>
+        <button type="button" class="btn btn-sm btn-success" :disabled="!mergeSourceId || !mergeTargetId || mutating" @click="doMerge">{{ $t('admin.merge') }}</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" @click="cancelMerge">{{ $t('admin.cancel') }}</button>
       </div>
-      <small class="text-muted mt-1 d-block">All artworks using the source tag will be reassigned to the target tag. The source tag will be deleted.</small>
+      <small class="text-muted mt-1 d-block">{{ $t('admin.mergeDescription') }}</small>
     </div>
 
     <!-- Edit form -->
     <div v-if="editingTag" class="tag-edit-form">
       <div class="mb-2">
-        <label class="form-label small fw-bold mb-1">Tag Name</label>
-        <input v-model="editName" type="text" class="form-control form-control-sm" placeholder="Tag name" />
+        <label class="form-label small fw-bold mb-1">{{ $t('admin.tagName') }}</label>
+        <input v-model="editName" type="text" class="form-control form-control-sm" :placeholder="$t('admin.tagName')" />
       </div>
       <div class="row g-2 mb-2">
         <div class="col-md-6">
-          <label class="form-label small fw-bold mb-1">VI Translation</label>
+          <label class="form-label small fw-bold mb-1">{{ $t('admin.viTranslation') }}</label>
           <input v-model="editTransVi" type="text" class="form-control form-control-sm" placeholder="Tiếng Việt" />
         </div>
         <div class="col-md-6">
-          <label class="form-label small fw-bold mb-1">JP Translation</label>
+          <label class="form-label small fw-bold mb-1">{{ $t('admin.jpTranslation') }}</label>
           <input v-model="editTransJa" type="text" class="form-control form-control-sm" placeholder="日本語" />
         </div>
       </div>
       <div class="d-flex gap-2">
-        <button type="button" class="btn btn-sm btn-success" :disabled="!editName.trim() || mutating" @click="saveEdit">Save</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" @click="cancelEdit">Cancel</button>
+        <button type="button" class="btn btn-sm btn-success" :disabled="!editName.trim() || mutating" @click="saveEdit">{{ $t('admin.save') }}</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" @click="cancelEdit">{{ $t('admin.cancel') }}</button>
       </div>
     </div>
 
-    <p v-if="loadingTags" class="state-note">Loading tags...</p>
+    <p v-if="loadingTags" class="state-note">{{ $t('admin.loadingTags') }}</p>
     <div v-else class="table-wrap">
       <table class="table table-sm align-middle mb-0">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Usage</th>
-            <th>Translations</th>
-            <th>Created</th>
-            <th>Actions</th>
+            <th>{{ $t('admin.tableName') }}</th>
+            <th>{{ $t('admin.tableUsage') }}</th>
+            <th>{{ $t('admin.tableTranslations') }}</th>
+            <th>{{ $t('admin.tableCreated') }}</th>
+            <th>{{ $t('admin.tableActions') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -189,25 +189,25 @@ const formattedTags = computed(() =>
             <td>{{ row._createdAt }}</td>
             <td class="actions-cell">
               <button type="button" class="btn btn-sm btn-outline-primary me-1" :disabled="mutating" @click="startEdit(row)">
-                Edit
+                {{ $t('admin.edit') }}
               </button>
               <button type="button" class="btn btn-sm btn-outline-danger" :disabled="mutating" @click="emit('delete-tag', row._id)">
-                Delete
+                {{ $t('admin.delete') }}
               </button>
             </td>
           </tr>
           <tr v-if="tags.length === 0">
-            <td colspan="5" class="text-center text-muted py-3">No tags found.</td>
+            <td colspan="5" class="text-center text-muted py-3">{{ $t('admin.noTagsFound') }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <footer class="panel-footer" aria-label="Tag pagination">
-      <span>Page {{ tagPagination.page }} / {{ tagPagination.pages }} &bull; {{ tagPagination.total }} tags</span>
+      <span>{{ $t('admin.pageOfLabel', { page: tagPagination.page, pages: tagPagination.pages, total: tagPagination.total, label: $t('admin.tagsCount') }) }}</span>
       <div class="pager-actions">
-        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="tagPagination.page <= 1 || loadingTags" @click="emit('go-page', tagPagination.page - 1)">Previous</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="tagPagination.page >= tagPagination.pages || loadingTags" @click="emit('go-page', tagPagination.page + 1)">Next</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="tagPagination.page <= 1 || loadingTags" @click="emit('go-page', tagPagination.page - 1)">{{ $t('admin.previous') }}</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="tagPagination.page >= tagPagination.pages || loadingTags" @click="emit('go-page', tagPagination.page + 1)">{{ $t('admin.next') }}</button>
       </div>
     </footer>
   </section>

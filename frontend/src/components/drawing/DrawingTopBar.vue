@@ -94,15 +94,15 @@
     <div v-if="store.showNewCanvasConfirm" class="confirm-overlay" @click.self="store.showNewCanvasConfirm = false" @keydown.enter.prevent="store.showNewCanvasConfirm = false" @keydown.space.prevent="store.showNewCanvasConfirm = false" tabindex="0" role="button">
       <div class="confirm-modal">
         <div class="confirm-header">
-          <h3>New Drawing</h3>
+          <h3>{{ $t('drawing.newDrawing') }}</h3>
           <button type="button" class="confirm-close-btn" @click="store.showNewCanvasConfirm = false">&times;</button>
         </div>
         <div class="confirm-body">
-          <p>Start a new drawing? Current drawing will be lost.</p>
+          <p>{{ $t('drawing.startNewDesc') }}</p>
         </div>
         <div class="confirm-footer">
-          <button type="button" class="confirm-btn cancel" @click="store.showNewCanvasConfirm = false">Cancel</button>
-          <button type="button" class="confirm-btn danger" @click="store.executeNewCanvas">Start New</button>
+          <button type="button" class="confirm-btn cancel" @click="store.showNewCanvasConfirm = false">{{ $t('drawing.cancel') }}</button>
+          <button type="button" class="confirm-btn danger" @click="store.executeNewCanvas">{{ $t('drawing.startNew') }}</button>
         </div>
       </div>
     </div>
@@ -113,15 +113,15 @@
     <div v-if="store.showRestoreAutosaveConfirm" class="confirm-overlay" @click.self="store.showRestoreAutosaveConfirm = false" @keydown.enter.prevent="store.showRestoreAutosaveConfirm = false" @keydown.space.prevent="store.showRestoreAutosaveConfirm = false" tabindex="0" role="button">
       <div class="confirm-modal">
         <div class="confirm-header">
-          <h3>Autosave Found</h3>
+          <h3>{{ $t('drawing.autosaveFound') }}</h3>
           <button type="button" class="confirm-close-btn" @click="store.showRestoreAutosaveConfirm = false">&times;</button>
         </div>
         <div class="confirm-body">
-          <p>You have an unsaved autosave. Restore it?</p>
+          <p>{{ $t('drawing.autosaveFoundDesc') }}</p>
         </div>
         <div class="confirm-footer">
-          <button type="button" class="confirm-btn cancel" @click="store.showRestoreAutosaveConfirm = false">Discard</button>
-          <button type="button" class="confirm-btn danger" @click="store.executeRestoreAutosave">Restore</button>
+          <button type="button" class="confirm-btn cancel" @click="store.showRestoreAutosaveConfirm = false">{{ $t('drawing.discard') }}</button>
+          <button type="button" class="confirm-btn danger" @click="store.executeRestoreAutosave">{{ $t('drawing.restore') }}</button>
         </div>
       </div>
     </div>
@@ -132,15 +132,15 @@
     <div v-if="store.showGoHomeConfirm" class="confirm-overlay" @click.self="store.showGoHomeConfirm = false" @keydown.enter.prevent="store.showGoHomeConfirm = false" @keydown.space.prevent="store.showGoHomeConfirm = false" tabindex="0" role="button">
       <div class="confirm-modal">
         <div class="confirm-header">
-          <h3>Leave Drawing</h3>
+          <h3>{{ $t('drawing.leaveDrawing') }}</h3>
           <button type="button" class="confirm-close-btn" @click="store.showGoHomeConfirm = false">&times;</button>
         </div>
         <div class="confirm-body">
-          <p>You have unsaved drawing content. Leave anyway?</p>
+          <p>{{ $t('drawing.leaveDrawingDesc') }}</p>
         </div>
         <div class="confirm-footer">
-          <button type="button" class="confirm-btn cancel" @click="store.showGoHomeConfirm = false">Cancel</button>
-          <button type="button" class="confirm-btn danger" @click="confirmGoHome">Leave</button>
+          <button type="button" class="confirm-btn cancel" @click="store.showGoHomeConfirm = false">{{ $t('drawing.cancel') }}</button>
+          <button type="button" class="confirm-btn danger" @click="confirmGoHome">{{ $t('drawing.leave') }}</button>
         </div>
       </div>
     </div>
