@@ -125,13 +125,6 @@ const getSeriesById = async (req, res, next) => {
       return next(new Error('Series not found'));
     }
 
-    // Increment view count (skip for owner) — NOT cached, always happens
-    const isOwner = req.user && String(seriesData.user?._id || seriesData.user) === String(req.user._id);
-    if (!isOwner) {
-      await Series.findByIdAndUpdate(req.params.id, { $inc: { totalViews: 1 } });
-      seriesData.totalViews = (seriesData.totalViews || 0) + 1;
-    }
-
     res.json(seriesData);
   } catch (error) {
     next(error);

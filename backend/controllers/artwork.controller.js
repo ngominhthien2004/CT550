@@ -334,6 +334,11 @@ const getArtworkById = async (req, res, next) => {
                 await Artwork.findByIdAndUpdate(req.params.id, { $inc: { viewCount: 1 } });
                 artwork.viewCount = (artwork.viewCount || 0) + 1;
 
+                // Invalidate series detail cache so aggregated view totals stay fresh
+                if (artwork.series) {
+                    delByPrefix(`series:detail:${artwork.series.toString()}`);
+                }
+
                 // Track view event for analytics (append-only log)
                 try {
                     await ViewEvent.create({
