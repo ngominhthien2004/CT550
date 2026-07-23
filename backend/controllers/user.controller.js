@@ -638,7 +638,7 @@ const getUserSeries = async (req, res, next) => {
             const series = await Series.find(filter)
                 .populate('user', 'username avatar')
                 .populate('tags', 'name')
-                .populate('artworks', 'title images type viewCount likeCount commentCount')
+                .populate('artworks', 'title images type viewCount likeCount bookmarkCount commentCount')
                 .sort({ createdAt: -1 })
                 .lean();
 
@@ -648,11 +648,13 @@ const getUserSeries = async (req, res, next) => {
                 if (doc.artworks?.length > 0) {
                     doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0);
                     doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);
+                    doc.totalBookmarks = doc.artworks.reduce((sum, a) => sum + (a.bookmarkCount || 0), 0);
                     doc.totalComments = doc.artworks.reduce((sum, a) => sum + (a.commentCount || 0), 0);
                     doc.episodeCount = doc.artworks.length;
                 } else {
                     doc.totalViews = 0;
                     doc.totalLikes = 0;
+                    doc.totalBookmarks = 0;
                     doc.totalComments = 0;
                     doc.episodeCount = 0;
                 }

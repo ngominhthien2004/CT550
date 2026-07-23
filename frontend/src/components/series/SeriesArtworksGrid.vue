@@ -1,14 +1,17 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+
 defineProps({
   artworks: { type: Array, required: true },
 })
 
 const emit = defineEmits(['select'])
+const { t } = useI18n()
 </script>
 
 <template>
   <div class="series-works-section">
-    <h2 class="section-title">Works in this series</h2>
+    <h2 class="section-title">{{ $t('series.worksInSeries') }}</h2>
     <div v-if="artworks.length > 0" class="artworks-grid">
       <div
         v-for="artwork in artworks"
@@ -33,12 +36,12 @@ const emit = defineEmits(['select'])
         </div>
         <div class="artwork-card-title">{{ artwork.title }}</div>
         <div class="artwork-card-meta">
-          <span v-if="artwork.viewCount !== undefined">{{ artwork.viewCount }} views</span>
+          <span v-if="artwork.viewCount !== undefined">{{ artwork.viewCount }} {{ $t('series.views') }}</span>
         </div>
       </div>
     </div>
     <div v-else class="empty-section">
-      <p>No works in this series yet.</p>
+      <p>{{ $t('series.noWorksInSeries') }}</p>
     </div>
   </div>
 </template>

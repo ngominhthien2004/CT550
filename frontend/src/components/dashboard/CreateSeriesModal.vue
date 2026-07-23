@@ -337,7 +337,7 @@ onBeforeUnmount(() => {
 
         <!-- Status toggle (edit mode only) -->
         <div v-if="isEditMode" class="cs-field">
-          <label class="cs-label">Status</label>
+          <label class="cs-label">{{ $t('series.status') }}</label>
           <div class="cs-toggle-row">
             <button
               type="button"

@@ -70,7 +70,7 @@ const getMySeries = async (req, res, next) => {
     const series = await Series.find(filter)
       .populate('user', 'username avatar')
       .populate('tags', 'name')
-      .populate('artworks', 'title images type viewCount likeCount commentCount')
+      .populate('artworks', 'title images type viewCount likeCount bookmarkCount commentCount')
       .sort(sortOrder);
 
     // Compute aggregated stats for each series
@@ -79,10 +79,12 @@ const getMySeries = async (req, res, next) => {
       if ((doc.type === 'manga' || doc.type === 'illust' || doc.type === 'novel') && doc.artworks?.length > 0) {
         doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0);
         doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);
+        doc.totalBookmarks = doc.artworks.reduce((sum, a) => sum + (a.bookmarkCount || 0), 0);
         doc.totalComments = doc.artworks.reduce((sum, a) => sum + (a.commentCount || 0), 0);
       } else {
         doc.totalViews = 0;
         doc.totalLikes = 0;
+        doc.totalBookmarks = 0;
         doc.totalComments = 0;
       }
       // totalReactions is not tracked yet — keep as 0
@@ -97,7 +99,7 @@ const getMySeries = async (req, res, next) => {
 
 // @desc    Get a single series by ID
 // @route   GET /api/series/:id
-// @access  Private
+// @access  Public
 const getSeriesById = async (req, res, next) => {
   try {
     validateObjectId(req.params.id, 'series ID');
@@ -107,7 +109,7 @@ const getSeriesById = async (req, res, next) => {
       const series = await Series.findById(req.params.id)
         .populate('user', 'username avatar')
         .populate('tags', 'name')
-        .populate('artworks', 'title images type viewCount likeCount commentCount')
+        .populate('artworks', 'title images type viewCount likeCount bookmarkCount commentCount')
         .lean();
 
       if (!series) return null;
@@ -117,6 +119,7 @@ const getSeriesById = async (req, res, next) => {
       if ((doc.type === 'manga' || doc.type === 'illust' || doc.type === 'novel') && doc.artworks?.length > 0) {
         doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0);
         doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);
+        doc.totalBookmarks = doc.artworks.reduce((sum, a) => sum + (a.bookmarkCount || 0), 0);
         doc.totalComments = doc.artworks.reduce((sum, a) => sum + (a.commentCount || 0), 0);
       }
 
@@ -213,7 +216,7 @@ const deleteSeries = async (req, res, next) => {
     await Series.findByIdAndDelete(req.params.id);
 
     // Invalidate series cache
-    delByPrefix('series:detail:');
+    delByPrefix(`series:detail:${req.params.id}`);
 
     // Invalidate user's series list cache
     delByPrefix(`user:series:${req.user._id}`);

@@ -127,7 +127,7 @@ onMounted(() => {
       <div class="series-actions">
         <div class="create-dropdown">
           <button type="button" class="create-series-btn" @click="openCreateModal('manga')">
-            Create series <i class="fa-solid fa-chevron-down"></i>
+            {{ $t('series.createSeriesShort') }} <i class="fa-solid fa-chevron-down"></i>
           </button>
           <div class="create-dropdown-menu">
             <button type="button" class="dropdown-item" @click="openCreateModal('manga')">

@@ -1,11 +1,13 @@
 <script setup>
 import { formatLongDate } from '../../utils/date.js'
 import { useSeriesCover } from '@/composables/useSeriesCover'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   series: { type: Object, required: true },
 })
 
+const { t } = useI18n()
 const coverUrl = useSeriesCover(props.series)
 
 function formatDate(dateStr) {
@@ -41,10 +43,10 @@ function getSeriesIcon(type) {
           {{ series.type }}
         </span>
         <span v-if="series.isCompleted" class="status-badge status-completed">
-          <i class="fa-solid fa-check-circle"></i> Completed
+          <i class="fa-solid fa-check-circle"></i> {{ $t('series.completed') }}
         </span>
         <span v-else class="status-badge status-ongoing">
-          <i class="fa-solid fa-play-circle"></i> Ongoing
+          <i class="fa-solid fa-play-circle"></i> {{ $t('series.ongoing') }}
         </span>
       </div>
       <h1 class="series-hero-title">{{ series.title }}</h1>
@@ -54,17 +56,17 @@ function getSeriesIcon(type) {
         <div class="hero-stat">
           <i class="fa-solid fa-eye"></i>
           <span>{{ series.totalViews?.toLocaleString() || 0 }}</span>
-          <span class="hero-stat-label">views</span>
+          <span class="hero-stat-label">{{ $t('series.views') }}</span>
         </div>
         <div class="hero-stat">
           <i class="fa-solid fa-heart"></i>
           <span>{{ series.totalLikes?.toLocaleString() || 0 }}</span>
-          <span class="hero-stat-label">likes</span>
+          <span class="hero-stat-label">{{ $t('series.likes') }}</span>
         </div>
         <div class="hero-stat">
           <i class="fa-solid fa-comment"></i>
           <span>{{ series.totalComments?.toLocaleString() || 0 }}</span>
-          <span class="hero-stat-label">comments</span>
+          <span class="hero-stat-label">{{ $t('series.comments') }}</span>
         </div>
         <div class="hero-stat">
           <i class="fa-regular fa-calendar"></i>
@@ -73,7 +75,7 @@ function getSeriesIcon(type) {
       </div>
 
       <div class="series-hero-episodes">
-        {{ series.artworkCount || 0 }} {{ series.type === 'novel' ? 'chapter(s)' : 'episode(s)' }}
+        {{ series.artworkCount || 0 }} {{ series.type === 'novel' ? $t('series.chapters') : $t('series.episodes') }}
       </div>
     </div>
   </div>
