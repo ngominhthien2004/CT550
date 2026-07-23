@@ -421,7 +421,11 @@ async function submitArtwork() {
     return
   }
 
-  const description = isNovel.value ? form.novelText.trim() : form.caption.trim()
+  // For novels, the backend auto-fills `description` from the first 500 chars
+  // of `novelContent` (see artwork.controller.js — oneshot novel sync).
+  // Sending the full text in both fields doubles storage and inflates the
+  // description with the entire novel body.
+  const description = isNovel.value ? '' : form.caption.trim()
 
   try {
     const createdArtwork = await artworkStore.submitArtwork({

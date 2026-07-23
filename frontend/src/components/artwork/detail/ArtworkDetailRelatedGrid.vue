@@ -33,7 +33,7 @@ const gridGroups = computed(() => {
     <template v-else>
       <div
         v-for="(group, gi) in gridGroups"
-        :key="gi"
+        :key="group[0]?._id || `related-group-${gi}`"
         class="related-group"
         :class="{ 'has-divider': gi < gridGroups.length - 1 }"
       >

@@ -33,6 +33,8 @@ const presenceState = ref({ online: false, typing: false, lastSeen: null })
 let presenceInterval = null
 let typingTimeout = null
 let newMessageInterval = null
+let presenceVisibilityHandler = null
+let messageVisibilityHandler = null
 const lastPolledAt = ref('')
 
 // Chat scroll guard: only auto-scroll on new messages when the user
@@ -273,24 +275,50 @@ function startPresencePolling(peerId) {
       presenceState.value = res.data || { online: false, typing: false }
     } catch { presenceState.value = { online: false, typing: false } }
   }
+  // Skip polls while tab is hidden to avoid draining mobile battery.
+  const tick = () => {
+    if (document.hidden) return
+    pollPresence()
+  }
   pollPresence()
-  presenceInterval = setInterval(pollPresence, 30 * 1000)
+  presenceInterval = setInterval(tick, 30 * 1000)
+  presenceVisibilityHandler = () => {
+    if (!document.hidden) tick()
+  }
+  document.addEventListener('visibilitychange', presenceVisibilityHandler)
 }
 
 function stopPresencePolling() {
   if (presenceInterval) clearInterval(presenceInterval)
   presenceInterval = null
+  if (presenceVisibilityHandler) {
+    document.removeEventListener('visibilitychange', presenceVisibilityHandler)
+    presenceVisibilityHandler = null
+  }
   presenceState.value = { online: false, typing: false }
 }
 
 function startMessagePolling() {
   stopMessagePolling()
   if (!lastPolledAt.value) lastPolledAt.value = new Date().toISOString()
-  newMessageInterval = setInterval(pollNewMessages, 10 * 1000)
+  // Skip polls while tab is hidden; catch up immediately on resume.
+  const tick = () => {
+    if (document.hidden) return
+    pollNewMessages()
+  }
+  newMessageInterval = setInterval(tick, 10 * 1000)
+  messageVisibilityHandler = () => {
+    if (!document.hidden) tick()
+  }
+  document.addEventListener('visibilitychange', messageVisibilityHandler)
 }
 
 function stopMessagePolling() {
   if (newMessageInterval) { clearInterval(newMessageInterval); newMessageInterval = null }
+  if (messageVisibilityHandler) {
+    document.removeEventListener('visibilitychange', messageVisibilityHandler)
+    messageVisibilityHandler = null
+  }
 }
 
 function handleIncomingMessage(message) {

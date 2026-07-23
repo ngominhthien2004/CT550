@@ -16,6 +16,7 @@ const unreadOnly = ref(false)
 const sentinelRef = ref(null)
 let observer = null
 let pollTimer = null
+let visibilityHandler = null
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -70,17 +71,30 @@ function setupObserver() {
 
 function startPolling() {
   stopPolling()
-  pollTimer = setInterval(() => {
+  // Skip polls while the tab is hidden to avoid draining battery on
+  // mobile. Resume with an immediate catch-up poll when the tab becomes
+  // visible again.
+  const tick = () => {
+    if (document.hidden) return
     if (!notificationStore.loading && authStore.isAuthenticated) {
       loadNotifications()
     }
-  }, POLL_INTERVAL)
+  }
+  pollTimer = setInterval(tick, POLL_INTERVAL)
+  visibilityHandler = () => {
+    if (!document.hidden) tick()
+  }
+  document.addEventListener('visibilitychange', visibilityHandler)
 }
 
 function stopPolling() {
   if (pollTimer) {
     clearInterval(pollTimer)
     pollTimer = null
+  }
+  if (visibilityHandler) {
+    document.removeEventListener('visibilitychange', visibilityHandler)
+    visibilityHandler = null
   }
 }
 

@@ -638,9 +638,16 @@ export const useDrawingStore = defineStore('drawing', () => {
 
   // ─── Save Slots (localStorage) ───────────────────────────────────────
   function getSavedSlots() {
+    const data = localStorage.getItem(SAVE_SLOTS_KEY)
+    if (!data) return []
     try {
-      return JSON.parse(localStorage.getItem(SAVE_SLOTS_KEY)) || []
-    } catch {
+      const parsed = JSON.parse(data)
+      return Array.isArray(parsed) ? parsed : []
+    } catch (parseError) {
+      // Corrupt JSON in localStorage — discard and clean up so the next
+      // save starts fresh instead of repeatedly throwing on every read.
+      console.warn('[drawing.store] Discarded corrupt save slots JSON:', parseError?.message || parseError)
+      localStorage.removeItem(SAVE_SLOTS_KEY)
       return []
     }
   }

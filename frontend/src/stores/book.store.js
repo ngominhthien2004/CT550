@@ -415,7 +415,11 @@ export const useBookStore = defineStore('book', {
         document.body.appendChild(link)
         link.click()
         link.remove()
-        window.URL.revokeObjectURL(url)
+        // Defer revoke: the browser reads the blob asynchronously after
+        // click(). Revoking immediately can cancel the download for large
+        // PDFs (intermittent failure). 1000ms is safe for Chrome/Firefox;
+        // Safari may need longer.
+        setTimeout(() => window.URL.revokeObjectURL(url), 1000)
       } catch (error) {
         throw error
       }
