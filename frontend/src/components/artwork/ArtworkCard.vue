@@ -99,7 +99,7 @@ function getImageCount(item) {
         :title="$t('series.series')"
         @click.stop
       >
-        {{ $t('series.series') }}
+        <span class="card-series-badge-text">{{ $t('series.series') }}</span>
       </router-link>
 
       <button type="button" class="btn-like" :class="{ 'is-active': isLiked }" :aria-label="$t('artwork.like')" @click.prevent="handleLike" :disabled="isToggling">
@@ -176,6 +176,10 @@ function getImageCount(item) {
 
 .card-cover-wrapper {
   position: relative;
+  /* Match the cover link’s rounded shape so absolutely positioned children
+     (Series ribbon, R-18 badge, like button) are clipped to the cover boundary. */
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .badge-count {
@@ -194,68 +198,47 @@ function getImageCount(item) {
   gap: 4px;
 }
 
-/* Japanese Pixiv-style "Series" ribbon.
-   A solid-yellow diagonal sash pinned inside the top-left corner of the
-   cover. The banner stays inside the cover boundary (not bleeding off
-   the left edge) but is rotated so it reads as a corner banner.
-
-   Geometry: rectangle (150 × 36) anchored at the cover's top-left corner
-   (top:0, left:0, transform-origin: top left) and rotated -45°. A small
-   translate(-15%, 30%) shifts the banner slightly down-and-left of the
-   anchor so the rotated rectangle sits inside the corner with both ends
-   visible. */
+/* Triangle corner ribbon for "Series" pinned to the top-left of the cover.
+   The badge lives inside .card-cover-wrapper, which has overflow:hidden and
+   the same border-radius as the cover, so the ribbon is clipped by the cover
+   boundary and cannot leak outside. */
 .card-series-badge {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 150px;
-  height: 36px;
-
-  /* Lighter amber — matches the reference yellow. */
-  background: #facc15;
-  color: #1a1a1a;
-
-  /* Anchor at top-left so the banner extends down-and-right inside the
-     cover after rotation, rather than bleeding off the left edge. */
-  transform: rotate(-45deg) translate(-15%, 30%);
-  transform-origin: top left;
-
-  font-size: 0.9rem;
-  font-weight: 700;
-  font-style: italic;
-  letter-spacing: 0.02em;
-  text-transform: none;
+  width: 92px;
+  height: 92px;
+  background: linear-gradient(to bottom right, #facc15, #f59e0b);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
   text-decoration: none;
-  white-space: nowrap;
-  line-height: 1;
-
-  /* Subtle drop shadow for depth. */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-
-  transition: filter 0.15s;
-  cursor: pointer;
   pointer-events: auto;
+  transition: filter 0.2s ease;
 }
 
 .card-series-badge:hover {
   filter: brightness(1.06);
-  color: #111;
+}
+
+.card-series-badge-text {
+  position: absolute;
+  top: 34px;
+  left: 13px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transform: rotate(-45deg);
+  transform-origin: left top;
+  white-space: nowrap;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
   text-decoration: none;
+  pointer-events: none;
 }
 
 .card-series-badge:focus-visible {
   outline: 2px solid #f59e0b;
   outline-offset: 2px;
-}
-
-/* Same solid color in dark theme — amber stays readable on dark covers. */
-:root.dark-theme .card-series-badge {
-  background: #fbbf24;
-  color: #111;
 }
 
 .btn-like {
