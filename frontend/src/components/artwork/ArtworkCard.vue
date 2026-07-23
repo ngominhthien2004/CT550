@@ -200,40 +200,40 @@ function getImageCount(item) {
    cover, with the lower-left tail intentionally extending beyond the cover
    boundary so the ribbon looks "pinned" to the corner.
 
-   Geometry: rectangle (120 × 26) with its center placed near the cover's
-   top-left corner, then rotated -45° so the long axis reads from
-   bottom-left → top-right. */
+   Geometry: rectangle (180 × 34) positioned so its center sits slightly
+   below-and-left of the cover's top-left corner, then rotated -45° so the
+   long axis reads from bottom-left → top-right. Negative left offset puts
+   the lower-left tail outside the cover's left edge. */
 .card-series-badge {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 28px;
+  left: -40px;
   z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 120px;
-  height: 26px;
+  width: 180px;
+  height: 34px;
 
   /* Solid amber — no gradient. */
   background: #fbbf24;
   color: #111;
 
-  /* Shift the banner's center slightly down-and-left of the cover's
-     top-left corner so the lower-left tail extends further outside the
-     cover (the "pinned to the corner" effect). */
-  transform: translate(-18%, 35%) rotate(-45deg);
+  /* Pure rotation — the negative left offset already places the sash
+     diagonally across the top-left corner. */
+  transform: rotate(-45deg);
   transform-origin: center;
 
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   text-decoration: none;
   white-space: nowrap;
   line-height: 1;
 
-  /* Subtle drop shadow for depth. No clip-path — plain rectangular sash. */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28);
+  /* Subtle drop shadow for depth. */
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
 
   transition: filter 0.15s;
   cursor: pointer;
