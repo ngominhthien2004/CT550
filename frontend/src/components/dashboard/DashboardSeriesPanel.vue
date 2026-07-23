@@ -225,7 +225,9 @@ onMounted(() => {
             </div>
           </div>
           <div class="series-card-status">
-            <i :class="series.isCompleted ? 'fa-solid fa-check' : 'fa-solid fa-minus'"></i>
+            <i v-if="series.isCompleted" class="fa-solid fa-check" :aria-label="$t('series.completed')"></i>
+            <i v-else class="fa-solid fa-play" :aria-label="$t('series.ongoing')"></i>
+            <span>{{ series.isCompleted ? $t('series.completed') : $t('series.ongoing') }}</span>
           </div>
         </div>
       </div>
@@ -508,6 +510,9 @@ onMounted(() => {
 .stat-item:nth-child(4) i { color: #10b981; }
 
 .series-card-status {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   font-size: 0.75rem;
   color: var(--muted);
   padding-top: 0.35rem;
@@ -520,6 +525,10 @@ onMounted(() => {
 
 .series-card-status .fa-check {
   color: #10b981;
+}
+
+.series-card-status .fa-play {
+  color: #f59e0b;
 }
 
 .state-note {
