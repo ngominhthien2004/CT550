@@ -319,8 +319,14 @@ const getArtworkById = async (req, res, next) => {
         if (artwork) {
             // Owner-view guard: don't inflate view count or record a view event
             // when the viewer is the artwork's own author.
+            // NOTE: artwork.user is populated above (see line 316), so it's a
+            // Mongoose document, not a raw ObjectId. Calling .toString() on a
+            // populated doc yields "[object Object]"; we must compare via ._id.
             const isOwnerView = Boolean(
-                req.user && artwork.user && artwork.user.toString() === req.user._id.toString()
+                req.user
+                && artwork.user
+                && artwork.user._id
+                && artwork.user._id.toString() === req.user._id.toString()
             );
 
             if (!isOwnerView) {

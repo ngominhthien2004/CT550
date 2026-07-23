@@ -30,9 +30,16 @@ const errorHandler = (err, req, res, next) => {
     // Custom upload errors
     if (err?.message && (
         err.message.includes('GIF uploads required') ||
-        err.message.includes('ZIP archives are not accepted')
+        err.message.includes('ZIP archives are not accepted') ||
+        err.message.includes('Unsupported request file type') ||
+        err.message.includes('Unsupported file type')
     )) {
         res.status(400);
+        return res.json({
+            message: err.message,
+            code: 'UNSUPPORTED_FILE_TYPE',
+            stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+        });
     }
 
     // Handle Mongoose validation errors — return 400 instead of 500
