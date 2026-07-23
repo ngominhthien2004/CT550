@@ -27,7 +27,8 @@ const listTags = async (req, res, next) => {
             return await Tag.find(query)
                 .select('name usageCount')
                 .sort({ usageCount: -1, name: 1 })
-                .limit(limit);
+                .limit(limit)
+                .lean();
         }, TTL.ARTWORK_LIST);
 
         res.json(tags);
@@ -48,14 +49,15 @@ const getTagDetail = async (req, res, next) => {
 
         const cacheKey = `tags:detail:${normalizedTagName}`;
         const data = await getOrSetWithL2(cacheKey, async () => {
-            const tag = await Tag.findOne({ name: normalizedTagName });
+            const tag = await Tag.findOne({ name: normalizedTagName }).lean();
 
             if (!tag) return null;
 
             const artworks = await Artwork.find({ tags: tag._id })
                 .populate('user', 'username displayName avatar')
                 .populate('tags', 'name')
-                .sort({ createdAt: -1 });
+                .sort({ createdAt: -1 })
+                .lean();
 
             return { tag, artworks };
         }, TTL.TAGS_POPULAR);

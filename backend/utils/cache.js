@@ -72,7 +72,9 @@ function get(key) {
  * @param {number} [ttl]
  */
 function set(key, value, ttl) {
-  cache.set(key, value, ttl);
+  // JSON round-trip to strip Mongoose internal properties
+  // node-cache's internal clone() package cannot handle Mongoose documents
+  cache.set(key, JSON.parse(JSON.stringify(value)), ttl);
 }
 
 /**

@@ -549,11 +549,12 @@ const getUserSeries = async (req, res, next) => {
                 .populate('user', 'username avatar')
                 .populate('tags', 'name')
                 .populate('artworks', 'title images type viewCount likeCount commentCount')
-                .sort({ createdAt: -1 });
+                .sort({ createdAt: -1 })
+                .lean();
 
             // Compute aggregated stats from artworks for all types
             return series.map((s) => {
-                const doc = s.toObject();
+                const doc = s;
                 if (doc.artworks?.length > 0) {
                     doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0);
                     doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);

@@ -104,12 +104,13 @@ const getSeriesById = async (req, res, next) => {
       const series = await Series.findById(req.params.id)
         .populate('user', 'username avatar')
         .populate('tags', 'name')
-        .populate('artworks', 'title images type viewCount likeCount commentCount');
+        .populate('artworks', 'title images type viewCount likeCount commentCount')
+        .lean();
 
       if (!series) return null;
 
       // Compute aggregated stats
-      const doc = series.toObject();
+      const doc = series;
       if ((doc.type === 'manga' || doc.type === 'illust' || doc.type === 'novel') && doc.artworks?.length > 0) {
         doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0);
         doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);

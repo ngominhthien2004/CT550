@@ -16,7 +16,7 @@ const getActiveBanners = async (req, res, next) => {
       if (req.query.type) {
         filter.type = req.query.type;
       }
-      return await Banner.find(filter).sort({ sortOrder: 1, createdAt: -1 });
+      return await Banner.find(filter).sort({ sortOrder: 1, createdAt: -1 }).lean();
     }, TTL.BANNERS);
     res.json(banners);
   } catch (error) {

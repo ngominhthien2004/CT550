@@ -200,7 +200,8 @@ const getReplies = async (req, res, next) => {
                     .populate('user', 'username displayName avatar')
                     .sort({ createdAt: 1 })
                     .skip(skip)
-                    .limit(limit),
+                    .limit(limit)
+                    .lean(),
                 Comment.countDocuments(filter)
             ]);
 

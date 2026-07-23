@@ -98,7 +98,8 @@ const getRankings = async (req, res, next) => {
           .populate('tags', 'name')
           .sort({ likeCount: -1, bookmarkCount: -1, viewCount: -1, createdAt: -1 })
           .skip(skip)
-          .limit(limit),
+          .limit(limit)
+          .lean(),
         Artwork.countDocuments(filter)
       ]);
 
@@ -155,7 +156,8 @@ const getDiscovery = async (req, res, next) => {
           .populate('tags', 'name')
           .sort({ createdAt: -1 })
           .skip(skip)
-          .limit(limit),
+          .limit(limit)
+          .lean(),
         Artwork.countDocuments(filter)
       ]);
 

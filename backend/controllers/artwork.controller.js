@@ -290,7 +290,8 @@ const getArtworks = async (req, res, next) => {
         .populate('user', 'username displayName avatar')
         .populate('tags', 'name')
         .sort(sortOption)
-        .limit(parsedLimit || 48);
+        .limit(parsedLimit || 48)
+        .lean();
 
       return artworks;
     };
