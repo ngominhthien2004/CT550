@@ -99,7 +99,6 @@ function getImageCount(item) {
         :title="$t('series.series')"
         @click.stop
       >
-        <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
         {{ $t('series.series') }}
       </router-link>
 
@@ -195,31 +194,55 @@ function getImageCount(item) {
   gap: 4px;
 }
 
+/* Japanese Pixiv-style "Series" ribbon.
+   A solid-yellow diagonal sash pinned to the top-left corner of the cover.
+   The banner's two short ends cross the top edge and the left edge of the
+   cover, with the lower-left tail intentionally extending beyond the cover
+   boundary so the ribbon looks "pinned" to the corner.
+
+   Geometry: rectangle (120 × 26) with its center placed near the cover's
+   top-left corner, then rotated -45° so the long axis reads from
+   bottom-left → top-right. */
 .card-series-badge {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  z-index: 2;
-  display: inline-flex;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  display: flex;
   align-items: center;
-  gap: 4px;
-  background: linear-gradient(135deg, #fde68a 0%, #f59e0b 100%);
-  color: #1f2937;
-  font-size: 0.7rem;
-  font-weight: 800;
-  padding: 3px 8px;
-  border-radius: 4px;
+  justify-content: center;
+  width: 120px;
+  height: 26px;
+
+  /* Solid amber — no gradient. */
+  background: #fbbf24;
+  color: #111;
+
+  /* Shift the banner's center slightly down-and-left of the cover's
+     top-left corner so the lower-left tail extends further outside the
+     cover (the "pinned to the corner" effect). */
+  transform: translate(-18%, 35%) rotate(-45deg);
+  transform-origin: center;
+
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   text-decoration: none;
-  line-height: 1.4;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-  letter-spacing: 0.02em;
-  transition: filter 0.15s, transform 0.15s;
+  white-space: nowrap;
+  line-height: 1;
+
+  /* Subtle drop shadow for depth. No clip-path — plain rectangular sash. */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28);
+
+  transition: filter 0.15s;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 .card-series-badge:hover {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
-  color: #1f2937;
+  filter: brightness(1.06);
+  color: #111;
   text-decoration: none;
 }
 
@@ -228,9 +251,10 @@ function getImageCount(item) {
   outline-offset: 2px;
 }
 
+/* Same solid color in dark theme — amber stays readable on dark covers. */
 :root.dark-theme .card-series-badge {
-  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
-  color: #1f2937;
+  background: #fbbf24;
+  color: #111;
 }
 
 .btn-like {
