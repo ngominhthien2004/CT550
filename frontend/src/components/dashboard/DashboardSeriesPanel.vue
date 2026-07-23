@@ -5,6 +5,12 @@ import { useSeriesStore } from '@/stores/series.store'
 import { useI18n } from 'vue-i18n'
 import { formatLongDate } from '../../utils/date.js'
 import CreateSeriesModal from './CreateSeriesModal.vue'
+import { useSeriesCover } from '@/composables/useSeriesCover'
+
+// Wrapper for template use — composable returns a ComputedRef; .value unwraps it.
+function getCover(series) {
+  return useSeriesCover(series).value
+}
 
 const router = useRouter()
 const seriesStore = useSeriesStore()
@@ -184,8 +190,8 @@ onMounted(() => {
 
         <div class="series-card-cover">
           <img
-            v-if="series.coverImage"
-            :src="series.coverImage"
+            v-if="getCover(series)"
+            :src="getCover(series)"
             :alt="series.title"
             loading="lazy"
           />

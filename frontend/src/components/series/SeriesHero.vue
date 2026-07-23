@@ -1,21 +1,12 @@
 <script setup>
-import { computed } from 'vue'
 import { formatLongDate } from '../../utils/date.js'
+import { useSeriesCover } from '@/composables/useSeriesCover'
 
 const props = defineProps({
   series: { type: Object, required: true },
 })
 
-const coverUrl = computed(() => {
-  const s = props.series
-  if (s.coverImage) return s.coverImage
-  const artworks = s.artworks
-  if (Array.isArray(artworks) && artworks.length > 0) {
-    const imgs = artworks[0].images
-    if (Array.isArray(imgs) && imgs.length > 0) return imgs[0]
-  }
-  return ''
-})
+const coverUrl = useSeriesCover(props.series)
 
 function formatDate(dateStr) {
   return formatLongDate(dateStr)
