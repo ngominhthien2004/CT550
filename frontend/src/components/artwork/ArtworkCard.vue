@@ -91,6 +91,18 @@ function getImageCount(item) {
         </router-link>
       </R18BlurOverlay>
 
+      <router-link
+        v-if="item.series"
+        :to="`/series/${item.series}`"
+        class="card-series-badge"
+        :aria-label="$t('series.series')"
+        :title="$t('series.series')"
+        @click.stop
+      >
+        <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+        {{ $t('series.series') }}
+      </router-link>
+
       <button type="button" class="btn-like" :class="{ 'is-active': isLiked }" :aria-label="$t('artwork.like')" @click.prevent="handleLike" :disabled="isToggling">
         <i :class="isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
       </button>
@@ -181,6 +193,44 @@ function getImageCount(item) {
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.card-series-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #fde68a 0%, #f59e0b 100%);
+  color: #1f2937;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-decoration: none;
+  line-height: 1.4;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  letter-spacing: 0.02em;
+  transition: filter 0.15s, transform 0.15s;
+}
+
+.card-series-badge:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  color: #1f2937;
+  text-decoration: none;
+}
+
+.card-series-badge:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+:root.dark-theme .card-series-badge {
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  color: #1f2937;
 }
 
 .btn-like {
