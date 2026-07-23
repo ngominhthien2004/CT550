@@ -27,7 +27,8 @@ function createReactionController(config) {
     responseIs,
     responseId,
     responseItems,
-    extraCreateFields
+    extraCreateFields,
+    onCounterChanged
   } = config;
 
   const create = async (req, res, next) => {
@@ -53,6 +54,10 @@ function createReactionController(config) {
       const doc = await Model.create(docFields);
 
       await Artwork.findByIdAndUpdate(artworkId, { $inc: { [counterField]: 1 } });
+
+      if (onCounterChanged) {
+        await onCounterChanged(artworkId);
+      }
 
       await createNotification({
         userId: artwork.user,
@@ -146,6 +151,10 @@ function createReactionController(config) {
         await existing.deleteOne();
         await Artwork.findByIdAndUpdate(existing.artwork, { $inc: { [counterField]: -1 } });
 
+        if (onCounterChanged) {
+          await onCounterChanged(existing.artwork.toString());
+        }
+
         return res.json({
           [responseIs]: false,
           [responseId]: null,
@@ -167,6 +176,10 @@ function createReactionController(config) {
       const doc = await Model.create(docFields);
 
       await Artwork.findByIdAndUpdate(artworkId, { $inc: { [counterField]: 1 } });
+
+      if (onCounterChanged) {
+        await onCounterChanged(artworkId);
+      }
 
       await createNotification({
         userId: artwork.user,
@@ -218,6 +231,10 @@ function createReactionController(config) {
       await Artwork.findByIdAndUpdate(doc.artwork, {
         $inc: { [counterField]: -1 }
       });
+
+      if (onCounterChanged) {
+        await onCounterChanged(doc.artwork.toString());
+      }
 
       res.json({ message: `${modelName} removed` });
     } catch (error) {

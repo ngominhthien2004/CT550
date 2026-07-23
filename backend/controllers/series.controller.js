@@ -45,6 +45,9 @@ const createSeries = async (req, res, next) => {
       .populate('user', 'username avatar')
       .populate('tags', 'name');
 
+    // Invalidate user's series list cache
+    delByPrefix(`user:series:${req.user._id}`);
+
     res.status(201).json(populated);
   } catch (error) {
     next(error);
@@ -172,6 +175,9 @@ const updateSeries = async (req, res, next) => {
     // Invalidate series cache
     delByPrefix(`series:detail:${req.params.id}`);
 
+    // Invalidate user's series list cache
+    delByPrefix(`user:series:${req.user._id}`);
+
     res.json(populated);
   } catch (error) {
     next(error);
@@ -208,6 +214,9 @@ const deleteSeries = async (req, res, next) => {
 
     // Invalidate series cache
     delByPrefix('series:detail:');
+
+    // Invalidate user's series list cache
+    delByPrefix(`user:series:${req.user._id}`);
 
     res.json({ message: 'Series deleted' });
   } catch (error) {
@@ -289,6 +298,9 @@ const addArtworkToSeries = async (req, res, next) => {
     // Invalidate series cache
     delByPrefix(`series:detail:${req.params.id}`);
 
+    // Invalidate user's series list cache
+    delByPrefix(`user:series:${req.user._id}`);
+
     res.json(populated);
   } catch (error) {
     next(error);
@@ -344,6 +356,9 @@ const removeArtworkFromSeries = async (req, res, next) => {
 
     // Invalidate series cache
     delByPrefix(`series:detail:${req.params.id}`);
+
+    // Invalidate user's series list cache
+    delByPrefix(`user:series:${req.user._id}`);
 
     res.json(populated);
   } catch (error) {
@@ -401,6 +416,9 @@ const reorderSeriesArtworks = async (req, res, next) => {
 
     // Invalidate series cache
     delByPrefix(`series:detail:${req.params.id}`);
+
+    // Invalidate user's series list cache
+    delByPrefix(`user:series:${req.user._id}`);
 
     res.json(populated);
   } catch (error) {

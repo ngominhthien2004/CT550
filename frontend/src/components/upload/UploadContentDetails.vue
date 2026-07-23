@@ -78,7 +78,7 @@ const emit = defineEmits(['update:selectedSeriesId'])
     </div>
 
     <!-- Series Card -->
-    <div v-if="!props.isNovel" class="additional-settings-card">
+    <div v-if="!props.isGif" class="additional-settings-card">
       <div class="row-left">
         <span class="placeholder-badge"></span>
         <span class="row-label">{{ $t('upload.series') }}</span>

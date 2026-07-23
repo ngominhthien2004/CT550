@@ -24,7 +24,7 @@ const createComment = async (req, res, next) => {
             return next(new AppError('At least one of content or emoji is required', 'VALIDATION_ERROR', 400));
         }
 
-        const artwork = await Artwork.findById(artworkId).select('user');
+        const artwork = await Artwork.findById(artworkId).select('user series');
         if (!artwork) {
             res.status(404);
             return next(new AppError('Artwork not found', 'ARTWORK_NOT_FOUND', 404));
@@ -108,6 +108,11 @@ const createComment = async (req, res, next) => {
         // Invalidate replies cache for the parent comment
         if (parentCommentId) {
             del(`replies:${parentCommentId}:`);
+        }
+
+        // Invalidate series detail cache if the artwork belongs to a series
+        if (artwork.series) {
+            delByPrefix(`series:detail:${artwork.series.toString()}`);
         }
 
         const populated = await Comment.findById(comment._id).populate('user', 'username displayName avatar');
@@ -261,6 +266,12 @@ const deleteComment = async (req, res, next) => {
         } else {
             // If it's a top-level comment being deleted, also invalidate all replies to it
             del(`replies:${comment._id}:`);
+        }
+
+        // Invalidate series detail cache if the artwork belongs to a series
+        const artwork = await Artwork.findById(artworkId).select('series');
+        if (artwork?.series) {
+            delByPrefix(`series:detail:${artwork.series.toString()}`);
         }
 
         res.json({ message: 'Comment removed' });

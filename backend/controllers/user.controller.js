@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const cloudinary = require('cloudinary').v2;
+const mongoose = require('mongoose');
 const Follow = require('../models/Follow');
 const UserBlock = require('../models/UserBlock');
 const Artwork = require('../models/Artwork');
@@ -620,6 +621,11 @@ const deleteAdminUser = async (req, res, next) => {
 // @access  Public
 const getUserSeries = async (req, res, next) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            res.status(400);
+            return next(new Error('Invalid user ID'));
+        }
+
         const cacheKey = buildKey(`user:series:${req.params.id}`, req.query);
         const enriched = await getOrSetWithL2(cacheKey, async () => {
             const { type } = req.query;

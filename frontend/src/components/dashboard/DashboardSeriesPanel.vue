@@ -225,8 +225,8 @@ onMounted(() => {
             </div>
           </div>
           <div class="series-card-status">
-            <i v-if="series.isCompleted" class="fa-solid fa-check" :aria-label="$t('series.completed')"></i>
-            <i v-else class="fa-solid fa-play" :aria-label="$t('series.ongoing')"></i>
+            <i v-if="series.isCompleted" class="fa-solid fa-check" aria-hidden="true"></i>
+            <i v-else class="fa-solid fa-play" aria-hidden="true"></i>
             <span>{{ series.isCompleted ? $t('series.completed') : $t('series.ongoing') }}</span>
           </div>
         </div>
