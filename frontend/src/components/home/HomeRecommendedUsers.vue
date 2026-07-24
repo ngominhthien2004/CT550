@@ -96,18 +96,18 @@ function handleAvatarError(event) {
           class="follow-btn"
           :class="item._isFollowing ? 'following' : 'not-following'"
           :disabled="item._isToggling"
-          :aria-label="item._isFollowing ? 'Unfollow user' : 'Follow user'"
+          :aria-label="item._isFollowing ? $t('profile.unfollow') : $t('profile.follow')"
           @click="emit('toggle-follow', item._id)"
         >
-          {{ item._isFollowing ? 'Following' : 'Follow' }}
+          {{ item._isFollowing ? $t('profile.following') : $t('profile.follow') }}
         </button>
         <router-link
           v-else
           to="/login"
           class="follow-btn not-following text-decoration-none"
-          aria-label="Go to login to follow"
+          :aria-label="$t('profile.follow')"
         >
-          Follow
+          {{ $t('profile.follow') }}
         </router-link>
       </article>
     </div>
