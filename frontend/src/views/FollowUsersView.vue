@@ -30,8 +30,8 @@ const routeUserId = computed(() => String(route.params.id || authStore.user?._id
 const tabs = computed(() => {
   const userId = routeUserId.value
   return [
-    { key: 'following', label: t('follow.following'), to: `/users/${userId}/following` },
     { key: 'followers', label: t('follow.followers'), to: `/users/${userId}/followers` },
+    { key: 'following', label: t('follow.following'), to: `/users/${userId}/following` },
   ]
 })
 

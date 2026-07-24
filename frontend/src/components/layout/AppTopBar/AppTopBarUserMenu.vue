@@ -79,18 +79,18 @@ defineEmits(['logout', 'toggle'])
           <p class="mb-0 small text-secondary">user_{{ props.userDisplayName.toLowerCase() }}</p>
           <div class="user-stats">
             <router-link
-              :to="{ name: 'users-following', params: { id: props.userId } }"
-              class="user-stat-link"
-              aria-label="View following"
-            >
-              <strong>{{ props.userStats.following }}</strong> {{ $t('profile.following') }}
-            </router-link>
-            <router-link
               :to="{ name: 'followers', params: { id: props.userId } }"
               class="user-stat-link"
               aria-label="View followers"
             >
               <strong>{{ props.userStats.followers }}</strong> {{ $t('profile.followers') }}
+            </router-link>
+            <router-link
+              :to="{ name: 'users-following', params: { id: props.userId } }"
+              class="user-stat-link"
+              aria-label="View following"
+            >
+              <strong>{{ props.userStats.following }}</strong> {{ $t('profile.following') }}
             </router-link>
           </div>
         </div>
