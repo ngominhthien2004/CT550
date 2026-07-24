@@ -15,16 +15,17 @@ export function formatShortDate(value, locale = 'en') {
 }
 
 /**
- * Date-only format (no time). Uses the active locale so Japanese/Vietnamese
- * users see native month names instead of English. Returns an empty string for
- * null/undefined/invalid input.
- * Example: "Jun 29, 2026" (en) / "2026年6月29日" (ja) / "29 thg 6, 2026" (vi)
+ * Date-only format (no time). Always outputs MM/DD regardless of locale.
+ * Returns an empty string for null/undefined/invalid input.
+ * Example: "06/29", "07/23"
  */
 export function formatDateOnly(value, locale = 'en') {
   if (!value) return ''
   const d = new Date(value)
   if (isNaN(d.getTime())) return ''
-  return d.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${month}/${day}`
 }
 
 /**
