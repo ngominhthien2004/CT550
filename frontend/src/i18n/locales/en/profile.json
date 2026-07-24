@@ -44,7 +44,7 @@
   "tabRequests": "Requests",
   "tabBookmarks": "Bookmarks",
   "tabFavorites": "Favorites",
-  "tabBlocked": "Blocked",
+
   "noSeries": "No series yet.",
   "sectionIllustrationsManga": "Illustrations and Manga",
   "noItems": "No items found.",
@@ -56,7 +56,7 @@
   "agreeAndUpload": "Agree and upload",
   "avatarCroppedNote": "The image you upload will be cropped and displayed as a circle in your profile.",
   "blockedByUser": "You have been blocked by this user.",
-  "blockedUsers": "Blocked Users",
+
   "copyFailed": "Copy failed",
   "croppedNote": "The uploaded image might be cropped depending on its aspect ratio and the device it's displayed on.",
   "dropCoverHere": "Drop the file or click to choose cover image here",
@@ -66,10 +66,10 @@
   "instagram": "Instagram",
   "instagramUsername": "Instagram username",
   "linkCopied": "Link copied!",
-  "loadingBlocked": "Loading blocked users...",
+
   "male": "Male",
   "maxFileSize": "Maximum file size",
-  "noBlockedUsers": "No blocked users.",
+
   "portfolio": "Portfolio",
   "ratherNotSay": "Rather not say",
   "recommendedAspectRatio": "Recommended aspect ratio",

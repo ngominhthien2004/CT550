@@ -18,7 +18,6 @@ const selectTab = inject('selectMainTab')
     <button type="button" class="profile-tab" :class="{ active: activeTab === 'requests' }" @click="selectTab('requests')">{{ $t('profile.tabRequests') }}</button>
     <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'bookmarks' }" @click="selectTab('bookmarks')">{{ $t('profile.tabBookmarks') }}</button>
     <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'likes' }" @click="selectTab('likes')">{{ $t('profile.tabFavorites') }}</button>
-    <button v-if="isOwnProfile" type="button" class="profile-tab" :class="{ active: activeTab === 'blocked' }" @click="selectTab('blocked')">{{ $t('profile.tabBlocked') }}</button>
   </nav>
 </template>
 

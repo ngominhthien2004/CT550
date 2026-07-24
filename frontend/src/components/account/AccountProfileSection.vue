@@ -9,7 +9,6 @@ import ProfileSeriesSection from '../profile/ProfileSeriesSection.vue'
 import ProfileCoverModal from '../profile/ProfileCoverModal.vue'
 import ProfileEditModal from '../profile/ProfileEditModal.vue'
 import ProfileAvatarModal from '../profile/ProfileAvatarModal.vue'
-import BlockedUsersList from '../profile/BlockedUsersList.vue'
 
 const user = inject('profileUser')
 const isOwnProfile = inject('isOwnProfile')
@@ -161,9 +160,6 @@ const workTypeTabs = [
         :error="requestTermsError"
       />
 
-      <BlockedUsersList
-        v-else-if="activeMainTab === 'blocked' && isOwnProfile"
-      />
 
       <section v-else-if="(activeMainTab === 'bookmarks' || activeMainTab === 'likes') && !isOwnProfile" class="bookmarks-placeholder">
         This list is only available on your own profile.

@@ -44,7 +44,7 @@
   "tabRequests": "Yêu cầu",
   "tabBookmarks": "Đánh dấu",
   "tabFavorites": "Yêu thích",
-  "tabBlocked": "Đã chặn",
+
   "noSeries": "Chưa có bộ sưu tập nào.",
   "sectionIllustrationsManga": "Minh họa và Manga",
   "noItems": "Không có mục nào.",
@@ -56,7 +56,7 @@
   "agreeAndUpload": "Đồng ý và tải lên",
   "avatarCroppedNote": "Ảnh bạn tải lên sẽ được cắt và hiển thị dưới dạng hình tròn trong hồ sơ của bạn.",
   "blockedByUser": "Bạn đã bị người dùng này chặn.",
-  "blockedUsers": "Người dùng đã chặn",
+
   "copyFailed": "Sao chép thất bại",
   "croppedNote": "Ảnh tải lên có thể bị cắt tùy thuộc vào tỷ lệ khung hình và thiết bị hiển thị.",
   "dropCoverHere": "Thả tệp hoặc nhấp để chọn ảnh bìa tại đây",
@@ -66,10 +66,10 @@
   "instagram": "Instagram",
   "instagramUsername": "Tên người dùng Instagram",
   "linkCopied": "Đã sao chép liên kết!",
-  "loadingBlocked": "Đang tải danh sách chặn...",
+
   "male": "Nam",
   "maxFileSize": "Kích thước tệp tối đa",
-  "noBlockedUsers": "Không có người dùng bị chặn.",
+
   "portfolio": "Portfolio",
   "ratherNotSay": "Không muốn tiết lộ",
   "recommendedAspectRatio": "Tỷ lệ khung hình khuyến nghị",
