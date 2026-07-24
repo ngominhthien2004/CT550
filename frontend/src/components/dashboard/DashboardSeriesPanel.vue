@@ -22,11 +22,20 @@ const sortOrder = ref('newest')
 
 const activeType = computed(() => route.query.type || 'all')
 
+const typeCounts = computed(() => {
+  const counts = { illust: 0, manga: 0, novel: 0 }
+  for (const s of seriesStore.seriesList) {
+    const type = String(s.type || '').toLowerCase()
+    if (type in counts) counts[type]++
+  }
+  return counts
+})
+
 const typeFilters = computed(() => [
-  { key: 'all', label: t('dashboard.tabAll') },
-  { key: 'illust', label: t('dashboard.tabIllustration') },
-  { key: 'manga', label: t('dashboard.tabManga') },
-  { key: 'novel', label: t('dashboard.tabNovel') },
+  { key: 'all', label: t('dashboard.tabAll'), count: seriesStore.seriesList.length },
+  { key: 'illust', label: t('dashboard.tabIllustration'), count: typeCounts.value.illust },
+  { key: 'manga', label: t('dashboard.tabManga'), count: typeCounts.value.manga },
+  { key: 'novel', label: t('dashboard.tabNovel'), count: typeCounts.value.novel },
 ])
 
 function setTypeFilter(type) {
@@ -119,20 +128,23 @@ function getSeriesIcon(type) {
   }
 }
 
-const processedSeriesList = computed(() =>
-  seriesStore.seriesList.map(series => ({
+const processedSeriesList = computed(() => {
+  const list = activeType.value === 'all'
+    ? seriesStore.seriesList
+    : seriesStore.seriesList.filter(s => String(s.type || '').toLowerCase() === activeType.value)
+  return list.map(series => ({
     ...series,
     _icon: getSeriesIcon(series.type),
     _createdAt: formatDate(series.createdAt),
   }))
-)
+})
 
 onMounted(() => {
-  seriesStore.fetchMySeries(activeType.value === 'all' ? null : activeType.value, sortOrder.value)
+  seriesStore.fetchMySeries(null, sortOrder.value)
 })
 
 watch(activeType, () => {
-  seriesStore.fetchMySeries(activeType.value === 'all' ? null : activeType.value, sortOrder.value)
+  // No re-fetch needed — filtering is client-side
 })
 </script>
 
@@ -148,7 +160,7 @@ watch(activeType, () => {
         :class="{ 'filter-btn--active': activeType === filter.key }"
         @click="setTypeFilter(filter.key)"
       >
-        {{ filter.label }}
+        {{ filter.label }}<span v-if="filter.count > 0" class="filter-count">{{ filter.count }}</span>
       </button>
     </div>
 
@@ -191,7 +203,7 @@ watch(activeType, () => {
     </p>
 
     <!-- Empty state -->
-    <div v-else-if="seriesStore.seriesList.length === 0" class="series-empty">
+    <div v-else-if="processedSeriesList.length === 0" class="series-empty">
       <p class="empty-title">{{ $t('dashboard.emptySeriesTitle') }}</p>
       <div class="empty-actions">
         <button type="button" class="empty-btn" @click="openCreateModal('illust')" @keydown.enter.prevent="openCreateModal('illust')" @keydown.space.prevent="openCreateModal('illust')">
@@ -344,6 +356,26 @@ watch(activeType, () => {
 .filter-btn--active {
   background: var(--accent);
   border-color: var(--accent);
+  color: #fff;
+}
+
+.filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  margin-left: 0.35rem;
+  padding: 0 4px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--line);
+  color: var(--muted);
+}
+
+.filter-btn--active .filter-count {
+  background: rgba(255, 255, 255, 0.25);
   color: #fff;
 }
 

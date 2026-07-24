@@ -26,23 +26,33 @@ const deleting = ref(false)
 
 const activeType = computed(() => route.query.type || 'all')
 
+const typeCounts = computed(() => {
+  const counts = { illust: 0, manga: 0, gif: 0, novel: 0 }
+  for (const item of artworks.value) {
+    const type = String(item.type || '').toLowerCase()
+    if (type in counts) counts[type]++
+  }
+  return counts
+})
+
 const typeFilters = computed(() => [
-  { key: 'all', label: t('dashboard.tabAll') },
-  { key: 'illust', label: t('dashboard.tabIllustration') },
-  { key: 'manga', label: t('dashboard.tabManga') },
-  { key: 'gif', label: t('dashboard.tabGif') },
-  { key: 'novel', label: t('dashboard.tabNovel') },
+  { key: 'all', label: t('dashboard.tabAll'), count: artworks.value.length },
+  { key: 'illust', label: t('dashboard.tabIllustration'), count: typeCounts.value.illust },
+  { key: 'manga', label: t('dashboard.tabManga'), count: typeCounts.value.manga },
+  { key: 'gif', label: t('dashboard.tabGif'), count: typeCounts.value.gif },
+  { key: 'novel', label: t('dashboard.tabNovel'), count: typeCounts.value.novel },
 ])
+
+const filteredArtworks = computed(() => {
+  if (activeType.value === 'all') return artworks.value
+  return artworks.value.filter(a => String(a.type || '').toLowerCase() === activeType.value)
+})
 
 async function loadArtworks() {
   if (!user.value?._id) return
   loadingArtworks.value = true
   try {
-    const params = { user: user.value._id, limit: 120 }
-    if (activeType.value !== 'all') {
-      params.type = activeType.value
-    }
-    const { data } = await getArtworks(params)
+    const { data } = await getArtworks({ user: user.value._id, limit: 120 })
     artworks.value = Array.isArray(data) ? data : []
   } catch {
     artworks.value = []
@@ -64,10 +74,6 @@ onMounted(() => {
 })
 
 watch(() => user.value?._id, () => {
-  loadArtworks()
-})
-
-watch(activeType, () => {
   loadArtworks()
 })
 
@@ -125,18 +131,18 @@ function handleArtworkUpdated() {
         :class="{ 'filter-btn--active': activeType === filter.key }"
         @click="setTypeFilter(filter.key)"
       >
-        {{ filter.label }}
+        {{ filter.label }}<span v-if="filter.count > 0" class="filter-count">{{ filter.count }}</span>
       </button>
     </div>
 
     <!-- Works content -->
     <p v-if="loadingArtworks" class="state-note">{{ $t('dashboard.loadingWorks') }}</p>
-    <div v-else-if="artworks.length === 0" class="empty-state">
+    <div v-else-if="filteredArtworks.length === 0" class="empty-state">
       <i class="fa-regular fa-images" aria-hidden="true"></i>
       <p>{{ $t('dashboard.noWorks') }}</p>
     </div>
     <div v-else class="works-grid">
-      <div v-for="artwork in artworks" :key="artwork._id" class="work-card" @click="goToArtworkDetail(artwork._id)">
+      <div v-for="artwork in filteredArtworks" :key="artwork._id" class="work-card" @click="goToArtworkDetail(artwork._id)">
         <!-- Card menu -->
         <div class="work-card-menu">
           <button type="button" class="card-menu-btn" @click.stop="toggleMenu(artwork._id)">
@@ -228,6 +234,26 @@ function handleArtworkUpdated() {
 .filter-btn--active {
   background: var(--accent);
   border-color: var(--accent);
+  color: #fff;
+}
+
+.filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  margin-left: 0.35rem;
+  padding: 0 4px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--line);
+  color: var(--muted);
+}
+
+.filter-btn--active .filter-count {
+  background: rgba(255, 255, 255, 0.25);
   color: #fff;
 }
 
