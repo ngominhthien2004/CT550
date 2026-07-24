@@ -211,8 +211,13 @@ onBeforeUnmount(() => {
 .picker-body {
   flex: 1;
   overflow-y: auto;
+  scrollbar-width: none;
   padding: 1rem 1.5rem;
   min-height: 200px;
+}
+
+.picker-body::-webkit-scrollbar {
+  display: none;
 }
 
 .picker-loading {

@@ -97,9 +97,14 @@ defineEmits(['close'])
 .shortcuts-body {
   padding: 20px;
   overflow-y: auto;
+  scrollbar-width: none;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+}
+
+.shortcuts-body::-webkit-scrollbar {
+  display: none;
 }
 .shortcut-group h3 {
   font-size: 12px;

@@ -453,7 +453,12 @@ onBeforeUnmount(() => {
 .cs-body {
   padding: 1.25rem 1.5rem 1.5rem;
   overflow-y: auto;
+  scrollbar-width: none;
   flex: 1;
+}
+
+.cs-body::-webkit-scrollbar {
+  display: none;
 }
 
 /* Cover section */
@@ -644,16 +649,7 @@ onBeforeUnmount(() => {
 }
 
 .cs-works-body::-webkit-scrollbar {
-  height: 4px;
-}
-
-.cs-works-body::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.cs-works-body::-webkit-scrollbar-thumb {
-  background: var(--line, #d1d5db);
-  border-radius: 4px;
+  display: none;
 }
 
 .cs-add-work {

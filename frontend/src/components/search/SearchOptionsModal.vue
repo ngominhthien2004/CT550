@@ -171,6 +171,11 @@ watch(
   z-index: 1040;
   padding: 1rem;
   overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.search-overlay::-webkit-scrollbar {
+  display: none;
 }
 
 .search-options-modal {
@@ -180,6 +185,11 @@ watch(
   background: var(--surface);
   box-shadow: var(--shadow-lg);
   overflow: auto;
+  scrollbar-width: none;
+}
+
+.search-options-modal::-webkit-scrollbar {
+  display: none;
 }
 
 .search-options-header {

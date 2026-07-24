@@ -331,15 +331,12 @@ function handleSave() {
   border-top: 1px solid var(--line);
 }
 
-/* Custom Scrollbar */
+/* Hide scrollbar */
+.modal-body--scroll {
+  scrollbar-width: none;
+}
+
 .modal-body--scroll::-webkit-scrollbar {
-  width: 6px;
-}
-.modal-body--scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-.modal-body--scroll::-webkit-scrollbar-thumb {
-  background: var(--line);
-  border-radius: 10px;
+  display: none;
 }
 </style>
