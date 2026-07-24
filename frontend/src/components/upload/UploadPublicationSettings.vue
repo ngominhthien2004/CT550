@@ -132,14 +132,6 @@ const props = defineProps({
       </div>
       <div class="row-right"></div>
     </div>
-
-    <div v-if="props.isNovel" class="settings-row-card info-row">
-      <div class="row-left"></div>
-      <div class="row-center">
-        <p class="small text-secondary mb-0">{{ $t('upload.novelPublicationNote') }}</p>
-      </div>
-      <div class="row-right"></div>
-    </div>
   </div>
 </template>
 
