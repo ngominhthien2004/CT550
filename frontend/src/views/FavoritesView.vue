@@ -6,6 +6,7 @@ import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
 import { useAuthStore } from '../stores/auth.store'
 import { useLikeStore } from '../stores/like.store'
+import { buildTypeTabs } from '../utils/typeTabs'
 
 const objectIdPattern = /^[0-9a-fA-F]{24}$/
 
@@ -19,32 +20,9 @@ const activeType = ref('')
 
 const user = computed(() => authStore.user)
 
-const typeLabelMap = {
-  illust: 'Illustration',
-  manga: 'Manga',
-  novel: 'Novel',
-  gif: 'GIF',
-}
-
-const typeTabs = computed(() => {
-  const bucket = new Map()
-
-  likeStore.items.forEach((entry) => {
-    const type = String(entry?.artwork?.type || '').toLowerCase()
-    if (!typeLabelMap[type]) {
-      return
-    }
-    bucket.set(type, (bucket.get(type) || 0) + 1)
-  })
-
-  return Object.keys(typeLabelMap)
-    .filter((type) => bucket.has(type))
-    .map((type) => ({
-      value: type,
-      label: typeLabelMap[type],
-      count: bucket.get(type) || 0,
-    }))
-})
+const typeTabs = computed(() =>
+  buildTypeTabs(likeStore.items, (entry) => String(entry?.artwork?.type || '').toLowerCase()),
+)
 
 const visibleFavorites = computed(() => {
   let items

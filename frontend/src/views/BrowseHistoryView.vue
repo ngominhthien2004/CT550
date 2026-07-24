@@ -6,6 +6,7 @@ import { useBrowseHistoryStore } from '@/stores/browseHistory.store'
 import { useAuthStore } from '@/stores/auth.store'
 
 import { formatShortDate } from '../utils/date.js'
+import { typeLabelMap, buildTypeTabs } from '../utils/typeTabs'
 
 
 const { t } = useI18n()
@@ -34,21 +35,11 @@ const hasActiveFilters = computed(() =>
   browseHistoryStore.search || browseHistoryStore.filterFrom || browseHistoryStore.filterTo
 )
 
-const typeLabelMap = { illust: 'Illustration', manga: 'Manga', gif: 'GIF', novel: 'Novel' }
 const activeType = ref('')
 
-const typeTabs = computed(() => {
-  const bucket = new Map()
-  historyEntries.value.forEach(entry => {
-    if (!entry.artwork) return
-    const type = String(entry.artwork.type || '').toLowerCase()
-    if (!typeLabelMap[type]) return
-    bucket.set(type, (bucket.get(type) || 0) + 1)
-  })
-  return Object.keys(typeLabelMap)
-    .filter(type => bucket.has(type))
-    .map(type => ({ value: type, label: typeLabelMap[type], count: bucket.get(type) || 0 }))
-})
+const typeTabs = computed(() =>
+  buildTypeTabs(historyEntries.value, (entry) => String(entry.artwork?.type || '').toLowerCase()),
+)
 
 function selectType(type) {
   activeType.value = activeType.value === type ? '' : type

@@ -1,11 +1,12 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useSeriesStore } from '@/stores/series.store'
 import { useI18n } from 'vue-i18n'
 import { formatShortDate } from '../../utils/date.js'
 import CreateSeriesModal from './CreateSeriesModal.vue'
 import { useSeriesCover } from '@/composables/useSeriesCover'
+import { typeLabelMap } from '../../utils/typeTabs'
 
 // Wrapper for template use — composable returns a ComputedRef; .value unwraps it.
 function getCover(series) {
@@ -22,8 +23,11 @@ const sortOrder = ref('newest')
 
 const activeType = computed(() => route.query.type || 'all')
 
+const seriesTypeKeys = Object.keys(typeLabelMap).filter(k => k !== 'gif')
+
 const typeCounts = computed(() => {
-  const counts = { illust: 0, manga: 0, novel: 0 }
+  const counts = {}
+  for (const key of seriesTypeKeys) counts[key] = 0
   for (const s of seriesStore.seriesList) {
     const type = String(s.type || '').toLowerCase()
     if (type in counts) counts[type]++
@@ -31,12 +35,17 @@ const typeCounts = computed(() => {
   return counts
 })
 
-const typeFilters = computed(() => [
-  { key: 'all', label: t('dashboard.tabAll'), count: seriesStore.seriesList.length },
-  { key: 'illust', label: t('dashboard.tabIllustration'), count: typeCounts.value.illust },
-  { key: 'manga', label: t('dashboard.tabManga'), count: typeCounts.value.manga },
-  { key: 'novel', label: t('dashboard.tabNovel'), count: typeCounts.value.novel },
-])
+const typeFilters = computed(() => {
+  const allCount = seriesStore.seriesList.length
+  return [
+    { key: 'all', label: t('dashboard.tabAll'), count: allCount },
+    ...seriesTypeKeys.map(key => ({
+      key,
+      label: typeLabelMap[key],
+      count: typeCounts.value[key],
+    })),
+  ]
+})
 
 function setTypeFilter(type) {
   if (type === 'all') {

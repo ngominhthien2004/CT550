@@ -7,6 +7,7 @@ import { useFollowStore } from '../stores/follow.store'
 import { useRequestStore } from '../stores/request.store'
 import { getArtworks, getMyBookmarks, getMyLikes, getUserSeries, userApi, getFollowers, getFollowing } from '../services/api'
 import { getApiErrorMessage } from '../utils/apiErrors'
+import { typeLabelMap, buildTypeTabs, filterByType } from '../utils/typeTabs'
 import { useToast } from './useToast'
 
 const ARTWORKS_PER_PAGE = 24
@@ -104,30 +105,6 @@ export function useProfilePage() {
     ]
     return parts.length ? `Born ${parts.join(' ')}` : ''
   })
-
-  const typeLabelMap = {
-    illust: 'Illustration',
-    manga: 'Manga',
-    gif: 'GIF',
-    novel: 'Novel',
-  }
-
-  function buildTypeTabs(items, getType) {
-    const bucket = new Map()
-    items.forEach((item) => {
-      const type = getType(item)
-      if (!typeLabelMap[type]) return
-      bucket.set(type, (bucket.get(type) || 0) + 1)
-    })
-    return Object.keys(typeLabelMap)
-      .filter((type) => bucket.has(type))
-      .map((type) => ({ value: type, label: typeLabelMap[type], count: bucket.get(type) || 0 }))
-  }
-
-  function filterByType(items, selectedType, getType) {
-    if (!selectedType) return items
-    return items.filter((item) => getType(item) === selectedType)
-  }
 
   const typeTabs = computed(() =>
     buildTypeTabs(artworks.value, (item) => String(item.type || '').toLowerCase()),

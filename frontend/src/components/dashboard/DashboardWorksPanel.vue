@@ -1,10 +1,11 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store'
 import { useArtworkStore } from '@/stores/artwork.store'
 import { getArtworks } from '@/services/api'
+import { typeLabelMap } from '../../utils/typeTabs'
 
 const router = useRouter()
 const route = useRoute()
@@ -27,7 +28,8 @@ const deleting = ref(false)
 const activeType = computed(() => route.query.type || 'all')
 
 const typeCounts = computed(() => {
-  const counts = { illust: 0, manga: 0, gif: 0, novel: 0 }
+  const counts = {}
+  for (const key of Object.keys(typeLabelMap)) counts[key] = 0
   for (const item of artworks.value) {
     const type = String(item.type || '').toLowerCase()
     if (type in counts) counts[type]++
@@ -35,13 +37,17 @@ const typeCounts = computed(() => {
   return counts
 })
 
-const typeFilters = computed(() => [
-  { key: 'all', label: t('dashboard.tabAll'), count: artworks.value.length },
-  { key: 'illust', label: t('dashboard.tabIllustration'), count: typeCounts.value.illust },
-  { key: 'manga', label: t('dashboard.tabManga'), count: typeCounts.value.manga },
-  { key: 'gif', label: t('dashboard.tabGif'), count: typeCounts.value.gif },
-  { key: 'novel', label: t('dashboard.tabNovel'), count: typeCounts.value.novel },
-])
+const typeFilters = computed(() => {
+  const allCount = artworks.value.length
+  return [
+    { key: 'all', label: t('dashboard.tabAll'), count: allCount },
+    ...Object.entries(typeLabelMap).map(([key, label]) => ({
+      key,
+      label,
+      count: typeCounts.value[key],
+    })),
+  ]
+})
 
 const filteredArtworks = computed(() => {
   if (activeType.value === 'all') return artworks.value
