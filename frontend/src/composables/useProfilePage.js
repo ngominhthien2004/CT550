@@ -5,7 +5,7 @@ import { useBookmarkStore } from '../stores/bookmark.store'
 import { useLikeStore } from '../stores/like.store'
 import { useFollowStore } from '../stores/follow.store'
 import { useRequestStore } from '../stores/request.store'
-import { getArtworks, getMyBookmarks, getMyLikes, getUserSeries, userApi } from '../services/api'
+import { getArtworks, getMyBookmarks, getMyLikes, getUserSeries, userApi, getFollowers, getFollowing } from '../services/api'
 import { getApiErrorMessage } from '../utils/apiErrors'
 import { useToast } from './useToast'
 
@@ -79,8 +79,8 @@ export function useProfilePage() {
     return followStore.isTogglingFollow(viewingUserId.value)
   })
 
-  const followingCount = computed(() => followStore.followingCount)
-  const followersCount = computed(() => followStore.followersCount)
+  const followersCount = ref(0)
+  const followingCount = ref(0)
 
   const profileCoverImage = computed(() => user.value?.coverImage || '')
   const isAcceptingRequests = computed(() => requestTerms.value.some((term) => term.isOpen))
@@ -312,10 +312,17 @@ export function useProfilePage() {
 
   async function loadFollowStats() {
     if (!viewingUserId.value) return
-    await Promise.all([
-      followStore.fetchFollowing(viewingUserId.value),
-      followStore.fetchFollowers(viewingUserId.value),
-    ])
+    try {
+      const [followingRes, followersRes] = await Promise.all([
+        getFollowing(viewingUserId.value),
+        getFollowers(viewingUserId.value),
+      ])
+      followingCount.value = Array.isArray(followingRes.data) ? followingRes.data.length : 0
+      followersCount.value = Array.isArray(followersRes.data) ? followersRes.data.length : 0
+    } catch (_error) {
+      followingCount.value = 0
+      followersCount.value = 0
+    }
   }
 
   async function loadSeries() {

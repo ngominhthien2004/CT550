@@ -5,7 +5,7 @@ import { ArtworkDetailCard, ArtworkDetailSidebar, ArtworkDetailCommentsCard, Art
 import { NovelReader } from '@/components/novel'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 
-import api, { getArtworks, getReadingProgress, saveReadingProgress, getSimilarArtworks, seriesApi } from '../services/api'
+import api, { getArtworks, getReadingProgress, saveReadingProgress, getSimilarArtworks, seriesApi, getFollowers, getFollowing } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useArtworkStore } from '../stores/artwork.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
@@ -165,12 +165,12 @@ async function loadFollowStats() {
   }
 
   try {
-    await Promise.all([
-      followStore.fetchFollowers(artistId.value),
-      followStore.fetchFollowing(artistId.value),
+    const [followersRes, followingRes] = await Promise.all([
+      getFollowers(artistId.value),
+      getFollowing(artistId.value),
     ])
-    artistFollowersCount.value = Number(followStore.followers.length || 0)
-    artistFollowingCount.value = Number(followStore.following.length || 0)
+    artistFollowersCount.value = Array.isArray(followersRes.data) ? followersRes.data.length : 0
+    artistFollowingCount.value = Array.isArray(followingRes.data) ? followingRes.data.length : 0
   } catch (_error) {
     artistFollowersCount.value = 0
     artistFollowingCount.value = 0
