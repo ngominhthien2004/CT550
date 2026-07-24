@@ -86,6 +86,7 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
   background: var(--surface-alt);
   color: var(--text);
   margin-right: auto;
+  border: 1px solid var(--line);
   border-bottom-left-radius: 4px;
 }
 
@@ -240,5 +241,11 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
   color: var(--accent);
   font-size: 0.72rem;
   cursor: pointer;
+}
+</style>
+
+<style>
+:root.dark-theme .bubble.incoming {
+  border-color: rgba(255, 255, 255, 0.12);
 }
 </style>
