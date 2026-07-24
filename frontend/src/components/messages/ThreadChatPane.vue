@@ -358,6 +358,10 @@ defineExpose({ scrollToBottom })
   overflow-y: auto;
   padding: 1rem;
   min-height: 0;
+  scrollbar-width: none; /* Firefox */
+}
+.thread-body::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Edge */
 }
 
 .skeleton-flow {
