@@ -70,8 +70,8 @@ function handleCoverFilesChange(event) {
 
     <nav class="type-tabs" :aria-label="$t('upload.pageTitle')">
       <router-link to="/upload/illust" class="type-tab" :class="{ active: props.currentKind === 'illust' }">{{ $t('nav.illustrations') }}</router-link>
-      <router-link to="/upload/gif" class="type-tab" :class="{ active: props.currentKind === 'gif' }">{{ $t('nav.gif') }}</router-link>
       <router-link to="/upload/manga" class="type-tab" :class="{ active: props.currentKind === 'manga' }">{{ $t('nav.manga') }}</router-link>
+      <router-link to="/upload/gif" class="type-tab" :class="{ active: props.currentKind === 'gif' }">{{ $t('nav.gif') }}</router-link>
       <router-link to="/upload/novel" class="type-tab" :class="{ active: props.currentKind === 'novel' }">{{ $t('nav.novels') }}</router-link>
     </nav>
 

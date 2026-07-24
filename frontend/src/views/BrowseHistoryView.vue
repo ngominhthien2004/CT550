@@ -34,7 +34,7 @@ const hasActiveFilters = computed(() =>
   browseHistoryStore.search || browseHistoryStore.filterFrom || browseHistoryStore.filterTo
 )
 
-const typeLabelMap = { illust: 'Illustration', manga: 'Manga', novel: 'Novel', gif: 'GIF' }
+const typeLabelMap = { illust: 'Illustration', manga: 'Manga', gif: 'GIF', novel: 'Novel' }
 const activeType = ref('')
 
 const typeTabs = computed(() => {

@@ -108,8 +108,8 @@ export function useProfilePage() {
   const typeLabelMap = {
     illust: 'Illustration',
     manga: 'Manga',
-    novel: 'Novel',
     gif: 'GIF',
+    novel: 'Novel',
   }
 
   function buildTypeTabs(items, getType) {

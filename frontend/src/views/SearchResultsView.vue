@@ -161,8 +161,8 @@ const isNovelSearch = computed(() => activeType.value === 'novel')
 const searchTypeTabs = computed(() => [
   { key: 'illust', label: t('profile.tabIllustrations') },
   { key: 'manga', label: t('profile.tabManga') },
-  { key: 'novel', label: t('profile.tabNovels') },
   { key: 'gif', label: 'GIF' },
+  { key: 'novel', label: t('profile.tabNovels') },
   { key: 'user', label: t('search.userTab') },
 ])
 
@@ -244,7 +244,7 @@ const displayTags = computed(() => {
 })
 
 const typeCounts = computed(() => {
-  const counts = { illust: 0, manga: 0, novel: 0, gif: 0 }
+  const counts = { illust: 0, manga: 0, gif: 0, novel: 0 }
   for (const item of searchItems.value) {
     const type = String(item.type || '').toLowerCase()
     if (Object.hasOwn(counts, type)) {
