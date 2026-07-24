@@ -59,6 +59,12 @@ const workTypeTabs = [
   { key: 'manga', type: 'manga', heading: 'Manga' },
   { key: 'novels', type: 'novel', heading: 'Novels' },
 ]
+
+const homeHeading = computed(() => {
+  if (!activeType || activeType === 'all') return 'All'
+  const match = typeTabs.value.find(t => t.value === activeType)
+  return match ? match.label : activeType
+})
 </script>
 
 <template>
@@ -81,7 +87,7 @@ const workTypeTabs = [
           :error="profileSeriesError"
         />
         <ArtworkGridSection
-          heading="Illustrations and Manga"
+          :heading="homeHeading"
           :show-featured="showFeaturedWorks"
           :preview-limit="8"
           :tabs="typeTabs"
