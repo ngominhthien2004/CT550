@@ -1,21 +1,18 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store'
 import { useArtworkStore } from '@/stores/artwork.store'
-import { useSeriesStore } from '@/stores/series.store'
 import { getArtworks } from '@/services/api'
-import DashboardSeriesPanel from './DashboardSeriesPanel.vue'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 const artworkStore = useArtworkStore()
-const seriesStore = useSeriesStore()
 const user = computed(() => authStore.user)
 const { t } = useI18n()
 
-const activeSubTab = ref('works')
 const artworks = ref([])
 const loadingArtworks = ref(false)
 
@@ -27,11 +24,25 @@ const showDeleteConfirm = ref(false)
 const deletingArtwork = ref(null)
 const deleting = ref(false)
 
+const activeType = computed(() => route.query.type || 'all')
+
+const typeFilters = computed(() => [
+  { key: 'all', label: t('dashboard.tabAll') },
+  { key: 'illust', label: t('dashboard.tabIllustration') },
+  { key: 'manga', label: t('dashboard.tabManga') },
+  { key: 'gif', label: t('dashboard.tabGif') },
+  { key: 'novel', label: t('dashboard.tabNovel') },
+])
+
 async function loadArtworks() {
   if (!user.value?._id) return
   loadingArtworks.value = true
   try {
-    const { data } = await getArtworks({ user: user.value._id, limit: 120 })
+    const params = { user: user.value._id, limit: 120 }
+    if (activeType.value !== 'all') {
+      params.type = activeType.value
+    }
+    const { data } = await getArtworks(params)
     artworks.value = Array.isArray(data) ? data : []
   } catch {
     artworks.value = []
@@ -40,14 +51,24 @@ async function loadArtworks() {
   }
 }
 
+function setTypeFilter(type) {
+  if (type === 'all') {
+    router.push({ name: 'dashboard-works' })
+  } else {
+    router.push({ name: 'dashboard-works', query: { type } })
+  }
+}
+
 onMounted(() => {
   loadArtworks()
-  seriesStore.fetchMySeries()
 })
 
 watch(() => user.value?._id, () => {
   loadArtworks()
-  seriesStore.fetchMySeries()
+})
+
+watch(activeType, () => {
+  loadArtworks()
 })
 
 function toggleMenu(id) {
@@ -94,75 +115,60 @@ function handleArtworkUpdated() {
 
 <template>
   <div class="works-panel">
-    <!-- Sub-tabs: Works / Series -->
-    <div class="subtab-bar">
+    <!-- Type filter bar -->
+    <div class="filter-bar">
       <button
+        v-for="filter in typeFilters"
+        :key="filter.key"
         type="button"
-        class="subtab-btn"
-        :class="{ 'subtab-btn--active': activeSubTab === 'works' }"
-        @click="activeSubTab = 'works'"
+        class="filter-btn"
+        :class="{ 'filter-btn--active': activeType === filter.key }"
+        @click="setTypeFilter(filter.key)"
       >
-        {{ $t('dashboard.tabWorks') }}
-      </button>
-      <button
-        type="button"
-        class="subtab-btn"
-        :class="{ 'subtab-btn--active': activeSubTab === 'series' }"
-        @click="activeSubTab = 'series'"
-      >
-        {{ $t('dashboard.tabSeries') }}
-        <span v-if="seriesStore.seriesList.length" class="subtab-badge">
-          {{ seriesStore.seriesList.length }}
-        </span>
+        {{ filter.label }}
       </button>
     </div>
 
     <!-- Works content -->
-    <div v-if="activeSubTab === 'works'" class="works-content">
-      <p v-if="loadingArtworks" class="state-note">{{ $t('dashboard.loadingWorks') }}</p>
-      <div v-else-if="artworks.length === 0" class="empty-state">
-        <i class="fa-regular fa-images" aria-hidden="true"></i>
-        <p>{{ $t('dashboard.noWorks') }}</p>
-      </div>
-      <div v-else class="works-grid">
-        <div v-for="artwork in artworks" :key="artwork._id" class="work-card" @click="goToArtworkDetail(artwork._id)">
-          <!-- Card menu -->
-          <div class="work-card-menu">
-            <button type="button" class="card-menu-btn" @click.stop="toggleMenu(artwork._id)">
-              <i class="fa-solid fa-ellipsis-vertical"></i>
+    <p v-if="loadingArtworks" class="state-note">{{ $t('dashboard.loadingWorks') }}</p>
+    <div v-else-if="artworks.length === 0" class="empty-state">
+      <i class="fa-regular fa-images" aria-hidden="true"></i>
+      <p>{{ $t('dashboard.noWorks') }}</p>
+    </div>
+    <div v-else class="works-grid">
+      <div v-for="artwork in artworks" :key="artwork._id" class="work-card" @click="goToArtworkDetail(artwork._id)">
+        <!-- Card menu -->
+        <div class="work-card-menu">
+          <button type="button" class="card-menu-btn" @click.stop="toggleMenu(artwork._id)">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </button>
+          <div v-if="openMenuId === artwork._id" class="card-menu-dropdown">
+            <button type="button" class="menu-dropdown-item" @click.stop="goToArtworkEdit(artwork)">
+              <i class="fa-solid fa-pen"></i> {{ $t('common.edit') }}
             </button>
-            <div v-if="openMenuId === artwork._id" class="card-menu-dropdown">
-              <button type="button" class="menu-dropdown-item" @click.stop="goToArtworkEdit(artwork)">
-                <i class="fa-solid fa-pen"></i> {{ $t('common.edit') }}
-              </button>
-              <button type="button" class="menu-dropdown-item menu-dropdown-item--danger" @click.stop="openDeleteConfirm(artwork)">
-                <i class="fa-solid fa-trash"></i> {{ $t('common.delete') }}
-              </button>
-            </div>
+            <button type="button" class="menu-dropdown-item menu-dropdown-item--danger" @click.stop="openDeleteConfirm(artwork)">
+              <i class="fa-solid fa-trash"></i> {{ $t('common.delete') }}
+            </button>
           </div>
+        </div>
 
-          <div class="work-card-thumb">
-            <img
-              v-if="artwork.images && artwork.images[0]"
-              :src="artwork.images[0]"
-              :alt="artwork.title"
-              loading="lazy"
-            />
-            <div v-else class="work-card-nothumb">
-              <i class="fa-solid fa-pen-nib"></i>
-            </div>
+        <div class="work-card-thumb">
+          <img
+            v-if="artwork.images && artwork.images[0]"
+            :src="artwork.images[0]"
+            :alt="artwork.title"
+            loading="lazy"
+          />
+          <div v-else class="work-card-nothumb">
+            <i class="fa-solid fa-pen-nib"></i>
           </div>
-          <div class="work-card-info">
-            <h4 class="work-card-title">{{ artwork.title }}</h4>
-            <span class="work-card-type">{{ artwork.type }}</span>
-          </div>
+        </div>
+        <div class="work-card-info">
+          <h4 class="work-card-title">{{ artwork.title }}</h4>
+          <span class="work-card-type">{{ artwork.type }}</span>
         </div>
       </div>
     </div>
-
-    <!-- Series content -->
-    <DashboardSeriesPanel v-if="activeSubTab === 'series'" />
-
 
     <!-- Delete confirmation -->
     <div v-if="showDeleteConfirm" class="del-backdrop" @click.self="showDeleteConfirm = false">
@@ -184,6 +190,45 @@ function handleArtworkUpdated() {
 <style scoped>
 .works-panel {
   margin-top: 0.5rem;
+}
+
+/* Filter bar */
+.filter-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 0.25rem;
+}
+
+.filter-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-btn {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 999px;
+  height: 32px;
+  padding: 0 0.85rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filter-btn:hover {
+  border-color: var(--muted);
+  color: var(--text);
+}
+
+.filter-btn--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
 }
 
 .works-grid {

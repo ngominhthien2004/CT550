@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useSeriesStore } from '@/stores/series.store'
 import { useI18n } from 'vue-i18n'
 import { formatShortDate } from '../../utils/date.js'
@@ -13,15 +13,33 @@ function getCover(series) {
 }
 
 const router = useRouter()
+const route = useRoute()
 const seriesStore = useSeriesStore()
 const { t, locale } = useI18n()
 const showCreateModal = ref(false)
 const createType = ref('manga')
 const sortOrder = ref('newest')
 
+const activeType = computed(() => route.query.type || 'all')
+
+const typeFilters = computed(() => [
+  { key: 'all', label: t('dashboard.tabAll') },
+  { key: 'illust', label: t('dashboard.tabIllustration') },
+  { key: 'manga', label: t('dashboard.tabManga') },
+  { key: 'novel', label: t('dashboard.tabNovel') },
+])
+
+function setTypeFilter(type) {
+  if (type === 'all') {
+    router.push({ name: 'dashboard-series' })
+  } else {
+    router.push({ name: 'dashboard-series', query: { type } })
+  }
+}
+
 function changeSort(event) {
   sortOrder.value = event.target.value
-  seriesStore.fetchMySeries(null, sortOrder.value)
+  seriesStore.fetchMySeries(activeType.value === 'all' ? null : activeType.value, sortOrder.value)
 }
 
 // Edit modal state
@@ -43,7 +61,7 @@ function openCreateModal(type) {
 
 function handleSeriesCreated() {
   showCreateModal.value = false
-  seriesStore.fetchMySeries(null, sortOrder.value)
+  seriesStore.fetchMySeries(activeType.value === 'all' ? null : activeType.value, sortOrder.value)
 }
 
 function openEditModal(series) {
@@ -65,7 +83,7 @@ async function confirmDelete() {
     await seriesStore.deleteSeries(deletingSeries.value._id)
     showDeleteConfirm.value = false
     deletingSeries.value = null
-    seriesStore.fetchMySeries(null, sortOrder.value)
+    seriesStore.fetchMySeries(activeType.value === 'all' ? null : activeType.value, sortOrder.value)
   } catch {
     // error handled by store
   } finally {
@@ -76,7 +94,7 @@ async function confirmDelete() {
 function handleSeriesUpdated() {
   showEditModal.value = false
   editingSeries.value = null
-  seriesStore.fetchMySeries(null, sortOrder.value)
+  seriesStore.fetchMySeries(activeType.value === 'all' ? null : activeType.value, sortOrder.value)
 }
 
 function toggleMenu(id) {
@@ -110,12 +128,30 @@ const processedSeriesList = computed(() =>
 )
 
 onMounted(() => {
-  seriesStore.fetchMySeries(null, sortOrder.value)
+  seriesStore.fetchMySeries(activeType.value === 'all' ? null : activeType.value, sortOrder.value)
+})
+
+watch(activeType, () => {
+  seriesStore.fetchMySeries(activeType.value === 'all' ? null : activeType.value, sortOrder.value)
 })
 </script>
 
 <template>
   <div class="series-panel">
+    <!-- Type filter bar -->
+    <div class="filter-bar">
+      <button
+        v-for="filter in typeFilters"
+        :key="filter.key"
+        type="button"
+        class="filter-btn"
+        :class="{ 'filter-btn--active': activeType === filter.key }"
+        @click="setTypeFilter(filter.key)"
+      >
+        {{ filter.label }}
+      </button>
+    </div>
+
     <!-- Header with sort and create button -->
     <div class="series-header">
       <div class="series-sort">
@@ -270,6 +306,45 @@ onMounted(() => {
 <style scoped>
 .series-panel {
   margin-top: 0.5rem;
+}
+
+/* Filter bar */
+.filter-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 0.25rem;
+}
+
+.filter-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-btn {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 999px;
+  height: 32px;
+  padding: 0 0.85rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filter-btn:hover {
+  border-color: var(--muted);
+  color: var(--text);
+}
+
+.filter-btn--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
 }
 
 .series-header {

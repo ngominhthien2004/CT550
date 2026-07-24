@@ -1,6 +1,7 @@
 export { default as CreatorDashboardTabs } from './CreatorDashboardTabs.vue'
 export { default as CreatorRecentlyUploadedPanel } from './CreatorRecentlyUploadedPanel.vue'
 export { default as CreatorReactionsCard } from './CreatorReactionsCard.vue'
+export { default as DashboardHomePanel } from './DashboardHomePanel.vue'
 export { default as DashboardWorksPanel } from './DashboardWorksPanel.vue'
 export { default as DashboardSeriesPanel } from './DashboardSeriesPanel.vue'
 export { default as CreateSeriesModal } from './CreateSeriesModal.vue'

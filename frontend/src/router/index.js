@@ -15,6 +15,11 @@ import MessagesView from '../views/MessagesView.vue'
 import NotificationsView from '../views/NotificationsView.vue'
 import AccountView from '../views/AccountView.vue'
 import DashboardView from '../views/DashboardView.vue'
+import DashboardHomePanel from '../components/dashboard/DashboardHomePanel.vue'
+import DashboardWorksPanel from '../components/dashboard/DashboardWorksPanel.vue'
+import DashboardSeriesPanel from '../components/dashboard/DashboardSeriesPanel.vue'
+import DashboardReactionsPanel from '../components/dashboard/DashboardReactionsPanel.vue'
+import DashboardAnalyticsPanel from '../components/dashboard/DashboardAnalyticsPanel.vue'
 import AdminManagementView from '../views/AdminManagementView.vue'
 import SignUpView from '../views/SignUpView.vue'
 import LoginView from '../views/LoginView.vue'
@@ -105,7 +110,19 @@ const routes = [
   { path: '/artworks/:id/edit', name: 'edit-artwork', component: EditArtworkView, meta: { requiresAuth: true } },
   { path: '/users/:id/following', name: 'users-following', component: FollowUsersView },
   { path: '/users/:id/followers', name: 'followers', component: FollowUsersView },
-  { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
+  {
+    path: '/dashboard',
+    component: DashboardView,
+    meta: { requiresAuth: true },
+    children: [
+      { path: '', name: 'dashboard', redirect: { name: 'dashboard-works' } },
+      { path: 'home', name: 'dashboard-home', component: DashboardHomePanel },
+      { path: 'works', name: 'dashboard-works', component: DashboardWorksPanel },
+      { path: 'series', name: 'dashboard-series', component: DashboardSeriesPanel },
+      { path: 'reactions', name: 'dashboard-reactions', component: DashboardReactionsPanel },
+      { path: 'analytics', name: 'dashboard-analytics', component: DashboardAnalyticsPanel },
+    ],
+  },
   { path: '/my-reports', name: 'my-reports', component: () => import('@/views/MyReportsView.vue'), meta: { requiresAuth: true } },
   { path: '/admin', name: 'admin-management', component: AdminManagementView, meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/novels/:id', name: 'novel-detail', component: ArtworkDetailView },
