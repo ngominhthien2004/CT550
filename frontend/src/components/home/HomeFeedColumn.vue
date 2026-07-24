@@ -148,9 +148,9 @@ async function handleLike(e, work) {
   <section class="feed-column">
     <header class="feed-head">
       <div>
-        <h3>Recommended for you</h3>
+        <h3>{{ $t('home.recommendedForYou') }}</h3>
       </div>
-      <router-link to="/discovery">See more</router-link>
+      <router-link to="/discovery">{{ $t('home.seeMore') }}</router-link>
     </header>
 
     <SkeletonLoader v-if="loading" type="feed-card" :count="3" />

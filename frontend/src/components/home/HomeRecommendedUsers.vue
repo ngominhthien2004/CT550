@@ -71,8 +71,7 @@ function handleAvatarError(event) {
   <section class="recommend-users">
     <header class="section-head">
       <div>
-        <h3>Recommended users</h3>
-        <span class="head-note">Artists you may want to follow</span>
+        <h3>{{ $t('home.recommendedUsers') }}</h3>
       </div>
     </header>
 

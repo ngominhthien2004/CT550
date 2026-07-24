@@ -31,7 +31,7 @@ const processedWorks = computed(() =>
   <section class="latest-section">
     <header class="section-head">
       <div>
-        <h3>Recommended works</h3>
+        <h3>{{ $t('home.recommendedWorks') }}</h3>
       </div>
       <router-link to="/discovery">View all</router-link>
     </header>
