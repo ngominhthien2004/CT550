@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSeriesStore } from '@/stores/series.store'
 import { useI18n } from 'vue-i18n'
-import { formatLongDate } from '../../utils/date.js'
+import { formatShortDate } from '../../utils/date.js'
 import CreateSeriesModal from './CreateSeriesModal.vue'
 import { useSeriesCover } from '@/composables/useSeriesCover'
 
@@ -89,7 +89,7 @@ function goToSeriesDetail(seriesId) {
 }
 
 function formatDate(dateStr) {
-  return formatLongDate(dateStr, locale.value)
+  return formatShortDate(dateStr, locale.value)
 }
 
 function getSeriesIcon(type) {

@@ -146,9 +146,10 @@ import { formatShortDate } from '@/utils/date.js'
 // or relative path: from '../../utils/date.js'
 ```
 
-**Output format:** `MM/DD, HH:mm` (24-hour) — e.g. `06/29, 14:30`
+**Output format:** `DD/MM/YYYY, HH:mm` (24-hour, Vietnamese standard) — e.g. `29/06/2026, 14:30`
 
 Rules:
 - Always use `formatShortDate(value)` instead of ad-hoc `toLocaleDateString` or `toLocaleString` calls.
 - The function returns empty string `''` for null/undefined/invalid dates.
-- For date ranges (e.g., RankingsView), use custom formatting but keep month/day numeric.
+- For date-only display, use `formatDateOnly(value)` — outputs `DD/MM/YYYY` (e.g. `29/06/2026`).
+- Always add the year (`YYYY`) — never omit it from date strings.

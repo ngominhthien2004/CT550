@@ -1,5 +1,5 @@
 <script setup>
-import { formatLongDate } from '../../utils/date.js'
+import { formatShortDate } from '../../utils/date.js'
 import { useSeriesCover } from '@/composables/useSeriesCover'
 import { useI18n } from 'vue-i18n'
 
@@ -11,7 +11,7 @@ const { t, locale } = useI18n()
 const coverUrl = useSeriesCover(props.series)
 
 function formatDate(dateStr) {
-  return formatLongDate(dateStr, locale.value)
+  return formatShortDate(dateStr, locale.value)
 }
 
 function getSeriesIcon(type) {
