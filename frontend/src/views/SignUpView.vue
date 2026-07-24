@@ -18,6 +18,8 @@ const form = reactive({
 
 const formError = ref('')
 const showEmailForm = ref(false)
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
 
 async function submitSignUp() {
   formError.value = ''
@@ -103,12 +105,22 @@ function facebookLogin() {
 
         <label class="d-grid gap-1">
           <span class="auth-label">{{ $t('auth.password') }}</span>
-          <input v-model="form.password" type="password" class="form-control auth-control" :placeholder="$t('auth.passwordMinChars')" :aria-label="$t('auth.password')" />
+          <div class="password-field">
+            <input v-model="form.password" :type="showPassword ? 'text' : 'password'" class="form-control auth-control" :placeholder="$t('auth.passwordMinChars')" :aria-label="$t('auth.password')" />
+            <button type="button" class="password-toggle" @click="showPassword = !showPassword" :aria-label="showPassword ? 'Hide password' : 'Show password'">
+              <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+            </button>
+          </div>
         </label>
 
         <label class="d-grid gap-1">
           <span class="auth-label">{{ $t('auth.confirmPassword') }}</span>
-          <input v-model="form.confirmPassword" type="password" class="form-control auth-control" :placeholder="$t('auth.confirmPasswordPlaceholder')" :aria-label="$t('auth.confirmPassword')" />
+          <div class="password-field">
+            <input v-model="form.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'" class="form-control auth-control" :placeholder="$t('auth.confirmPasswordPlaceholder')" :aria-label="$t('auth.confirmPassword')" />
+            <button type="button" class="password-toggle" @click="showConfirmPassword = !showConfirmPassword" :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'">
+              <i :class="showConfirmPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+            </button>
+          </div>
         </label>
 
         <p v-if="formError" class="text-danger mb-0">{{ formError }}</p>

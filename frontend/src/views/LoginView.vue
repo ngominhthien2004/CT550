@@ -15,6 +15,7 @@ const form = reactive({
   password: '',
 })
 
+const showPassword = ref(false)
 const formError = ref('')
 const loginNotice = computed(() => {
   const reason = route.query.reason
@@ -78,7 +79,12 @@ function facebookLogin() {
 
         <label class="d-grid gap-1">
           <span class="auth-label">{{ $t('auth.password') }}</span>
-          <input v-model="form.password" type="password" class="form-control auth-control" :placeholder="$t('auth.passwordPlaceholder')" :aria-label="$t('auth.password')" />
+          <div class="password-field">
+            <input v-model="form.password" :type="showPassword ? 'text' : 'password'" class="form-control auth-control" :placeholder="$t('auth.passwordPlaceholder')" :aria-label="$t('auth.password')" />
+            <button type="button" class="password-toggle" @click="showPassword = !showPassword" :aria-label="showPassword ? 'Hide password' : 'Show password'">
+              <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+            </button>
+          </div>
         </label>
 
         <p v-if="loginNotice" class="text-warning mb-0" style="background: rgba(251, 191, 36, 0.1); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.3);">
