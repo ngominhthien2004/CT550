@@ -1,43 +1,48 @@
 /**
  * Standard short date format used across the system.
- * Format: MM/DD, HH:mm (24-hour) — e.g. "06/29, 14:30"
+ * Format: DD/MM/YYYY, HH:mm (24-hour) — e.g. "29/06/2026, 14:30"
  * If the input is invalid (null, undefined, empty, or non-date), returns an empty string.
  */
 export function formatShortDate(value, locale = 'en') {
   if (!value) return ''
   const d = new Date(value)
   if (isNaN(d.getTime())) return ''
-  const month = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const year = d.getFullYear()
   const hours = String(d.getHours()).padStart(2, '0')
   const minutes = String(d.getMinutes()).padStart(2, '0')
-  return `${month}/${day}, ${hours}:${minutes}`
+  return `${day}/${month}/${year}, ${hours}:${minutes}`
 }
 
 /**
- * Date-only format (no time). Always outputs MM/DD regardless of locale.
+ * Date-only format (no time). Always outputs DD/MM/YYYY regardless of locale.
  * Returns an empty string for null/undefined/invalid input.
- * Example: "06/29", "07/23"
+ * Example: "29/06/2026", "23/07/2026"
  */
 export function formatDateOnly(value, locale = 'en') {
   if (!value) return ''
   const d = new Date(value)
   if (isNaN(d.getTime())) return ''
-  const month = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
-  return `${month}/${day}`
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const year = d.getFullYear()
+  return `${day}/${month}/${year}`
 }
 
 /**
- * Long date format with full month name. Useful for hero sections and
- * detail pages that want a more readable presentation.
- * Example: "June 29, 2026" (en) / "2026年6月29日" (ja)
+ * Long date format (numeric). Always outputs DD/MM/YYYY regardless of locale.
+ * Returns an empty string for null/undefined/invalid input.
+ * Example: "29/06/2026"
  */
 export function formatLongDate(value, locale = 'en') {
   if (!value) return ''
   const d = new Date(value)
   if (isNaN(d.getTime())) return ''
-  return d.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })
+  const day = String(d.getDate()).padStart(2, '0')
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const year = d.getFullYear()
+  return `${day}/${month}/${year}`
 }
 
 /**
