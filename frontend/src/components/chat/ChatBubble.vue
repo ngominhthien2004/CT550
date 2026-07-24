@@ -10,6 +10,7 @@ import ChatInput from './ChatInput.vue'
 
 const chatStore = useChatStore()
 const { execute } = useAgentExecutor()
+const { locale } = useI18n()
 const userInput = ref('')
 const inputRef = ref(null)
 const isSessionsOpen = ref(false)
@@ -61,7 +62,7 @@ const groupedMessages = computed(() => {
       let label
       if (dateStr === today) label = 'Hôm nay'
       else if (dateStr === yesterday) label = 'Hôm qua'
-      else label = formatShortDate(msgDate)
+      else label = formatShortDate(msgDate, locale.value)
       result.push({ type: 'date-separator', label, key: 'sep-' + dateStr })
       lastDate = dateStr
     }
@@ -92,9 +93,9 @@ function formatChatTimestamp(ts) {
   if (isNaN(d.getTime())) return ''
   const now = new Date()
   const isToday = d.toDateString() === now.toDateString()
-  const time = d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+  const time = d.toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
   if (isToday) return time
-  return `${formatShortDate(ts)} ${time}`
+  return `${formatShortDate(ts, locale.value)} ${time}`
 }
 
 function toggleSessions() {

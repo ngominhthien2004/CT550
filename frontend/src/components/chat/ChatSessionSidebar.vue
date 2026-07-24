@@ -60,7 +60,10 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { formatShortDate } from '../../utils/date.js'
+
+const { locale } = useI18n()
 
 defineProps({
   isOpen: { type: Boolean, default: false },
@@ -89,10 +92,10 @@ function formatSessionTime(ts) {
   const now = new Date()
   const isToday = d.toDateString() === now.toDateString()
   const isYesterday = new Date(now - 86400000).toDateString() === d.toDateString()
-  const time = d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+  const time = d.toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
   if (isToday) return `Hôm nay, ${time}`
   if (isYesterday) return `Hôm qua, ${time}`
-  return formatShortDate(ts)
+  return formatShortDate(ts, locale.value)
 }
 </script>
 

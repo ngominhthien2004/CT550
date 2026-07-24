@@ -15,7 +15,7 @@ const route = useRoute()
 const router = useRouter()
 const seriesStore = useSeriesStore()
 const authStore = useAuthStore()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const isNavCollapsed = ref(true)
 const seriesLoadError = ref('')
@@ -46,7 +46,7 @@ const isOwner = computed(() => {
 })
 
 function formatDate(dateStr) {
-  return formatLongDate(dateStr)
+  return formatLongDate(dateStr, locale.value)
 }
 
 function getSeriesIcon(type) {

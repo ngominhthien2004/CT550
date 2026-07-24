@@ -14,7 +14,7 @@ function getCover(series) {
 
 const router = useRouter()
 const seriesStore = useSeriesStore()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const showCreateModal = ref(false)
 const createType = ref('manga')
 const sortOrder = ref('newest')
@@ -89,7 +89,7 @@ function goToSeriesDetail(seriesId) {
 }
 
 function formatDate(dateStr) {
-  return formatLongDate(dateStr)
+  return formatLongDate(dateStr, locale.value)
 }
 
 function getSeriesIcon(type) {

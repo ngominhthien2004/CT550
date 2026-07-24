@@ -7,11 +7,11 @@ const props = defineProps({
   series: { type: Object, required: true },
 })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const coverUrl = useSeriesCover(props.series)
 
 function formatDate(dateStr) {
-  return formatLongDate(dateStr)
+  return formatLongDate(dateStr, locale.value)
 }
 
 function getSeriesIcon(type) {

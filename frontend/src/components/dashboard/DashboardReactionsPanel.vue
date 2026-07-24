@@ -19,7 +19,7 @@ const totalItems = ref(0)
 const limit = 10
 
 const { showError } = useToast()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 async function fetchReactions() {
   const id = ++requestId.value
@@ -67,7 +67,7 @@ onMounted(() => {
 function formatTime(dateStr) {
   if (!dateStr) return ''
   const date = new Date(dateStr)
-  return date.toLocaleString('vi-VN', {
+  return date.toLocaleString(locale.value, {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
