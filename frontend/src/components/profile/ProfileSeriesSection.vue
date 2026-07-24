@@ -14,7 +14,7 @@ const router = useRouter()
 const typeConfig = {
   manga: { label: 'Manga Series', icon: 'fa-solid fa-book' },
   novel: { label: 'Novel Series', icon: 'fa-solid fa-pen-fancy' },
-  illust: { label: 'Illust Series', icon: 'fa-solid fa-image' },
+  illust: { label: 'Illustration Series', icon: 'fa-solid fa-image' },
 }
 
 function getSeriesIcon(type) {
