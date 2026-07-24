@@ -837,6 +837,20 @@ const getRecommendedUsers = async (req, res, next) => {
                 },
             },
             { $unwind: '$user' },
+            // Count artworks per user
+            {
+                $lookup: {
+                    from: 'artworks',
+                    localField: '_id',
+                    foreignField: 'user',
+                    as: 'userArtworks',
+                },
+            },
+            {
+                $addFields: {
+                    artworkCount: { $size: '$userArtworks' },
+                },
+            },
             // Shape the output
             {
                 $project: {
@@ -845,6 +859,7 @@ const getRecommendedUsers = async (req, res, next) => {
                     displayName: '$user.displayName',
                     avatar: '$user.avatar',
                     mutualCount: 1,
+                    artworkCount: 1,
                 },
             },
         ];
