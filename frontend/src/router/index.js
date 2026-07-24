@@ -115,7 +115,7 @@ const routes = [
     component: DashboardView,
     meta: { requiresAuth: true },
     children: [
-      { path: '', name: 'dashboard', redirect: { name: 'dashboard-works' } },
+      { path: '', name: 'dashboard', redirect: { name: 'dashboard-home' } },
       { path: 'home', name: 'dashboard-home', component: DashboardHomePanel },
       { path: 'works', name: 'dashboard-works', component: DashboardWorksPanel },
       { path: 'series', name: 'dashboard-series', component: DashboardSeriesPanel },
