@@ -17,6 +17,7 @@ const { createNotification } = require('../utils/notification');
 const Series = require('../models/Series');
 const { buildDateFilter } = require('../utils/dateFilter');
 const { getOrSet, getOrSetWithL2, get, set, delByPrefix, TTL, buildKey } = require('../utils/cache');
+const { computeSeriesStats } = require('../utils/seriesStats');
 
 const PUBLIC_PROFILE_FIELDS = '_id username displayName avatar coverImage bio gender location website socialLinks createdAt';
 const OWNER_ONLY_FIELDS = 'email birthYear birthdayMonth birthdayDay isSuspended role updatedAt';
@@ -642,22 +643,10 @@ const getUserSeries = async (req, res, next) => {
                 .sort({ createdAt: -1 })
                 .lean();
 
-            // Compute aggregated stats from artworks for all types
+            // Compute aggregated stats from artworks for all types.
             return series.map((s) => {
-                const doc = s;
-                if (doc.artworks?.length > 0) {
-                    doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0);
-                    doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);
-                    doc.totalBookmarks = doc.artworks.reduce((sum, a) => sum + (a.bookmarkCount || 0), 0);
-                    doc.totalComments = doc.artworks.reduce((sum, a) => sum + (a.commentCount || 0), 0);
-                    doc.episodeCount = doc.artworks.length;
-                } else {
-                    doc.totalViews = 0;
-                    doc.totalLikes = 0;
-                    doc.totalBookmarks = 0;
-                    doc.totalComments = 0;
-                    doc.episodeCount = 0;
-                }
+                const doc = computeSeriesStats(s);
+                doc.episodeCount = s.artworks?.length || 0;
                 return doc;
             });
         }, TTL.PUBLIC_PROFILE);

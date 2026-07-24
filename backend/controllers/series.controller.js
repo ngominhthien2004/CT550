@@ -4,6 +4,7 @@ const Artwork = require('../models/Artwork');
 const cloudinary = require('cloudinary').v2;
 const mongoose = require('mongoose');
 const { getOrSet, getOrSetWithL2, delByPrefix, TTL, buildKey } = require('../utils/cache');
+const { computeSeriesStats } = require('../utils/seriesStats');
 
 function validateObjectId(id, name = 'ID') {
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -73,23 +74,8 @@ const getMySeries = async (req, res, next) => {
       .populate('artworks', 'title images type viewCount likeCount bookmarkCount commentCount')
       .sort(sortOrder);
 
-    // Compute aggregated stats for each series
-    const enriched = series.map((s) => {
-      const doc = s.toObject();
-      if ((doc.type === 'manga' || doc.type === 'illust' || doc.type === 'novel') && doc.artworks?.length > 0) {
-        doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0);
-        doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);
-        doc.totalBookmarks = doc.artworks.reduce((sum, a) => sum + (a.bookmarkCount || 0), 0);
-        doc.totalComments = doc.artworks.reduce((sum, a) => sum + (a.commentCount || 0), 0);
-      } else {
-        doc.totalViews = 0;
-        doc.totalLikes = 0;
-        doc.totalBookmarks = 0;
-        doc.totalComments = 0;
-      }
-      // totalReactions is not tracked yet — keep as 0
-      return doc;
-    });
+    // Compute aggregated stats for each series.
+    const enriched = series.map(computeSeriesStats);
 
     res.json(enriched);
   } catch (error) {
@@ -114,16 +100,8 @@ const getSeriesById = async (req, res, next) => {
 
       if (!series) return null;
 
-      // Compute aggregated stats
-      const doc = series;
-      if ((doc.type === 'manga' || doc.type === 'illust' || doc.type === 'novel') && doc.artworks?.length > 0) {
-        doc.totalViews = doc.artworks.reduce((sum, a) => sum + (a.viewCount || 0), 0);
-        doc.totalLikes = doc.artworks.reduce((sum, a) => sum + (a.likeCount || 0), 0);
-        doc.totalBookmarks = doc.artworks.reduce((sum, a) => sum + (a.bookmarkCount || 0), 0);
-        doc.totalComments = doc.artworks.reduce((sum, a) => sum + (a.commentCount || 0), 0);
-      }
-
-      return doc;
+      // Compute aggregated stats.
+      return computeSeriesStats(series);
     }, TTL.PUBLIC_PROFILE);
 
     if (!seriesData) {
@@ -173,7 +151,8 @@ const updateSeries = async (req, res, next) => {
 
     const populated = await Series.findById(updated._id)
       .populate('user', 'username avatar')
-      .populate('tags', 'name');
+      .populate('tags', 'name')
+      .populate('artworks', 'title images type viewCount likeCount bookmarkCount commentCount');
 
     // Invalidate series cache
     delByPrefix(`series:detail:${req.params.id}`);
@@ -181,7 +160,7 @@ const updateSeries = async (req, res, next) => {
     // Invalidate user's series list cache
     delByPrefix(`user:series:${req.user._id}`);
 
-    res.json(populated);
+    res.json(computeSeriesStats(populated));
   } catch (error) {
     next(error);
   }
@@ -296,7 +275,7 @@ const addArtworkToSeries = async (req, res, next) => {
     const populated = await Series.findById(series._id)
       .populate('user', 'username avatar')
       .populate('tags', 'name')
-      .populate('artworks', 'title images type');
+      .populate('artworks', 'title images type viewCount likeCount bookmarkCount commentCount');
 
     // Invalidate series cache
     delByPrefix(`series:detail:${req.params.id}`);
@@ -304,7 +283,7 @@ const addArtworkToSeries = async (req, res, next) => {
     // Invalidate user's series list cache
     delByPrefix(`user:series:${req.user._id}`);
 
-    res.json(populated);
+    res.json(computeSeriesStats(populated));
   } catch (error) {
     next(error);
   }
@@ -355,7 +334,7 @@ const removeArtworkFromSeries = async (req, res, next) => {
     const populated = await Series.findById(series._id)
       .populate('user', 'username avatar')
       .populate('tags', 'name')
-      .populate('artworks', 'title images type');
+      .populate('artworks', 'title images type viewCount likeCount bookmarkCount commentCount');
 
     // Invalidate series cache
     delByPrefix(`series:detail:${req.params.id}`);
@@ -363,7 +342,7 @@ const removeArtworkFromSeries = async (req, res, next) => {
     // Invalidate user's series list cache
     delByPrefix(`user:series:${req.user._id}`);
 
-    res.json(populated);
+    res.json(computeSeriesStats(populated));
   } catch (error) {
     next(error);
   }
@@ -415,7 +394,7 @@ const reorderSeriesArtworks = async (req, res, next) => {
     const populated = await Series.findById(series._id)
       .populate('user', 'username avatar')
       .populate('tags', 'name')
-      .populate('artworks', 'title images type');
+      .populate('artworks', 'title images type viewCount likeCount bookmarkCount commentCount');
 
     // Invalidate series cache
     delByPrefix(`series:detail:${req.params.id}`);
@@ -423,7 +402,7 @@ const reorderSeriesArtworks = async (req, res, next) => {
     // Invalidate user's series list cache
     delByPrefix(`user:series:${req.user._id}`);
 
-    res.json(populated);
+    res.json(computeSeriesStats(populated));
   } catch (error) {
     next(error);
   }
@@ -469,12 +448,12 @@ const uploadSeriesCover = async (req, res, next) => {
     const populated = await Series.findById(series._id)
       .populate('user', 'username avatar')
       .populate('tags', 'name')
-      .populate('artworks', 'title images type');
+      .populate('artworks', 'title images type viewCount likeCount bookmarkCount commentCount');
 
     // Invalidate series cache
     delByPrefix(`series:detail:${req.params.id}`);
 
-    res.json(populated);
+    res.json(computeSeriesStats(populated));
   } catch (error) {
     next(error);
   }

@@ -114,6 +114,10 @@ const createComment = async (req, res, next) => {
         if (artwork.series) {
             delByPrefix(`series:detail:${artwork.series.toString()}`);
         }
+        // Invalidate the owner's series list so aggregated stats stay fresh.
+        if (artwork.user) {
+            delByPrefix(`user:series:${artwork.user.toString()}`);
+        }
 
         const populated = await Comment.findById(comment._id).populate('user', 'username displayName avatar');
         res.status(201).json(populated);
@@ -269,9 +273,13 @@ const deleteComment = async (req, res, next) => {
         }
 
         // Invalidate series detail cache if the artwork belongs to a series
-        const artwork = await Artwork.findById(artworkId).select('series');
+        const artwork = await Artwork.findById(artworkId).select('series user');
         if (artwork?.series) {
             delByPrefix(`series:detail:${artwork.series.toString()}`);
+        }
+        // Invalidate the owner's series list so aggregated stats stay fresh.
+        if (artwork?.user) {
+            delByPrefix(`user:series:${artwork.user.toString()}`);
         }
 
         res.json({ message: 'Comment removed' });

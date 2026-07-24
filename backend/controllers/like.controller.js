@@ -5,9 +5,12 @@ const { delByPrefix } = require('../utils/cache');
 
 async function invalidateSeriesDetailCache(artworkId) {
   try {
-    const artwork = await Artwork.findById(artworkId).select('series');
+    const artwork = await Artwork.findById(artworkId).select('series user');
     if (artwork?.series) {
       delByPrefix(`series:detail:${artwork.series.toString()}`);
+    }
+    if (artwork?.user) {
+      delByPrefix(`user:series:${artwork.user.toString()}`);
     }
   } catch {
     // Cache invalidation is best-effort; don't fail the reaction request.
