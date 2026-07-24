@@ -6,10 +6,6 @@ defineProps({
     type: Object,
     required: true,
   },
-  description: {
-    type: String,
-    default: 'Discover featured illustrations, manga, and creator highlights in a denser editorial layout.',
-  },
   bannerLink: {
     type: [String, Object],
     default: null,
@@ -28,7 +24,6 @@ defineProps({
       <img :src="slide.image" :alt="slide.title" loading="lazy" />
       <div class="banner-overlay">
         <h1>{{ slide.title }}</h1>
-        <p>{{ description }}</p>
       </div>
     </article>
   </a>
@@ -36,7 +31,6 @@ defineProps({
     <img :src="slide.image" :alt="slide.title" loading="lazy" />
     <div class="banner-overlay">
       <h1>{{ slide.title }}</h1>
-        <p>{{ description }}</p>
       </div>
     </article>
 </template>

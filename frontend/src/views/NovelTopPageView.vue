@@ -165,18 +165,6 @@ const creatorRows = computed(() => {
     .slice(0, 6)
 })
 
-const heroDescription = computed(() => {
-  if (!featuredNovel.value) {
-    return 'A dedicated editorial landing page for novels, stories, and long-form reading.'
-  }
-
-  const text = String(featuredNovel.value?.excerpt || featuredNovel.value?.description || featuredNovel.value?.novelContent || '')
-    .replace(/\s+/g, ' ')
-    .trim()
-
-  return text.length > 220 ? `${text.slice(0, 220).trimEnd()}...` : text
-})
-
 const sectionTabs = computed(() => [
   { id: 'top', label: 'Top', href: '#top' },
   { id: 'popular-original', label: t('novel.popularOriginal'), href: '#popular-original' },
@@ -300,7 +288,6 @@ onMounted(async () => {
       <HomeHeroBanner
         :slide="heroSlide"
         :banner-link="bannerLink"
-        :description="heroDescription"
       />
 
       <p v-if="loadError" class="novel-page-state novel-page-state--error">{{ loadError }}</p>
