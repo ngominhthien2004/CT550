@@ -17,7 +17,7 @@ const route = useRoute()
 const seriesStore = useSeriesStore()
 const { t, locale } = useI18n()
 const showCreateModal = ref(false)
-const createType = ref('manga')
+const createType = ref('illust')
 const sortOrder = ref('newest')
 
 const activeType = computed(() => route.query.type || 'all')
@@ -112,9 +112,9 @@ function formatDate(dateStr) {
 
 function getSeriesIcon(type) {
   switch (type) {
+    case 'illust': return 'fa-solid fa-image'
     case 'manga': return 'fa-solid fa-book'
     case 'novel': return 'fa-solid fa-pen-fancy'
-    case 'illust': return 'fa-solid fa-image'
     default: return 'fa-solid fa-book'
   }
 }
@@ -162,18 +162,18 @@ watch(activeType, () => {
       </div>
       <div class="series-actions">
         <div class="create-dropdown">
-          <button type="button" class="create-series-btn" @click="openCreateModal('manga')">
+          <button type="button" class="create-series-btn" @click="openCreateModal('illust')">
             {{ $t('series.createSeriesShort') }} <i class="fa-solid fa-chevron-down"></i>
           </button>
           <div class="create-dropdown-menu">
+            <button type="button" class="dropdown-item" @click="openCreateModal('illust')">
+              {{ $t('dashboard.createIllustSeries') }}
+            </button>
             <button type="button" class="dropdown-item" @click="openCreateModal('manga')">
               {{ $t('dashboard.createMangaSeries') }}
             </button>
             <button type="button" class="dropdown-item" @click="openCreateModal('novel')">
               {{ $t('dashboard.createNovelSeries') }}
-            </button>
-            <button type="button" class="dropdown-item" @click="openCreateModal('illust')">
-              {{ $t('dashboard.createIllustSeries') }}
             </button>
           </div>
         </div>
@@ -194,14 +194,14 @@ watch(activeType, () => {
     <div v-else-if="seriesStore.seriesList.length === 0" class="series-empty">
       <p class="empty-title">{{ $t('dashboard.emptySeriesTitle') }}</p>
       <div class="empty-actions">
+        <button type="button" class="empty-btn" @click="openCreateModal('illust')" @keydown.enter.prevent="openCreateModal('illust')" @keydown.space.prevent="openCreateModal('illust')">
+          {{ $t('dashboard.createIllustSeries') }}
+        </button>
         <button type="button" class="empty-btn" @click="openCreateModal('manga')">
           {{ $t('dashboard.createMangaSeries') }}
         </button>
         <button type="button" class="empty-btn" @click="openCreateModal('novel')">
           {{ $t('dashboard.createNovelSeries') }}
-        </button>
-        <button type="button" class="empty-btn" @click="openCreateModal('illust')" @keydown.enter.prevent="openCreateModal('illust')" @keydown.space.prevent="openCreateModal('illust')">
-          {{ $t('dashboard.createIllustSeries') }}
         </button>
       </div>
     </div>
