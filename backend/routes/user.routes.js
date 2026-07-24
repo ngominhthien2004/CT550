@@ -30,7 +30,7 @@ const {
     getRecommendedUsers,
     changePassword,
 } = require('../controllers/user.controller');
-const { protect, admin } = require('../middlewares/auth.middleware');
+const { protect, admin, optionalAuth } = require('../middlewares/auth.middleware');
 const { passwordChangeLimiter } = require('../middlewares/rateLimit.middleware');
 
 const storage = multer.diskStorage({
@@ -84,7 +84,7 @@ router.get('/dashboard/reactions', protect, getCreatorReactions);
 router.get('/recommended', protect, getRecommendedUsers);
 router.get('/:id/series', getUserSeries);
 
-router.get('/:id/profile', protect, getUserProfile);
+router.get('/:id/profile', optionalAuth, getUserProfile);
 router.put('/profile', protect, upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'coverImage', maxCount: 1 }]), updateUserProfile);
 router.delete('/profile/cover', protect, deleteUserCover);
 router.post('/:id/follow', protect, followUser);
