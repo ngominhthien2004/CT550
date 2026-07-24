@@ -284,9 +284,8 @@ function handleCoverFilesChange(event) {
 
 .cover-preview-image {
   width: 100%;
-  height: 100%;
   max-height: 160px;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 0.5rem;
 }
 
