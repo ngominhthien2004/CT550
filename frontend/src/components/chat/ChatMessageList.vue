@@ -433,6 +433,7 @@ defineExpose({ chatBodyRef })
   color: var(--text);
   border-bottom-left-radius: 4px;
   box-shadow: var(--shadow-sm);
+  border: 1px solid var(--line);
 }
 
 .is-error .message-bubble {
@@ -767,5 +768,14 @@ defineExpose({ chatBodyRef })
   .feature-cards {
     grid-template-columns: 1fr;
   }
+}
+</style>
+
+<!-- Unscoped: dark theme override for message bubble borders.
+     In dark mode --line (#2d3748) equals --surface-alt, so a solid border
+     would be invisible. Use a subtle translucent white instead. -->
+<style>
+:root.dark-theme .message-assistant .message-bubble {
+  border-color: rgba(255, 255, 255, 0.12);
 }
 </style>
