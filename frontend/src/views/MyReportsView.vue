@@ -125,7 +125,6 @@ onMounted(() => {
           <h1 class="h4 mb-1">
             <i class="fa-regular fa-flag me-2"></i>{{ $t('report.myReports') }}
           </h1>
-          <p class="text-secondary mb-0">Track the status of reports you've submitted</p>
         </div>
         <button type="button" class="btn btn-outline-secondary btn-sm" @click="loadReports(page)" :disabled="loading">
           <i class="fa-solid fa-rotate me-1"></i>Refresh

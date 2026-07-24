@@ -165,7 +165,6 @@ watch(() => props.activeTab, (tab) => {
     <template v-else>
       <div class="banners-header">
         <h2>{{ $t('admin.bannerManagement') }}</h2>
-        <p class="text-secondary">{{ $t('admin.bannerManagementDesc') }}</p>
       </div>
 
       <p v-if="error" class="error-note">{{ error }}</p>

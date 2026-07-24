@@ -12,7 +12,6 @@
   "admin": "Admin",
   "hidden": "Hidden",
   "bannerManagement": "Banner Management",
-  "bannerManagementDesc": "Manage homepage hero banners — add, edit, reorder, or remove promotional banners.",
   "addBanner": "Add New Banner",
   "editBanner": "Edit Banner",
   "linkRequired": "Link is required",

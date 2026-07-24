@@ -172,7 +172,6 @@ function toggleLeftNav() {
                 <span class="info-label">{{ $t('settings.nickname') }}</span>
                 <div class="info-value">
                   <span class="info-text">{{ user?.displayName || user?.username }}</span>
-                  <span class="info-hint">{{ $t('settings.nicknameHint') }}</span>
                 </div>
               </div>
 
@@ -180,7 +179,6 @@ function toggleLeftNav() {
                 <span class="info-label">{{ $t('settings.email') }}</span>
                 <div class="info-value">
                   <span class="info-text">{{ user?.email || $t('settings.notSet') }}</span>
-                  <span class="info-hint">{{ $t('settings.emailHint') }}</span>
                 </div>
               </div>
 
@@ -229,7 +227,6 @@ function toggleLeftNav() {
                 <span class="info-label">{{ $t('settings.countryRegion') }}</span>
                 <div class="info-value">
                   <span class="info-text">{{ $t('settings.countryRegionValue') }}</span>
-                  <span class="info-hint">{{ $t('settings.regionalContent') }}</span>
                 </div>
               </div>
             </div>

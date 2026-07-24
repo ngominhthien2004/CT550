@@ -89,7 +89,6 @@ const emit = defineEmits(['update:selectedSeriesId'])
             <option value="">{{ $t('upload.noSeries') }}</option>
             <option v-for="s in props.seriesList" :key="s._id" :value="s._id">{{ s.title }}</option>
           </select>
-          <span class="text-muted small" style="font-size:0.78rem;">{{ $t('upload.orCreateLater') }}</span>
         </div>
       </div>
     </div>

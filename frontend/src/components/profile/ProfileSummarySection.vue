@@ -195,7 +195,6 @@ function closeReportModal() {
         </div>
       </div>
 
-      <p class="profile-status">{{ isOwnProfile ? $t('profile.publicProfile') : isFollowing ? $t('profile.youFollowUser') : $t('profile.followCreator') }}</p>
       <p v-if="followError" class="profile-error">{{ followError }}</p>
     </div>
 

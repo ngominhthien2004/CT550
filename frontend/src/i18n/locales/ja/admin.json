@@ -12,7 +12,6 @@
   "admin": "管理者",
   "hidden": "非表示",
   "bannerManagement": "バナー管理",
-  "bannerManagementDesc": "ホームページのヒーローバナーを管理 — 追加、編集、並び替え、削除。",
   "addBanner": "新しいバナー",
   "editBanner": "バナー編集",
   "linkRequired": "リンクが必要です",

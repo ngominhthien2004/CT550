@@ -170,7 +170,6 @@ onBeforeUnmount(() => {
 
         <div ref="sentinelRef" class="scroll-sentinel">
           <p v-if="notificationStore.loadingMore" class="text-secondary mb-0">{{ $t('common.loading') }}...</p>
-          <p v-else-if="!notificationStore.hasMore" class="text-secondary mb-0">No more notifications.</p>
         </div>
       </div>
 
