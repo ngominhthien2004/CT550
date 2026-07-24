@@ -7,9 +7,11 @@ export function formatShortDate(value, locale = 'en') {
   if (!value) return ''
   const d = new Date(value)
   if (isNaN(d.getTime())) return ''
-  const datePart = d.toLocaleDateString(locale, { month: '2-digit', day: '2-digit' })
-  const timePart = d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', hour12: false })
-  return `${datePart}, ${timePart}`
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  const hours = String(d.getHours()).padStart(2, '0')
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+  return `${month}/${day}, ${hours}:${minutes}`
 }
 
 /**
