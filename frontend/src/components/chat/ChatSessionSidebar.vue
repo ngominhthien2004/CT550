@@ -92,7 +92,8 @@ function formatSessionTime(ts) {
   const now = new Date()
   const isToday = d.toDateString() === now.toDateString()
   const isYesterday = new Date(now - 86400000).toDateString() === d.toDateString()
-  const time = d.toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
+  const pad = n => String(n).padStart(2, '0')
+  const time = `${pad(d.getHours())}:${pad(d.getMinutes())}`
   if (isToday) return `Hôm nay, ${time}`
   if (isYesterday) return `Hôm qua, ${time}`
   return formatShortDate(ts, locale.value)

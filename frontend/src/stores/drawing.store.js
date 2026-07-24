@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, reactive, computed, nextTick } from 'vue'
 import { createArtwork } from '../services/api.js'
+import { formatShortDate } from '../utils/date.js'
 
 export const useDrawingStore = defineStore('drawing', () => {
   // ─── Constants ────────────────────────────────────────────────────────
@@ -709,18 +710,7 @@ export const useDrawingStore = defineStore('drawing', () => {
   }
 
   function formatDate(isoStr) {
-    try {
-      const d = new Date(isoStr)
-      return d.toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    } catch {
-      return isoStr
-    }
+    return formatShortDate(isoStr)
   }
 
   async function saveCurrentDrawing() {

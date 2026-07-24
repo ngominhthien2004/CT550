@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import AdminPagination from './AdminPagination.vue'
 import AdminPillSelect from './AdminPillSelect.vue'
 import DateRangeFilter from '@/components/common/DateRangeFilter.vue'
+import { formatShortDate } from '../../utils/date.js'
 
 const props = defineProps({
   activeTab: { type: String, required: true },
@@ -14,7 +15,7 @@ const props = defineProps({
   reportPagination: { type: Object, default: () => ({ page: 1, pages: 1, total: 0 }) },
   reportStatusFilter: { type: String, default: 'pending' },
   reportDateRange: { type: Object, default: () => ({ from: '', to: '' }) },
-  formatDate: { type: Function, default: (d) => d ? new Date(d).toLocaleDateString() : '-' },
+  formatDate: { type: Function, default: (d) => d ? formatShortDate(d) : '-' },
 })
 
 const emit = defineEmits(['resolve-report', 'hide-artwork', 'go-page', 'update:report-status-filter', 'update:reportDateRange'])

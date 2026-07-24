@@ -19,7 +19,7 @@ const totalItems = ref(0)
 const limit = 10
 
 const { showError } = useToast()
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
 async function fetchReactions() {
   const id = ++requestId.value
@@ -63,18 +63,6 @@ function setTab(tab) {
 onMounted(() => {
   fetchReactions()
 })
-
-function formatTime(dateStr) {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  return date.toLocaleString(locale.value, {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 
 function getArtworkLink(artwork) {
   if (!artwork) return '#'
@@ -167,7 +155,7 @@ function getArtworkThumb(artwork) {
               <router-link :to="`/account?user=${item.user?._id}`" class="user-name">
                 {{ item.user?.displayName || item.user?.username || $t('dashboard.guest') }}
               </router-link>
-              <span class="reaction-time">{{ formatTime(item.createdAt) }}</span>
+              <span class="reaction-time">{{ formatShortDate(item.createdAt) }}</span>
             </div>
 
             <!-- Reaction details -->

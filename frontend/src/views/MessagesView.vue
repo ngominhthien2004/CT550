@@ -12,7 +12,7 @@ import { getMyMessages, markMessageRead, userApi, messageApi, reportApi } from '
 import { useMessageStore } from '../stores/message.store'
 import { useSocket } from '../composables/useSocket'
 
-import { formatShortDate } from '../utils/date.js'
+import { formatShortDate, formatDateOnly } from '../utils/date.js'
 
 const isNavCollapsed = ref(true)
 const selectedThreadId = ref('')
@@ -67,21 +67,12 @@ function getThreadTimestamp(message) {
   return Math.max(getTimestamp(message?.createdAt), getTimestamp(message?.updatedAt), getTimestamp(message?.readAt))
 }
 
-const dayFormatOptions = { month: 'short', day: 'numeric', year: 'numeric' }
-const timeFormatOptions = { hour: '2-digit', minute: '2-digit' }
-
-function formatDateValue(value, options) {
-  const timestamp = getTimestamp(value)
-  if (!timestamp) return ''
-  return new Date(timestamp).toLocaleString([], options)
-}
-
 function formatMessageTime(value) {
   return formatShortDate(value)
 }
 
 function formatDayLabel(value) {
-  return formatDateValue(value, dayFormatOptions)
+  return formatDateOnly(value)
 }
 
 const allMessages = computed(() => {

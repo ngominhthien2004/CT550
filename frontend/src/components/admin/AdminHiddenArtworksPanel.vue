@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import AdminPagination from './AdminPagination.vue'
+import { formatShortDate } from '../../utils/date.js'
 
 const props = defineProps({
   activeTab: { type: String, required: true },
@@ -8,7 +9,7 @@ const props = defineProps({
   loadingHidden: { type: Boolean, default: false },
   mutating: { type: Boolean, default: false },
   hiddenPagination: { type: Object, default: () => ({ page: 1, pages: 1, total: 0 }) },
-  formatDate: { type: Function, default: (d) => d ? new Date(d).toLocaleDateString() : '-' },
+  formatDate: { type: Function, default: (d) => d ? formatShortDate(d) : '-' },
 })
 const emit = defineEmits(['unhide-artwork', 'go-page'])
 

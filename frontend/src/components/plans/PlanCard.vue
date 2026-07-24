@@ -1,4 +1,6 @@
 <script setup>
+import { formatShortDate } from '../../utils/date.js'
+
 const DEFAULT_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
 const props = defineProps({
@@ -14,12 +16,7 @@ function formatCurrency(amount, currency = 'USD') {
 }
 
 function formatDate(value) {
-  if (!value) return ''
-  try {
-    return new Date(value).toLocaleDateString()
-  } catch {
-    return ''
-  }
+  return formatShortDate(value)
 }
 </script>
 

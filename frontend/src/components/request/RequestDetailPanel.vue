@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { formatShortDate } from '../../utils/date.js'
 
 const props = defineProps({
   request: { type: Object, default: null },
@@ -241,13 +242,13 @@ defineExpose({ updateChatMessages, setChatLoading })
           <div v-if="msg.isSystem" class="chat-message system-message">
             <i class="fa-solid fa-circle-info"></i>
             <span class="msg-content">{{ msg.content }}</span>
-            <span class="msg-time">{{ new Date(msg.createdAt).toLocaleString() }}</span>
+            <span class="msg-time">{{ formatShortDate(msg.createdAt) }}</span>
           </div>
           <!-- User message -->
           <div v-else class="chat-message">
             <div class="msg-header">
               <strong>{{ msg.sender?.displayName || msg.sender?.username || 'Unknown' }}</strong>
-              <span class="msg-time">{{ new Date(msg.createdAt).toLocaleString() }}</span>
+              <span class="msg-time">{{ formatShortDate(msg.createdAt) }}</span>
             </div>
             <p v-if="msg.content" class="msg-content">{{ msg.content }}</p>
             <div v-if="msg.attachments?.length" class="msg-attachments">

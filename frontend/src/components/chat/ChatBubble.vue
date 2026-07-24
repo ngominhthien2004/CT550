@@ -93,7 +93,8 @@ function formatChatTimestamp(ts) {
   if (isNaN(d.getTime())) return ''
   const now = new Date()
   const isToday = d.toDateString() === now.toDateString()
-  const time = d.toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
+  const pad = n => String(n).padStart(2, '0')
+  const time = `${pad(d.getHours())}:${pad(d.getMinutes())}`
   if (isToday) return time
   return `${formatShortDate(ts, locale.value)} ${time}`
 }
