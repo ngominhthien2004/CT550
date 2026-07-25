@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import { useBrowseHistoryStore } from '@/stores/browseHistory.store'
 import { useAuthStore } from '@/stores/auth.store'
+import ArtworkCard from '@/components/artwork/ArtworkCard.vue'
 
 import { formatShortDate } from '../utils/date.js'
 import { typeLabelMap, buildTypeTabs } from '../utils/typeTabs'
@@ -111,13 +112,6 @@ function timeAgo(dateStr) {
   return formatDate(dateStr)
 }
 
-function getImage(item) {
-  if (!item?.artwork) return ''
-  const images = item.artwork.images
-  if (Array.isArray(images) && images.length > 0) return images[0]
-  if (typeof images === 'string' && images) return images
-  return ''
-}
 </script>
 
 <template>
@@ -216,12 +210,8 @@ function getImage(item) {
       <!-- Loading -->
       <div v-if="loading" class="loading-state">
         <div class="card-grid">
-          <div v-for="i in 6" :key="'sk-' + i" class="history-card skeleton">
-            <div class="card-cover skeleton-pulse"></div>
-            <div class="card-meta">
-              <div class="skeleton-line title"></div>
-              <div class="skeleton-line author"></div>
-            </div>
+          <div v-for="i in 6" :key="'sk-' + i" class="skeleton-card skeleton-pulse">
+            <div class="skeleton-thumb"></div>
           </div>
         </div>
       </div>
@@ -258,47 +248,17 @@ function getImage(item) {
 
       <!-- Grid -->
       <div v-else class="card-grid">
-        <article
+        <div
           v-for="entry in processedHistory"
           :key="entry._id"
           class="history-card"
         >
-          <div class="card-cover-wrapper">
-            <router-link :to="`/artworks/${entry.artwork._id}`" class="card-cover-link">
-              <img
-                v-if="getImage(entry)"
-                :src="getImage(entry)"
-                :alt="entry.artwork.title"
-                loading="lazy"
-              />
-              <div v-else class="card-placeholder"></div>
-            </router-link>
-            <span class="time-badge">{{ entry._timeAgo }}</span>
+          <ArtworkCard :item="entry.artwork" hide-series-badge />
+          <div class="card-footer">
+            <span class="time-badge"><i class="fa-regular fa-clock"></i> {{ entry._timeAgo }}</span>
+            <span class="footer-stat"><i class="fa-regular fa-eye"></i> {{ entry.artwork.viewCount || 0 }}</span>
           </div>
-          <div class="card-meta">
-            <router-link :to="`/artworks/${entry.artwork._id}`" class="card-title">
-              {{ entry.artwork.title }}
-            </router-link>
-            <router-link
-              v-if="entry.artwork.user?._id"
-              :to="`/account?user=${entry.artwork.user._id}`"
-              class="card-author"
-            >
-              <img
-                :src="entry.artwork.user?.avatar || 'https://s.pximg.net/common/images/no_profile.png'"
-                class="author-avatar"
-                :alt="entry.artwork.user?.displayName || entry.artwork.user?.username"
-                @error="(e) => (e.target.src = 'https://s.pximg.net/common/images/no_profile.png')"
-              />
-              <span>{{ entry.artwork.user?.displayName || entry.artwork.user?.username }}</span>
-            </router-link>
-            <div class="card-stats">
-              <span><i class="fa-regular fa-heart"></i> {{ entry.artwork.likeCount || 0 }}</span>
-              <span><i class="fa-regular fa-bookmark"></i> {{ entry.artwork.bookmarkCount || 0 }}</span>
-              <span><i class="fa-regular fa-eye"></i> {{ entry.artwork.viewCount || 0 }}</span>
-            </div>
-          </div>
-        </article>
+        </div>
       </div>
 
       <!-- Pagination -->
@@ -587,111 +547,48 @@ function getImage(item) {
   transition: transform 0.3s ease;
 }
 
-.card-cover-link:hover img {
-  transform: scale(1.03);
-}
-
-.card-placeholder {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  background: linear-gradient(135deg, var(--surface-alt), var(--surface));
-}
-
 .time-badge {
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  font-size: 0.68rem;
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 4px;
-  pointer-events: none;
-}
-
-/* Meta */
-.card-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-
-.card-title {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--brand);
-  text-decoration: none;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.35;
-}
-
-.card-title:hover {
-  text-decoration: underline;
-}
-
-.card-author {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  text-decoration: none;
-  color: var(--muted);
-  font-size: 0.76rem;
-  min-width: 0;
-}
-
-.card-author:hover {
-  color: var(--accent);
-}
-
-.author-avatar {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  background: var(--surface-alt);
-}
-
-.card-author span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.card-stats {
-  display: flex;
-  gap: 0.65rem;
   font-size: 0.72rem;
   color: var(--muted);
-  margin-top: 0.15rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0.15rem;
+}
+
+.footer-stat {
+  font-size: 0.72rem;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 /* Skeleton */
-.skeleton .card-cover {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 12px;
-}
-
-.skeleton-line {
-  height: 12px;
-  border-radius: 4px;
-  background: var(--line);
-}
-
-.skeleton-line.title { width: 70%; }
-.skeleton-line.author { width: 50%; }
-
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
 
 .skeleton-pulse { animation: pulse 1.5s ease-in-out infinite; }
+
+.skeleton-card {
+  background: var(--surface-alt);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.skeleton-thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--line);
+}
 
 /* Empty / Error */
 .empty-state {
