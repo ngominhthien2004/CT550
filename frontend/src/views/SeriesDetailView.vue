@@ -33,9 +33,11 @@ const series = computed(() => seriesStore.currentSeries)
 
 const processedArtworks = computed(() => {
   if (!series.value?.artworks?.length) return []
+  const seriesUser = series.value.user
   return series.value.artworks.map(artwork => ({
     ...artwork,
     _icon: getSeriesIcon(artwork.type || series.value?.type),
+    user: seriesUser,
   }))
 })
 

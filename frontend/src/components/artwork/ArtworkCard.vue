@@ -10,6 +10,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  hideSeriesBadge: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const router = useRouter()
@@ -92,7 +96,7 @@ function getImageCount(item) {
       </R18BlurOverlay>
 
       <router-link
-        v-if="item.series"
+        v-if="item.series && !hideSeriesBadge"
         :to="`/series/${item.series}`"
         class="card-series-badge"
         :aria-label="$t('series.series')"
