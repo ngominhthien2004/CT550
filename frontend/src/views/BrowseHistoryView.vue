@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, computed, ref } from 'vue'
+import { onMounted, computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import { useBrowseHistoryStore } from '@/stores/browseHistory.store'
@@ -7,7 +7,7 @@ import { useAuthStore } from '@/stores/auth.store'
 import ArtworkCard from '@/components/artwork/ArtworkCard.vue'
 
 import { formatShortDate } from '../utils/date.js'
-import { typeLabelMap, buildTypeTabs } from '../utils/typeTabs'
+import { typeLabelMap } from '../utils/typeTabs'
 
 
 const { t } = useI18n()
@@ -37,19 +37,54 @@ const hasActiveFilters = computed(() =>
 )
 
 const activeType = ref('')
-
-const currentPageCount = computed(() => historyEntries.value.filter(entry => entry.artwork).length)
+const cachedTypeTabs = ref([])
+const cachedFullTotal = ref(0)
 
 const typeTabs = computed(() => {
-  const allTab = currentPageCount.value > 0 ? [{ value: '', label: 'All', count: currentPageCount.value }] : []
-  return [
+  const counts = browseHistoryStore.typeCounts || {}
+  const typeEntries = Object.entries(counts)
+    .filter(([, c]) => c > 0)
+    .sort(([a], [b]) => {
+      const order = Object.keys(typeLabelMap)
+      return order.indexOf(a) - order.indexOf(b)
+    })
+
+  if (activeType.value && cachedTypeTabs.value.length > 0) {
+    const allTab = cachedFullTotal.value > 0 ? { value: '', label: 'All', count: cachedFullTotal.value } : null
+    const tabs = allTab ? [allTab, ...cachedTypeTabs.value.filter(t => t.value !== '')] : cachedTypeTabs.value
+    return tabs.map(t => {
+      if (!t.value || t.value === activeType.value) {
+        return { ...t, count: !t.value ? cachedFullTotal.value : (counts[t.value] || 0) }
+      }
+      return t
+    })
+  }
+  const allTab = (cachedFullTotal.value || total.value) > 0 ? [{ value: '', label: 'All', count: cachedFullTotal.value || total.value }] : []
+  const tabs = [
     ...allTab,
-    ...buildTypeTabs(historyEntries.value, (entry) => String(entry.artwork?.type || '').toLowerCase()),
+    ...typeEntries.map(([type, count]) => ({
+      value: type,
+      label: typeLabelMap[type] || type.charAt(0).toUpperCase() + type.slice(1),
+      count,
+    })),
   ]
+  if (!activeType.value && tabs.length > 1) {
+    cachedTypeTabs.value = tabs
+  }
+  return tabs
+})
+
+// Keep cachedFullTotal in sync with the full total (from API responses without type filter)
+watch(() => browseHistoryStore.total, (newTotal) => {
+  if (!browseHistoryStore.filterType && !browseHistoryStore.loading) {
+    cachedFullTotal.value = newTotal
+  }
 })
 
 function selectType(type) {
-  activeType.value = activeType.value === type ? '' : type
+  const newType = activeType.value === type ? '' : type
+  activeType.value = newType
+  browseHistoryStore.setType(newType)
 }
 
 const processedHistory = computed(() => {
@@ -66,6 +101,8 @@ const processedHistory = computed(() => {
 })
 
 onMounted(() => {
+  browseHistoryStore.filterType = ''
+  activeType.value = ''
   browseHistoryStore.fetchHistory(1)
 })
 
@@ -145,10 +182,6 @@ function timeAgo(dateStr) {
             </button>
           </div>
         </div>
-        <p class="page-subtitle">
-          Showing {{ currentPageCount }} of <strong>{{ total }}</strong> artworks viewed
-          <span v-if="totalPages > 1">— page {{ currentPage }} of {{ totalPages }}</span>
-        </p>
       </div>
 
       <!-- Type Tabs -->
@@ -233,26 +266,12 @@ function timeAgo(dateStr) {
 
       <!-- Empty -->
       <div v-else-if="historyEntries.length === 0" class="empty-state">
-        <div class="card-grid">
-          <div v-for="i in 6" :key="'empty-' + i" class="history-card empty-card">
-            <div class="card-cover-wrapper">
-              <div class="card-placeholder empty-placeholder">
-                <i class="fa-regular fa-clock"></i>
-              </div>
-            </div>
-            <div class="card-meta">
-              <span class="empty-label">{{ $t('browseHistory.noHistory') }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="empty-overlay">
-          <i class="fa-regular fa-clock"></i>
-          <h3>{{ $t('browseHistory.noHistory') }}</h3>
-          <p>Artworks you view will appear here</p>
-          <router-link to="/discovery" class="btn-explore">
-            <i class="fa-regular fa-compass"></i> Explore artworks
-          </router-link>
-        </div>
+        <i class="fa-regular fa-clock"></i>
+        <h3>{{ $t('browseHistory.noHistory') }}</h3>
+        <p>Artworks you view will appear here</p>
+        <router-link to="/discovery" class="btn-explore">
+          <i class="fa-regular fa-compass"></i> Explore artworks
+        </router-link>
       </div>
 
       <!-- Grid -->
@@ -594,56 +613,29 @@ function timeAgo(dateStr) {
 
 /* Empty / Error */
 .empty-state {
-  position: relative;
-}
-
-.empty-card {
-  pointer-events: none;
-}
-
-.empty-placeholder {
-  display: grid;
-  place-items: center;
-  background: var(--surface-alt);
-  color: var(--muted);
-  font-size: 2rem;
-  opacity: 0.4;
-}
-
-.empty-label {
-  font-size: 0.78rem;
-  color: var(--muted);
-  opacity: 0.5;
-}
-
-.empty-overlay {
-  position: absolute;
-  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(var(--bg-rgb, 15, 23, 42), 0.85);
-  backdrop-filter: blur(4px);
-  border-radius: 12px;
+  padding: 4rem 2rem;
   text-align: center;
-  padding: 2rem;
 }
 
-.empty-overlay i {
-  font-size: 2.5rem;
+.empty-state i {
+  font-size: 3rem;
   color: var(--muted);
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  opacity: 0.4;
 }
 
-.empty-overlay h3 {
+.empty-state h3 {
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text);
   margin: 0 0 0.3rem;
 }
 
-.empty-overlay p {
+.empty-state p {
   font-size: 0.85rem;
   color: var(--muted);
   margin: 0 0 1.25rem;

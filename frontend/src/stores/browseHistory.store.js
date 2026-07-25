@@ -13,6 +13,8 @@ export const useBrowseHistoryStore = defineStore('browseHistory', {
     filterFrom: '',
     filterTo: '',
     filterCreator: '',
+    filterType: '',
+    typeCounts: {},
   }),
 
   actions: {
@@ -25,12 +27,14 @@ export const useBrowseHistoryStore = defineStore('browseHistory', {
         if (this.filterFrom) params.set('from', this.filterFrom)
         if (this.filterTo) params.set('to', this.filterTo)
         if (this.filterCreator) params.set('creator', this.filterCreator)
+        if (this.filterType) params.set('type', this.filterType)
 
         const res = await api.get(`/users/me/history?${params.toString()}`)
         this.entries = res.data.entries
         this.total = res.data.total
         this.page = res.data.page
         this.pages = res.data.pages
+        this.typeCounts = res.data.typeCounts || {}
       } catch (err) {
         this.error = err.response?.data?.message || 'Failed to load browsing history'
       } finally {
@@ -40,6 +44,11 @@ export const useBrowseHistoryStore = defineStore('browseHistory', {
 
     setSearch(value) {
       this.search = value
+      this.fetchHistory(1)
+    },
+
+    setType(type) {
+      this.filterType = type
       this.fetchHistory(1)
     },
 
@@ -67,6 +76,7 @@ export const useBrowseHistoryStore = defineStore('browseHistory', {
         this.total = 0
         this.page = 1
         this.pages = 0
+        this.typeCounts = {}
       } catch (err) {
         this.error = err.response?.data?.message || 'Failed to clear history'
       } finally {

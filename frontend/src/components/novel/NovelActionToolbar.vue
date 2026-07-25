@@ -6,6 +6,8 @@ defineProps({
   isBookmarked: { type: Boolean, default: false },
   likeLoading: { type: Boolean, default: false },
   bookmarkLoading: { type: Boolean, default: false },
+  likeCount: { type: Number, default: 0 },
+  bookmarkCount: { type: Number, default: 0 },
 })
 
 const emit = defineEmits(['toggle-like', 'toggle-bookmark', 'report'])
@@ -83,6 +85,7 @@ onUnmounted(() => {
       @click="emit('toggle-like')"
     >
       <i :class="[isLiked ? 'fa-solid' : 'fa-regular', 'fa-heart']" aria-hidden="true"></i>
+      <span v-if="likeCount > 0" class="action-count">{{ likeCount }}</span>
     </button>
 
     <button
@@ -94,6 +97,7 @@ onUnmounted(() => {
       @click="emit('toggle-bookmark')"
     >
       <i :class="[isBookmarked ? 'fa-solid' : 'fa-regular', 'fa-bookmark']" aria-hidden="true"></i>
+      <span v-if="bookmarkCount > 0" class="action-count">{{ bookmarkCount }}</span>
     </button>
 
     <button type="button" class="icon-btn" aria-label="Share" @click="handleShare">
@@ -128,6 +132,7 @@ onUnmounted(() => {
 }
 
 .icon-btn {
+  position: relative;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
@@ -159,6 +164,24 @@ onUnmounted(() => {
 
 .more-btn-wrapper {
   position: relative;
+}
+
+.action-count {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 /* Novel more menu item sizing override */

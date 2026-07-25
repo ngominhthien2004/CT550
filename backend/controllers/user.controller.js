@@ -741,7 +741,7 @@ const getBrowseHistory = async (req, res, next) => {
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 20;
     const skip = (page - 1) * limit;
-    const { search, from, to, creator } = req.query;
+    const { search, from, to, creator, type } = req.query;
 
     const historyFilter = { user: req.user._id };
 
@@ -751,33 +751,84 @@ const getBrowseHistory = async (req, res, next) => {
       if (to) historyFilter.createdAt.$lte = new Date(to);
     }
 
-    if (search || creator) {
-      const artworkFilter = {};
-      if (search) artworkFilter.title = { $regex: search, $options: 'i' };
-      if (creator) artworkFilter.user = creator;
+    const artworkFilter = {};
+    if (search) artworkFilter.title = { $regex: search, $options: 'i' };
+    if (creator) artworkFilter.user = creator;
+    if (type) artworkFilter.type = type;
 
+    if (Object.keys(artworkFilter).length > 0) {
       const Artwork = require('../models/Artwork');
       const matchingArtworks = await Artwork.find(artworkFilter).select('_id').lean();
       historyFilter.artwork = { $in: matchingArtworks.map(a => a._id) };
     }
 
-    const [entries, total] = await Promise.all([
-      BrowseHistory.find(historyFilter)
-        .populate({
-          path: 'artwork',
-          populate: [
-            { path: 'user', select: 'username displayName avatar' },
-            { path: 'tags', select: 'name' },
-          ],
-        })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      BrowseHistory.countDocuments(historyFilter),
+    // Count only entries with artwork that still exists
+    const countResult = await BrowseHistory.aggregate([
+      { $match: historyFilter },
+      {
+        $lookup: {
+          from: 'artworks',
+          localField: 'artwork',
+          foreignField: '_id',
+          as: 'artworkDoc',
+        },
+      },
+      { $match: { 'artworkDoc.0': { $exists: true } } },
+      { $count: 'total' },
     ]);
+    const total = countResult.length > 0 ? countResult[0].total : 0;
 
-    res.json({ entries, total, page, pages: Math.ceil(total / limit) });
+    const entries = await BrowseHistory.find(historyFilter)
+      .populate({
+        path: 'artwork',
+        populate: [
+          { path: 'user', select: 'username displayName avatar' },
+          { path: 'tags', select: 'name' },
+        ],
+      })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Build type counts for all types (ignoring type filter)
+    const typeCountFilter = { ...historyFilter };
+    // Remove any type-specific artwork filter for the type counts
+    if (type && Object.keys(artworkFilter).length === 1 && artworkFilter.type) {
+      // Only type filter was applied — remove it for typeCounts
+      delete typeCountFilter.artwork;
+    } else if (type) {
+      // Type + other filters — rebuild artwork filter without type
+      const { type: _, ...restArtworkFilter } = artworkFilter;
+      if (Object.keys(restArtworkFilter).length > 0) {
+        const Artwork = require('../models/Artwork');
+        const matchingArtworks = await Artwork.find(restArtworkFilter).select('_id').lean();
+        typeCountFilter.artwork = { $in: matchingArtworks.map(a => a._id) };
+      } else {
+        delete typeCountFilter.artwork;
+      }
+    }
+
+    // Get type distribution via aggregation
+    const typeAgg = await BrowseHistory.aggregate([
+      { $match: typeCountFilter },
+      {
+        $lookup: {
+          from: 'artworks',
+          localField: 'artwork',
+          foreignField: '_id',
+          as: 'artworkDoc',
+        },
+      },
+      { $unwind: { path: '$artworkDoc', preserveNullAndEmptyArrays: false } },
+      { $group: { _id: '$artworkDoc.type', count: { $sum: 1 } } },
+    ]);
+    const typeCounts = {};
+    typeAgg.forEach((tc) => {
+      if (tc._id) typeCounts[tc._id] = tc.count;
+    });
+
+    res.json({ entries, total, page, pages: Math.ceil(total / limit), typeCounts });
   } catch (error) {
     next(error);
   }
