@@ -1,10 +1,9 @@
 <script setup>
-import { provide } from 'vue'
+import { provide, ref, computed } from 'vue'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { AccountProfileSection, AccountLoggedOutPrompt } from '@/components/account'
 import { useProfilePage } from '../composables/useProfilePage'
 import { toggleNavCollapsed } from '../utils/viewNavigation'
-import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const isNavCollapsed = ref(true)
@@ -39,15 +38,15 @@ provide('showFeaturedWorks', state.showFeaturedWorks)
 provide('bookmarkTypeTabs', state.bookmarkTypeTabs)
 provide('activeBookmarkType', state.activeBookmarkType)
 provide('visibleBookmarks', state.visibleBookmarks)
-provide('bookmarkLoading', state.bookmarkStore.loading)
-provide('bookmarkError', state.bookmarkStore.error)
+provide('bookmarkLoading', computed(() => state.bookmarkStore.loading))
+provide('bookmarkError', computed(() => state.bookmarkStore.error))
 provide('bookmarkHasMore', state.bookmarkHasMore)
 provide('bookmarkLimit', state.bookmarkLimit)
 provide('likeTypeTabs', state.likeTypeTabs)
 provide('activeLikeType', state.activeLikeType)
 provide('visibleLikes', state.visibleLikes)
-provide('likeLoading', state.likeStore.loading)
-provide('likeError', state.likeStore.error)
+provide('likeLoading', computed(() => state.likeStore.loading))
+provide('likeError', computed(() => state.likeStore.error))
 provide('likeHasMore', state.likeHasMore)
 provide('likeLimit', state.likeLimit)
 provide('requestTerms', state.requestTerms)
