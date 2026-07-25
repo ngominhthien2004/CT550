@@ -46,7 +46,6 @@ const displayItems = computed(() => {
   return list
 })
 
-const filteredCount = computed(() => props.items.length)
 </script>
 
 <template>
@@ -77,16 +76,7 @@ const filteredCount = computed(() => props.items.length)
       </button>
     </div>
 
-    <!-- Header -->
-    <div class="section-header">
-      <div class="section-heading">
-        <h3>{{ heading }}</h3>
-        <span v-if="filteredCount" class="section-badge">{{ filteredCount }}</span>
-      </div>
-      <span v-if="activeType" class="filter-note">{{ activeType }}</span>
-    </div>
-
-    <!-- Loading state -->
+<!-- Loading state -->
     <div v-if="loading && !displayItems.length" class="section-note">
       <SkeletonLoader type="card" :count="6" />
     </div>
@@ -166,44 +156,6 @@ const filteredCount = computed(() => props.items.length)
 .type-count {
   font-size: 0.72rem;
   color: var(--muted);
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.8rem;
-}
-
-.section-heading {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-}
-
-.section-header h3 {
-  margin: 0;
-  font-size: 1.05rem;
-}
-
-.section-badge {
-  min-width: 1.3rem;
-  height: 1.3rem;
-  padding: 0 0.35rem;
-  border-radius: 999px;
-  background: var(--surface-alt);
-  color: var(--text);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-.filter-note {
-  color: var(--muted);
-  font-size: 0.8rem;
-  text-transform: capitalize;
 }
 
 .section-note {
