@@ -38,9 +38,14 @@ const hasActiveFilters = computed(() =>
 
 const activeType = ref('')
 
-const typeTabs = computed(() =>
-  buildTypeTabs(historyEntries.value, (entry) => String(entry.artwork?.type || '').toLowerCase()),
-)
+const typeTabs = computed(() => {
+  const allCount = historyEntries.value.filter(entry => entry.artwork).length
+  const allTab = allCount > 0 ? [{ value: '', label: 'All', count: allCount }] : []
+  return [
+    ...allTab,
+    ...buildTypeTabs(historyEntries.value, (entry) => String(entry.artwork?.type || '').toLowerCase()),
+  ]
+})
 
 function selectType(type) {
   activeType.value = activeType.value === type ? '' : type
@@ -296,7 +301,8 @@ function timeAgo(dateStr) {
 <style scoped>
 .browse-history-page {
   max-width: 1100px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: 1.5rem 0;
 }
 
