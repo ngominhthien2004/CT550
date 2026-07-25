@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useChatStore } from '../../stores/chat.store'
 import { formatShortDate } from '../../utils/date.js'
 import { useAgentExecutor } from '../../composables/useAgentExecutor'
