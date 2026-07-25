@@ -19,7 +19,9 @@ export const useLikeStore = defineStore('likes', {
       this.error = ''
       try {
         const { data } = await getMyLikes(params)
-        this.items = data.likes || []
+        const rawItems = data.likes || []
+        // Filter out likes whose artwork has been deleted
+        this.items = rawItems.filter((item) => item?.artwork)
 
         // Pre-populate statusByArtwork so ArtworkCard shows red hearts immediately
         this.items.forEach((item) => {

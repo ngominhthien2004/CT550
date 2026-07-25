@@ -19,7 +19,9 @@ export const useBookmarkStore = defineStore('bookmarks', {
       this.error = ''
       try {
         const { data } = await getMyBookmarks(params)
-        this.items = data.bookmarks || []
+        const rawItems = data.bookmarks || []
+        // Filter out bookmarks whose artwork has been deleted
+        this.items = rawItems.filter((item) => item?.artwork)
 
         // Pre-populate statusByArtwork so BookmarkCard shows filled icons immediately
         this.items.forEach((item) => {

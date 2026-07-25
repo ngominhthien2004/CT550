@@ -11,6 +11,12 @@ const { createNotification } = require('../utils/notification');
 const { detectAIWithHuggingFace } = require('../services/huggingface.service');
 const { buildDateFilter } = require('../utils/dateFilter');
 
+const Like = require('../models/Like');
+const Bookmark = require('../models/Bookmark');
+const Comment = require('../models/Comment');
+const Notification = require('../models/Notification');
+const Series = require('../models/Series');
+
 const { getSimilarArtworks: getSimilarArtworksService } = require('../services/similarity.service');
 const fs = require('fs');
 const path = require('path');
@@ -472,6 +478,24 @@ const deleteArtwork = async (req, res, next) => {
         }
 
         await artwork.deleteOne();
+
+        // Clean up related data
+        await Promise.all([
+          Like.deleteMany({ artwork: artwork._id }),
+          Bookmark.deleteMany({ artwork: artwork._id }),
+          Comment.deleteMany({ artwork: artwork._id }),
+          BrowseHistory.deleteMany({ artwork: artwork._id }),
+          ReadingProgress.deleteMany({ artwork: artwork._id }),
+          ViewEvent.deleteMany({ artwork: artwork._id }),
+          ArtworkReport.deleteMany({ artwork: artwork._id }),
+          Notification.deleteMany({ artwork: artwork._id }),
+          // Remove artwork reference from any series it belongs to
+          Series.updateMany(
+            { artworks: artwork._id },
+            { $pull: { artworks: artwork._id } },
+          ),
+        ]);
+
         // Invalidate cached listings
         delByPrefix('artworks:list');
         delByPrefix('artworks:similar');
