@@ -216,7 +216,7 @@ export function useProfilePage() {
     try {
       const page = append ? bookmarkPage.value : 1
       const { data } = await getMyBookmarks({ page, limit: BOOKMARKS_PER_PAGE })
-      const items = data.bookmarks || []
+      const items = (data.bookmarks || []).filter((item) => item?.artwork)
       if (append) {
         bookmarkStore.items = [...bookmarkStore.items, ...items]
         bookmarkPage.value++
@@ -254,7 +254,7 @@ export function useProfilePage() {
     try {
       const page = append ? likePage.value : 1
       const { data } = await getMyLikes({ page, limit: LIKES_PER_PAGE })
-      const items = data.likes || []
+      const items = (data.likes || []).filter((item) => item?.artwork)
       items.forEach((item) => {
         const artworkId = item?.artwork?._id || item?.artwork
         if (artworkId) likeStore.statusByArtwork[artworkId] = true
