@@ -61,9 +61,9 @@ const workTypeTabs = [
 ]
 
 const homeHeading = computed(() => {
-  if (!activeType || activeType === 'all') return 'All'
-  const match = typeTabs.value.find(t => t.value === activeType)
-  return match ? match.label : activeType
+  if (!activeType.value || activeType.value === 'all') return 'All'
+  const match = typeTabs.value.find(t => t.value === activeType.value)
+  return match ? match.label : activeType.value
 })
 </script>
 
