@@ -256,7 +256,6 @@ function timeAgo(dateStr) {
           <ArtworkCard :item="entry.artwork" hide-series-badge />
           <div class="card-footer">
             <span class="time-badge"><i class="fa-regular fa-clock"></i> {{ entry._timeAgo }}</span>
-            <span class="footer-stat"><i class="fa-regular fa-eye"></i> {{ entry.artwork.viewCount || 0 }}</span>
           </div>
         </div>
       </div>
@@ -560,14 +559,6 @@ function timeAgo(dateStr) {
   align-items: center;
   gap: 0.75rem;
   padding: 0 0.15rem;
-}
-
-.footer-stat {
-  font-size: 0.72rem;
-  color: var(--muted);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
 }
 
 /* Skeleton */
