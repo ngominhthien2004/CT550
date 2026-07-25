@@ -38,9 +38,10 @@ const hasActiveFilters = computed(() =>
 
 const activeType = ref('')
 
+const currentPageCount = computed(() => historyEntries.value.filter(entry => entry.artwork).length)
+
 const typeTabs = computed(() => {
-  const allCount = historyEntries.value.filter(entry => entry.artwork).length
-  const allTab = allCount > 0 ? [{ value: '', label: 'All', count: allCount }] : []
+  const allTab = currentPageCount.value > 0 ? [{ value: '', label: 'All', count: currentPageCount.value }] : []
   return [
     ...allTab,
     ...buildTypeTabs(historyEntries.value, (entry) => String(entry.artwork?.type || '').toLowerCase()),
@@ -144,7 +145,10 @@ function timeAgo(dateStr) {
             </button>
           </div>
         </div>
-        <p class="page-subtitle">{{ total }} artwork{{ total !== 1 ? 's' : '' }} viewed</p>
+        <p class="page-subtitle">
+          Showing {{ currentPageCount }} of <strong>{{ total }}</strong> artworks viewed
+          <span v-if="totalPages > 1">— page {{ currentPage }} of {{ totalPages }}</span>
+        </p>
       </div>
 
       <!-- Type Tabs -->
@@ -265,8 +269,8 @@ function timeAgo(dateStr) {
         </div>
       </div>
 
-      <!-- Pagination -->
-      <nav v-if="totalPages > 1" class="pagination-bar">
+      <!-- Pagination (hidden when filtering by type — client-side filter vs server-side pagination don't mix) -->
+      <nav v-if="totalPages > 1 && !activeType" class="pagination-bar">
         <button
           type="button"
           class="page-btn"
@@ -302,6 +306,7 @@ function timeAgo(dateStr) {
 .browse-history-page {
   max-width: 1100px;
   width: 100%;
+  justify-self: center;
   margin: 0;
   padding: 1.5rem 0;
 }
