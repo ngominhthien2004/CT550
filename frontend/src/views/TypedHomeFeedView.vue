@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid, HomeFeedColumn, HomeHeroBanner, HomeRecommendedUsers, HomeTabs, HomeTagStrip } from '@/components/home'
 import { getArtworks, bannerApi, userApi } from '../services/api'
+import CustomSelect from '@/components/common/CustomSelect.vue'
 
 import { useFollowStore } from '../stores/follow.store'
 import { useAuthStore } from '../stores/auth.store'
@@ -50,6 +51,12 @@ const normalizedWorks = computed(() =>
 const spotlightWorks = computed(() => normalizedWorks.value.slice(0, 12))
 const feedWorks = computed(() => normalizedWorks.value.slice(12, 26))
 const isNovelPage = computed(() => props.workType === 'novel')
+
+const novelSortOptions = computed(() => [
+  { value: 'newest', label: t('home.newest') },
+  { value: 'views', label: t('home.mostViewed') },
+  { value: 'likes', label: t('home.mostLiked') },
+])
 
 function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
@@ -224,11 +231,7 @@ watch(
         <!-- Novel-specific filter bar -->
         <div v-if="isNovelPage" class="novel-filter-bar">
           <label class="nf-sort">
-            <select v-model="novelSortBy" aria-label="Novel sort by">
-              <option value="newest">{{ $t('home.newest') }}</option>
-              <option value="views">{{ $t('home.mostViewed') }}</option>
-              <option value="likes">{{ $t('home.mostLiked') }}</option>
-            </select>
+            <CustomSelect v-model="novelSortBy" :options="novelSortOptions" />
           </label>
         </div>
 

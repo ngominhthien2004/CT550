@@ -3,9 +3,7 @@
     <div class="chart-header">
       <h5 class="chart-title">{{ title }}</h5>
       <div class="chart-header-controls">
-        <select v-if="sortOptions" v-model="localSort" @change="$emit('update:sort', localSort)" class="sort-select">
-          <option v-for="opt in sortOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
-        </select>
+        <CustomSelect v-if="sortOptions" v-model="localSort" :options="sortOptions" />
       </div>
     </div>
     <div class="chart-wrapper">
@@ -21,6 +19,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { Bar } from 'vue-chartjs'
+import CustomSelect from '@/components/common/CustomSelect.vue'
 import {
   Chart as ChartJS,
   CategoryScale,

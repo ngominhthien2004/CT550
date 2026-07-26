@@ -1,5 +1,7 @@
 <script setup>
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import CustomSelect from '@/components/common/CustomSelect.vue'
 
 const props = defineProps({
   filters: {
@@ -24,6 +26,13 @@ const sortOptions = [
   { value: 'priceDesc', labelKey: 'bookstore.sortPriceDesc' },
   { value: 'popular', labelKey: 'bookstore.sortPopular' },
 ]
+
+const bookSortOptions = computed(() =>
+  sortOptions.map((opt) => ({
+    value: opt.value,
+    label: t(opt.labelKey),
+  }))
+)
 
 function updateField(field, value) {
   emit('update:filters', { ...props.filters, [field]: value })
@@ -51,11 +60,7 @@ function submitSearch() {
         </div>
       </div>
 
-      <select class="form-select filter-select" :value="filters.sort" @change="updateField('sort', $event.target.value)">
-        <option v-for="option in sortOptions" :key="option.value" :value="option.value">
-          {{ t(option.labelKey) }}
-        </option>
-      </select>
+      <CustomSelect :model-value="filters.sort" :options="bookSortOptions" @update:modelValue="(v) => updateField('sort', v)" />
     </div>
 
     <div class="filter-row price-row">

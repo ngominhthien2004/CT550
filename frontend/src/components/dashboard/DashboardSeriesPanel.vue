@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n'
 import { formatShortDate } from '../../utils/date.js'
 import CreateSeriesModal from './CreateSeriesModal.vue'
 import { useSeriesCover } from '@/composables/useSeriesCover'
+import CustomSelect from '@/components/common/CustomSelect.vue'
 import { typeLabelMap } from '../../utils/typeTabs'
 
 // Wrapper for template use — composable returns a ComputedRef; .value unwraps it.
@@ -20,6 +21,11 @@ const { t, locale } = useI18n()
 const showCreateModal = ref(false)
 const createType = ref('illust')
 const sortOrder = ref('newest')
+
+const seriesSortOptions = computed(() => [
+  { value: 'newest', label: t('dashboard.newestFirst') },
+  { value: 'oldest', label: t('dashboard.oldestFirst') },
+])
 
 const activeType = computed(() => route.query.type || 'all')
 
@@ -55,8 +61,8 @@ function setTypeFilter(type) {
   }
 }
 
-function changeSort(event) {
-  sortOrder.value = event.target.value
+function changeSort(value) {
+  sortOrder.value = value
   seriesStore.fetchMySeries(activeType.value === 'all' ? null : activeType.value, sortOrder.value)
 }
 
@@ -176,10 +182,7 @@ watch(activeType, () => {
     <!-- Header with sort and create button -->
     <div class="series-header">
       <div class="series-sort">
-        <select class="series-sort-select" :value="sortOrder" @change="changeSort" :aria-label="$t('dashboard.sortSeries')">
-          <option value="newest">{{ $t('dashboard.newestFirst') }}</option>
-          <option value="oldest">{{ $t('dashboard.oldestFirst') }}</option>
-        </select>
+        <CustomSelect :model-value="sortOrder" :options="seriesSortOptions" @update:modelValue="changeSort" />
       </div>
       <div class="series-actions">
         <div class="create-dropdown">

@@ -2,6 +2,7 @@
 import { computed, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import DateRangeFilter from '@/components/common/DateRangeFilter.vue'
+import CustomSelect from '@/components/common/CustomSelect.vue'
 
 const { t } = useI18n()
 
@@ -85,6 +86,27 @@ watch(
     }
   },
 )
+
+const targetOptions = computed(() => [
+  { value: 'tag_partial', label: t('search.tagsPartial') },
+  { value: 'tag_exact', label: t('search.tagsPerfect') },
+  { value: 'title', label: t('search.targetTitle') },
+  { value: 'title_caption', label: t('search.titleDescription') },
+  { value: 'all', label: t('search.tagsTitlesDescriptions') },
+])
+
+const typeOptions = computed(() => [
+  { value: 'illust', label: t('search.illustrationType') },
+  { value: 'manga', label: t('search.mangaType') },
+  { value: 'gif', label: t('search.gifType') },
+  { value: 'novel', label: t('search.novelType') },
+])
+
+const seriesOptions = computed(() => [
+  { value: 'all', label: t('search.seriesAll') },
+  { value: 'oneshot', label: t('search.seriesOneshot') },
+  { value: 'series_only', label: t('search.seriesOnly') },
+])
 </script>
 
 <template>
@@ -114,32 +136,17 @@ watch(
           <div class="field-grid">
             <label class="field-block">
               <span class="field-label">{{ $t('search.targets') }}</span>
-              <select v-model="formState.target" :aria-label="$t('search.targets')">
-                <option value="tag_partial">{{ $t('search.tagsPartial') }}</option>
-                <option value="tag_exact">{{ $t('search.tagsPerfect') }}</option>
-                <option value="title">{{ $t('search.targetTitle') }}</option>
-                <option value="title_caption">{{ $t('search.titleDescription') }}</option>
-                <option value="all">{{ $t('search.tagsTitlesDescriptions') }}</option>
-              </select>
+              <CustomSelect v-model="formState.target" :options="targetOptions" />
             </label>
 
             <label class="field-block">
               <span class="field-label">{{ $t('search.workType') }}</span>
-              <select v-model="formState.type" :aria-label="$t('search.workType')">
-                <option value="illust">{{ $t('search.illustrationType') }}</option>
-                <option value="manga">{{ $t('search.mangaType') }}</option>
-                <option value="gif">{{ $t('search.gifType') }}</option>
-                <option value="novel">{{ $t('search.novelType') }}</option>
-              </select>
+              <CustomSelect v-model="formState.type" :options="typeOptions" />
             </label>
 
             <label class="field-block">
               <span class="field-label">{{ $t('search.seriesType') }}</span>
-              <select v-model="formState.series" :aria-label="$t('search.seriesType')">
-                <option value="all">{{ $t('search.seriesAll') }}</option>
-                <option value="oneshot">{{ $t('search.seriesOneshot') }}</option>
-                <option value="series_only">{{ $t('search.seriesOnly') }}</option>
-              </select>
+              <CustomSelect v-model="formState.series" :options="seriesOptions" />
             </label>
           </div>
 

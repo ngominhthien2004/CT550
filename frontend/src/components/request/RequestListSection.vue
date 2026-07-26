@@ -1,5 +1,6 @@
 <script setup>
 import DateRangeFilter from '@/components/common/DateRangeFilter.vue'
+import CustomSelect from '@/components/common/CustomSelect.vue'
 
 defineProps({
   requests: { type: Array, required: true },
@@ -14,6 +15,17 @@ defineProps({
 
 const emit = defineEmits(['select', 'action', 'update:statusFilter', 'update:searchQuery', 'update:dateRange', 'loadAll'])
 
+const statusFilterOptions = [
+  { value: '', label: 'All status' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'in_progress', label: 'In progress' },
+  { value: 'draft_submitted', label: 'Draft submitted' },
+  { value: 'revision', label: 'Revision' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'rejected', label: 'Rejected' },
+  { value: 'cancelled', label: 'Cancelled' },
+]
+
 function statusLabel(value) {
   return String(value || '').replace(/_/g, ' ')
 }
@@ -26,16 +38,7 @@ function statusLabel(value) {
       <button type="button" role="tab" :aria-selected="activeRole === 'requester'" :class="{ active: activeRole === 'requester' }" @click="$emit('update:activeRole', 'requester')">Requester</button>
       <div class="filter-bar">
         <input :value="searchQuery" type="search" placeholder="Search requests..." class="search-input" aria-label="Search requests" @input="emit('update:searchQuery', $event.target.value)" />
-        <select :value="statusFilter" @change="emit('update:statusFilter', $event.target.value); emit('loadAll')" aria-label="Filter by status">
-          <option value="">All status</option>
-          <option value="pending">Pending</option>
-          <option value="in_progress">In progress</option>
-          <option value="draft_submitted">Draft submitted</option>
-          <option value="revision">Revision</option>
-          <option value="completed">Completed</option>
-          <option value="rejected">Rejected</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
+        <CustomSelect :model-value="statusFilter" :options="statusFilterOptions" @update:modelValue="(v) => { emit('update:statusFilter', v); emit('loadAll') }" />
       </div>
     </div>
     <div class="date-filter-row">
