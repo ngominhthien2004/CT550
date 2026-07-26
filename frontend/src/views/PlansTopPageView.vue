@@ -7,6 +7,7 @@ import { HomeTabs } from '@/components/home'
 import PlansHero from '../components/plans/PlansHero.vue'
 import CreatorsStrip from '../components/plans/CreatorsStrip.vue'
 import PlanCard from '../components/plans/PlanCard.vue'
+import CustomSelect from '../components/common/CustomSelect.vue'
 import { requestApi } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useFollowStore } from '../stores/follow.store'
@@ -61,6 +62,12 @@ const typeOptions = computed(() => [
   { value: 'manga', label: t('ranking.manga') },
   { value: 'novel', label: t('ranking.novels') },
   { value: 'gif', label: t('ranking.gif') },
+])
+
+const sortOptions = computed(() => [
+  { value: 'newest', label: t('plan.sortNewest') },
+  { value: 'priceDesc', label: t('plan.sortPriceHighLow') },
+  { value: 'priceAsc', label: t('plan.sortPriceLowHigh') },
 ])
 
 const filteredPlans = computed(() => {
@@ -161,11 +168,7 @@ onMounted(async () => {
                 {{ opt.label }}
               </button>
             </div>
-            <select v-model="sortBy" class="plans-sort-select">
-              <option value="newest">{{ $t('plan.sortNewest') }}</option>
-              <option value="priceDesc">{{ $t('plan.sortPriceHighLow') }}</option>
-              <option value="priceAsc">{{ $t('plan.sortPriceLowHigh') }}</option>
-            </select>
+            <CustomSelect v-model="sortBy" :options="sortOptions" />
           </div>
 
           <div v-if="filteredPlans.length" class="plans-grid plans-grid--wide">
@@ -268,18 +271,6 @@ onMounted(async () => {
   background: var(--accent);
   color: #fff;
   border-color: var(--accent);
-}
-
-.plans-sort-select {
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--text);
-  font-size: 0.78rem;
-  font-weight: 700;
-  padding: 0.35rem 0.85rem;
-  cursor: pointer;
-  min-width: 140px;
 }
 
 .plans-empty {
