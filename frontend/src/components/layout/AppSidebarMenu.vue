@@ -93,7 +93,7 @@ const illuWrlStyleSections = computed(() => {
       label: 'Explore',
       i18nKey: 'nav.groupExplore',
       items: [
-        { id: 'following', label: 'Following', i18nKey: 'nav.following', to: '/newest_by_followed', icon: 'fa-solid fa-users' },
+        { id: 'following', label: 'Following', i18nKey: 'nav.following', to: '/newest_by_following', icon: 'fa-solid fa-users' },
         { id: 'discovery', label: 'Discovery', i18nKey: 'nav.discovery', to: '/discovery', icon: 'fa-regular fa-compass' },
         { id: 'rankings', label: 'Rankings', i18nKey: 'nav.rankings', to: '/rankings', icon: 'fa-solid fa-chart-line' },
         { id: 'favorites', label: 'My Favorite', i18nKey: 'nav.myFavorite', to: '/favorites', icon: 'fa-regular fa-heart' },

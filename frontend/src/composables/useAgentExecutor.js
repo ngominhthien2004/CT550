@@ -18,7 +18,7 @@ const ALLOWED_PATH_PREFIXES = [
   '/plans',
   '/search',
   '/discovery',
-  '/newest_by_followed',
+  '/newest_by_following',
   '/bookmarks',
   '/bookmark',
   '/favorites',

@@ -20,5 +20,6 @@
   "mostLiked": "最もいいねされた",
   "sortPopularity": "人気順",
   "longest": "最長",
-  "shortest": "最短"
+  "shortest": "最短",
+  "novelsByFollowing": "フォロー中の小説"
 }

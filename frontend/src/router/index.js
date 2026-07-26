@@ -78,7 +78,7 @@ const routes = [
   { path: '/search', name: 'search-results', component: SearchResultsView },
   { path: '/search/users', name: 'user-search-results', component: SearchResultsView },
   { path: '/discovery', name: 'discovery', component: DiscoveryView },
-  { path: '/newest_by_followed', name: 'following-newest', component: FollowingNewestView, meta: { requiresAuth: true } },
+  { path: '/newest_by_following', name: 'following-newest', component: FollowingNewestView, meta: { requiresAuth: true } },
   { path: '/bookmarks', redirect: '/account?tab=bookmarks' },
   { path: '/bookmark', redirect: '/account?tab=bookmarks' },
   { path: '/favorites', redirect: '/account?tab=likes' },
