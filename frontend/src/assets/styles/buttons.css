@@ -138,3 +138,42 @@
   padding: 0.32rem 0.5rem;
   font-size: 0.82rem;
 }
+
+/* ── Filter / Clear action buttons ── */
+.btn-filter,
+.btn-clear {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-filter:hover {
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+.btn-filter.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn-clear:hover {
+  background: var(--surface-alt);
+  color: var(--danger);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
