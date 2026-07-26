@@ -2,6 +2,12 @@
   "openPlans": "クリエイターからのオープンプラン",
   "creatorsWithOpenPlans": "オープンプランがあるクリエイター",
   "topByPrice": "価格別トッププラン",
-  "newestPlans": "最新プラン",
+  "allPlans": "すべてのプラン",
+  "sortBy": "並び替え",
+  "sortNewest": "最新",
+  "sortPriceHighLow": "価格: 高い→低い",
+  "sortPriceLowHigh": "価格: 低い→高い",
+  "filterAllTypes": "すべて",
+  "noPlans": "プランが見つかりません",
   "loadFailed": "プランの読み込みに失敗しました。"
 }

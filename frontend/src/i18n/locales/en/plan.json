@@ -2,6 +2,12 @@
   "openPlans": "Open plans from creators",
   "creatorsWithOpenPlans": "Creators with open plans",
   "topByPrice": "Top plans by price",
-  "newestPlans": "Newest plans",
+  "allPlans": "All Plans",
+  "sortBy": "Sort",
+  "sortNewest": "Newest",
+  "sortPriceHighLow": "Price: High → Low",
+  "sortPriceLowHigh": "Price: Low → High",
+  "filterAllTypes": "All types",
+  "noPlans": "No plans found",
   "loadFailed": "Failed to load plans."
 }

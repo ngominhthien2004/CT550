@@ -52,19 +52,38 @@ const topPlans = computed(() =>
   [...plans.value].sort((a, b) => b.targetPrice - a.targetPrice).slice(0, 6),
 )
 
-const newestPlans = computed(() =>
-  [...plans.value].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 12),
-)
+const sortBy = ref('newest')
+const filterType = ref('all')
 
-const plansByWorkType = computed(() => {
-  const groups = {}
-  plans.value.forEach((plan) => {
-    (plan.acceptedWorkTypes || []).forEach((type) => {
-      if (!groups[type]) groups[type] = []
-      groups[type].push(plan)
-    })
-  })
-  return groups
+const typeOptions = computed(() => [
+  { value: 'all', label: t('plan.filterAllTypes') },
+  { value: 'illust', label: t('ranking.illustrations') },
+  { value: 'manga', label: t('ranking.manga') },
+  { value: 'novel', label: t('ranking.novels') },
+  { value: 'gif', label: t('ranking.gif') },
+])
+
+const filteredPlans = computed(() => {
+  let result = [...plans.value]
+
+  if (filterType.value !== 'all') {
+    result = result.filter((p) => (p.acceptedWorkTypes || []).includes(filterType.value))
+  }
+
+  switch (sortBy.value) {
+    case 'priceDesc':
+      result.sort((a, b) => b.targetPrice - a.targetPrice)
+      break
+    case 'priceAsc':
+      result.sort((a, b) => a.targetPrice - b.targetPrice)
+      break
+    case 'newest':
+    default:
+      result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      break
+  }
+
+  return result
 })
 
 async function loadPlans() {
@@ -127,17 +146,39 @@ onMounted(async () => {
         </section>
 
         <section class="plans-section">
-          <h2 class="section-heading">{{ $t('plan.newestPlans') }}</h2>
-          <div class="plans-grid plans-grid--wide">
-            <PlanCard v-for="plan in newestPlans" :key="plan._id" :plan="plan" show-meta />
-          </div>
-        </section>
+          <h2 class="section-heading">{{ $t('plan.allPlans') }}</h2>
 
-        <section v-for="(items, type) in plansByWorkType" :key="type" class="plans-section">
-          <h2 class="section-heading">Plans accepting {{ type }}</h2>
-          <div class="plans-grid">
-            <PlanCard v-for="plan in items.slice(0, 6)" :key="plan._id" :plan="plan" show-accepting show-slots :highlight-type="type" />
+          <div class="plans-filter-bar">
+            <div class="plans-type-filters">
+              <button
+                v-for="opt in typeOptions"
+                :key="opt.value"
+                type="button"
+                class="plans-filter-btn"
+                :class="{ active: filterType === opt.value }"
+                @click="filterType = opt.value"
+              >
+                {{ opt.label }}
+              </button>
+            </div>
+            <select v-model="sortBy" class="plans-sort-select">
+              <option value="newest">{{ $t('plan.sortNewest') }}</option>
+              <option value="priceDesc">{{ $t('plan.sortPriceHighLow') }}</option>
+              <option value="priceAsc">{{ $t('plan.sortPriceLowHigh') }}</option>
+            </select>
           </div>
+
+          <div v-if="filteredPlans.length" class="plans-grid plans-grid--wide">
+            <PlanCard
+              v-for="plan in filteredPlans"
+              :key="plan._id"
+              :plan="plan"
+              show-meta
+              show-slots
+              show-accepting
+            />
+          </div>
+          <p v-else class="plans-state">{{ $t('plan.noPlans') }}</p>
         </section>
       </template>
 
@@ -189,6 +230,56 @@ onMounted(async () => {
 
 .plans-grid--wide {
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.plans-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.plans-type-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.plans-filter-btn {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.plans-filter-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.plans-filter-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.plans-sort-select {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+  min-width: 140px;
 }
 
 .plans-empty {
