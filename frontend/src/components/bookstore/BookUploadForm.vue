@@ -29,6 +29,11 @@ const form = ref({
 
 const coverPreview = ref('')
 const ebookName = ref('')
+const isDraggingCover = ref(false)
+const isDraggingEbook = ref(false)
+
+const coverInputRef = ref(null)
+const ebookInputRef = ref(null)
 
 const isEdit = computed(() => Boolean(props.initialBook))
 
@@ -100,6 +105,46 @@ function handleTagKeydown(event) {
 function submit() {
   emit('submit', { ...form.value })
 }
+
+function handleCoverDragOver(e) {
+  e.preventDefault()
+  isDraggingCover.value = true
+}
+
+function handleCoverDragLeave() {
+  isDraggingCover.value = false
+}
+
+function handleCoverDrop(e) {
+  e.preventDefault()
+  isDraggingCover.value = false
+  const file = e.dataTransfer?.files?.[0]
+  if (!file || !file.type.startsWith('image/')) return
+  const dt = new DataTransfer()
+  dt.items.add(file)
+  const pseudoEvent = { target: { files: dt.files } }
+  onCoverChange(pseudoEvent)
+}
+
+function handleEbookDragOver(e) {
+  e.preventDefault()
+  isDraggingEbook.value = true
+}
+
+function handleEbookDragLeave() {
+  isDraggingEbook.value = false
+}
+
+function handleEbookDrop(e) {
+  e.preventDefault()
+  isDraggingEbook.value = false
+  const file = e.dataTransfer?.files?.[0]
+  if (!file) return
+  const dt = new DataTransfer()
+  dt.items.add(file)
+  const pseudoEvent = { target: { files: dt.files } }
+  onEbookChange(pseudoEvent)
+}
 </script>
 
 <template>
@@ -159,19 +204,39 @@ function submit() {
     </div>
 
     <div class="row g-3">
-      <div class="col-md-6">
+      <div
+        class="col-md-6"
+        :class="{ 'drop-zone--active': isDraggingCover }"
+        @dragover="handleCoverDragOver"
+        @dragleave="handleCoverDragLeave"
+        @drop="handleCoverDrop"
+      >
         <label class="form-label">Cover Image</label>
-        <input type="file" class="form-control" accept="image/*" @change="onCoverChange" />
+        <input ref="coverInputRef" type="file" class="form-control" accept="image/*" @change="onCoverChange" />
         <div v-if="coverPreview" class="preview-wrap mt-2">
           <img :src="coverPreview" alt="Cover preview" class="cover-preview" />
         </div>
+        <div v-if="isDraggingCover" class="drop-overlay">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>Drop cover image here</span>
+        </div>
       </div>
-      <div class="col-md-6">
+      <div
+        class="col-md-6"
+        :class="{ 'drop-zone--active': isDraggingEbook }"
+        @dragover="handleEbookDragOver"
+        @dragleave="handleEbookDragLeave"
+        @drop="handleEbookDrop"
+      >
         <label class="form-label">E-book File</label>
-        <input type="file" class="form-control" accept=".pdf,.epub,.mobi" @change="onEbookChange" />
+        <input ref="ebookInputRef" type="file" class="form-control" accept=".pdf,.epub,.mobi" @change="onEbookChange" />
         <p v-if="ebookName" class="file-name mt-2 mb-0">
           <i class="fa-solid fa-file-lines me-1"></i> {{ ebookName }}
         </p>
+        <div v-if="isDraggingEbook" class="drop-overlay">
+          <i class="fa-solid fa-file-arrow-up"></i>
+          <span>Drop ebook file here</span>
+        </div>
       </div>
     </div>
 
@@ -186,6 +251,38 @@ function submit() {
 <style scoped>
 .upload-form {
   max-width: 800px;
+}
+
+.col-md-6 {
+  position: relative;
+}
+
+.col-md-6.drop-zone--active {
+  outline: 2px dashed #6366f1;
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.drop-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(4px);
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.drop-overlay i {
+  font-size: 2rem;
+  color: #6366f1;
 }
 
 .tag-input-wrap {

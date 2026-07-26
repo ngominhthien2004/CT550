@@ -1,4 +1,6 @@
 <script setup>
+import { ref } from 'vue'
+
 const props = defineProps({
   currentKind: {
     type: String,
@@ -54,12 +56,66 @@ const emit = defineEmits(['media-change', 'cover-change'])
 
 const mediaAccept = '.jpg,.jpeg,.png,.webp,.gif,image/*'
 
+const isDraggingMedia = ref(false)
+const isDraggingCover = ref(false)
+
 function handleMediaFilesChange(event) {
   emit('media-change', event)
 }
 
 function handleCoverFilesChange(event) {
   emit('cover-change', event)
+}
+
+function handleMediaDragOver(e) {
+  e.preventDefault()
+  isDraggingMedia.value = true
+}
+
+function handleMediaDragLeave() {
+  isDraggingMedia.value = false
+}
+
+function handleMediaDrop(e) {
+  e.preventDefault()
+  isDraggingMedia.value = false
+  const files = Array.from(e.dataTransfer?.files || [])
+  if (files.length === 0) return
+  // Filter image files only
+  const imageFiles = files.filter(f => f.type.startsWith('image/'))
+  if (imageFiles.length === 0) return
+  if (imageFiles.length > props.maxMediaFiles) {
+    // Truncated; parent will show error
+    imageFiles.splice(props.maxMediaFiles)
+  }
+  // Create a pseudo input event for the parent handler
+  const dt = new DataTransfer()
+  imageFiles.forEach(f => dt.items.add(f))
+  const pseudoEvent = { target: { files: dt.files } }
+  handleMediaFilesChange(pseudoEvent)
+}
+
+function handleCoverDragOver(e) {
+  e.preventDefault()
+  isDraggingCover.value = true
+}
+
+function handleCoverDragLeave() {
+  isDraggingCover.value = false
+}
+
+function handleCoverDrop(e) {
+  e.preventDefault()
+  isDraggingCover.value = false
+  const files = Array.from(e.dataTransfer?.files || [])
+  if (files.length === 0) return
+  const imageFiles = files.filter(f => f.type.startsWith('image/'))
+  if (imageFiles.length === 0) return
+  // Take first file only for cover
+  const dt = new DataTransfer()
+  dt.items.add(imageFiles[0])
+  const pseudoEvent = { target: { files: dt.files } }
+  handleCoverFilesChange(pseudoEvent)
 }
 </script>
 
@@ -75,7 +131,14 @@ function handleCoverFilesChange(event) {
       <router-link to="/upload/novel" class="type-tab" :class="{ active: props.currentKind === 'novel' }">{{ $t('nav.novels') }}</router-link>
     </nav>
 
-    <div v-if="props.isMediaPage" class="upload-dropzone">
+    <div
+      v-if="props.isMediaPage"
+      class="upload-dropzone"
+      :class="{ 'drag-over': isDraggingMedia }"
+      @dragover="handleMediaDragOver"
+      @dragleave="handleMediaDragLeave"
+      @drop="handleMediaDrop"
+    >
       <label for="upload-media" class="form-label text-light mb-2">{{ $t('upload.uploadImagesGif') }}</label>
       <input
         id="upload-media"
@@ -90,6 +153,10 @@ function handleCoverFilesChange(event) {
       <p id="upload-media-help" class="small text-light-emphasis mt-2 mb-0" aria-live="polite">
         {{ $t('upload.mediaCount', { count: props.mediaCount, max: props.maxMediaFiles }) }}
       </p>
+      <div v-if="isDraggingMedia" class="drag-hint-overlay">
+        <i class="fa-regular fa-images"></i>
+        <span>{{ $t('upload.dropToAttach') || 'Drop images here' }}</span>
+      </div>
     </div>
 
     <div v-if="props.isMediaPage && props.mediaPreviews.length" class="upload-preview">
@@ -109,7 +176,13 @@ function handleCoverFilesChange(event) {
     </div>
 
     <div v-if="props.isNovel" class="cover-upload-row">
-      <div class="cover-upload-input">
+      <div
+        class="cover-upload-input"
+        :class="{ 'drag-over': isDraggingCover }"
+        @dragover="handleCoverDragOver"
+        @dragleave="handleCoverDragLeave"
+        @drop="handleCoverDrop"
+      >
         <label for="upload-cover" class="form-label text-light mb-2">{{ $t('upload.uploadCover') }}</label>
         <input
           id="upload-cover"
@@ -122,6 +195,10 @@ function handleCoverFilesChange(event) {
           aria-label="Upload cover image"
         />
         <p id="upload-cover-help" class="small text-light-emphasis mt-2 mb-0" aria-live="polite">{{ $t('upload.fileCount', { count: props.coverCount }) }}</p>
+        <div v-if="isDraggingCover" class="drag-hint-overlay">
+          <i class="fa-regular fa-image"></i>
+          <span>Drop cover here</span>
+        </div>
       </div>
       <div class="cover-preview-box" role="img" :aria-label="props.previewUrl ? $t('upload.coverPreview') : $t('upload.coverPreviewPlaceholder')">
         <img v-if="props.previewUrl" :src="props.previewUrl" :alt="props.previewAlt" class="cover-preview-image" />
@@ -179,6 +256,47 @@ function handleCoverFilesChange(event) {
   border-radius: 0.72rem;
   padding: 0.8rem;
   background: #1b2331;
+  position: relative;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.upload-dropzone.drag-over {
+  border-color: #3d7eff;
+  background: rgba(61, 126, 255, 0.08);
+}
+
+.drag-hint-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: rgba(29, 34, 51, 0.92);
+  border-radius: 0.72rem;
+  color: #eff4ff;
+  font-size: 0.95rem;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.drag-hint-overlay i {
+  font-size: 1.8rem;
+  color: #3d7eff;
+}
+
+.cover-upload-input {
+  display: grid;
+  gap: 0.4rem;
+  position: relative;
+}
+
+.cover-upload-input.drag-over {
+  border: 1px dashed #3d7eff;
+  border-radius: 0.72rem;
+  padding: 0.6rem;
+  background: rgba(61, 126, 255, 0.08);
 }
 
 .cover-upload-row {

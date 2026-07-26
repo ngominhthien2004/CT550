@@ -1,5 +1,5 @@
 <script setup>
-import { computed, watch, inject } from 'vue'
+import { computed, ref, watch, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useImageUpload } from '@/composables/useImageUpload'
 
@@ -16,6 +16,8 @@ const deleteCover = inject('deleteCover')
 const upload = useImageUpload({
   formats: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
 })
+
+const isDraggingAvatar = ref(false)
 
 const currentAvatar = computed(() => user.value?.avatar || DEFAULT_AVATAR)
 
@@ -55,6 +57,24 @@ function handleSave() {
   const fd = upload.toFormData('avatar')
   if (fd) save(fd)
 }
+
+function handleDrop(e) {
+  e.preventDefault()
+  isDraggingAvatar.value = false
+  const file = e.dataTransfer?.files?.[0]
+  if (!file || !file.type.startsWith('image/')) return
+  const pseudoEvent = { target: { files: [file] } }
+  upload.selectFile(pseudoEvent)
+}
+
+function handleDragOver(e) {
+  e.preventDefault()
+  isDraggingAvatar.value = true
+}
+
+function handleDragLeave() {
+  isDraggingAvatar.value = false
+}
 </script>
 
 <template>
@@ -69,7 +89,13 @@ function handleSave() {
 
       <div class="modal-body avatar-body">
         <div class="avatar-preview-wrap">
-          <div class="avatar-preview">
+          <div
+            class="avatar-preview"
+            :class="{ 'drag-over': isDraggingAvatar }"
+            @dragover="handleDragOver"
+            @dragleave="handleDragLeave"
+            @drop="handleDrop"
+          >
             <img :src="upload.preview.value || DEFAULT_AVATAR" alt="Avatar preview" />
             <label class="upload-trigger">
               <input type="file" accept="image/*" hidden @change="upload.selectFile" aria-label="Upload avatar image">
@@ -77,6 +103,10 @@ function handleSave() {
                 <i class="fa-solid fa-camera" aria-hidden="true"></i>
               </span>
             </label>
+            <div v-if="isDraggingAvatar" class="avatar-drag-indicator">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>Drop to change avatar</span>
+            </div>
           </div>
           <button type="button" class="avatar-delete-btn" :title="$t('profile.deleteAvatar')" @click="deleteCover">
             <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
@@ -199,6 +229,33 @@ function handleSave() {
 
 .upload-trigger:hover .upload-trigger-icon {
   opacity: 1;
+}
+
+.avatar-preview.drag-over {
+  outline: 3px dashed #6366f1;
+  outline-offset: -3px;
+}
+
+.avatar-drag-indicator {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  border-radius: 999px;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.avatar-drag-indicator i {
+  font-size: 1.5rem;
+  color: #6366f1;
 }
 
 .upload-trigger-icon {

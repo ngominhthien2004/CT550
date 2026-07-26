@@ -1,5 +1,5 @@
 <script setup>
-import { computed, watch, inject } from 'vue'
+import { computed, ref, watch, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useImageUpload } from '@/composables/useImageUpload'
 
@@ -32,6 +32,8 @@ const upload = useImageUpload({
   formats: ['image/jpeg', 'image/png', 'image/gif'],
 })
 
+const isDraggingCover = ref(false)
+
 const currentCover = computed(() => coverImage || user.value?.coverImage || '')
 
 watch(
@@ -62,6 +64,24 @@ function handleUpload() {
   }
   save(fd)
 }
+
+function handleDrop(e) {
+  e.preventDefault()
+  isDraggingCover.value = false
+  const file = e.dataTransfer?.files?.[0]
+  if (!file || !file.type.startsWith('image/')) return
+  const pseudoEvent = { target: { files: [file] } }
+  upload.selectFile(pseudoEvent)
+}
+
+function handleDragOver(e) {
+  e.preventDefault()
+  isDraggingCover.value = true
+}
+
+function handleDragLeave() {
+  isDraggingCover.value = false
+}
 </script>
 
 <template>
@@ -76,7 +96,11 @@ function handleUpload() {
 
       <div
         class="cover-preview"
+        :class="{ 'drag-over': isDraggingCover }"
         :style="upload.preview.value ? { backgroundImage: `url(${upload.preview.value})` } : { background: DEFAULT_COVER }"
+        @dragover="handleDragOver"
+        @dragleave="handleDragLeave"
+        @drop="handleDrop"
       >
         <label class="upload-overlay">
           <input type="file" accept="image/jpeg, image/png, image/gif" hidden @change="upload.selectFile" :aria-label="$t('profile.editCoverImage')">
@@ -85,6 +109,10 @@ function handleUpload() {
             <span>{{ $t('profile.dropCoverHere') }}</span>
           </div>
         </label>
+        <div v-if="isDraggingCover" class="cover-drag-indicator">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>Drop to upload cover</span>
+        </div>
       </div>
 
       <div class="modal-body">
@@ -151,6 +179,32 @@ function handleUpload() {
 
 .cover-preview:hover .upload-overlay {
   opacity: 1;
+}
+
+.cover-preview.drag-over {
+  outline: 3px dashed #6366f1;
+  outline-offset: -3px;
+}
+
+.cover-drag-indicator {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.cover-drag-indicator i {
+  font-size: 2rem;
+  color: #6366f1;
 }
 
 .specs-list {
