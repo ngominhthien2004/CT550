@@ -245,10 +245,18 @@ watch(
 }
 
 .search-options-actions {
-  display: grid;
+  display: flex;
   gap: 0.55rem;
   padding: 1rem 1.15rem 1.15rem;
   border-top: 1px solid var(--line);
+}
+
+.search-options-actions .btn-primary {
+  flex: 1;
+}
+
+.search-options-actions .btn-outline-secondary {
+  flex-shrink: 0;
 }
 
 @media (max-width: 640px) {
