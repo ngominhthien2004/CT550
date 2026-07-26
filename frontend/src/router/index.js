@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { watch as vueWatch } from 'vue'
 import HomePage from '../views/HomePage.vue'
 import TypedHomeFeedView from '../views/TypedHomeFeedView.vue'
-import NovelTopPageView from '../views/NovelTopPageView.vue'
+import NovelView from '../views/NovelView.vue'
 import PlansTopPageView from '../views/PlansTopPageView.vue'
 import EditArtworkView from '../views/EditArtworkView.vue'
 import SearchResultsView from '../views/SearchResultsView.vue'
@@ -67,7 +67,7 @@ const routes = [
   {
     path: '/novels',
     name: 'novels',
-    component: NovelTopPageView,
+    component: NovelView,
   },
   {
     path: '/plans',

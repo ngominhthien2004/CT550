@@ -4,8 +4,6 @@ import { useI18n } from 'vue-i18n'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { HomeArtworkGrid, HomeFeedColumn, HomeHeroBanner, HomeRecommendedUsers, HomeTabs, HomeTagStrip } from '@/components/home'
 import { getArtworks, bannerApi, userApi } from '../services/api'
-import CustomSelect from '@/components/common/CustomSelect.vue'
-
 import { useFollowStore } from '../stores/follow.store'
 import { useAuthStore } from '../stores/auth.store'
 import { useLikeStore } from '../stores/like.store'
@@ -28,9 +26,6 @@ const liveWorks = ref([])
 const liveTags = ref([])
 const recommendedUsers = ref([])
 
-// Novel-specific filter state
-const novelSortBy = ref('newest')
-
 const authStore = useAuthStore()
 const followStore = useFollowStore()
 const likeStore = useLikeStore()
@@ -50,26 +45,12 @@ const normalizedWorks = computed(() =>
 
 const spotlightWorks = computed(() => normalizedWorks.value.slice(0, 12))
 const feedWorks = computed(() => normalizedWorks.value.slice(12, 26))
-const isNovelPage = computed(() => props.workType === 'novel')
-
-const novelSortOptions = computed(() => [
-  { value: 'newest', label: t('home.newest') },
-  { value: 'views', label: t('home.mostViewed') },
-  { value: 'likes', label: t('home.mostLiked') },
-])
-
 function toggleLeftNav() {
   isNavCollapsed.value = !isNavCollapsed.value
 }
 
 function buildFilterParams() {
-  const params = { limit: 48, type: props.workType }
-  if (props.workType !== 'novel') return params
-
-  if (novelSortBy.value !== 'newest') {
-    params.sortBy = novelSortBy.value
-  }
-  return params
+  return { limit: 48, type: props.workType }
 }
 
 function normalizeRecommendedUsers(artworks) {
@@ -212,14 +193,6 @@ watch(
   { immediate: true },
 )
 
-watch(
-  [novelSortBy],
-  async () => {
-    if (props.workType === 'novel') {
-      await loadData()
-    }
-  },
-)
 </script>
 
 <template>
@@ -227,13 +200,6 @@ watch(
     <section class="typed-home-page">
       <div class="typed-home-main-column">
         <HomeTabs />
-
-        <!-- Novel-specific filter bar -->
-        <div v-if="isNovelPage" class="novel-filter-bar">
-          <label class="nf-sort">
-            <CustomSelect v-model="novelSortBy" :options="novelSortOptions" />
-          </label>
-        </div>
 
         <HomeTagStrip :tags="liveTags" />
         <HomeHeroBanner :slide="heroSlide" :banner-link="bannerLink" />
@@ -273,23 +239,6 @@ watch(
   margin: 0;
   color: var(--muted);
   font-weight: 600;
-}
-
-.novel-filter-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.nf-sort select {
-  border: none;
-  background: var(--surface-alt);
-  border-radius: 999px;
-  padding: 0.35rem 0.7rem;
-  font-weight: 700;
-  color: var(--text);
-  font-size: 0.82rem;
 }
 
 .typed-home-feed-layout {
