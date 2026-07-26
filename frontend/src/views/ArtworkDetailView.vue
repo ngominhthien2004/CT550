@@ -582,7 +582,7 @@ watch(
 <style scoped>
 .detail-page-content {
   width: 100%;
-  background-color: var(--bg); /* Premium soft background */
+  background-color: var(--surface);
   padding: 1.5rem 0 3rem;
   min-height: 100vh;
 }

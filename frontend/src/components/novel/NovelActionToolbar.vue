@@ -90,7 +90,7 @@ onUnmounted(() => {
 
     <button
       type="button"
-      class="icon-btn"
+      class="icon-btn bookmark-btn"
       :class="{ active: isBookmarked }"
       :disabled="bookmarkLoading"
       aria-label="Bookmark"
@@ -155,6 +155,11 @@ onUnmounted(() => {
   color: var(--novel-surface);
   background: #f91880;
   border-color: #f91880;
+}
+
+.icon-btn.active.bookmark-btn {
+  background: #3b82f6;
+  border-color: #3b82f6;
 }
 
 .icon-btn:disabled {

@@ -1,9 +1,23 @@
 {
   "title": "Rankings",
+  "overall": "Overall",
+  "illustrations": "Illustrations",
+  "manga": "Manga",
+  "gif": "GIF",
+  "novels": "Novels",
+  "daily": "Daily",
+  "weekly": "Weekly",
+  "monthly": "Monthly",
+  "rookie": "Rookie",
   "noArtworks24h": "No artworks ranked in the last 24 hours",
   "noArtworks7d": "No artworks ranked in the last 7 days",
   "noArtworks30d": "No artworks ranked in the last 30 days",
   "noRookies": "No artworks from rookie creators yet",
+  "noRankingsDaily": "No rankings available for this daily period",
+  "noRankingsWeekly": "No rankings available for this weekly period",
+  "noRankingsMonthly": "No rankings available for this monthly period",
+  "noRankingsRookie": "No rankings for rookie creators",
+  "noRankings": "No rankings available",
   "error": "Something went wrong",
   "noArtworks": "No artworks ranked"
 }

@@ -1,9 +1,23 @@
 {
   "title": "Bảng xếp hạng",
+  "overall": "Tổng hợp",
+  "illustrations": "Minh họa",
+  "manga": "Manga",
+  "gif": "GIF",
+  "novels": "Tiểu thuyết",
+  "daily": "Hàng ngày",
+  "weekly": "Hàng tuần",
+  "monthly": "Hàng tháng",
+  "rookie": "Mới",
   "noArtworks24h": "Không có tác phẩm nào được xếp hạng trong 24 giờ qua",
   "noArtworks7d": "Không có tác phẩm nào được xếp hạng trong 7 ngày qua",
   "noArtworks30d": "Không có tác phẩm nào được xếp hạng trong 30 ngày qua",
   "noRookies": "Chưa có tác phẩm nào từ người mới",
+  "noRankingsDaily": "Không có xếp hạng nào cho hôm nay",
+  "noRankingsWeekly": "Không có xếp hạng nào cho tuần này",
+  "noRankingsMonthly": "Không có xếp hạng nào cho tháng này",
+  "noRankingsRookie": "Chưa có xếp hạng cho người mới",
+  "noRankings": "Không có xếp hạng nào",
   "error": "Đã xảy ra lỗi",
   "noArtworks": "Không có tác phẩm nào được xếp hạng"
 }

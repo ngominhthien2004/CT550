@@ -19,6 +19,7 @@ const TYPE_OPTIONS = computed(() => [
   { value: 'all', label: t('ranking.overall') },
   { value: 'illust', label: t('ranking.illustrations') },
   { value: 'manga', label: t('ranking.manga') },
+  { value: 'gif', label: t('ranking.gif') },
   { value: 'novel', label: t('ranking.novels') },
 ])
 
