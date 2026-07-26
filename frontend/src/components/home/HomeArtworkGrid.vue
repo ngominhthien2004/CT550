@@ -12,6 +12,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  titleKey: {
+    type: String,
+    default: 'home.recommendedWorks',
+  },
+  showViewAll: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const isNovelGrid = computed(() =>
@@ -31,9 +39,9 @@ const processedWorks = computed(() =>
   <section class="latest-section">
     <header class="section-head">
       <div>
-        <h3>{{ $t('home.recommendedWorks') }}</h3>
+        <h3>{{ $t(titleKey) }}</h3>
       </div>
-      <router-link to="/discovery">View all</router-link>
+      <router-link v-if="showViewAll" to="/discovery">View all</router-link>
     </header>
 
     <SkeletonLoader v-if="loading" type="artwork-card" :count="12" />

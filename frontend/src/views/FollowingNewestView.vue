@@ -3,15 +3,14 @@ import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { translateError } from '../utils/translateError.js'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
-import { HomeArtworkGrid, HomeFeedColumn, HomeTagStrip, HomeTabs } from '@/components/home'
-import { getFeed, getTags } from '../services/api'
+import { HomeArtworkGrid, HomeFeedColumn } from '@/components/home'
+import { getFeed } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useLikeStore } from '../stores/like.store'
 
 const { t } = useI18n()
 const isNavCollapsed = ref(true)
 const liveWorks = ref([])
-const liveTags = ref([])
 const loading = ref(false)
 const error = ref('')
 const authStore = useAuthStore()
@@ -46,17 +45,8 @@ async function loadFollowingWorks() {
   }
 }
 
-async function loadTags() {
-  try {
-    const { data } = await getTags({ limit: 12 })
-    liveTags.value = Array.isArray(data)
-      ? data.map((item) => `#${item.name}`)
-      : []
-  } catch { liveTags.value = [] }
-}
-
 onMounted(() => {
-  Promise.all([loadFollowingWorks(), loadTags()])
+  loadFollowingWorks()
   if (authStore.isAuthenticated) {
     likeStore.fetchMyLikes({ limit: 120 })
   }
@@ -67,11 +57,9 @@ onMounted(() => {
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="following-page">
       <div class="following-main">
-        <HomeTabs />
-        <HomeTagStrip :tags="liveTags" />
-        <HomeArtworkGrid :works="spotlightWorks" />
+          <HomeArtworkGrid :works="spotlightWorks" title-key="home.worksByFollowing" :show-view-all="false" />
 
-        <p v-if="loading && liveWorks.length === 0" class="state-note">{{ $t('common.loading') }}...</p>
+          <p v-if="loading && liveWorks.length === 0" class="state-note">{{ $t('common.loading') }}...</p>
         <p v-else-if="error" class="state-note error">{{ error }}</p>
         <p v-else-if="!loading && liveWorks.length === 0" class="state-note">
           {{ $t('home.noWorksFollowed') }}
