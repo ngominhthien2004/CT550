@@ -122,6 +122,7 @@ const userStats = computed(() => ({
 
 const isMessageMenuOpen = ref(false)
 const isNotificationMenuOpen = ref(false)
+const isServicesMenuOpen = ref(false)
 const forceCloseUserMenu = ref(false)
 const notificationPreviewItems = ref([])
 const notificationPreviewLoading = ref(false)
@@ -296,10 +297,18 @@ async function loadMoreNotificationPreview() {
   }
 }
 
+function closeAllPanels() {
+  isMessageMenuOpen.value = false
+  isNotificationMenuOpen.value = false
+  isServicesMenuOpen.value = false
+  forceCloseUserMenu.value = true
+}
+
 function handleMessageMenuToggle(event) {
   isMessageMenuOpen.value = event.target.open
   if (isMessageMenuOpen.value) {
     isNotificationMenuOpen.value = false
+    isServicesMenuOpen.value = false
     forceCloseUserMenu.value = true
     loadMessagePreview()
   }
@@ -309,15 +318,24 @@ function handleNotificationMenuToggle(event) {
   isNotificationMenuOpen.value = event.target.open
   if (isNotificationMenuOpen.value) {
     isMessageMenuOpen.value = false
+    isServicesMenuOpen.value = false
     forceCloseUserMenu.value = true
     loadNotificationPreview()
   }
 }
 
-function handleUserMenuToggle(event) {
-  if (event.target.open) {
+function handleServicesMenuToggle(event) {
+  isServicesMenuOpen.value = event.target.open
+  if (isServicesMenuOpen.value) {
     isMessageMenuOpen.value = false
     isNotificationMenuOpen.value = false
+    forceCloseUserMenu.value = true
+  }
+}
+
+function handleUserMenuToggle(event) {
+  if (event.target.open) {
+    closeAllPanels()
   }
 }
 
@@ -456,7 +474,7 @@ async function applySearchOptions(payload) {
 
       <router-link v-else to="/login" class="action-pill action-pill--auth" :aria-label="$t('topbar.logIn')">{{ $t('topbar.logIn') }}</router-link>
 
-      <AppTopBarServicesMenu :site-label="siteLabel" :service-links="serviceLinks" />
+      <AppTopBarServicesMenu :site-label="siteLabel" :service-links="serviceLinks" :open="isServicesMenuOpen" @toggle="handleServicesMenuToggle" />
     </div>
   </header>
 

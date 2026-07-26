@@ -8,11 +8,16 @@ defineProps({
     type: Array,
     default: () => [],
   },
+  open: {
+    type: Boolean,
+    default: false,
+  },
 })
+const emit = defineEmits(['toggle'])
 </script>
 
 <template>
-  <details class="services-menu">
+  <details class="services-menu" :open="open" @toggle="emit('toggle', $event)">
     <summary class="icon-round app-grid-btn" aria-label="Related services" title="Related services">
       <span class="app-grid-icon" aria-hidden="true">
         <span v-for="dot in 9" :key="dot" class="app-grid-dot"></span>
