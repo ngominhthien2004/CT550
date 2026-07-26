@@ -82,7 +82,7 @@ const isOwnArtist = computed(() => {
 })
 
 const hasSeriesNavigation = computed(() => {
-  return seriesArtworkIds.value.length > 1
+  return seriesArtworkIds.value.length > 0
 })
 
 const sameAuthorWorks = computed(() => {
@@ -252,7 +252,7 @@ async function loadSeriesNavigation() {
   if (!artwork.value?.series) return
   try {
     const { data } = await seriesApi.getById(artwork.value.series)
-    if (data?.artworks?.length > 1) {
+    if (data?.artworks?.length) {
       // artworks may be populated objects or plain IDs
       const ids = data.artworks.map(a => (typeof a === 'string' ? a : a._id))
       seriesArtworkIds.value = ids
@@ -447,7 +447,7 @@ watch(
               />
 
               <!-- Series navigation for novels (prev/next artwork in series) -->
-              <div v-if="seriesArtworkIds.length > 1" class="series-nav-bar">
+              <div v-if="hasSeriesNavigation" class="series-nav-bar">
                 <router-link
                   v-if="seriesPrevId"
                   :to="`/artworks/${seriesPrevId}`"
