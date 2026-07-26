@@ -75,8 +75,16 @@ async function handleLike(item) {
         <div v-else class="novel-cover-fallback">
           <i class="fa-solid fa-book-open" aria-hidden="true"></i>
         </div>
-        <span v-if="item.series" class="novel-cover-badge">{{ $t('search.seriesBadge') }}</span>
-        <span v-else class="novel-cover-badge">{{ $t('search.oneShot') }}</span>
+        <router-link
+          v-if="item.series"
+          :to="`/series/${item.series}`"
+          class="novel-series-badge"
+          :aria-label="$t('series.series')"
+          :title="$t('series.series')"
+          @click.stop
+        >
+          <span class="novel-series-badge-text">{{ $t('series.series') }}</span>
+        </router-link>
         <span v-if="item.wordCount > 0" class="novel-word-badge">
           <i class="fa-regular fa-file-lines" aria-hidden="true"></i>
           {{ (item.wordCount || 0).toLocaleString() }}
@@ -186,16 +194,44 @@ async function handleLike(item) {
   font-size: 2rem;
 }
 
-.novel-cover-badge {
+/* Triangle corner ribbon for "Series" on novel covers */
+.novel-series-badge {
   position: absolute;
-  top: 6px;
-  left: 6px;
-  background: rgba(0,0,0,0.65);
+  top: 0;
+  left: 0;
+  z-index: 5;
+  width: 92px;
+  height: 92px;
+  background: linear-gradient(to bottom right, #facc15, #f59e0b);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  text-decoration: none;
+  pointer-events: auto;
+  transition: filter 0.2s ease;
+}
+
+.novel-series-badge:hover {
+  filter: brightness(1.06);
+}
+
+.novel-series-badge-text {
+  position: absolute;
+  top: 30px;
+  left: 30px;
   color: #fff;
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
+  letter-spacing: 0.5px;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  transform-origin: center center;
+  white-space: nowrap;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+  text-decoration: none;
+  pointer-events: none;
+}
+
+.novel-series-badge:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
 }
 
 .novel-word-badge {

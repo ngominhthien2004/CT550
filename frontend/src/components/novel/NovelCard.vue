@@ -33,8 +33,6 @@ const snippet = computed(() => {
   return text.length > 150 ? `${text.slice(0, 150).trimEnd()}...` : text
 })
 
-const formatLabel = computed(() => (props.item?.series ? 'Series' : 'One-shot'))
-
 
 function buildTagLink(tag) {
   const label = String(tag?.label || tag?.name || '').replace(/^#/, '').trim().toLowerCase()
@@ -85,10 +83,17 @@ const authorLink = computed(() => {
       <div v-else class="novel-compact-fallback">
         <i class="fa-solid fa-book-open" aria-hidden="true"></i>
       </div>
-      <div class="novel-compact-cover-badges">
-        <span class="novel-compact-format">{{ formatLabel }}</span>
-      </div>
       <span v-if="item.wordCount > 0" class="novel-compact-wordcount">{{ Number(item.wordCount).toLocaleString() }}w</span>
+      <router-link
+        v-if="item.series"
+        :to="`/series/${item.series}`"
+        class="novel-series-badge"
+        :aria-label="$t('series.series')"
+        :title="$t('series.series')"
+        @click.stop
+      >
+        <span class="novel-series-badge-text">{{ $t('series.series') }}</span>
+      </router-link>
     </router-link>
 
     <div class="novel-compact-body">
@@ -173,26 +178,44 @@ const authorLink = computed(() => {
   background: linear-gradient(135deg, rgba(22, 149, 240, 0.08), rgba(148, 185, 109, 0.16));
 }
 
-.novel-compact-cover-badges {
+/* Triangle corner ribbon for "Series" on novel covers */
+.novel-series-badge {
   position: absolute;
-  top: 6px;
-  left: 6px;
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-  z-index: 1;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  width: 92px;
+  height: 92px;
+  background: linear-gradient(to bottom right, #facc15, #f59e0b);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  text-decoration: none;
+  pointer-events: auto;
+  transition: filter 0.2s ease;
 }
 
-.novel-compact-format,
-.novel-compact-badge {
-  padding: 2px 7px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.58);
+.novel-series-badge:hover {
+  filter: brightness(1.06);
+}
+
+.novel-series-badge-text {
+  position: absolute;
+  top: 30px;
+  left: 30px;
   color: #fff;
-  font-size: 0.62rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  line-height: 1.3;
+  letter-spacing: 0.5px;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  transform-origin: center center;
+  white-space: nowrap;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+  text-decoration: none;
   pointer-events: none;
+}
+
+.novel-series-badge:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
 }
 
 .novel-compact-wordcount {

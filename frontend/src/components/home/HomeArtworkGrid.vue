@@ -50,8 +50,16 @@ const processedWorks = computed(() =>
             <div v-else class="novel-grid-fallback">
               <i class="fa-solid fa-book-open" aria-hidden="true"></i>
             </div>
-            <span v-if="work.series" class="novel-grid-badge">Series</span>
-            <span v-else class="novel-grid-badge">One-shot</span>
+            <router-link
+              v-if="work.series"
+              :to="`/series/${work.series}`"
+              class="novel-series-badge"
+              :aria-label="$t('series.series')"
+              :title="$t('series.series')"
+              @click.stop
+            >
+              <span class="novel-series-badge-text">{{ $t('series.series') }}</span>
+            </router-link>
             <span v-if="work.wordCount > 0" class="novel-grid-wordcount">
               {{ (work.wordCount || 0).toLocaleString() }}w
             </span>
@@ -149,18 +157,44 @@ const processedWorks = computed(() =>
     var(--surface-alt);
 }
 
-.novel-grid-badge {
+/* Triangle corner ribbon for "Series" on novel covers */
+.novel-series-badge {
   position: absolute;
-  top: 6px;
-  left: 6px;
-  padding: 2px 7px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.58);
+  top: 0;
+  left: 0;
+  z-index: 5;
+  width: 92px;
+  height: 92px;
+  background: linear-gradient(to bottom right, #facc15, #f59e0b);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  text-decoration: none;
+  pointer-events: auto;
+  transition: filter 0.2s ease;
+}
+
+.novel-series-badge:hover {
+  filter: brightness(1.06);
+}
+
+.novel-series-badge-text {
+  position: absolute;
+  top: 30px;
+  left: 30px;
   color: #fff;
-  font-size: 0.62rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  line-height: 1.3;
+  letter-spacing: 0.5px;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  transform-origin: center center;
+  white-space: nowrap;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+  text-decoration: none;
   pointer-events: none;
+}
+
+.novel-series-badge:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
 }
 
 .novel-grid-wordcount {
