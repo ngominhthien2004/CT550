@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useSeriesStore } from '@/stores/series.store'
 import { useI18n } from 'vue-i18n'
@@ -21,6 +21,22 @@ const { t, locale } = useI18n()
 const showCreateModal = ref(false)
 const createType = ref('illust')
 const sortOrder = ref('newest')
+const isCreateDropdownOpen = ref(false)
+const createDropdownRef = ref(null)
+
+function toggleCreateDropdown() {
+  isCreateDropdownOpen.value = !isCreateDropdownOpen.value
+}
+
+function closeCreateDropdown() {
+  isCreateDropdownOpen.value = false
+}
+
+function handleCreateDropdownClickOutside(e) {
+  if (createDropdownRef.value && !createDropdownRef.value.contains(e.target)) {
+    isCreateDropdownOpen.value = false
+  }
+}
 
 const seriesSortOptions = computed(() => [
   { value: 'newest', label: t('dashboard.newestFirst') },
@@ -156,6 +172,11 @@ const processedSeriesList = computed(() => {
 
 onMounted(() => {
   seriesStore.fetchMySeries(null, sortOrder.value)
+  document.addEventListener('click', handleCreateDropdownClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleCreateDropdownClickOutside)
 })
 
 watch(activeType, () => {
@@ -185,11 +206,11 @@ watch(activeType, () => {
         <CustomSelect :model-value="sortOrder" :options="seriesSortOptions" @update:modelValue="changeSort" />
       </div>
       <div class="series-actions">
-        <div class="create-dropdown">
-          <button type="button" class="create-series-btn" @click="openCreateModal('illust')">
+        <div ref="createDropdownRef" class="create-dropdown" :class="{ open: isCreateDropdownOpen }">
+          <button type="button" class="create-series-btn" @click.stop="toggleCreateDropdown">
             {{ $t('series.createSeriesShort') }} <i class="fa-solid fa-chevron-down"></i>
           </button>
-          <div class="create-dropdown-menu">
+          <div v-if="isCreateDropdownOpen" class="create-dropdown-menu">
             <button type="button" class="dropdown-item" @click="openCreateModal('illust')">
               {{ $t('dashboard.createIllustSeries') }}
             </button>
@@ -466,7 +487,7 @@ watch(activeType, () => {
   overflow: hidden;
 }
 
-.create-dropdown:hover .create-dropdown-menu {
+.create-dropdown.open .create-dropdown-menu {
   display: block;
 }
 
