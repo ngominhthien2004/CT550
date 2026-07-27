@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useDrawingStore } from '../../stores/drawing.store.js'
 
 const store = useDrawingStore()
