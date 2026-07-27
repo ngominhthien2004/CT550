@@ -63,6 +63,7 @@ export const useDrawingStore = defineStore('drawing', () => {
   // Save slots state
   const showSlotsDialog = ref(false)
   const savedSlots = ref([])
+  const selectedSlotId = ref(null)
 
   // New canvas confirmation
   const showNewCanvasConfirm = ref(false)
@@ -85,8 +86,9 @@ export const useDrawingStore = defineStore('drawing', () => {
   const showPostDialog = ref(false)
   const postTitle = ref('')
   const postType = ref('illust')
-  const postAgeRating = ref('all-ages')
-  const postTags = ref('')
+  const postAgeRating = ref('all')
+  const postTags = ref([])
+  const postTagInput = ref('')
   const postSubmitting = ref(false)
   const postError = ref('')
   const postPreviewUrl = ref('')
@@ -134,9 +136,14 @@ export const useDrawingStore = defineStore('drawing', () => {
     listening: false,
   }
 
+  const selectedSlot = computed(() => {
+    if (selectedSlotId.value === null) return null
+    return savedSlots.value.find(function (s) { return s.id === selectedSlotId.value }) || null
+  })
+
   // ─── Template ref setters (for syncing from components) ─────────────
-  function setStageRef(ref) { stageRef.value = ref }
-  function setDrawLayerRef(ref) { drawLayerRef.value = ref }
+  function setStageRef(ref) { stageRef.value = ref.value }
+  function setDrawLayerRef(ref) { drawLayerRef.value = ref.value }
   function setStageContainer(el) { stageContainer.value = el }
   function setFileInput(el) { fileInput.value = el }
 
@@ -554,6 +561,12 @@ export const useDrawingStore = defineStore('drawing', () => {
 
   // ─── Keyboard Shortcuts ────────────────────────────────────────────
   function handleKeyDown(e) {
+    // Skip all shortcuts when user is typing in an input/textarea/select
+    const tag = e.target?.tagName
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target?.isContentEditable) {
+      return
+    }
+
     // Ctrl+Shift+Z (Redo) must be checked before Ctrl+Z
     if (e.ctrlKey && e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
       e.preventDefault()
@@ -737,8 +750,41 @@ export const useDrawingStore = defineStore('drawing', () => {
     saveSlotsToStorage(slots)
   }
 
+  function selectSlot(slotId) {
+    selectedSlotId.value = selectedSlotId.value === slotId ? null : slotId
+  }
+
+  function clearSelection() {
+    selectedSlotId.value = null
+  }
+
+  async function saveNewSlotFromDialog() {
+    await saveCurrentDrawing()
+    savedSlots.value = getSavedSlots()
+  }
+
+  async function overwriteSelectedSlot() {
+    const slot = selectedSlot.value
+    if (!slot) return
+    const slots = getSavedSlots()
+    const idx = slots.findIndex(function (s) { return s.id === slot.id })
+    if (idx === -1) return
+    const thumbnail = await generateThumbnail()
+    const layersData = serializeLayers()
+    slots[idx] = {
+      ...slots[idx],
+      timestamp: new Date().toISOString(),
+      thumbnail: thumbnail,
+      layers: layersData,
+    }
+    saveSlotsToStorage(slots)
+    savedSlots.value = slots
+    selectedSlotId.value = null
+  }
+
   function openSlotsDialog() {
     savedSlots.value = getSavedSlots()
+    selectedSlotId.value = null
     showSlotsDialog.value = true
   }
 
@@ -766,6 +812,7 @@ export const useDrawingStore = defineStore('drawing', () => {
       const slots = getSavedSlots()
       savedSlots.value = slots.filter(function (s) { return s.id !== pendingSlotId.value })
       saveSlotsToStorage(savedSlots.value)
+      selectedSlotId.value = null
     }
     showDeleteSlotConfirm.value = false
     pendingSlotId.value = null
@@ -897,7 +944,8 @@ export const useDrawingStore = defineStore('drawing', () => {
     postTitle.value = ''
     postType.value = 'illust'
     postAgeRating.value = 'all-ages'
-    postTags.value = ''
+    postTags.value = []
+    postTagInput.value = ''
     postError.value = ''
     const blob = await exportToBlob()
     if (blob) {
@@ -909,6 +957,43 @@ export const useDrawingStore = defineStore('drawing', () => {
   function closePostDialog() {
     revokePostPreview()
     showPostDialog.value = false
+  }
+
+  // ─── Post tag helpers ──────────────────────────────────────────────
+  function normalizePostTag(raw) {
+    return String(raw || '').trim().replace(/^#+/, '').replace(/[\s-]+/g, '_').toLowerCase()
+  }
+
+  function commitPostTag(raw) {
+    const tag = normalizePostTag(raw)
+    if (!tag) return
+    if (postTags.value.includes(tag)) {
+      postTagInput.value = ''
+      return
+    }
+    if (postTags.value.length >= 10) {
+      postError.value = 'Tối đa 10 tags'
+      return
+    }
+    postTags.value.push(tag)
+    postTagInput.value = ''
+    postError.value = ''
+  }
+
+  function removePostTag(index) {
+    postTags.value.splice(index, 1)
+  }
+
+  function handlePostTagInputKeydown(e) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault()
+      commitPostTag(postTagInput.value)
+    } else if (e.key === ' ') {
+      e.preventDefault()
+      if (postTagInput.value.trim()) {
+        commitPostTag(postTagInput.value)
+      }
+    }
   }
 
   async function submitPost(router) {
@@ -927,14 +1012,17 @@ export const useDrawingStore = defineStore('drawing', () => {
       fd.append('title', postTitle.value.trim())
       fd.append('type', postType.value)
       fd.append('ageRating', postAgeRating.value)
-      if (postTags.value.trim()) {
-        fd.append('tags', postTags.value.trim())
+      if (postTags.value.length > 0) {
+        for (const tag of postTags.value) {
+          fd.append('tags', tag.trim())
+        }
       }
 
       const res = await createArtwork(fd)
       const artworkId = res.data?.artwork?._id || res.data?._id
       if (artworkId) {
         closePostDialog()
+        confirmGoHomeIntent()
         router.push('/artworks/' + artworkId)
       }
     } catch (err) {
@@ -985,10 +1073,11 @@ export const useDrawingStore = defineStore('drawing', () => {
     tool, brushColor, brushSize, brushOpacity, eraserSize,
     isPanning, isDrawing, isSpaceDown,
     activeLayerIndex, layers, undoMap, redoMap,
-    showSlotsDialog, savedSlots, showNewCanvasConfirm, showGoHomeConfirm,
+    showSlotsDialog, savedSlots, selectedSlotId, selectedSlot,
+    showNewCanvasConfirm, showGoHomeConfirm,
     showLoadSlotConfirm, showDeleteSlotConfirm, showRestoreAutosaveConfirm,
     pendingSlotId, pendingSlotData, pendingAutosaveData,
-    showPostDialog, postTitle, postType, postAgeRating, postTags,
+    showPostDialog, postTitle, postType, postAgeRating, postTags, postTagInput,
     postSubmitting, postError, postPreviewUrl,
     // Computed
     activeLayer, hasContent, orderedVisibleLayers,
@@ -1009,10 +1098,13 @@ export const useDrawingStore = defineStore('drawing', () => {
     handleResize, clearTimers,
     getSavedSlots, saveSlotsToStorage, serializeLayers, generateThumbnail,
     saveCurrentDrawing, loadFromSlot, formatDate,
+    selectSlot, clearSelection,
+    saveNewSlotFromDialog, overwriteSelectedSlot,
     requestLoadSlot, executeLoadSlot, requestDeleteSlot, executeDeleteSlot,
     removeSlotFromStorage, triggerAutoSave, restoreFromData,
     restoreAutosave, executeRestoreAutosave,
     openSlotsDialog,
     openPostDialog, closePostDialog, submitPost, exportToBlob,
+    commitPostTag, removePostTag, handlePostTagInputKeydown,
   }
 })

@@ -14,7 +14,7 @@
       @mouseleave="store.handleStageMouseUp"
     >
       <!-- White background layer -->
-      <v-layer :config="{ hitGraphEnabled: false }">
+      <v-layer :config="{ listening: false }">
         <v-rect :config="store.bgRectConfig" />
       </v-layer>
 

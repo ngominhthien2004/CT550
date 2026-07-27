@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <div v-if="store.showSlotsDialog" class="modal-overlay" @click.self="store.showSlotsDialog = false" @keydown.enter.prevent="store.showSlotsDialog = false" @keydown.space.prevent="store.showSlotsDialog = false" tabindex="0" role="button">
+    <div v-if="store.showSlotsDialog" class="modal-overlay" @click.self="handleOverlayClick" @keydown.enter.prevent="store.showSlotsDialog = false" @keydown.space.prevent="store.showSlotsDialog = false" tabindex="0" role="button">
       <div class="modal-content modal-content--wide">
         <div class="modal-header">
           <h2>{{ $t('drawing.savedDrawings') }}</h2>
@@ -11,17 +11,67 @@
             <p>{{ $t('drawing.noSavedDrawings') }}</p>
           </div>
           <div v-else class="slots-grid">
-            <div v-for="slot in store.savedSlots" :key="slot.id" class="slot-card">
+            <div
+              v-for="slot in store.savedSlots"
+              :key="slot.id"
+              class="slot-card"
+              :class="{ selected: store.selectedSlotId === slot.id }"
+              @click="store.selectSlot(slot.id)"
+            >
               <img :src="slot.thumbnail" :alt="slot.name" class="slot-thumb" />
               <div class="slot-info">
                 <span class="slot-name">{{ slot.name }}</span>
                 <span class="slot-date">{{ store.formatDate(slot.timestamp) }}</span>
               </div>
-              <div class="slot-actions">
-                <button type="button" class="slot-btn load" @click="store.requestLoadSlot(slot)">{{ $t('drawing.load') }}</button>
-                <button type="button" class="slot-btn delete" @click="store.requestDeleteSlot(slot.id)">{{ $t('drawing.delete') }}</button>
+              <div v-if="store.selectedSlotId === slot.id" class="slot-check">
+                <i class="fa-solid fa-check" />
               </div>
             </div>
+          </div>
+        </div>
+        <!-- Bottom action bar -->
+        <div class="modal-footer action-bar">
+          <div class="action-bar-left">
+            <button
+              type="button"
+              class="action-btn action-btn--primary"
+              :disabled="!store.selectedSlot"
+              @click="handleLoad"
+            >
+              <i class="fa-solid fa-folder-open" /> {{ $t('drawing.load') }}
+            </button>
+            <button
+              type="button"
+              class="action-btn action-btn--primary"
+              :disabled="!store.selectedSlot"
+              @click="handleOverwrite"
+            >
+              <i class="fa-solid fa-pen" /> Ghi đè
+            </button>
+            <button
+              type="button"
+              class="action-btn action-btn--danger"
+              :disabled="!store.selectedSlot"
+              @click="handleDelete"
+            >
+              <i class="fa-solid fa-trash-can" /> {{ $t('drawing.delete') }}
+            </button>
+          </div>
+          <div class="action-bar-right">
+            <button
+              type="button"
+              class="action-btn action-btn--secondary"
+              @click="handleSaveNew"
+            >
+              <i class="fa-solid fa-floppy-disk" /> Lưu bản mới
+            </button>
+            <button
+              type="button"
+              class="action-btn action-btn--cancel"
+              @click="store.showSlotsDialog = false"
+            >
+              {{ $t('drawing.cancel') }}
+            </button>
           </div>
         </div>
       </div>
@@ -71,6 +121,30 @@
 import { useDrawingStore } from '../../stores/drawing.store.js'
 
 const store = useDrawingStore()
+
+function handleOverlayClick() {
+  store.clearSelection()
+  store.showSlotsDialog = false
+}
+
+function handleLoad() {
+  if (!store.selectedSlot) return
+  store.requestLoadSlot(store.selectedSlot)
+}
+
+function handleOverwrite() {
+  if (!store.selectedSlot) return
+  store.overwriteSelectedSlot()
+}
+
+function handleDelete() {
+  if (!store.selectedSlot) return
+  store.requestDeleteSlot(store.selectedSlot.id)
+}
+
+function handleSaveNew() {
+  store.saveNewSlotFromDialog()
+}
 </script>
 
 <style scoped src="./drawing-modal-styles.css"></style>
@@ -88,15 +162,22 @@ const store = useDrawingStore()
 }
 
 .slot-card {
+  position: relative;
   background: var(--surface-alt);
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: 8px;
   overflow: hidden;
-  transition: border-color 0.15s ease;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .slot-card:hover {
   border-color: var(--accent);
+}
+
+.slot-card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.3);
 }
 
 .slot-thumb {
@@ -127,33 +208,20 @@ const store = useDrawingStore()
   color: var(--muted);
 }
 
-.slot-actions {
+.slot-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
   display: flex;
-  border-top: 1px solid var(--line);
-}
-
-.slot-btn {
-  flex: 1;
-  padding: 6px;
-  border: none;
-  background: transparent;
-  color: var(--muted);
+  align-items: center;
+  justify-content: center;
   font-size: 12px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.slot-btn:hover {
-  background: var(--surface-alt);
-}
-
-.slot-btn.load {
-  border-right: 1px solid var(--line);
-  color: var(--accent);
-}
-
-.slot-btn.delete:hover {
-  color: var(--danger);
+  pointer-events: none;
 }
 
 .empty-state {
@@ -161,6 +229,67 @@ const store = useDrawingStore()
   padding: 40px 20px;
   color: var(--muted);
   font-size: 14px;
+}
+
+/* ─── Bottom Action Bar ──────────────────────────────────────────── */
+.action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.action-bar-left,
+.action-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.action-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.action-btn--primary:not(:disabled):hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.action-btn--danger:not(:disabled):hover {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+}
+
+.action-btn--secondary:hover {
+  background: var(--surface-alt);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.action-btn--cancel:hover {
+  background: var(--surface-alt);
 }
 
 /* Confirm modal styles */

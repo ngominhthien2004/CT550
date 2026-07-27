@@ -20,20 +20,44 @@
               <select v-model="store.postType" class="form-select" :aria-label="$t('drawing.type')">
                 <option value="illust">{{ $t('drawing.illustration') }}</option>
                 <option value="manga">Manga</option>
-                <option value="novel">Novel</option>
               </select>
             </div>
             <div class="form-group">
               <label>{{ $t('drawing.ageRating') }}</label>
               <select v-model="store.postAgeRating" class="form-select" :aria-label="$t('drawing.ageRating')">
-                <option value="all-ages">{{ $t('drawing.allAges') }}</option>
+                <option value="all">{{ $t('drawing.allAges') }}</option>
                 <option value="r-18">{{ $t('drawing.r18') }}</option>
               </select>
             </div>
           </div>
           <div class="form-group">
-            <label>{{ $t('drawing.tagsCommaSeparated') }}</label>
-            <input v-model="store.postTags" type="text" :placeholder="$t('drawing.tagHint')" class="form-input" :aria-label="$t('drawing.tags')" />
+            <label>{{ $t('drawing.tags') }}</label>
+            <div class="tag-input-wrap">
+              <div class="tag-input-row">
+                <input
+                  v-model="store.postTagInput"
+                  type="text"
+                  class="form-input tag-input-field"
+                  :placeholder="$t('drawing.tagHint')"
+                  :aria-label="$t('drawing.tags')"
+                  @keydown="store.handlePostTagInputKeydown"
+                />
+                <span class="counter-badge">{{ store.postTags.length }}/10</span>
+              </div>
+            </div>
+            <div v-if="store.postTags.length > 0" class="tag-list">
+              <button
+                v-for="(tag, index) in store.postTags"
+                :key="index"
+                type="button"
+                class="tag-pill"
+                :aria-label="'Remove tag ' + tag"
+                @click="store.removePostTag(index)"
+              >
+                #{{ tag }}
+                <span class="remove-x" aria-hidden="true">&times;</span>
+              </button>
+            </div>
           </div>
           <p v-if="store.postError" class="form-error">{{ store.postError }}</p>
         </div>
@@ -63,6 +87,10 @@ function submit() {
 <style scoped src="./drawing-modal-styles.css"></style>
 
 <style scoped>
+/* Override shared modal-body scroll — content fits without scrolling */
+.modal-body {
+  overflow: hidden;
+}
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -106,11 +134,11 @@ function submit() {
 
 /* Post preview */
 .post-preview {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   border-radius: 8px;
   overflow: hidden;
   background: var(--surface);
-  max-height: 240px;
+  max-height: 160px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -118,7 +146,7 @@ function submit() {
 
 .post-preview img {
   max-width: 100%;
-  max-height: 240px;
+  max-height: 160px;
   object-fit: contain;
 }
 
@@ -168,5 +196,67 @@ function submit() {
   color: var(--danger);
   font-size: 13px;
   margin: 8px 0 0;
+}
+
+/* ─── Tag Input ─────────────────────────────────────────────────── */
+.tag-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.tag-input-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.tag-input-field {
+  padding-right: 3.5rem !important;
+}
+
+.counter-badge {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 0.8rem;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Tag pills */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tag-pill:hover {
+  background: #fce8e6;
+  border-color: #ea4335;
+  color: #c5221f;
+}
+
+.remove-x {
+  font-size: 14px;
+  line-height: 1;
+  font-weight: bold;
 }
 </style>
