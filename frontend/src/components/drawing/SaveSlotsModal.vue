@@ -3,7 +3,7 @@
     <div v-if="store.showSlotsDialog" class="modal-overlay" @click.self="handleOverlayClick" @keydown.enter.prevent="store.showSlotsDialog = false" @keydown.space.prevent="store.showSlotsDialog = false" tabindex="0" role="button">
       <div class="modal-content modal-content--wide">
         <div class="modal-header">
-          <h2>{{ $t('drawing.savedDrawings') }}</h2>
+          <h2 ref="dialogHeaderRef">{{ $t('drawing.savedDrawings') }}</h2>
           <button type="button" class="modal-close-btn" @click="store.showSlotsDialog = false">&times;</button>
         </div>
         <div class="modal-body">
@@ -20,7 +20,23 @@
             >
               <img :src="slot.thumbnail" :alt="slot.name" class="slot-thumb" />
               <div class="slot-info">
-                <span class="slot-name">{{ slot.name }}</span>
+                <!-- Rename input vs display name -->
+                <template v-if="store.renamingSlotId === slot.id">
+                  <input
+                    ref="renameInputRef"
+                    v-model="store.renamingSlotInput"
+                    type="text"
+                    class="rename-input"
+                    maxlength="40"
+                    @keydown.enter="store.commitRenameSlot()"
+                    @keydown.escape="store.cancelRenameSlot()"
+                    @click.stop
+                    @blur="store.commitRenameSlot()"
+                  />
+                </template>
+                <template v-else>
+                  <span class="slot-name" @dblclick.stop="store.startRenameSlot(slot.id)">{{ slot.name }}</span>
+                </template>
                 <span class="slot-date">{{ store.formatDate(slot.timestamp) }}</span>
               </div>
               <div v-if="store.selectedSlotId === slot.id" class="slot-check">
@@ -118,9 +134,12 @@
 </template>
 
 <script setup>
+import { ref, nextTick, watch } from 'vue'
 import { useDrawingStore } from '../../stores/drawing.store.js'
 
 const store = useDrawingStore()
+const dialogHeaderRef = ref(null)
+const renameInputRef = ref(null)
 
 function handleOverlayClick() {
   store.clearSelection()
@@ -144,7 +163,25 @@ function handleDelete() {
 
 function handleSaveNew() {
   store.saveNewSlotFromDialog()
+  // Focus the dialog header after save so keyboard users stay in the dialog
+  nextTick(function () {
+    if (dialogHeaderRef.value) {
+      dialogHeaderRef.value.focus({ preventScroll: true })
+    }
+  })
 }
+
+// Auto-focus rename input when rename starts
+watch(function () { return store.renamingSlotId }, function (newVal) {
+  if (newVal !== null) {
+    nextTick(function () {
+      if (renameInputRef.value) {
+        renameInputRef.value.focus()
+        renameInputRef.value.select()
+      }
+    })
+  }
+})
 </script>
 
 <style scoped src="./drawing-modal-styles.css"></style>
@@ -201,6 +238,7 @@ function handleSaveNew() {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: text;
 }
 
 .slot-date {
@@ -222,6 +260,20 @@ function handleSaveNew() {
   justify-content: center;
   font-size: 12px;
   pointer-events: none;
+}
+
+/* Rename input */
+.rename-input {
+  width: 100%;
+  padding: 2px 4px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  outline: none;
+  box-sizing: border-box;
 }
 
 .empty-state {

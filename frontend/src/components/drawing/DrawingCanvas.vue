@@ -4,6 +4,8 @@
     class="canvas-container"
     :style="{ cursor: canvasCursor }"
     @wheel.prevent="store.handleZoom"
+    @mousemove="onContainerMouseMove"
+    @mouseleave="onContainerMouseLeave"
   >
     <v-stage
       ref="stageRefComp"
@@ -39,6 +41,13 @@
       </v-layer>
     </v-stage>
 
+    <!-- Custom brush cursor preview circle -->
+    <div
+      v-if="showCursorPreview"
+      class="brush-cursor-preview"
+      :style="cursorPreviewStyle"
+    />
+
     <!-- Zoom overlay indicator -->
     <transition name="fade">
       <div v-if="store.zoomIndicator" class="zoom-indicator">
@@ -49,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useDrawingStore } from '../../stores/drawing.store.js'
 
 const store = useDrawingStore()
@@ -58,11 +67,47 @@ const stageContainerEl = ref(null)
 const stageRefComp = ref(null)
 const drawLayerRefComp = ref(null)
 
+// ─── Custom brush cursor preview ───────────────────────────────────
+const cursorPos = ref({ x: -100, y: -100 })
+const showCursor = ref(false)
+
+const showCursorPreview = computed(function () {
+  return showCursor.value && !store.isDrawing && !store.isPanning && !store.isSpaceDown && (store.tool === 'brush' || store.tool === 'eraser')
+})
+
+const cursorPreviewStyle = computed(function () {
+  var size = store.tool === 'eraser' ? store.eraserSize : store.brushSize
+  return {
+    width: size + 'px',
+    height: size + 'px',
+    left: cursorPos.value.x + 'px',
+    top: cursorPos.value.y + 'px',
+    backgroundColor: store.tool === 'eraser' ? 'transparent' : store.brushColor,
+    borderColor: store.tool === 'eraser' ? '#fff' : 'rgba(255,255,255,0.6)',
+    opacity: store.tool === 'eraser' ? '0.7' : String(store.brushOpacity),
+  }
+})
+
+function onContainerMouseMove(event) {
+  var rect = stageContainerEl.value ? stageContainerEl.value.getBoundingClientRect() : null
+  if (!rect) return
+  cursorPos.value = {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top,
+  }
+  showCursor.value = true
+}
+
+function onContainerMouseLeave() {
+  showCursor.value = false
+}
+
+// ─── Canvas cursor ─────────────────────────────────────────────────
 const canvasCursor = computed(() => {
   if (store.isPanning || store.isSpaceDown) return 'grab'
   switch (store.tool) {
-    case 'brush': return 'crosshair'
-    case 'eraser': return 'crosshair'
+    case 'brush': return 'none'
+    case 'eraser': return 'none'
     case 'eyedropper': return 'crosshair'
     case 'pan': return 'grab'
     default: return 'default'
@@ -111,6 +156,18 @@ onMounted(() => {
   pointer-events: none;
   z-index: 5;
   font-variant-numeric: tabular-nums;
+}
+
+/* Brush cursor preview circle */
+.brush-cursor-preview {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid;
+  pointer-events: none;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+  transition: width 0.08s ease, height 0.08s ease, background-color 0.08s ease;
+  box-sizing: border-box;
 }
 
 .fade-enter-active,

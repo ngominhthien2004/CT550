@@ -246,6 +246,9 @@ const store = useDrawingStore()
   .left-toolbar.collapsed {
     margin-left: -180px;
   }
+  .color-palette {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 @media (max-width: 640px) {
@@ -262,6 +265,13 @@ const store = useDrawingStore()
     transform: translateX(-100%);
     opacity: 1;
     pointer-events: none;
+  }
+  .custom-color-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .color-hex {
+    text-align: center;
   }
 }
 </style>

@@ -6,78 +6,102 @@
           <h2>{{ $t('drawing.postDrawing') }}</h2>
           <button type="button" class="modal-close-btn" @click="store.closePostDialog">&times;</button>
         </div>
-        <div class="modal-body">
-          <div v-if="store.postPreviewUrl" class="post-preview">
-            <img :src="store.postPreviewUrl" :alt="$t('drawing.drawingPreview')" />
-          </div>
-          <div class="form-group">
-            <label>{{ $t('drawing.title') }} *</label>
-            <input v-model="store.postTitle" type="text" :placeholder="$t('drawing.enterTitle')" class="form-input" maxlength="100" :aria-label="$t('drawing.title')" />
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>{{ $t('drawing.type') }}</label>
-              <select v-model="store.postType" class="form-select" :aria-label="$t('drawing.type')">
-                <option value="illust">{{ $t('drawing.illustration') }}</option>
-                <option value="manga">Manga</option>
-              </select>
+        <form @submit.prevent="submit">
+          <div class="modal-body">
+            <div v-if="store.postPreviewUrl" class="post-preview">
+              <img :src="store.postPreviewUrl" :alt="$t('drawing.drawingPreview')" />
             </div>
             <div class="form-group">
-              <label>{{ $t('drawing.ageRating') }}</label>
-              <select v-model="store.postAgeRating" class="form-select" :aria-label="$t('drawing.ageRating')">
-                <option value="all">{{ $t('drawing.allAges') }}</option>
-                <option value="r-18">{{ $t('drawing.r18') }}</option>
-              </select>
+              <label>{{ $t('drawing.title') }} *</label>
+              <input v-model="store.postTitle" type="text" :placeholder="$t('drawing.enterTitle')" class="form-input" maxlength="100" :aria-label="$t('drawing.title')" />
             </div>
-          </div>
-          <div class="form-group">
-            <label>{{ $t('drawing.tags') }}</label>
-            <div class="tag-input-wrap">
-              <div class="tag-input-row">
-                <input
-                  v-model="store.postTagInput"
-                  type="text"
-                  class="form-input tag-input-field"
-                  :placeholder="$t('drawing.tagHint')"
-                  :aria-label="$t('drawing.tags')"
-                  @keydown="store.handlePostTagInputKeydown"
-                />
-                <span class="counter-badge">{{ store.postTags.length }}/10</span>
+            <div class="form-row">
+              <div class="form-group">
+                <label>{{ $t('drawing.type') }}</label>
+                <select v-model="store.postType" class="form-select" :aria-label="$t('drawing.type')">
+                  <option value="illust">{{ $t('drawing.illustration') }}</option>
+                  <option value="manga">Manga</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>{{ $t('drawing.ageRating') }}</label>
+                <select v-model="store.postAgeRating" class="form-select" :aria-label="$t('drawing.ageRating')">
+                  <option value="all">{{ $t('drawing.allAges') }}</option>
+                  <option value="r-18">{{ $t('drawing.r18') }}</option>
+                </select>
               </div>
             </div>
-            <div v-if="store.postTags.length > 0" class="tag-list">
-              <button
-                v-for="(tag, index) in store.postTags"
-                :key="index"
-                type="button"
-                class="tag-pill"
-                :aria-label="'Remove tag ' + tag"
-                @click="store.removePostTag(index)"
-              >
-                #{{ tag }}
-                <span class="remove-x" aria-hidden="true">&times;</span>
-              </button>
+            <div class="form-group">
+              <label>{{ $t('drawing.tags') }}</label>
+              <div class="tag-input-wrap">
+                <div class="tag-input-row">
+                  <input
+                    v-model="store.postTagInput"
+                    type="text"
+                    class="form-input tag-input-field"
+                    :placeholder="$t('drawing.tagHint')"
+                    :aria-label="$t('drawing.tags')"
+                    @keydown="store.handlePostTagInputKeydown"
+                  />
+                  <span class="counter-badge">{{ store.postTags.length }}/10</span>
+                </div>
+                <!-- Suggestions dropdown -->
+                <div v-if="showSuggestions" class="tag-suggestion-panel">
+                  <p v-if="store.postTagSuggestionLoading" class="suggestion-hint">Đang tải...</p>
+                  <template v-else>
+                    <button
+                      v-for="s in store.postTagSuggestions"
+                      :key="s.name"
+                      type="button"
+                      class="tag-suggestion-item"
+                      @click="store.handleSelectPostTagSuggestion(s.name)"
+                    >
+                      <span class="tag-name">#{{ s.name }}</span>
+                      <span v-if="s.usageCount" class="tag-count">{{ s.usageCount }} kết quả</span>
+                    </button>
+                    <p v-if="store.postTagSuggestions.length === 0" class="suggestion-hint">Không có tag nào</p>
+                  </template>
+                </div>
+              </div>
+              <div v-if="store.postTags.length > 0" class="tag-list">
+                <button
+                  v-for="(tag, index) in store.postTags"
+                  :key="index"
+                  type="button"
+                  class="tag-pill"
+                  :aria-label="'Remove tag ' + tag"
+                  @click="store.removePostTag(index)"
+                >
+                  #{{ tag }}
+                  <span class="remove-x" aria-hidden="true">&times;</span>
+                </button>
+              </div>
             </div>
+            <p v-if="store.postError" class="form-error">{{ store.postError }}</p>
           </div>
-          <p v-if="store.postError" class="form-error">{{ store.postError }}</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="modal-btn cancel" @click="store.closePostDialog">{{ $t('drawing.cancel') }}</button>
-          <button type="button" class="modal-btn submit" :disabled="store.postSubmitting" @click="submit">
-            {{ store.postSubmitting ? $t('drawing.posting') : $t('drawing.post') }}
-          </button>
-        </div>
+          <div class="modal-footer">
+            <button type="button" class="modal-btn cancel" @click="store.closePostDialog">{{ $t('drawing.cancel') }}</button>
+            <button type="submit" class="modal-btn submit" :disabled="store.postSubmitting">
+              {{ store.postSubmitting ? $t('drawing.posting') : $t('drawing.post') }}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </Teleport>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDrawingStore } from '../../stores/drawing.store.js'
 
 const router = useRouter()
 const store = useDrawingStore()
+
+const showSuggestions = computed(function () {
+  return store.postTagInput.trim().length > 0
+})
 
 function submit() {
   store.submitPost(router)
@@ -91,6 +115,7 @@ function submit() {
 .modal-body {
   overflow: hidden;
 }
+
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -145,9 +170,9 @@ function submit() {
 }
 
 .post-preview img {
-  max-width: 100%;
-  max-height: 160px;
-  object-fit: contain;
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
 }
 
 /* Form fields */
@@ -258,5 +283,58 @@ function submit() {
   font-size: 14px;
   line-height: 1;
   font-weight: bold;
+}
+
+/* ─── Tag Suggestion Panel ─────────────────────────────────────── */
+.tag-suggestion-panel {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  display: grid;
+  gap: 2px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.tag-suggestion-item {
+  border: 0;
+  border-radius: 4px;
+  text-align: left;
+  padding: 6px 10px;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tag-suggestion-item:hover {
+  background: var(--surface-alt);
+}
+
+.tag-name {
+  font-weight: 500;
+}
+
+.tag-count {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.suggestion-hint {
+  padding: 8px 10px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
 }
 </style>

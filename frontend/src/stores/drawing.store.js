@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { ref, reactive, computed, nextTick } from 'vue'
-import { createArtwork } from '../services/api.js'
+import { ref, reactive, computed, nextTick, watch } from 'vue'
+import { createArtwork, getTags } from '../services/api.js'
 import { formatShortDate } from '../utils/date.js'
 
 export const useDrawingStore = defineStore('drawing', () => {
@@ -81,6 +81,8 @@ export const useDrawingStore = defineStore('drawing', () => {
   const pendingSlotId = ref(null)
   const pendingSlotData = ref(null)
   const pendingAutosaveData = ref(null)
+  const renamingSlotId = ref(null)
+  const renamingSlotInput = ref('')
 
   // Post dialog state
   const showPostDialog = ref(false)
@@ -89,6 +91,8 @@ export const useDrawingStore = defineStore('drawing', () => {
   const postAgeRating = ref('all')
   const postTags = ref([])
   const postTagInput = ref('')
+  const postTagSuggestions = ref([])
+  const postTagSuggestionLoading = ref(false)
   const postSubmitting = ref(false)
   const postError = ref('')
   const postPreviewUrl = ref('')
@@ -824,7 +828,52 @@ export const useDrawingStore = defineStore('drawing', () => {
     saveSlotsToStorage(filtered)
   }
 
+  // ─── Slot rename ──────────────────────────────────────────────────
+  function startRenameSlot(slotId) {
+    const slot = savedSlots.value.find(function (s) { return s.id === slotId })
+    if (!slot) return
+    renamingSlotId.value = slotId
+    renamingSlotInput.value = slot.name
+    selectedSlotId.value = null
+  }
+
+  function commitRenameSlot() {
+    const id = renamingSlotId.value
+    if (!id) return
+    const newName = renamingSlotInput.value.trim()
+    if (!newName) {
+      renamingSlotId.value = null
+      return
+    }
+    const slots = getSavedSlots()
+    var found = false
+    for (var ri = 0; ri < slots.length; ri++) {
+      if (slots[ri].id === id) {
+        slots[ri].name = newName
+        found = true
+        break
+      }
+    }
+    if (found) {
+      saveSlotsToStorage(slots)
+      savedSlots.value = slots
+    }
+    renamingSlotId.value = null
+  }
+
+  function cancelRenameSlot() {
+    renamingSlotId.value = null
+  }
+
   function loadFromSlot(slot) {
+    // Save current drawing state into undo map before clearing
+    for (var li = 0; li < layers.length; li++) {
+      var l = layers[li]
+      if (!undoMap[l.id]) undoMap[l.id] = []
+      for (var li2 = 0; li2 < l.lines.length; li2++) {
+        undoMap[l.id].push(JSON.parse(JSON.stringify(l.lines[li2])))
+      }
+    }
     layers.splice(0, layers.length)
     slot.layers.forEach(function (savedLayer) {
       const newLayer = {
@@ -869,6 +918,14 @@ export const useDrawingStore = defineStore('drawing', () => {
   }
 
   function restoreFromData(data) {
+    // Save current state to undo map before restoring
+    for (var li = 0; li < layers.length; li++) {
+      var l = layers[li]
+      if (!undoMap[l.id]) undoMap[l.id] = []
+      for (var li2 = 0; li2 < l.lines.length; li2++) {
+        undoMap[l.id].push(JSON.parse(JSON.stringify(l.lines[li2])))
+      }
+    }
     layers.splice(0, layers.length)
     data.forEach(function (savedLayer) {
       const newLayer = {
@@ -988,13 +1045,61 @@ export const useDrawingStore = defineStore('drawing', () => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault()
       commitPostTag(postTagInput.value)
+      postTagSuggestions.value = []
     } else if (e.key === ' ') {
       e.preventDefault()
       if (postTagInput.value.trim()) {
         commitPostTag(postTagInput.value)
+        postTagSuggestions.value = []
       }
     }
   }
+
+  var postTagSuggestionTimer = null
+
+  function clearPostTagSuggestionTimer() {
+    if (postTagSuggestionTimer) {
+      clearTimeout(postTagSuggestionTimer)
+      postTagSuggestionTimer = null
+    }
+  }
+
+  async function fetchPostTagSuggestions(keyword) {
+    postTagSuggestionLoading.value = true
+    try {
+      var res = await getTags({ q: keyword, limit: 8 })
+      var raw = Array.isArray(res.data) ? res.data : []
+      postTagSuggestions.value = raw
+        .map(function (item) {
+          var name = normalizePostTag(item.name || item._id || '')
+          return { name: name, usageCount: Number(item.usageCount || 0) }
+        })
+        .filter(function (s) { return s.name && !postTags.value.includes(s.name) })
+    } catch (_e) {
+      postTagSuggestions.value = []
+    } finally {
+      postTagSuggestionLoading.value = false
+    }
+  }
+
+  function handleSelectPostTagSuggestion(suggestion) {
+    commitPostTag(suggestion)
+    postTagSuggestions.value = []
+  }
+
+  // Watch post tag input for suggestions
+  watch(postTagInput, function (value) {
+    clearPostTagSuggestionTimer()
+    var keyword = normalizePostTag(value).replace(/_/g, ' ')
+    if (!keyword) {
+      postTagSuggestions.value = []
+      postTagSuggestionLoading.value = false
+      return
+    }
+    postTagSuggestionTimer = setTimeout(function () {
+      fetchPostTagSuggestions(keyword)
+    }, 180)
+  })
 
   async function submitPost(router) {
     if (!postTitle.value.trim()) {
@@ -1026,6 +1131,7 @@ export const useDrawingStore = defineStore('drawing', () => {
         router.push('/artworks/' + artworkId)
       }
     } catch (err) {
+      clearGoHomeIntent()
       postError.value = err?.response?.data?.message || err.message || 'Failed to post drawing'
     } finally {
       postSubmitting.value = false
@@ -1077,7 +1183,9 @@ export const useDrawingStore = defineStore('drawing', () => {
     showNewCanvasConfirm, showGoHomeConfirm,
     showLoadSlotConfirm, showDeleteSlotConfirm, showRestoreAutosaveConfirm,
     pendingSlotId, pendingSlotData, pendingAutosaveData,
+    renamingSlotId, renamingSlotInput,
     showPostDialog, postTitle, postType, postAgeRating, postTags, postTagInput,
+    postTagSuggestions, postTagSuggestionLoading,
     postSubmitting, postError, postPreviewUrl,
     // Computed
     activeLayer, hasContent, orderedVisibleLayers,
@@ -1102,9 +1210,11 @@ export const useDrawingStore = defineStore('drawing', () => {
     saveNewSlotFromDialog, overwriteSelectedSlot,
     requestLoadSlot, executeLoadSlot, requestDeleteSlot, executeDeleteSlot,
     removeSlotFromStorage, triggerAutoSave, restoreFromData,
+    startRenameSlot, commitRenameSlot, cancelRenameSlot,
     restoreAutosave, executeRestoreAutosave,
     openSlotsDialog,
     openPostDialog, closePostDialog, submitPost, exportToBlob,
     commitPostTag, removePostTag, handlePostTagInputKeydown,
+    handleSelectPostTagSuggestion, clearPostTagSuggestionTimer,
   }
 })
