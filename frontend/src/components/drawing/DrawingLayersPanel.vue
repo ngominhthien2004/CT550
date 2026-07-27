@@ -57,13 +57,53 @@
         <i class="fa-solid fa-chevron-down" />
       </button>
     </div>
+
+    <!-- ─── Layer Properties (Opacity + Blend Mode) ─────────────────── -->
+    <div v-if="store.activeLayer" class="layer-props">
+      <div class="prop-group">
+        <label class="prop-label">Opacity</label>
+        <div class="prop-row">
+          <input
+            type="range"
+            class="prop-slider"
+            min="0"
+            max="1"
+            step="0.05"
+            :value="store.activeLayer.opacity"
+            @input="store.setLayerOpacity(store.activeLayerIndex, Number($event.target.value))"
+            aria-label="Layer opacity"
+          />
+          <span class="prop-value">{{ Math.round(store.activeLayer.opacity * 100) }}%</span>
+        </div>
+      </div>
+      <div class="prop-group">
+        <label class="prop-label">Blend</label>
+        <select
+          class="prop-select"
+          :value="store.activeLayer.blendMode"
+          @change="store.setLayerBlendMode(store.activeLayerIndex, $event.target.value)"
+          aria-label="Layer blend mode"
+        >
+          <option v-for="mode in blendModes" :key="mode" :value="mode">{{ mode }}</option>
+        </select>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useDrawingStore } from '../../stores/drawing.store.js'
 
 const store = useDrawingStore()
+
+const blendModes = computed(function () {
+  return store.BLEND_MODES || [
+    'source-over', 'multiply', 'screen', 'overlay',
+    'darken', 'lighten', 'color-dodge', 'color-burn',
+    'hard-light', 'soft-light', 'difference', 'exclusion',
+  ]
+})
 </script>
 
 <style scoped>
@@ -243,6 +283,89 @@ const store = useDrawingStore()
 .layer-list::-webkit-scrollbar-thumb {
   background: #444;
   border-radius: 2px;
+}
+
+/* ─── Layer Properties (Opacity + Blend Mode) ─────────────────────── */
+.layer-props {
+  border-top: 1px solid #333338;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prop-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.prop-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #888;
+}
+
+.prop-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.prop-slider {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #444;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.prop-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #4a6cf7;
+  cursor: pointer;
+  border: none;
+}
+
+.prop-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #4a6cf7;
+  cursor: pointer;
+  border: none;
+}
+
+.prop-value {
+  font-size: 11px;
+  color: #aaa;
+  min-width: 36px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.prop-select {
+  width: 100%;
+  padding: 4px 6px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background: #1a1a1e;
+  color: #ccc;
+  font-size: 11px;
+  outline: none;
+  cursor: pointer;
+}
+
+.prop-select:focus {
+  border-color: #4a6cf7;
 }
 
 /* Responsive */

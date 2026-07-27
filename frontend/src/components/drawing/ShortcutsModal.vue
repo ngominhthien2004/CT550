@@ -12,6 +12,10 @@
             <div class="shortcut-row"><kbd>B</kbd><span>{{ $t('drawing.brush') }}</span></div>
             <div class="shortcut-row"><kbd>E</kbd><span>{{ $t('drawing.eraser') }}</span></div>
             <div class="shortcut-row"><kbd>I</kbd><span>{{ $t('drawing.eyedropper') }}</span></div>
+            <div class="shortcut-row"><kbd>R</kbd><span>Rectangle</span></div>
+            <div class="shortcut-row"><kbd>C</kbd><span>Circle</span></div>
+            <div class="shortcut-row"><kbd>L</kbd><span>Line</span></div>
+            <div class="shortcut-row"><kbd>A</kbd><span>Arrow</span></div>
             <div class="shortcut-row"><kbd>Space</kbd><span>{{ $t('drawing.panHold') }}</span></div>
           </div>
           <div class="shortcut-group">

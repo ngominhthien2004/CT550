@@ -1,10 +1,14 @@
 import { defineStore } from 'pinia'
-import { ref, reactive, computed, nextTick, watch } from 'vue'
+import { ref, reactive, computed, nextTick } from 'vue'
 import { createArtwork, getTags } from '../services/api.js'
-import { formatShortDate } from '../utils/date.js'
+import { useDrawingExport } from '../composables/useDrawingExport.js'
+import { useDrawingSlots } from '../composables/useDrawingSlots.js'
+import { useDrawingPost } from '../composables/useDrawingPost.js'
 
 export const useDrawingStore = defineStore('drawing', () => {
-  // ─── Constants ────────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  CONSTANTS
+  // ════════════════════════════════════════════════════════════════════
   const CANVAS_WIDTH = 1920
   const CANVAS_HEIGHT = 1080
   const MIN_SCALE = 0.1
@@ -16,13 +20,21 @@ export const useDrawingStore = defineStore('drawing', () => {
     '#808080', '#00ffff',
   ]
   const EXTENSIONS = { 'image/png': 'png', 'image/jpeg': 'jpg' }
-  const SAVE_SLOTS_KEY = 'drawing_slots' // LocalStorage key constant (not a secret)
-  const AUTO_SAVE_KEY = 'drawing_autosave' // LocalStorage key constant (not a secret)
+  const SAVE_SLOTS_KEY = 'drawing_slots'
+  const AUTO_SAVE_KEY = 'drawing_autosave'
   const MAX_SLOTS = 10
   const MAX_THUMB_W = 320
   const MAX_THUMB_H = 180
+  const BLEND_MODES = [
+    'source-over', 'multiply', 'screen', 'overlay',
+    'darken', 'lighten', 'color-dodge', 'color-burn',
+    'hard-light', 'soft-light', 'difference', 'exclusion',
+  ]
+  const SHAPE_TOOLS = ['rect', 'circle', 'line', 'arrow']
 
-  // ─── Refs (state) ─────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  CORE STATE REFS
+  // ════════════════════════════════════════════════════════════════════
   const stageRef = ref(null)
   const drawLayerRef = ref(null)
   const stageContainer = ref(null)
@@ -38,7 +50,7 @@ export const useDrawingStore = defineStore('drawing', () => {
   const stageX = ref(0)
   const stageY = ref(0)
 
-  const tool = ref('brush') // 'brush' | 'eraser' | 'eyedropper'
+  const tool = ref('brush') // 'brush' | 'eraser' | 'eyedropper' | 'rect' | 'circle' | 'line' | 'arrow'
   const brushColor = ref('#000000')
   const brushSize = ref(5)
   const brushOpacity = ref(1)
@@ -50,57 +62,57 @@ export const useDrawingStore = defineStore('drawing', () => {
   let dragStartPointer = null
   let dragStartStagePos = null
 
+  const shapeStartPos = ref(null)
+
   let nextLayerId = 2
   const activeLayerIndex = ref(0)
   const layers = reactive([
-    { id: 1, name: 'Layer 1', visible: true, lines: [], images: [] },
+    { id: 1, name: 'Layer 1', visible: true, opacity: 1, blendMode: 'source-over', lines: [], images: [], shapes: [] },
   ])
 
-  // History mapping: { [layerId]: [lineConfigs] }
+  // History mapping: { [layerId]: [entries] }
   const undoMap = reactive({})
   const redoMap = reactive({})
-
-  // Save slots state
-  const showSlotsDialog = ref(false)
-  const savedSlots = ref([])
-  const selectedSlotId = ref(null)
 
   // New canvas confirmation
   const showNewCanvasConfirm = ref(false)
 
-  // Non-reactive flag to track go-home intent (avoids native confirm conflict)
+  // Non-reactive flag to track go-home intent
   let goHomeIntentConfirmed = false
 
   // Go home confirmation
   const showGoHomeConfirm = ref(false)
 
-  // Slot confirmation modals
-  const showLoadSlotConfirm = ref(false)
-  const showDeleteSlotConfirm = ref(false)
-  const showRestoreAutosaveConfirm = ref(false)
-  const pendingSlotId = ref(null)
-  const pendingSlotData = ref(null)
-  const pendingAutosaveData = ref(null)
-  const renamingSlotId = ref(null)
-  const renamingSlotInput = ref('')
+  // ════════════════════════════════════════════════════════════════════
+  //  COMPOSABLES (export / slots / post)
+  // ════════════════════════════════════════════════════════════════════
+  var exportApi = useDrawingExport(stageRef, CANVAS_WIDTH, CANVAS_HEIGHT, EXTENSIONS, MAX_THUMB_W, MAX_THUMB_H)
+  var { generateThumbnail } = exportApi
 
-  // Post dialog state
-  const showPostDialog = ref(false)
-  const postTitle = ref('')
-  const postType = ref('illust')
-  const postAgeRating = ref('all')
-  const postTags = ref([])
-  const postTagInput = ref('')
-  const postTagSuggestions = ref([])
-  const postTagSuggestionLoading = ref(false)
-  const postSubmitting = ref(false)
-  const postError = ref('')
-  const postPreviewUrl = ref('')
+  var slotsApi = useDrawingSlots({
+    layers: layers,
+    undoMap: undoMap,
+    redoMap: redoMap,
+    generateThumbnail: generateThumbnail,
+    fitToScreen: fitToScreen,
+    SAVE_SLOTS_KEY: SAVE_SLOTS_KEY,
+    AUTO_SAVE_KEY: AUTO_SAVE_KEY,
+    MAX_SLOTS: MAX_SLOTS,
+    MAX_THUMB_W: MAX_THUMB_W,
+    MAX_THUMB_H: MAX_THUMB_H,
+  })
 
-  // Auto-save
-  let autoSaveTimer = null
+  var postApi = useDrawingPost({
+    exportToBlob: exportApi.exportToBlob,
+    confirmGoHomeIntent: confirmGoHomeIntent,
+    clearGoHomeIntent: clearGoHomeIntent,
+    getTags: getTags,
+    createArtwork: createArtwork,
+  })
 
-  // ─── Computed (getters) ──────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  COMPUTED (getters)
+  // ════════════════════════════════════════════════════════════════════
   const activeLayer = computed(() => layers[activeLayerIndex.value])
 
   const hasContent = computed(() =>
@@ -124,47 +136,52 @@ export const useDrawingStore = defineStore('drawing', () => {
   }))
 
   const bgRectConfig = computed(() => ({
-    x: 0,
-    y: 0,
-    width: CANVAS_WIDTH,
-    height: CANVAS_HEIGHT,
+    x: 0, y: 0,
+    width: CANVAS_WIDTH, height: CANVAS_HEIGHT,
     fill: '#ffffff',
   }))
 
   const invisibleCanvasRectConfig = {
-    x: 0,
-    y: 0,
-    width: CANVAS_WIDTH,
-    height: CANVAS_HEIGHT,
+    x: 0, y: 0,
+    width: CANVAS_WIDTH, height: CANVAS_HEIGHT,
     fill: 'transparent',
     listening: false,
   }
 
-  const selectedSlot = computed(() => {
-    if (selectedSlotId.value === null) return null
-    return savedSlots.value.find(function (s) { return s.id === selectedSlotId.value }) || null
-  })
-
-  // ─── Template ref setters (for syncing from components) ─────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  TEMPLATE REF SETTERS
+  // ════════════════════════════════════════════════════════════════════
   function setStageRef(ref) { stageRef.value = ref.value }
   function setDrawLayerRef(ref) { drawLayerRef.value = ref.value }
   function setStageContainer(el) { stageContainer.value = el }
   function setFileInput(el) { fileInput.value = el }
 
-  // ─── Canvas Coordinate Helpers ─────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  CANVAS COORDINATE HELPERS
+  // ════════════════════════════════════════════════════════════════════
   function screenToCanvas(clientX, clientY) {
+    // Prefer Konva's built-in transform — it always matches the stage
+    if (stageRef.value && typeof stageRef.value.getPointerPosition === 'function') {
+      var pos = stageRef.value.getPointerPosition()
+      if (pos) return pos
+    }
+    // Fallback manual conversion (legacy)
     if (!stageContainer.value) return { x: 0, y: 0 }
-    const rect = stageContainer.value.getBoundingClientRect()
+    var rect = stageContainer.value.getBoundingClientRect()
     return {
       x: (clientX - rect.left - stageX.value) / stageScale.value,
       y: (clientY - rect.top - stageY.value) / stageScale.value,
     }
   }
 
-  // ─── Tool Management ────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  TOOL MANAGEMENT
+  // ════════════════════════════════════════════════════════════════════
   function setTool(t) {
     tool.value = t
     if (t !== 'pan') isPanning.value = false
+    shapeStartPos.value = null
+    isDrawing.value = false
   }
 
   function togglePanMode() {
@@ -182,22 +199,16 @@ export const useDrawingStore = defineStore('drawing', () => {
 
   function executeNewCanvas() {
     showNewCanvasConfirm.value = false
-    // Clear all layers
     layers.splice(0, layers.length)
-    // Reset to initial state
-    layers.push({ id: 1, name: 'Layer 1', visible: true, lines: [], images: [] })
+    layers.push({ id: 1, name: 'Layer 1', visible: true, opacity: 1, blendMode: 'source-over', lines: [], images: [], shapes: [] })
     activeLayerIndex.value = 0
     nextLayerId = 2
-    // Clear undo/redo
     for (const key of Object.keys(undoMap)) delete undoMap[key]
     for (const key of Object.keys(redoMap)) delete redoMap[key]
-    // Clear autosave
-    localStorage.removeItem(AUTO_SAVE_KEY)
-    // Reset canvas transform
+    slotsApi.clearAutoSaveStorage()
     stageScale.value = 1
     stageX.value = 0
     stageY.value = 0
-    // Re-fit
     nextTick(() => fitToScreen())
   }
 
@@ -224,7 +235,9 @@ export const useDrawingStore = defineStore('drawing', () => {
     else brushSize.value = v
   }
 
-  // ─── Drawing ────────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  DRAWING (mouse handlers)
+  // ════════════════════════════════════════════════════════════════════
   function createLineConfig(pos) {
     const isEraser = tool.value === 'eraser'
     return {
@@ -242,7 +255,7 @@ export const useDrawingStore = defineStore('drawing', () => {
   function handleStageMouseDown(e) {
     const nativeEvent = e.evt
 
-    // Middle button click → start pan
+    // Middle button → pan
     if (nativeEvent.button === 1) {
       isPanning.value = true
       dragStartPointer = { x: nativeEvent.clientX, y: nativeEvent.clientY }
@@ -250,7 +263,7 @@ export const useDrawingStore = defineStore('drawing', () => {
       return
     }
 
-    // Space held or pan tool → start pan with left button
+    // Space / pan tool
     if (isSpaceDown.value || tool.value === 'pan') {
       isPanning.value = true
       dragStartPointer = { x: nativeEvent.clientX, y: nativeEvent.clientY }
@@ -262,6 +275,15 @@ export const useDrawingStore = defineStore('drawing', () => {
     if (nativeEvent.button === 0) {
       if (tool.value === 'eyedropper') {
         pickColor(nativeEvent)
+        return
+      }
+
+      if (isShapeTool(tool.value)) {
+        isDrawing.value = true
+        const pos = screenToCanvas(nativeEvent.clientX, nativeEvent.clientY)
+        shapeStartPos.value = pos
+        const shape = createShapeConfig(tool.value, pos, pos)
+        if (shape) activeLayer.value.shapes.push(shape)
         return
       }
 
@@ -285,6 +307,18 @@ export const useDrawingStore = defineStore('drawing', () => {
 
     if (isDrawing.value) {
       const pos = screenToCanvas(nativeEvent.clientX, nativeEvent.clientY)
+
+      // Shape drawing — update last shape
+      if (shapeStartPos.value) {
+        const shapes = activeLayer.value.shapes
+        const newShape = createShapeConfig(tool.value, shapeStartPos.value, pos)
+        if (newShape && shapes.length > 0) {
+          shapes[shapes.length - 1] = newShape
+        }
+        return
+      }
+
+      // Brush / eraser — extend last line
       const lines = activeLayer.value.lines
       const lastLine = lines[lines.length - 1]
       if (lastLine) {
@@ -303,6 +337,23 @@ export const useDrawingStore = defineStore('drawing', () => {
 
     if (isDrawing.value) {
       isDrawing.value = false
+
+      // Shape finalization
+      if (shapeStartPos.value) {
+        const shapes = activeLayer.value.shapes
+        if (shapes.length > 0) {
+          const shape = JSON.parse(JSON.stringify(shapes[shapes.length - 1]))
+          const lid = activeLayer.value.id
+          if (!undoMap[lid]) undoMap[lid] = []
+          undoMap[lid].push({ type: 'shape', data: shape })
+          redoMap[lid] = []
+        }
+        shapeStartPos.value = null
+        slotsApi.triggerAutoSave()
+        return
+      }
+
+      // Brush / eraser finalization
       const lines = activeLayer.value.lines
       if (lines.length > 0) {
         const line = lines[lines.length - 1]
@@ -311,26 +362,19 @@ export const useDrawingStore = defineStore('drawing', () => {
         undoMap[lid].push(JSON.parse(JSON.stringify(line)))
         redoMap[lid] = []
       }
-      triggerAutoSave()
+      slotsApi.triggerAutoSave()
     }
   }
 
-  // ─── Eyedropper ─────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  EYEDROPPER
+  // ════════════════════════════════════════════════════════════════════
   function pickColor(nativeEvent) {
     const pos = screenToCanvas(nativeEvent.clientX, nativeEvent.clientY)
-    // Search from topmost layer to bottommost
     const ordered = [...layers].reverse()
     for (const layer of ordered) {
       if (!layer.visible) continue
-      // Check images first (more likely to be clicked)
-      for (const img of layer.images) {
-        const { x, y, width, height } = img
-        if (pos.x >= x && pos.x <= x + width && pos.y >= y && pos.y <= y + height) {
-          // Approximate: just skip images, can't easily get pixel color
-          continue
-        }
-      }
-      // Check lines in reverse order (topmost drawn first)
+      for (const img of layer.images) continue // skip images
       for (let j = layer.lines.length - 1; j >= 0; j--) {
         const line = layer.lines[j]
         if (!line.stroke || line.name === 'eraser') continue
@@ -348,71 +392,84 @@ export const useDrawingStore = defineStore('drawing', () => {
     }
   }
 
-  // ─── Undo / Redo ────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  UNDO / REDO
+  // ════════════════════════════════════════════════════════════════════
+  function shapesEqual(a, b) {
+    if (!a || !b) return false
+    return a.type === b.type && a.config.stroke === b.config.stroke &&
+      a.config.strokeWidth === b.config.strokeWidth &&
+      a.config.x === b.config.x && a.config.y === b.config.y
+  }
+
   function undo() {
     const lid = activeLayer.value.id
     const stack = undoMap[lid]
     if (!stack || stack.length === 0) return
-    const lineConfig = stack.pop()
+    var entry = stack.pop()
     if (!redoMap[lid]) redoMap[lid] = []
-    redoMap[lid].push(lineConfig)
+    redoMap[lid].push(entry)
 
-    const lines = activeLayer.value.lines
-    for (let i = lines.length - 1; i >= 0; i--) {
-      if (shallowEqual(lines[i], lineConfig)) {
-        lines.splice(i, 1)
-        return
+    if (entry && entry.type === 'shape') {
+      var shapes = activeLayer.value.shapes
+      for (var i = shapes.length - 1; i >= 0; i--) {
+        if (shapesEqual(shapes[i], entry.data)) { shapes.splice(i, 1); return }
       }
+      shapes.pop()
+    } else {
+      var lines = activeLayer.value.lines
+      for (var j = lines.length - 1; j >= 0; j--) {
+        if (shallowEqual(lines[j], entry)) { lines.splice(j, 1); return }
+      }
+      lines.pop()
     }
-    // Fallback: remove last line
-    lines.pop()
   }
 
   function redo() {
     const lid = activeLayer.value.id
     const stack = redoMap[lid]
     if (!stack || stack.length === 0) return
-    const lineConfig = stack.pop()
+    var entry = stack.pop()
     if (!undoMap[lid]) undoMap[lid] = []
-    undoMap[lid].push(lineConfig)
-    activeLayer.value.lines.push(JSON.parse(JSON.stringify(lineConfig)))
+    undoMap[lid].push(entry)
+
+    if (entry && entry.type === 'shape') {
+      activeLayer.value.shapes.push(JSON.parse(JSON.stringify(entry.data)))
+    } else {
+      activeLayer.value.lines.push(JSON.parse(JSON.stringify(entry)))
+    }
   }
 
   function shallowEqual(a, b) {
     if (!a || !b) return false
-    return a.stroke === b.stroke &&
-      a.strokeWidth === b.strokeWidth &&
-      a.points.length === b.points.length &&
-      a.points[0] === b.points[0]
+    return a.stroke === b.stroke && a.strokeWidth === b.strokeWidth &&
+      a.points.length === b.points.length && a.points[0] === b.points[0]
   }
 
-  // ─── Zoom / Pan ─────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  ZOOM / PAN
+  // ════════════════════════════════════════════════════════════════════
   function handleZoom(e) {
     if (!stageContainer.value) return
     const rect = stageContainer.value.getBoundingClientRect()
     const mouseX = e.clientX - rect.left
     const mouseY = e.clientY - rect.top
-
     const oldScale = stageScale.value
     const direction = e.deltaY < 0 ? 1 : -1
     const newScale = oldScale * (1 + direction * ZOOM_FACTOR)
     const clamped = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale))
-
-    // Zoom toward mouse pointer
     const worldX = (mouseX - stageX.value) / oldScale
     const worldY = (mouseY - stageY.value) / oldScale
     stageX.value = mouseX - worldX * clamped
     stageY.value = mouseY - worldY * clamped
     stageScale.value = clamped
-
-    // Show zoom indicator
     zoomIndicator.value = true
     clearTimeout(zoomIndicatorTimer)
     zoomIndicatorTimer = setTimeout(() => { zoomIndicator.value = false }, 800)
   }
 
   function fitToScreen() {
-    const pad = 40
+    const pad = Math.min(containerWidth.value, containerHeight.value) * 0.02
     const w = containerWidth.value - pad
     const h = containerHeight.value - pad
     const scale = Math.min(w / CANVAS_WIDTH, h / CANVAS_HEIGHT)
@@ -421,14 +478,19 @@ export const useDrawingStore = defineStore('drawing', () => {
     stageY.value = (containerHeight.value - CANVAS_HEIGHT * scale) / 2
   }
 
-  // ─── Layers ─────────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  LAYERS
+  // ════════════════════════════════════════════════════════════════════
   function addLayer() {
     layers.push({
       id: nextLayerId,
       name: `Layer ${nextLayerId}`,
       visible: true,
+      opacity: 1,
+      blendMode: 'source-over',
       lines: [],
       images: [],
+      shapes: [],
     })
     nextLayerId++
     activeLayerIndex.value = layers.length - 1
@@ -440,9 +502,7 @@ export const useDrawingStore = defineStore('drawing', () => {
     delete undoMap[lid]
     delete redoMap[lid]
     layers.splice(index, 1)
-    if (activeLayerIndex.value >= layers.length) {
-      activeLayerIndex.value = layers.length - 1
-    }
+    if (activeLayerIndex.value >= layers.length) { activeLayerIndex.value = layers.length - 1 }
   }
 
   function toggleLayerVisibility(index) {
@@ -457,7 +517,58 @@ export const useDrawingStore = defineStore('drawing', () => {
     activeLayerIndex.value = newIndex
   }
 
-  // ─── Import Image ───────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  LAYER PROPERTIES (Opacity / Blend Mode)
+  // ════════════════════════════════════════════════════════════════════
+  function setLayerOpacity(index, opacity) {
+    if (layers[index]) layers[index].opacity = Math.min(1, Math.max(0, opacity))
+    slotsApi.triggerAutoSave()
+  }
+
+  function setLayerBlendMode(index, mode) {
+    if (layers[index] && BLEND_MODES.includes(mode)) {
+      layers[index].blendMode = mode
+      slotsApi.triggerAutoSave()
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  //  SHAPE TOOLS
+  // ════════════════════════════════════════════════════════════════════
+  function isShapeTool(t) {
+    return SHAPE_TOOLS.includes(t)
+  }
+
+  function createShapeConfig(type, startPos, currentPos) {
+    var x = Math.min(startPos.x, currentPos.x)
+    var y = Math.min(startPos.y, currentPos.y)
+    var w = Math.abs(currentPos.x - startPos.x)
+    var h = Math.abs(currentPos.y - startPos.y)
+    var base = {
+      stroke: brushColor.value,
+      strokeWidth: brushSize.value,
+      strokeScaleEnabled: false,
+      opacity: brushOpacity.value,
+      lineCap: 'round',
+      lineJoin: 'round',
+    }
+    switch (type) {
+      case 'rect':
+        return { type: 'rect', config: { ...base, x: x, y: y, width: w || 1, height: h || 1, fill: 'transparent' } }
+      case 'circle':
+        return { type: 'circle', config: { ...base, x: startPos.x, y: startPos.y, radiusX: Math.max(w / 2, 1), radiusY: Math.max(h / 2, 1), fill: 'transparent' } }
+      case 'line':
+        return { type: 'line', config: { ...base, points: [startPos.x, startPos.y, currentPos.x, currentPos.y] } }
+      case 'arrow':
+        return { type: 'arrow', config: { ...base, points: [startPos.x, startPos.y, currentPos.x, currentPos.y], pointerLength: 10, pointerWidth: 10 } }
+      default:
+        return null
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  //  IMPORT IMAGE
+  // ════════════════════════════════════════════════════════════════════
   function triggerImport() {
     fileInput.value?.click()
   }
@@ -474,139 +585,44 @@ export const useDrawingStore = defineStore('drawing', () => {
         let h = img.naturalHeight || img.height
         if (w > CANVAS_WIDTH || h > CANVAS_HEIGHT) {
           const s = Math.min(CANVAS_WIDTH / w, CANVAS_HEIGHT / h) * 0.8
-          w *= s
-          h *= s
+          w *= s; h *= s
         }
         activeLayer.value.images.push({
           image: img,
           x: (CANVAS_WIDTH - w) / 2,
           y: (CANVAS_HEIGHT - h) / 2,
-          width: w,
-          height: h,
+          width: w, height: h,
           src: evt.target.result,
         })
       }
-      img.onerror = () => {
-        // Silent — the post-drawing modal surfaces its own upload errors.
-      }
+      img.onerror = () => { /* silent */ }
       img.src = evt.target.result
     }
     reader.readAsDataURL(file)
     e.target.value = ''
   }
 
-  // ─── Export ──────────────────────────────────────────────────────────
-  async function exportPNG() {
-    await exportImage('image/png')
-  }
-
-  async function exportJPG() {
-    await exportImage('image/jpeg')
-  }
-
-  async function exportImage(mimeType) {
-    const stage = stageRef.value?.getStage()
-    const drawLayer = drawLayerRef.value?.getNode()
-    if (!drawLayer) return
-
-    const offscreen = document.createElement('canvas')
-    offscreen.width = CANVAS_WIDTH
-    offscreen.height = CANVAS_HEIGHT
-    const ctx = offscreen.getContext('2d')
-
-    // White fill for JPG / transparent for PNG
-    if (mimeType === 'image/jpeg') {
-      ctx.fillStyle = '#ffffff'
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-    }
-
-    // Collect all visible Konva layers in order
-    const konvaLayers = stage.getLayers()
-    for (const kLayer of konvaLayers) {
-      if (!kLayer.isVisible()) continue
-      try {
-        const dataURL = kLayer.toDataURL({
-          x: 0,
-          y: 0,
-          width: CANVAS_WIDTH,
-          height: CANVAS_HEIGHT,
-          pixelRatio: 1,
-        })
-        const img = await loadImage(dataURL)
-        ctx.drawImage(img, 0, 0)
-      } catch {
-        // Skip layers that can't be exported
-      }
-    }
-
-    const ext = EXTENSIONS[mimeType] || 'png'
-    const dataURL = offscreen.toDataURL(mimeType, mimeType === 'image/jpeg' ? 0.92 : 1)
-    downloadFile(dataURL, `drawing.${ext}`)
-  }
-
-  function loadImage(url) {
-    return new Promise((resolve, reject) => {
-      const img = new window.Image()
-      img.crossOrigin = 'Anonymous'
-      img.onload = () => resolve(img)
-      img.onerror = () => reject(new Error('Image load failed'))
-      img.src = url
-    })
-  }
-
-  function downloadFile(url, filename) {
-    const link = document.createElement('a')
-    link.href = url
-    link.download = filename
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
-
-  // ─── Keyboard Shortcuts ────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  KEYBOARD SHORTCUTS
+  // ════════════════════════════════════════════════════════════════════
   function handleKeyDown(e) {
-    // Skip all shortcuts when user is typing in an input/textarea/select
     const tag = e.target?.tagName
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target?.isContentEditable) {
-      return
-    }
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target?.isContentEditable) return
 
-    // Ctrl+Shift+Z (Redo) must be checked before Ctrl+Z
-    if (e.ctrlKey && e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
-      e.preventDefault()
-      redo()
-      return
-    }
-    if (e.ctrlKey && e.key === 'z') {
-      e.preventDefault()
-      undo()
-      return
-    }
-    if (e.ctrlKey && (e.key === 's' || e.key === 'S')) {
-      e.preventDefault()
-      exportPNG()
-      return
-    }
+    if (e.ctrlKey && e.shiftKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); redo(); return }
+    if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); return }
+    if (e.ctrlKey && (e.key === 's' || e.key === 'S')) { e.preventDefault(); exportApi.exportPNG(); return }
 
     switch (e.key) {
-      case 'b':
-      case 'B':
-        e.preventDefault()
-        tool.value = 'brush'
-        break
-      case 'e':
-      case 'E':
-        e.preventDefault()
-        tool.value = 'eraser'
-        break
-      case 'i':
-      case 'I':
-        e.preventDefault()
-        tool.value = 'eyedropper'
-        break
+      case 'b': case 'B': e.preventDefault(); tool.value = 'brush'; break
+      case 'e': case 'E': e.preventDefault(); tool.value = 'eraser'; break
+      case 'i': case 'I': e.preventDefault(); tool.value = 'eyedropper'; break
+      case 'r': case 'R': e.preventDefault(); tool.value = 'rect'; break
+      case 'c': case 'C': e.preventDefault(); tool.value = 'circle'; break
+      case 'l': case 'L': e.preventDefault(); tool.value = 'line'; break
+      case 'a': case 'A': e.preventDefault(); tool.value = 'arrow'; break
       case ' ':
-        e.preventDefault()
-        isSpaceDown.value = true
+        e.preventDefault(); isSpaceDown.value = true
         if (tool.value !== 'pan') isPanning.value = true
         break
       case '[':
@@ -617,16 +633,9 @@ export const useDrawingStore = defineStore('drawing', () => {
         if (tool.value === 'eraser') eraserSize.value = Math.min(100, eraserSize.value + 2)
         else brushSize.value = Math.min(100, brushSize.value + 2)
         break
-      case '+':
-      case '=':
-        stageScale.value = Math.min(MAX_SCALE, stageScale.value * 1.2)
-        break
-      case '-':
-        stageScale.value = Math.max(MIN_SCALE, stageScale.value / 1.2)
-        break
-      case '0':
-        fitToScreen()
-        break
+      case '+': case '=': stageScale.value = Math.min(MAX_SCALE, stageScale.value * 1.2); break
+      case '-': stageScale.value = Math.max(MIN_SCALE, stageScale.value / 1.2); break
+      case '0': fitToScreen(); break
     }
   }
 
@@ -638,7 +647,9 @@ export const useDrawingStore = defineStore('drawing', () => {
     }
   }
 
-  // ─── Resize ──────────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  RESIZE
+  // ════════════════════════════════════════════════════════════════════
   function handleResize() {
     if (!stageContainer.value) return
     const rect = stageContainer.value.getBoundingClientRect()
@@ -646,575 +657,60 @@ export const useDrawingStore = defineStore('drawing', () => {
     containerHeight.value = rect.height
   }
 
-  // ─── Clear timers ───────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  //  CLEAR TIMERS
+  // ════════════════════════════════════════════════════════════════════
   function clearTimers() {
     clearTimeout(zoomIndicatorTimer)
-    clearTimeout(autoSaveTimer)
+    slotsApi.clearAutoSaveTimer()
     zoomIndicatorTimer = null
-    autoSaveTimer = null
   }
 
-  // ─── Save Slots (localStorage) ───────────────────────────────────────
-  function getSavedSlots() {
-    const data = localStorage.getItem(SAVE_SLOTS_KEY)
-    if (!data) return []
-    try {
-      const parsed = JSON.parse(data)
-      return Array.isArray(parsed) ? parsed : []
-    } catch (parseError) {
-      // Corrupt JSON in localStorage — discard and clean up so the next
-      // save starts fresh instead of repeatedly throwing on every read.
-      console.warn('[drawing.store] Discarded corrupt save slots JSON:', parseError?.message || parseError)
-      localStorage.removeItem(SAVE_SLOTS_KEY)
-      return []
-    }
-  }
-
-  function saveSlotsToStorage(slots) {
-    localStorage.setItem(SAVE_SLOTS_KEY, JSON.stringify(slots))
-  }
-
-  function serializeLayers() {
-    return layers.map(function (l) {
-      return {
-        id: l.id,
-        name: l.name,
-        visible: l.visible,
-        lines: l.lines.map(function (line) {
-          return JSON.parse(JSON.stringify(line))
-        }),
-        images: l.images.map(function (img) {
-          return {
-            x: img.x,
-            y: img.y,
-            width: img.width,
-            height: img.height,
-            src: img.src || '',
-          }
-        }),
-      }
-    })
-  }
-
-  async function generateThumbnail() {
-    const stage = stageRef.value?.getStage()
-    if (!stage) return ''
-    const scale = Math.min(MAX_THUMB_W / CANVAS_WIDTH, MAX_THUMB_H / CANVAS_HEIGHT)
-    const offscreen = document.createElement('canvas')
-    offscreen.width = CANVAS_WIDTH * scale
-    offscreen.height = CANVAS_HEIGHT * scale
-    const ctx = offscreen.getContext('2d')
-    ctx.fillStyle = '#ffffff'
-    ctx.fillRect(0, 0, offscreen.width, offscreen.height)
-
-    for (const kLayer of stage.getLayers()) {
-      if (!kLayer.isVisible()) continue
-      try {
-        const dataURL = kLayer.toDataURL({
-          x: 0,
-          y: 0,
-          width: CANVAS_WIDTH,
-          height: CANVAS_HEIGHT,
-          pixelRatio: scale,
-        })
-        const img = await loadImage(dataURL)
-        ctx.drawImage(img, 0, 0, offscreen.width, offscreen.height)
-      } catch {
-        /* skip */
-      }
-    }
-    return offscreen.toDataURL('image/png')
-  }
-
-  function formatDate(isoStr) {
-    return formatShortDate(isoStr)
-  }
-
-  async function saveCurrentDrawing() {
-    const slots = getSavedSlots()
-    const name = 'Drawing #' + (slots.length + 1)
-    const id = Date.now()
-    const thumbnail = await generateThumbnail()
-    const layersData = serializeLayers()
-    const slot = {
-      id,
-      name,
-      timestamp: new Date().toISOString(),
-      thumbnail,
-      layers: layersData,
-    }
-
-    if (slots.length >= MAX_SLOTS) {
-      slots.sort(function (a, b) {
-        return new Date(a.timestamp) - new Date(b.timestamp)
-      })
-      slots.shift()
-    }
-    slots.push(slot)
-    saveSlotsToStorage(slots)
-  }
-
-  function selectSlot(slotId) {
-    selectedSlotId.value = selectedSlotId.value === slotId ? null : slotId
-  }
-
-  function clearSelection() {
-    selectedSlotId.value = null
-  }
-
-  async function saveNewSlotFromDialog() {
-    await saveCurrentDrawing()
-    savedSlots.value = getSavedSlots()
-  }
-
-  async function overwriteSelectedSlot() {
-    const slot = selectedSlot.value
-    if (!slot) return
-    const slots = getSavedSlots()
-    const idx = slots.findIndex(function (s) { return s.id === slot.id })
-    if (idx === -1) return
-    const thumbnail = await generateThumbnail()
-    const layersData = serializeLayers()
-    slots[idx] = {
-      ...slots[idx],
-      timestamp: new Date().toISOString(),
-      thumbnail: thumbnail,
-      layers: layersData,
-    }
-    saveSlotsToStorage(slots)
-    savedSlots.value = slots
-    selectedSlotId.value = null
-  }
-
-  function openSlotsDialog() {
-    savedSlots.value = getSavedSlots()
-    selectedSlotId.value = null
-    showSlotsDialog.value = true
-  }
-
-  function requestLoadSlot(slot) {
-    pendingSlotData.value = slot
-    showLoadSlotConfirm.value = true
-  }
-
-  function executeLoadSlot() {
-    if (pendingSlotData.value) {
-      loadFromSlot(pendingSlotData.value)
-      showSlotsDialog.value = false
-    }
-    showLoadSlotConfirm.value = false
-    pendingSlotData.value = null
-  }
-
-  function requestDeleteSlot(slotId) {
-    pendingSlotId.value = slotId
-    showDeleteSlotConfirm.value = true
-  }
-
-  function executeDeleteSlot() {
-    if (pendingSlotId.value) {
-      const slots = getSavedSlots()
-      savedSlots.value = slots.filter(function (s) { return s.id !== pendingSlotId.value })
-      saveSlotsToStorage(savedSlots.value)
-      selectedSlotId.value = null
-    }
-    showDeleteSlotConfirm.value = false
-    pendingSlotId.value = null
-  }
-
-  function removeSlotFromStorage(slotId) {
-    const slots = getSavedSlots()
-    const filtered = slots.filter(function (s) { return s.id !== slotId })
-    saveSlotsToStorage(filtered)
-  }
-
-  // ─── Slot rename ──────────────────────────────────────────────────
-  function startRenameSlot(slotId) {
-    const slot = savedSlots.value.find(function (s) { return s.id === slotId })
-    if (!slot) return
-    renamingSlotId.value = slotId
-    renamingSlotInput.value = slot.name
-    selectedSlotId.value = null
-  }
-
-  function commitRenameSlot() {
-    const id = renamingSlotId.value
-    if (!id) return
-    const newName = renamingSlotInput.value.trim()
-    if (!newName) {
-      renamingSlotId.value = null
-      return
-    }
-    const slots = getSavedSlots()
-    var found = false
-    for (var ri = 0; ri < slots.length; ri++) {
-      if (slots[ri].id === id) {
-        slots[ri].name = newName
-        found = true
-        break
-      }
-    }
-    if (found) {
-      saveSlotsToStorage(slots)
-      savedSlots.value = slots
-    }
-    renamingSlotId.value = null
-  }
-
-  function cancelRenameSlot() {
-    renamingSlotId.value = null
-  }
-
-  function loadFromSlot(slot) {
-    // Save current drawing state into undo map before clearing
-    for (var li = 0; li < layers.length; li++) {
-      var l = layers[li]
-      if (!undoMap[l.id]) undoMap[l.id] = []
-      for (var li2 = 0; li2 < l.lines.length; li2++) {
-        undoMap[l.id].push(JSON.parse(JSON.stringify(l.lines[li2])))
-      }
-    }
-    layers.splice(0, layers.length)
-    slot.layers.forEach(function (savedLayer) {
-      const newLayer = {
-        id: savedLayer.id,
-        name: savedLayer.name,
-        visible: savedLayer.visible,
-        lines: savedLayer.lines.map(function (line) { return { ...line } }),
-        images: [],
-      }
-      savedLayer.images.forEach(function (imgData) {
-        if (imgData.src) {
-          const img = new window.Image()
-          img.crossOrigin = 'Anonymous'
-          img.src = imgData.src
-          newLayer.images.push({
-            image: img,
-            x: imgData.x,
-            y: imgData.y,
-            width: imgData.width,
-            height: imgData.height,
-            src: imgData.src,
-          })
-        }
-      })
-      layers.push(newLayer)
-    })
-    activeLayerIndex.value = 0
-    const keys1 = Object.keys(undoMap)
-    for (let i1 = 0; i1 < keys1.length; i1++) { delete undoMap[keys1[i1]] }
-    const keys2 = Object.keys(redoMap)
-    for (let i2 = 0; i2 < keys2.length; i2++) { delete redoMap[keys2[i2]] }
-    nextTick(function () { fitToScreen() })
-  }
-
-  // ─── Auto-save ───────────────────────────────────────────────────────
-  function triggerAutoSave() {
-    clearTimeout(autoSaveTimer)
-    autoSaveTimer = setTimeout(function () {
-      const data = serializeLayers()
-      localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(data))
-    }, 2000)
-  }
-
-  function restoreFromData(data) {
-    // Save current state to undo map before restoring
-    for (var li = 0; li < layers.length; li++) {
-      var l = layers[li]
-      if (!undoMap[l.id]) undoMap[l.id] = []
-      for (var li2 = 0; li2 < l.lines.length; li2++) {
-        undoMap[l.id].push(JSON.parse(JSON.stringify(l.lines[li2])))
-      }
-    }
-    layers.splice(0, layers.length)
-    data.forEach(function (savedLayer) {
-      const newLayer = {
-        id: savedLayer.id,
-        name: savedLayer.name,
-        visible: savedLayer.visible,
-        lines: savedLayer.lines.map(function (line) { return { ...line } }),
-        images: [],
-      }
-      savedLayer.images.forEach(function (imgData) {
-        if (imgData.src) {
-          const img = new window.Image()
-          img.crossOrigin = 'Anonymous'
-          img.src = imgData.src
-          newLayer.images.push({
-            image: img,
-            x: imgData.x,
-            y: imgData.y,
-            width: imgData.width,
-            height: imgData.height,
-            src: imgData.src,
-          })
-        }
-      })
-      layers.push(newLayer)
-    })
-    activeLayerIndex.value = 0
-    const keys1 = Object.keys(undoMap)
-    for (let i1 = 0; i1 < keys1.length; i1++) { delete undoMap[keys1[i1]] }
-    const keys2 = Object.keys(redoMap)
-    for (let i2 = 0; i2 < keys2.length; i2++) { delete redoMap[keys2[i2]] }
-    nextTick(function () { fitToScreen() })
-  }
-
-  function restoreAutosave() {
-    try {
-      const autosave = localStorage.getItem(AUTO_SAVE_KEY)
-      if (!autosave) return
-      const data = JSON.parse(autosave)
-      const hasExistingContent = layers.some(function (l) {
-        return l.lines.length > 0 || l.images.length > 0
-      })
-      if (!hasExistingContent) {
-        restoreFromData(data)
-      } else {
-        pendingAutosaveData.value = data
-        showRestoreAutosaveConfirm.value = true
-      }
-    } catch {
-      /* ignore */
-    }
-  }
-
-  function executeRestoreAutosave() {
-    if (pendingAutosaveData.value) {
-      restoreFromData(pendingAutosaveData.value)
-    }
-    showRestoreAutosaveConfirm.value = false
-    pendingAutosaveData.value = null
-  }
-
-  // ─── Post to Upload ──────────────────────────────────────────────────
-  function revokePostPreview() {
-    if (postPreviewUrl.value) {
-      URL.revokeObjectURL(postPreviewUrl.value)
-      postPreviewUrl.value = ''
-    }
-  }
-
-  async function openPostDialog() {
-    // Revoke previous preview URL if any to avoid blob memory leaks
-    revokePostPreview()
-    postTitle.value = ''
-    postType.value = 'illust'
-    postAgeRating.value = 'all-ages'
-    postTags.value = []
-    postTagInput.value = ''
-    postError.value = ''
-    const blob = await exportToBlob()
-    if (blob) {
-      postPreviewUrl.value = URL.createObjectURL(blob)
-    }
-    showPostDialog.value = true
-  }
-
-  function closePostDialog() {
-    revokePostPreview()
-    showPostDialog.value = false
-  }
-
-  // ─── Post tag helpers ──────────────────────────────────────────────
-  function normalizePostTag(raw) {
-    return String(raw || '').trim().replace(/^#+/, '').replace(/[\s-]+/g, '_').toLowerCase()
-  }
-
-  function commitPostTag(raw) {
-    const tag = normalizePostTag(raw)
-    if (!tag) return
-    if (postTags.value.includes(tag)) {
-      postTagInput.value = ''
-      return
-    }
-    if (postTags.value.length >= 10) {
-      postError.value = 'Tối đa 10 tags'
-      return
-    }
-    postTags.value.push(tag)
-    postTagInput.value = ''
-    postError.value = ''
-  }
-
-  function removePostTag(index) {
-    postTags.value.splice(index, 1)
-  }
-
-  function handlePostTagInputKeydown(e) {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault()
-      commitPostTag(postTagInput.value)
-      postTagSuggestions.value = []
-    } else if (e.key === ' ') {
-      e.preventDefault()
-      if (postTagInput.value.trim()) {
-        commitPostTag(postTagInput.value)
-        postTagSuggestions.value = []
-      }
-    }
-  }
-
-  var postTagSuggestionTimer = null
-
-  function clearPostTagSuggestionTimer() {
-    if (postTagSuggestionTimer) {
-      clearTimeout(postTagSuggestionTimer)
-      postTagSuggestionTimer = null
-    }
-  }
-
-  async function fetchPostTagSuggestions(keyword) {
-    postTagSuggestionLoading.value = true
-    try {
-      var res = await getTags({ q: keyword, limit: 8 })
-      var raw = Array.isArray(res.data) ? res.data : []
-      postTagSuggestions.value = raw
-        .map(function (item) {
-          var name = normalizePostTag(item.name || item._id || '')
-          return { name: name, usageCount: Number(item.usageCount || 0) }
-        })
-        .filter(function (s) { return s.name && !postTags.value.includes(s.name) })
-    } catch (_e) {
-      postTagSuggestions.value = []
-    } finally {
-      postTagSuggestionLoading.value = false
-    }
-  }
-
-  function handleSelectPostTagSuggestion(suggestion) {
-    commitPostTag(suggestion)
-    postTagSuggestions.value = []
-  }
-
-  // Watch post tag input for suggestions
-  watch(postTagInput, function (value) {
-    clearPostTagSuggestionTimer()
-    var keyword = normalizePostTag(value).replace(/_/g, ' ')
-    if (!keyword) {
-      postTagSuggestions.value = []
-      postTagSuggestionLoading.value = false
-      return
-    }
-    postTagSuggestionTimer = setTimeout(function () {
-      fetchPostTagSuggestions(keyword)
-    }, 180)
-  })
-
-  async function submitPost(router) {
-    if (!postTitle.value.trim()) {
-      postError.value = 'Title is required'
-      return
-    }
-    postSubmitting.value = true
-    postError.value = ''
-    try {
-      const blob = await exportToBlob()
-      if (!blob) throw new Error('Failed to export drawing')
-
-      const fd = new FormData()
-      fd.append('images', blob, 'drawing.png')
-      fd.append('title', postTitle.value.trim())
-      fd.append('type', postType.value)
-      fd.append('ageRating', postAgeRating.value)
-      if (postTags.value.length > 0) {
-        for (const tag of postTags.value) {
-          fd.append('tags', tag.trim())
-        }
-      }
-
-      const res = await createArtwork(fd)
-      const artworkId = res.data?.artwork?._id || res.data?._id
-      if (artworkId) {
-        closePostDialog()
-        confirmGoHomeIntent()
-        router.push('/artworks/' + artworkId)
-      }
-    } catch (err) {
-      clearGoHomeIntent()
-      postError.value = err?.response?.data?.message || err.message || 'Failed to post drawing'
-    } finally {
-      postSubmitting.value = false
-    }
-  }
-
-  async function exportToBlob() {
-    const stage = stageRef.value?.getStage()
-    if (!stage) return null
-    const offscreen = document.createElement('canvas')
-    offscreen.width = CANVAS_WIDTH
-    offscreen.height = CANVAS_HEIGHT
-    const ctx = offscreen.getContext('2d')
-    ctx.fillStyle = '#ffffff'
-    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-
-    for (const kLayer of stage.getLayers()) {
-      if (!kLayer.isVisible()) continue
-      try {
-        const dataURL = kLayer.toDataURL({
-          x: 0,
-          y: 0,
-          width: CANVAS_WIDTH,
-          height: CANVAS_HEIGHT,
-          pixelRatio: 1,
-        })
-        const img = await loadImage(dataURL)
-        ctx.drawImage(img, 0, 0)
-      } catch {
-        /* skip */
-      }
-    }
-    return new Promise(function (resolve) { offscreen.toBlob(resolve, 'image/png') })
-  }
-
+  // ════════════════════════════════════════════════════════════════════
+  //  RETURN — expose everything through the store
+  // ════════════════════════════════════════════════════════════════════
   return {
-    // Constants
+    // ───── Constants ─────
     CANVAS_WIDTH, CANVAS_HEIGHT, MIN_SCALE, MAX_SCALE, ZOOM_FACTOR,
     PRESET_COLORS, EXTENSIONS, SAVE_SLOTS_KEY, AUTO_SAVE_KEY, MAX_SLOTS,
-    MAX_THUMB_W, MAX_THUMB_H,
-    // Refs
+    MAX_THUMB_W, MAX_THUMB_H, BLEND_MODES, SHAPE_TOOLS,
+
+    // ───── Core state refs ─────
     stageRef, drawLayerRef, stageContainer, fileInput,
     containerWidth, containerHeight, toolbarVisible, zoomIndicator,
     stageScale, stageX, stageY,
     tool, brushColor, brushSize, brushOpacity, eraserSize,
-    isPanning, isDrawing, isSpaceDown,
+    isPanning, isDrawing, isSpaceDown, shapeStartPos,
     activeLayerIndex, layers, undoMap, redoMap,
-    showSlotsDialog, savedSlots, selectedSlotId, selectedSlot,
     showNewCanvasConfirm, showGoHomeConfirm,
-    showLoadSlotConfirm, showDeleteSlotConfirm, showRestoreAutosaveConfirm,
-    pendingSlotId, pendingSlotData, pendingAutosaveData,
-    renamingSlotId, renamingSlotInput,
-    showPostDialog, postTitle, postType, postAgeRating, postTags, postTagInput,
-    postTagSuggestions, postTagSuggestionLoading,
-    postSubmitting, postError, postPreviewUrl,
-    // Computed
+
+    // ───── Export composable ─────
+    ...exportApi,
+
+    // ───── Slots composable ─────
+    ...slotsApi,
+
+    // ───── Post composable ─────
+    ...postApi,
+
+    // ───── Computed ─────
     activeLayer, hasContent, orderedVisibleLayers,
     stageConfig, bgRectConfig, invisibleCanvasRectConfig,
-    // Template ref setters
+
+    // ───── Template ref setters ─────
     setStageRef, setDrawLayerRef, setStageContainer, setFileInput,
-    // Functions
+
+    // ───── Core functions ─────
     screenToCanvas,
     setTool, togglePanMode, toggleToolbar, requestNewCanvas, executeNewCanvas,
     requestGoHome, confirmGoHomeIntent, isGoHomeIntentConfirmed, clearGoHomeIntent, onSizeChange,
     createLineConfig, handleStageMouseDown, handleStageMouseMove, handleStageMouseUp,
     pickColor, shallowEqual, undo, redo,
+    setLayerOpacity, setLayerBlendMode, isShapeTool, createShapeConfig,
     handleZoom, fitToScreen,
     addLayer, deleteLayer, toggleLayerVisibility, moveLayer,
     triggerImport, handleFileImport,
-    exportPNG, exportJPG, exportImage, loadImage, downloadFile,
     handleKeyDown, handleKeyUp,
     handleResize, clearTimers,
-    getSavedSlots, saveSlotsToStorage, serializeLayers, generateThumbnail,
-    saveCurrentDrawing, loadFromSlot, formatDate,
-    selectSlot, clearSelection,
-    saveNewSlotFromDialog, overwriteSelectedSlot,
-    requestLoadSlot, executeLoadSlot, requestDeleteSlot, executeDeleteSlot,
-    removeSlotFromStorage, triggerAutoSave, restoreFromData,
-    startRenameSlot, commitRenameSlot, cancelRenameSlot,
-    restoreAutosave, executeRestoreAutosave,
-    openSlotsDialog,
-    openPostDialog, closePostDialog, submitPost, exportToBlob,
-    commitPostTag, removePostTag, handlePostTagInputKeydown,
-    handleSelectPostTagSuggestion, clearPostTagSuggestionTimer,
   }
 })

@@ -20,24 +20,53 @@
         <v-rect :config="store.bgRectConfig" />
       </v-layer>
 
-      <!-- Drawing layer (single Konva layer for all content) -->
-      <v-layer ref="drawLayerRefComp">
+      <!-- Per-layer Konva layers (supports opacity + blend mode per layer) -->
+      <v-layer
+        v-for="layer in store.orderedVisibleLayers"
+        :key="layer.id"
+        :config="{
+          opacity: layer.opacity,
+          globalCompositeOperation: layer.blendMode || 'source-over'
+        }"
+      >
         <!-- Invisible rect to guarantee canvas export size -->
         <v-rect :config="store.invisibleCanvasRectConfig" />
 
-        <!-- Render all visible layers' content in order -->
-        <template v-for="layer in store.orderedVisibleLayers" :key="layer.id">
-          <v-image
-            v-for="(img, ii) in layer.images"
-            :key="`${layer.id}-img-${ii}`"
-            :config="img"
-          />
-          <v-line
-            v-for="(line, li) in layer.lines"
-            :key="`${layer.id}-l-${li}`"
-            :config="line"
-          />
-        </template>
+        <!-- Imported images -->
+        <v-image
+          v-for="(img, ii) in layer.images"
+          :key="`${layer.id}-img-${ii}`"
+          :config="img"
+        />
+
+        <!-- Brush / eraser strokes -->
+        <v-line
+          v-for="(line, li) in layer.lines"
+          :key="`${layer.id}-l-${li}`"
+          :config="line"
+        />
+
+        <!-- Shapes -->
+        <v-rect
+          v-for="(shape, si) in layer.shapes.filter(s => s.type === 'rect')"
+          :key="`${layer.id}-sr-${si}`"
+          :config="shape.config"
+        />
+        <v-ellipse
+          v-for="(shape, si) in layer.shapes.filter(s => s.type === 'circle')"
+          :key="`${layer.id}-sc-${si}`"
+          :config="shape.config"
+        />
+        <v-line
+          v-for="(shape, si) in layer.shapes.filter(s => s.type === 'line')"
+          :key="`${layer.id}-sl-${si}`"
+          :config="shape.config"
+        />
+        <v-arrow
+          v-for="(shape, si) in layer.shapes.filter(s => s.type === 'arrow')"
+          :key="`${layer.id}-sa-${si}`"
+          :config="shape.config"
+        />
       </v-layer>
     </v-stage>
 
@@ -63,9 +92,8 @@ import { useDrawingStore } from '../../stores/drawing.store.js'
 
 const store = useDrawingStore()
 
-const stageContainerEl = ref(null)
-const stageRefComp = ref(null)
-const drawLayerRefComp = ref(null)
+	const stageContainerEl = ref(null)
+	const stageRefComp = ref(null)
 
 // ─── Custom brush cursor preview ───────────────────────────────────
 const cursorPos = ref({ x: -100, y: -100 })
@@ -103,23 +131,26 @@ function onContainerMouseLeave() {
 }
 
 // ─── Canvas cursor ─────────────────────────────────────────────────
-const canvasCursor = computed(() => {
-  if (store.isPanning || store.isSpaceDown) return 'grab'
-  switch (store.tool) {
-    case 'brush': return 'none'
-    case 'eraser': return 'none'
-    case 'eyedropper': return 'crosshair'
-    case 'pan': return 'grab'
-    default: return 'default'
-  }
-})
+	const canvasCursor = computed(() => {
+	  if (store.isPanning || store.isSpaceDown) return 'grab'
+	  switch (store.tool) {
+	    case 'brush': return 'none'
+	    case 'eraser': return 'none'
+	    case 'eyedropper': return 'crosshair'
+	    case 'rect': return 'crosshair'
+	    case 'circle': return 'crosshair'
+	    case 'line': return 'crosshair'
+	    case 'arrow': return 'crosshair'
+	    case 'pan': return 'grab'
+	    default: return 'default'
+	  }
+	})
 
-onMounted(() => {
-  // Sync template refs to the store
-  store.setStageContainer(stageContainerEl.value)
-  store.setStageRef(stageRefComp)
-  store.setDrawLayerRef(drawLayerRefComp)
-})
+	onMounted(() => {
+	  // Sync template refs to the store
+	  store.setStageContainer(stageContainerEl.value)
+	  store.setStageRef(stageRefComp)
+	})
 </script>
 
 <style scoped>

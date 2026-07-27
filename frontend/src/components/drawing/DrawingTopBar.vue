@@ -53,6 +53,43 @@
         <span class="tb-label">Pick</span>
       </button>
       <div class="tb-separator" />
+      <button type="button"
+        class="tb-btn tool-btn"
+        :class="{ active: store.tool === 'rect' }"
+        @click="store.setTool('rect')"
+        title="Rectangle (R)"
+      >
+        <i class="fa-regular fa-square" />
+        <span class="tb-label">Rect</span>
+      </button>
+      <button type="button"
+        class="tb-btn tool-btn"
+        :class="{ active: store.tool === 'circle' }"
+        @click="store.setTool('circle')"
+        title="Circle (C)"
+      >
+        <i class="fa-regular fa-circle" />
+        <span class="tb-label">Circle</span>
+      </button>
+      <button type="button"
+        class="tb-btn tool-btn"
+        :class="{ active: store.tool === 'line' }"
+        @click="store.setTool('line')"
+        title="Line (L)"
+      >
+        <i class="fa-solid fa-minus" />
+        <span class="tb-label">Line</span>
+      </button>
+      <button type="button"
+        class="tb-btn tool-btn"
+        :class="{ active: store.tool === 'arrow' }"
+        @click="store.setTool('arrow')"
+        title="Arrow (A)"
+      >
+        <i class="fa-solid fa-arrow-up" style="transform: rotate(45deg)" />
+        <span class="tb-label">Arrow</span>
+      </button>
+      <div class="tb-separator" />
       <button type="button" class="tb-btn" @click="store.undo" title="Undo (Ctrl+Z)">
         <i class="fa-solid fa-rotate-left" />
       </button>
