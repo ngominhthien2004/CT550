@@ -103,7 +103,7 @@ onMounted(async () => {
 }
 
 .page-title {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: var(--brand);
   margin: 0 0 0.35rem;
