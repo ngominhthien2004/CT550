@@ -81,7 +81,7 @@ const adminTabs = computed(() => [
 
 // Sync URL query params to tab state
 watch(() => route.query, (query) => {
-  if (query.tab && adminTabs.some(t => t.id === query.tab)) {
+      if (query.tab && adminTabs.value.some(t => t.id === query.tab)) {
     activeTab.value = query.tab
   }
   if (query.type && ['artwork', 'comment', 'user', 'hidden'].includes(query.type)) {

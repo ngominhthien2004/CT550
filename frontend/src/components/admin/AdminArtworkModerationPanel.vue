@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import AdminActionsDropdown from './AdminActionsDropdown.vue'
 import DateRangeFilter from '@/components/common/DateRangeFilter.vue'
 
-defineProps({
+const props = defineProps({
   activeTab: {
     type: String,
     required: true,

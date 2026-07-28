@@ -7,7 +7,8 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "node --test tests/*.test.js",
-    "migrate:chapters": "node scripts/migrate-chapters.js"
+    "migrate:chapters": "node scripts/migrate-chapters.js",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -33,6 +34,8 @@
     "socket.io": "^4.8.3"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.0",
     "nodemon": "^3.1.14"
   }
 }
