@@ -86,20 +86,12 @@ export const useArtworkStore = defineStore('artwork', {
     },
 
     async updateArtwork(artworkId, payload) {
-      try {
-        const { data } = await updateArtwork(artworkId, payload)
-        return data
-      } catch (error) {
-        throw error
-      }
+      const { data } = await updateArtwork(artworkId, payload)
+      return data
     },
 
     async deleteArtwork(artworkId) {
-      try {
-        await deleteArtwork(artworkId)
-      } catch (error) {
-        throw error
-      }
+      await deleteArtwork(artworkId)
     },
   },
 })

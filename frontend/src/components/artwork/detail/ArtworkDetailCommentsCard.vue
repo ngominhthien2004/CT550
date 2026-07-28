@@ -95,6 +95,7 @@ const handleSubmit = async () => {
       textareaRef.value.style.height = 'auto'
     }
   } catch (_error) {
+    console.error('Failed to submit comment:', _error)
   } finally {
     isSubmitting.value = false
   }
@@ -212,6 +213,7 @@ const handleReplySubmit = async (commentId) => {
       [commentId]: true,
     }
   } catch (_error) {
+    console.error('Failed to submit reply:', _error)
   } finally {
     submittingReplyByCommentId.value = {
       ...submittingReplyByCommentId.value,
@@ -230,6 +232,7 @@ const handleDelete = async (commentId) => {
   try {
     await commentStore.removeComment(commentId)
   } catch (_error) {
+    console.error('Failed to delete comment:', _error)
   }
 }
 

@@ -251,12 +251,8 @@ export const useBookStore = defineStore('book', {
     },
 
     async removeBook(bookId) {
-      try {
-        await deleteBook(bookId)
-        this.myBooks = this.myBooks.filter((book) => book._id !== bookId)
-      } catch (error) {
-        throw error
-      }
+      await deleteBook(bookId)
+      this.myBooks = this.myBooks.filter((book) => book._id !== bookId)
     },
 
     async fetchMyBooks(params = {}) {
@@ -291,61 +287,37 @@ export const useBookStore = defineStore('book', {
     },
 
     async addBookToCart(bookId, quantity = 1) {
-      try {
-        const { data } = await addToCart({ bookId, quantity })
-        this.cart = data
-        this.cartItems = data?.items || []
-      } catch (error) {
-        throw error
-      }
+      const { data } = await addToCart({ bookId, quantity })
+      this.cart = data
+      this.cartItems = data?.items || []
     },
 
     async updateCartItemQuantity(itemId, quantity) {
-      try {
-        const { data } = await updateCartItem(itemId, { quantity })
-        this.cart = data
-        this.cartItems = data?.items || []
-      } catch (error) {
-        throw error
-      }
+      const { data } = await updateCartItem(itemId, { quantity })
+      this.cart = data
+      this.cartItems = data?.items || []
     },
 
     async removeFromCart(itemId) {
-      try {
-        const { data } = await removeCartItem(itemId)
-        this.cart = data
-        this.cartItems = data?.items || []
-      } catch (error) {
-        throw error
-      }
+      const { data } = await removeCartItem(itemId)
+      this.cart = data
+      this.cartItems = data?.items || []
     },
 
     async emptyCart() {
-      try {
-        await clearCart()
-        this.cart = null
-        this.cartItems = []
-      } catch (error) {
-        throw error
-      }
+      await clearCart()
+      this.cart = null
+      this.cartItems = []
     },
 
     async checkout(orderId) {
-      try {
-        const { data } = await createCheckoutSession({ orderId })
-        return data?.url
-      } catch (error) {
-        throw error
-      }
+      const { data } = await createCheckoutSession({ orderId })
+      return data?.url
     },
 
     async placeOrder(payload) {
-      try {
-        const { data } = await createOrder(payload)
-        return data
-      } catch (error) {
-        throw error
-      }
+      const { data } = await createOrder(payload)
+      return data
     },
 
     async fetchOrders(params = {}) {
@@ -396,33 +368,25 @@ export const useBookStore = defineStore('book', {
     },
 
     async updateSellerOrderStatus(orderId, status) {
-      try {
-        const { data } = await updateOrderStatus(orderId, { status })
-        return data
-      } catch (error) {
-        throw error
-      }
+      const { data } = await updateOrderStatus(orderId, { status })
+      return data
     },
 
     async downloadPaidBook(orderId, itemId) {
-      try {
-        const response = await downloadOrderItem(orderId, itemId)
-        const blob = new Blob([response.data])
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = `book-${itemId}.pdf`
-        document.body.appendChild(link)
-        link.click()
-        link.remove()
-        // Defer revoke: the browser reads the blob asynchronously after
-        // click(). Revoking immediately can cancel the download for large
-        // PDFs (intermittent failure). 1000ms is safe for Chrome/Firefox;
-        // Safari may need longer.
-        setTimeout(() => window.URL.revokeObjectURL(url), 1000)
-      } catch (error) {
-        throw error
-      }
+      const response = await downloadOrderItem(orderId, itemId)
+      const blob = new Blob([response.data])
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `book-${itemId}.pdf`
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      // Defer revoke: the browser reads the blob asynchronously after
+      // click(). Revoking immediately can cancel the download for large
+      // PDFs (intermittent failure). 1000ms is safe for Chrome/Firefox;
+      // Safari may need longer.
+      setTimeout(() => window.URL.revokeObjectURL(url), 1000)
     },
 
     async fetchSellerProfile() {
@@ -544,16 +508,12 @@ export const useBookStore = defineStore('book', {
     },
 
     async removeReview(reviewId) {
-      try {
-        await deleteReview(reviewId)
-        const target = this.reviews.find(r => r._id === reviewId)
-        this.reviews = this.reviews.filter(r => r._id !== reviewId)
-        this.reviewsPagination.total -= 1
-        this.userReview = null
-        if (target) this._recomputeBookRating(target.book)
-      } catch (error) {
-        throw error
-      }
+      await deleteReview(reviewId)
+      const target = this.reviews.find(r => r._id === reviewId)
+      this.reviews = this.reviews.filter(r => r._id !== reviewId)
+      this.reviewsPagination.total -= 1
+      this.userReview = null
+      if (target) this._recomputeBookRating(target.book)
     },
 
     // Recompute the rating aggregate on the current book from the local

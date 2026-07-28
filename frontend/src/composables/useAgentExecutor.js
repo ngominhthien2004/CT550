@@ -49,7 +49,7 @@ function isValidInternalPath(path) {
   if (path.includes('\\')) return false // backslash tricks
   // Only allow characters that are safe in client-side route paths,
   // including a query string and fragment.
-  return /^\/[a-zA-Z0-9\-_\./?&=#%]+$/.test(path)
+  return /^\/[a-zA-Z0-9\-_./?&=#%]+$/.test(path)
 }
 
 function isAllowedPath(path) {

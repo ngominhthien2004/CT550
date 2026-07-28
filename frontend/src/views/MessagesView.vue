@@ -254,7 +254,9 @@ async function deleteMessage(messageId) {
     await messageStore.softDelete(messageId)
     inboxMessages.value = inboxMessages.value.filter(item => item._id !== messageId)
     sentMessages.value = sentMessages.value.filter(item => item._id !== messageId)
-  } catch {}
+  } catch {
+    console.error('Failed to delete message')
+  }
 }
 
 function startPresencePolling(peerId) {
@@ -458,7 +460,9 @@ async function markAsRead(messageId) {
       if (item._id !== messageId) return item
       return { ...item, isRead: true, readAt: new Date().toISOString() }
     })
-  } catch {}
+  } catch {
+    console.error('Failed to mark message as read')
+  }
 }
 
 async function selectThread(peerId) {
