@@ -1,9 +1,5 @@
 <script setup>
 const props = defineProps({
-  form: {
-    type: Object,
-    required: true,
-  },
   isNovel: {
     type: Boolean,
     default: false,
@@ -17,6 +13,8 @@ const props = defineProps({
     default: '',
   },
 })
+
+const formModel = defineModel('form', { type: Object, required: true })
 </script>
 
 <template>
@@ -30,12 +28,12 @@ const props = defineProps({
       <div class="row-center">
         <div class="options-group" role="radiogroup" :aria-label="$t('upload.visibleTo')">
           <label class="custom-radio">
-            <input v-model="props.form.ageRating" type="radio" name="ageRating" value="all" :aria-label="$t('upload.allAges')" />
+            <input v-model="formModel.ageRating" type="radio" name="ageRating" value="all" :aria-label="$t('upload.allAges')" />
             <span class="radio-indicator"></span>
             <span class="radio-label">{{ $t('upload.allAges') }}</span>
           </label>
           <label class="custom-radio">
-            <input v-model="props.form.ageRating" type="radio" name="ageRating" value="r-18" :aria-label="$t('upload.r18')" />
+            <input v-model="formModel.ageRating" type="radio" name="ageRating" value="r-18" :aria-label="$t('upload.r18')" />
             <span class="radio-indicator"></span>
             <span class="radio-label">{{ $t('upload.r18') }}</span>
           </label>
@@ -61,18 +59,18 @@ const props = defineProps({
         <div class="d-flex flex-column gap-1">
           <div class="options-group" role="radiogroup" :aria-label="$t('upload.aiGenerated')">
             <label class="custom-radio">
-            <input v-model="props.form.aiGenerated" type="radio" name="aiGenerated" value="yes" :aria-label="$t('upload.yes')" />
+            <input v-model="formModel.aiGenerated" type="radio" name="aiGenerated" value="yes" :aria-label="$t('upload.yes')" />
             <span class="radio-indicator"></span>
             <span class="radio-label">{{ $t('upload.yes') }}</span>
           </label>
           <label class="custom-radio">
-            <input v-model="props.form.aiGenerated" type="radio" name="aiGenerated" value="no" :aria-label="$t('upload.no')" />
+            <input v-model="formModel.aiGenerated" type="radio" name="aiGenerated" value="no" :aria-label="$t('upload.no')" />
               <span class="radio-indicator"></span>
               <span class="radio-label">{{ $t('upload.no') }}</span>
             </label>
           </div>
           <!-- Automatically enabled red text below Yes No -->
-          <p v-if="props.showAiWarning && props.form.aiGenerated === 'yes'" class="auto-enabled-text mb-0" role="alert">
+          <p v-if="props.showAiWarning && formModel.aiGenerated === 'yes'" class="auto-enabled-text mb-0" role="alert">
             {{ props.aiWarningMessage || $t('upload.autoEnabled') }}
           </p>
         </div>
@@ -97,12 +95,12 @@ const props = defineProps({
       <div class="row-center">
         <div class="options-group" role="radiogroup" :aria-label="$t('upload.comments')">
           <label class="custom-radio">
-            <input v-model="props.form.comments" type="radio" name="comments" value="on" :aria-label="$t('upload.on')" />
+            <input v-model="formModel.comments" type="radio" name="comments" value="on" :aria-label="$t('upload.on')" />
             <span class="radio-indicator"></span>
             <span class="radio-label">{{ $t('upload.on') }}</span>
           </label>
           <label class="custom-radio">
-            <input v-model="props.form.comments" type="radio" name="comments" value="off" :aria-label="$t('upload.off')" />
+            <input v-model="formModel.comments" type="radio" name="comments" value="off" :aria-label="$t('upload.off')" />
             <span class="radio-indicator"></span>
             <span class="radio-label">{{ $t('upload.off') }}</span>
           </label>
@@ -120,13 +118,13 @@ const props = defineProps({
       <div class="row-center">
         <div class="d-grid gap-2">
           <label class="custom-checkbox">
-            <input v-model="props.form.scheduleEnabled" type="checkbox" :aria-label="$t('upload.scheduleSubmission')" />
+            <input v-model="formModel.scheduleEnabled" type="checkbox" :aria-label="$t('upload.scheduleSubmission')" />
             <span class="checkbox-indicator"></span>
             <span class="checkbox-label">{{ $t('upload.scheduleSubmission') }}</span>
           </label>
-          <div class="d-flex flex-column flex-sm-row gap-2" :class="{ 'opacity-50': !props.form.scheduleEnabled }">
-            <input v-model="props.form.scheduleDate" type="date" class="form-control custom-input" :disabled="!props.form.scheduleEnabled" :aria-label="$t('upload.scheduledPost')" />
-            <input v-model="props.form.scheduleTime" type="time" class="form-control custom-input" :disabled="!props.form.scheduleEnabled" aria-label="Schedule time" />
+          <div class="d-flex flex-column flex-sm-row gap-2" :class="{ 'opacity-50': !formModel.scheduleEnabled }">
+            <input v-model="formModel.scheduleDate" type="date" class="form-control custom-input" :disabled="!formModel.scheduleEnabled" :aria-label="$t('upload.scheduledPost')" />
+            <input v-model="formModel.scheduleTime" type="time" class="form-control custom-input" :disabled="!formModel.scheduleEnabled" aria-label="Schedule time" />
           </div>
         </div>
       </div>

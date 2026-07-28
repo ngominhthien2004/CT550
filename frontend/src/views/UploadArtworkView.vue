@@ -539,7 +539,7 @@ onBeforeUnmount(() => {
 
       <form class="d-grid gap-3 mt-3" @submit.prevent="submitArtwork" novalidate>
         <UploadContentDetails
-          :form="form"
+          v-model:form="form"
           :is-manga="isManga"
           :is-gif="isGif"
           :is-novel="isNovel"
@@ -568,7 +568,7 @@ onBeforeUnmount(() => {
         />
 
         <UploadPublicationSettings
-          :form="form"
+          v-model:form="form"
           :is-novel="isNovel"
           :show-ai-warning="showAiWarning"
           :ai-warning-message="aiWarningMessage"

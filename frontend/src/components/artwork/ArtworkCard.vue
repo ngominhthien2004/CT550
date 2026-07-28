@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLikeStore } from '../../stores/like.store'
 import { useAuthStore } from '../../stores/auth.store'
@@ -40,7 +40,6 @@ async function handleLike(e) {
   if (isToggling.value) return
 
   const previousStatus = isLiked.value
-  const previousCount = props.item.likeCount || 0
   const nextStatus = !previousStatus
 
   // Optimistic: flip immediately
@@ -48,14 +47,12 @@ async function handleLike(e) {
     likeStore.statusByArtwork[props.item._id] = previousStatus
   }
   likeStore.statusByArtwork[props.item._id] = nextStatus
-  props.item.likeCount = Math.max(0, previousCount + (nextStatus ? 1 : -1))
 
   try {
     await likeStore.toggleLikeByArtwork(props.item._id)
-  } catch (error) {
+  } catch {
     // Rollback on failure
     likeStore.statusByArtwork[props.item._id] = previousStatus
-    props.item.likeCount = previousCount
   }
 }
 

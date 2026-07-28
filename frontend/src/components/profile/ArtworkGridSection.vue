@@ -87,8 +87,10 @@ const displayItems = computed(() => {
 
     <!-- Grid -->
     <div v-else-if="displayItems.length" class="artwork-grid" :class="{ compact: showFeatured }">
-      <BookmarkCard v-if="cardType === 'bookmark'" v-for="item in displayItems" :key="item._id" :item="item" />
-      <ArtworkCard v-else v-for="item in displayItems" :key="item._id" :item="item" />
+      <template v-for="item in displayItems" :key="item._id">
+        <BookmarkCard v-if="cardType === 'bookmark'" :item="item" />
+        <ArtworkCard v-else :item="item" />
+      </template>
     </div>
 
     <!-- Empty state -->

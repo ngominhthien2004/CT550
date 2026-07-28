@@ -1,9 +1,5 @@
 <script setup>
 const props = defineProps({
-  form: {
-    type: Object,
-    required: true,
-  },
   isManga: {
     type: Boolean,
     default: false,
@@ -41,6 +37,8 @@ const props = defineProps({
     default: '',
   },
 })
+
+const formModel = defineModel('form', { type: Object, required: true })
 const emit = defineEmits(['update:selectedSeriesId'])
 </script>
 
@@ -51,7 +49,7 @@ const emit = defineEmits(['update:selectedSeriesId'])
       <div class="title-row-wrap">
         <input
           id="upload-title"
-          v-model="props.form.title"
+          v-model="formModel.title"
           type="text"
           class="title-input-field"
           :maxlength="props.titleMax"
@@ -66,7 +64,7 @@ const emit = defineEmits(['update:selectedSeriesId'])
       <div class="caption-row-wrap">
         <textarea
           id="upload-caption"
-          v-model="props.form.caption"
+          v-model="formModel.caption"
           class="caption-textarea-field"
           rows="5"
           maxlength="3000"
@@ -103,7 +101,7 @@ const emit = defineEmits(['update:selectedSeriesId'])
         <div class="input-with-count position-relative">
           <textarea
             id="upload-novel-text"
-            v-model="props.form.novelText"
+            v-model="formModel.novelText"
             class="form-control custom-textarea text-area-large"
             rows="10"
             maxlength="300000"

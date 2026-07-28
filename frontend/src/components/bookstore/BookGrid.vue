@@ -1,7 +1,7 @@
 <script setup>
 import BookCard from './BookCard.vue'
 
-const props = defineProps({
+defineProps({
   books: {
     type: Array,
     default: () => [],
@@ -16,13 +16,15 @@ const props = defineProps({
 <template>
   <div class="book-grid">
     <BookCard v-for="book in books" :key="book._id || book.id" :book="book" />
-    <div v-for="n in 6" :key="`skeleton-${n}`" v-if="loading && books.length === 0" class="book-card skeleton">
-      <div class="skeleton-cover"></div>
-      <div class="skeleton-meta">
-        <div class="skeleton-line short"></div>
-        <div class="skeleton-line"></div>
+    <template v-if="loading && books.length === 0">
+      <div v-for="n in 6" :key="`skeleton-${n}`" class="book-card skeleton">
+        <div class="skeleton-cover"></div>
+        <div class="skeleton-meta">
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line"></div>
+        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
