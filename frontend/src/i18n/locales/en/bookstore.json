@@ -150,5 +150,11 @@
   "ratedOutOf": "{rating} out of {max}",
   "noReviewsYet": "No reviews yet",
   "beFirstToReview": "Be the first to share your thoughts!",
-  "charCount": "{count}/2000"
+  "charCount": "{count}/2000",
+  "bookmark": "Bookmark",
+  "bookmarked": "Bookmarked",
+  "removeBookmark": "Remove bookmark",
+  "bookmarks": "Bookmarks",
+  "noBookmarksYet": "No bookmarks yet",
+  "loginToBookmark": "Log in to bookmark this book"
 }

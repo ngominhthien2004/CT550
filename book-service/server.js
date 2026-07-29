@@ -86,6 +86,9 @@ app.use('/api/book-service/seller', sellerRoutes);
 const reviewRoutes = require('./routes/review.routes');
 app.use('/api/book-service', reviewRoutes);
 
+const bookmarkRoutes = require('./routes/bookmark.routes');
+app.use('/api/book-service/book-bookmarks', bookmarkRoutes);
+
 // 404 + error handling
 app.use(notFound);
 app.use(errorHandler);

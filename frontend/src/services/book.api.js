@@ -150,5 +150,13 @@ export function deleteReview(reviewId) {
   return bookServiceApi.delete(`/reviews/${reviewId}`)
 }
 
+// --- Book Bookmarks ---
+export const bookBookmarkApi = {
+  toggle: (bookId) => bookServiceApi.post('/book-bookmarks/toggle', { bookId }),
+  getStatus: (bookId) => bookServiceApi.get(`/book-bookmarks/status/${bookId}`),
+  getMine: (params = {}) => bookServiceApi.get('/book-bookmarks', { params }),
+  delete: (bookmarkId) => bookServiceApi.delete(`/book-bookmarks/${bookmarkId}`),
+}
+
 // Exposed for diagnostics / tests.
 export { useDirectBookService, DIRECT_BOOK_SERVICE_URL }

@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import AddToCartButton from '@/components/bookstore/AddToCartButton.vue'
+import BookBookmarkButton from '@/components/bookstore/BookBookmarkButton.vue'
 import ReviewSection from '@/components/bookstore/ReviewSection.vue'
 import StarRating from '@/components/bookstore/StarRating.vue'
 import { useBookStore } from '@/stores/book.store.js'
@@ -81,7 +82,7 @@ const sellerInfo = computed(() => {
 function visitSeller() {
   const sellerId = sellerInfo.value?.id
   if (!sellerId) return
-  router.push(`/users/${sellerId}`)
+  router.push(`/account?user=${sellerId}`)
 }
 
 function onCoverError(e) {
@@ -153,6 +154,7 @@ onMounted(() => {
                 :disabled="book.status !== 'published' || (!isUnlimited && book.stock === 0)"
                 :max-quantity="isUnlimited ? 99 : (book.stock || 0)"
               />
+              <BookBookmarkButton :book="book" variant="detail" />
             </div>
           </div>
 
@@ -192,6 +194,8 @@ onMounted(() => {
 }
 
 .detail-cover-wrap {
+  position: relative;
+  aspect-ratio: 2 / 3;
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
@@ -278,6 +282,9 @@ onMounted(() => {
 }
 
 .detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
 }
 

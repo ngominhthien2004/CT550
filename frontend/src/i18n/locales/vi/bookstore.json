@@ -150,5 +150,11 @@
   "ratedOutOf": "{rating} trên {max}",
   "noReviewsYet": "Chưa có đánh giá nào",
   "beFirstToReview": "Hãy là người đầu tiên chia sẻ suy nghĩ của bạn!",
-  "charCount": "{count}/2000"
+  "charCount": "{count}/2000",
+  "bookmark": "Đánh dấu",
+  "bookmarked": "Đã đánh dấu",
+  "removeBookmark": "Bỏ đánh dấu",
+  "bookmarks": "Đánh dấu",
+  "noBookmarksYet": "Chưa có đánh dấu nào",
+  "loginToBookmark": "Đăng nhập để đánh dấu cuốn sách này"
 }

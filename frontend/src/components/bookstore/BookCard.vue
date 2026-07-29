@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import StarRating from '@/components/bookstore/StarRating.vue'
+import BookBookmarkButton from '@/components/bookstore/BookBookmarkButton.vue'
 
 const props = defineProps({
   book: {
@@ -54,6 +55,7 @@ function navigateToDetail() {
   <article class="book-card" @click="navigateToDetail">
     <div class="book-cover-wrap">
       <img :src="coverUrl" :alt="book.title" class="book-cover" loading="lazy" />
+      <BookBookmarkButton :book="book" />
       <span v-if="hasDiscount" class="book-badge">{{ t('bookstore.sale') }}</span>
     </div>
     <div class="book-meta">
@@ -95,6 +97,7 @@ function navigateToDetail() {
 }
 
 .book-cover {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;

@@ -150,5 +150,11 @@
   "ratedOutOf": "{rating}/{max}",
   "noReviewsYet": "まだレビューはありません",
   "beFirstToReview": "最初にレビューを書いてみませんか！",
-  "charCount": "{count}/2000"
+  "charCount": "{count}/2000",
+  "bookmark": "ブックマーク",
+  "bookmarked": "ブックマーク済み",
+  "removeBookmark": "ブックマークを解除",
+  "bookmarks": "ブックマーク",
+  "noBookmarksYet": "ブックマークはまだありません",
+  "loginToBookmark": "ログインしてこの本をブックマーク"
 }
