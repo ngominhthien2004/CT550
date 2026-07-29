@@ -85,7 +85,13 @@ function onClickOutsideFilter(e) {
   }
 }
 
-onMounted(() => document.addEventListener('click', onClickOutsideFilter))
+onMounted(() => {
+  document.addEventListener('click', onClickOutsideFilter)
+  // Fetch cart count so the badge shows immediately on any bookstore page
+  if (isLoggedIn.value) {
+    bookStore.fetchCart()
+  }
+})
 onUnmounted(() => document.removeEventListener('click', onClickOutsideFilter))
 
 // Sort options for the filter dropdown (same set as BookFilterBar, but we store
