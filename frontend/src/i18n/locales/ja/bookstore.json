@@ -147,5 +147,8 @@
   "unknownSeller": "不明な売り手",
   "unknownUser": "不明なユーザー",
   "outOfStock": "在庫切れ",
-  "ratedOutOf": "{rating}/{max}"
+  "ratedOutOf": "{rating}/{max}",
+  "noReviewsYet": "まだレビューはありません",
+  "beFirstToReview": "最初にレビューを書いてみませんか！",
+  "charCount": "{count}/2000"
 }

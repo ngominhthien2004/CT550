@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
@@ -21,7 +21,6 @@ const sizeMap = {
 const fontSize = computed(() => sizeMap[props.size] || sizeMap.medium)
 
 const stars = computed(() => {
-  // Return array of N objects: { fill: 0..1, index: 1..N }
   return Array.from({ length: props.max }, (_, i) => {
     const starValue = props.value - i
     return {
@@ -32,13 +31,11 @@ const stars = computed(() => {
 })
 
 const displayValue = computed(() => {
-  // Round to 1 decimal place for display
   return Math.round(props.value * 10) / 10
 })
 
 const autoLabel = computed(() => {
   if (props.ariaLabel) return props.ariaLabel
-  // Localized "5.0 out of 5" / "5.0 trên 5" / "5.0/5"
   return t('bookstore.ratedOutOf', { rating: displayValue.value, max: props.max })
 })
 </script>
@@ -55,6 +52,7 @@ const autoLabel = computed(() => {
         v-for="star in stars"
         :key="star.index"
         class="star-rating__star"
+        :class="{ 'star-rating__star--full': star.fill >= 1, 'star-rating__star--partial': star.fill > 0 && star.fill < 1 }"
         :style="{
           fontSize,
           background: `linear-gradient(to right, #f59e0b 0%, #f59e0b ${star.fill * 100}%, var(--line) ${star.fill * 100}%, var(--line) 100%)`,
@@ -83,8 +81,12 @@ const autoLabel = computed(() => {
 .star-rating__star {
   line-height: 1;
   display: inline-block;
-  /* The text is colored via background-clip; fall back to muted color for no-JS / very old browsers */
   color: var(--line);
+  transition: transform 0.15s ease;
+}
+
+.star-rating__star--full {
+  filter: drop-shadow(0 0 1px rgba(245, 158, 11, 0.3));
 }
 
 .star-rating__value {

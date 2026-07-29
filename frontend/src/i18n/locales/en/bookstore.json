@@ -147,5 +147,8 @@
   "unknownSeller": "Unknown seller",
   "unknownUser": "Unknown user",
   "outOfStock": "Out of stock",
-  "ratedOutOf": "{rating} out of {max}"
+  "ratedOutOf": "{rating} out of {max}",
+  "noReviewsYet": "No reviews yet",
+  "beFirstToReview": "Be the first to share your thoughts!",
+  "charCount": "{count}/2000"
 }

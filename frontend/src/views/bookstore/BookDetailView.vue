@@ -172,10 +172,9 @@ onMounted(() => {
           </div>
         </div>
       </div>
-    </section>
-
       <!-- Reviews Section -->
       <ReviewSection v-if="book" :book-id="book._id" />
+    </section>
   </BookstoreLayout>
 </template>
 

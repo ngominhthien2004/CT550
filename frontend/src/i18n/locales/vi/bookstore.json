@@ -147,5 +147,8 @@
   "unknownSeller": "Người bán ẩn danh",
   "unknownUser": "Người dùng ẩn danh",
   "outOfStock": "Hết hàng",
-  "ratedOutOf": "{rating} trên {max}"
+  "ratedOutOf": "{rating} trên {max}",
+  "noReviewsYet": "Chưa có đánh giá nào",
+  "beFirstToReview": "Hãy là người đầu tiên chia sẻ suy nghĩ của bạn!",
+  "charCount": "{count}/2000"
 }
