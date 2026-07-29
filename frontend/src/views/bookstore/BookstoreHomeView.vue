@@ -30,6 +30,11 @@ const FEATURED_LIMIT = 10
 
 const featuredBooks = computed(() => books.value.slice(0, FEATURED_LIMIT))
 
+const hasActiveFilters = computed(() => {
+  const f = filters.value
+  return !!(f.search || f.minPrice || f.maxPrice || (f.sort && f.sort !== 'newest'))
+})
+
 // TagStrip accepts plain tag strings and renders them verbatim. The store
 // returns `{name, count}` objects, so flatten to just the names and prepend
 // "#" to match the original `TagPill` visual. TagStrip's `button` variant
@@ -158,8 +163,8 @@ onMounted(async () => {
         </div>
       </section>
 
-      <!-- Featured / Latest books -->
-      <section class="bookstore-section bookstore-section--featured">
+      <!-- No active filters: show featured / latest books -->
+      <section v-if="!hasActiveFilters" class="bookstore-section bookstore-section--featured">
         <BookSection
           :title="$t('bookstore.featured')"
           icon="fa-fire"
@@ -168,7 +173,10 @@ onMounted(async () => {
           :limit="FEATURED_LIMIT"
           :show-more="false"
         />
+      </section>
 
+      <!-- Active filters: show filter toolbar + filtered results -->
+      <section v-else class="bookstore-section bookstore-section--results">
         <BookFilterBar
           v-model:filters="filters"
           :loading="loading"
@@ -179,7 +187,7 @@ onMounted(async () => {
           {{ bookStore.booksError }}
         </div>
 
-        <div v-if="filters.search || filters.minPrice || filters.maxPrice" class="bookstore-filtered-grid">
+        <div class="bookstore-filtered-grid">
           <BookGrid :books="books" :loading="loading" />
           <nav v-if="pagination.pages > 1" class="bookstore-pagination-wrap bookstore-pagination" :aria-label="$t('bookstore.bookstore')">
             <ul class="pagination mb-0">

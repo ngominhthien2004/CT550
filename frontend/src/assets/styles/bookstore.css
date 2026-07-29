@@ -519,6 +519,162 @@
   color: var(--accent);
 }
 
+/* --- Search + filter group (wraps the search form + filter button) --- */
+.bookstore-topbar-search-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+/* --- Filter toggle button (gear icon next to search) --- */
+.bookstore-topbar-filter-btn {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.bookstore-topbar-filter-btn:hover {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.bookstore-topbar-filter-btn.is-active {
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* --- Filter dropdown wrap (positions the panel) --- */
+.bookstore-topbar-filter-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* --- Filter dropdown panel --- */
+.bookstore-filter-panel {
+  right: 0;
+  top: calc(100% + 6px);
+  min-width: 220px;
+  max-width: 300px;
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.filter-dd-section {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.filter-dd-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.filter-dd-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.filter-dd-pill {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  font-family: inherit;
+}
+
+.filter-dd-pill:hover {
+  border-color: var(--muted);
+  background: var(--surface-alt);
+}
+
+.filter-dd-pill.is-active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.filter-dd-price {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.filter-dd-input {
+  width: 70px;
+  padding: 0.35rem 0.45rem;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.18s ease;
+}
+
+.filter-dd-input:hover {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+
+.filter-dd-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.filter-dd-input::placeholder {
+  color: var(--muted);
+}
+
+.filter-dd-sep {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.filter-dd-apply {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.filter-dd-apply:hover {
+  background: var(--accent-hover);
+}
+
 /* --- Action buttons (right) --- */
 .bookstore-topbar-actions {
   display: inline-flex;
@@ -597,6 +753,12 @@
   }
 
   .bookstore-topbar-action {
+    width: 38px;
+    height: 38px;
+    font-size: 0.92rem;
+  }
+
+  .bookstore-topbar-filter-btn {
     width: 38px;
     height: 38px;
     font-size: 0.92rem;

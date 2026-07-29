@@ -140,6 +140,8 @@
   "sortPopular": "Phổ biến",
   "minPrice": "Tối thiểu",
   "maxPrice": "Tối đa",
+  "sortBy": "Sắp xếp theo",
+  "filter": "Bộ lọc",
   "apply": "Áp dụng",
   "sale": "Giảm giá",
   "unknownSeller": "Người bán ẩn danh",

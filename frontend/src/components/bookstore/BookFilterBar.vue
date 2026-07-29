@@ -44,95 +44,119 @@ function submitSearch() {
 </script>
 
 <template>
-  <div class="filter-bar page-block p-3">
-    <div class="filter-row">
-      <div class="filter-search">
-        <div class="input-group">
-          <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-          <input
-            type="search"
-            class="form-control"
-            :placeholder="t('bookstore.searchBooks')"
-            :value="filters.search"
-            @input="updateField('search', $event.target.value)"
-            @keydown.enter.prevent="submitSearch"
-          />
-        </div>
-      </div>
-
-      <CustomSelect :model-value="filters.sort" :options="bookSortOptions" @update:modelValue="(v) => updateField('sort', v)" />
+  <div class="bookstore-filter-toolbar">
+    <div class="filter-tb-group">
+      <span class="filter-tb-label">{{ t('bookstore.sortBy') }}:</span>
+      <CustomSelect
+        :model-value="filters.sort"
+        :options="bookSortOptions"
+        @update:modelValue="(v) => updateField('sort', v)"
+      />
     </div>
 
-    <div class="filter-row price-row">
-      <span class="price-label">{{ t('bookstore.price') }}:</span>
+    <div class="filter-tb-group filter-tb-price">
+      <span class="filter-tb-label">{{ t('bookstore.price') }}:</span>
       <input
         type="number"
-        class="form-control price-input"
+        class="filter-tb-input"
         :placeholder="t('bookstore.minPrice')"
         min="0"
         :value="filters.minPrice"
         @input="updateField('minPrice', $event.target.value)"
       />
-      <span class="price-separator">–</span>
+      <span class="filter-tb-sep">–</span>
       <input
         type="number"
-        class="form-control price-input"
+        class="filter-tb-input"
         :placeholder="t('bookstore.maxPrice')"
         min="0"
         :value="filters.maxPrice"
         @input="updateField('maxPrice', $event.target.value)"
       />
-      <button type="button" class="btn btn-primary btn-sm" :disabled="loading" @click="submitSearch">
-        <i class="fa-solid fa-filter me-1"></i> {{ t('bookstore.apply') }}
-      </button>
     </div>
+
+    <button type="button" class="filter-tb-apply" :disabled="loading" @click="submitSearch">
+      <i class="fa-solid fa-magnifying-glass me-1"></i> {{ t('bookstore.apply') }}
+    </button>
   </div>
 </template>
 
 <style scoped>
-.filter-bar {
-  display: grid;
-  gap: 0.75rem;
-}
-
-.filter-row {
+.bookstore-filter-toolbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
   align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.6rem 0;
 }
 
-.filter-search {
-  flex: 1 1 240px;
-  min-width: 200px;
+.filter-tb-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
-.filter-select {
-  flex: 0 1 180px;
-  min-width: 150px;
+.filter-tb-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
-.price-row {
-  justify-content: flex-start;
+.filter-tb-input {
+  width: 80px;
+  padding: 0.35rem 0.5rem;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.18s ease;
 }
 
-.price-label {
-  font-size: 0.9rem;
+.filter-tb-input:hover {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+
+.filter-tb-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.filter-tb-input::placeholder {
   color: var(--muted);
 }
 
-.price-input {
-  width: 100px;
-  flex: 0 0 auto;
+.filter-tb-sep {
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
-.price-separator {
-  color: var(--muted);
+.filter-tb-apply {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+  font-family: inherit;
 }
 
-.input-group-text {
-  background: var(--surface-alt);
-  border-color: var(--line);
-  color: var(--muted);
+.filter-tb-apply:hover:not(:disabled) {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.filter-tb-apply:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

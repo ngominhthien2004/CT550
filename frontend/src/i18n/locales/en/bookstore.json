@@ -140,6 +140,8 @@
   "sortPopular": "Popular",
   "minPrice": "Min",
   "maxPrice": "Max",
+  "sortBy": "Sort by",
+  "filter": "Filters",
   "apply": "Apply",
   "sale": "Sale",
   "unknownSeller": "Unknown seller",

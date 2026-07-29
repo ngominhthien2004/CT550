@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store.js'
@@ -31,6 +31,75 @@ watch(
   },
   { immediate: true },
 )
+
+// --- Filter dropdown state ---
+const isFilterOpen = ref(false)
+const filterDraft = ref({ sort: 'newest', minPrice: '', maxPrice: '' })
+const filterRef = ref(null)
+
+// Initialize filter draft from the current route query so the dropdown
+// shows the correct state when the user opens it.
+function syncFilterDraftFromQuery(query) {
+  filterDraft.value = {
+    sort: query.sort || 'newest',
+    minPrice: query.minPrice || '',
+    maxPrice: query.maxPrice || '',
+  }
+}
+
+watch(
+  () => route.query,
+  (query) => syncFilterDraftFromQuery(query),
+  { immediate: true },
+)
+
+function toggleFilterDropdown() {
+  syncFilterDraftFromQuery(route.query)
+  isFilterOpen.value = !isFilterOpen.value
+}
+
+function applyFilterDraft() {
+  const query = { ...route.query }
+  const draft = filterDraft.value
+
+  if (draft.sort && draft.sort !== 'newest') query.sort = draft.sort
+  else delete query.sort
+  if (draft.minPrice) query.minPrice = draft.minPrice
+  else delete query.minPrice
+  if (draft.maxPrice) query.maxPrice = draft.maxPrice
+  else delete query.maxPrice
+
+  // Preserve the search term from the topbar input
+  const trimmed = searchQuery.value.trim()
+  if (trimmed) query.search = trimmed
+  else delete query.search
+  query.page = undefined
+
+  router.push({ path: '/bookstore', query })
+  isFilterOpen.value = false
+}
+
+function onClickOutsideFilter(e) {
+  if (filterRef.value && !filterRef.value.contains(e.target)) {
+    isFilterOpen.value = false
+  }
+}
+
+onMounted(() => document.addEventListener('click', onClickOutsideFilter))
+onUnmounted(() => document.removeEventListener('click', onClickOutsideFilter))
+
+// Sort options for the filter dropdown (same set as BookFilterBar, but we store
+// resolved labels for use directly in the template).
+const bookSortOptions = computed(() => [
+  { value: 'newest', label: t('bookstore.sortLatest') },
+  { value: 'priceAsc', label: t('bookstore.sortPriceAsc') },
+  { value: 'priceDesc', label: t('bookstore.sortPriceDesc') },
+  { value: 'popular', label: t('bookstore.sortPopular') },
+])
+
+function selectSort(value) {
+  filterDraft.value.sort = value
+}
 
 // Reactive cart count pulled from the Pinia store. The store already exposes
 // `cartItemCount` as a derived getter; re-read it through `state` so the
@@ -122,32 +191,91 @@ async function handleLogout() {
         </span>
       </router-link>
 
-      <!-- Center: search -->
-      <form class="bookstore-topbar-search" @submit.prevent="onSearch">
-        <span class="bookstore-topbar-search-icon" aria-hidden="true">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </span>
-        <input
-          v-model="searchQuery"
-          type="search"
-          name="search"
-          class="bookstore-topbar-search-input"
-          :class="{ 'is-focused': isSearchFocused }"
-          placeholder="Search books by title or tag…"
-          aria-label="Search books"
-          @focus="isSearchFocused = true"
-          @blur="isSearchFocused = false"
-        />
-        <button
-          v-if="searchQuery"
-          type="button"
-          class="bookstore-topbar-search-clear"
-          aria-label="Clear search"
-          @click="clearSearch"
-        >
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </form>
+      <!-- Center: search + filter -->
+      <div class="bookstore-topbar-search-group">
+        <form class="bookstore-topbar-search" @submit.prevent="onSearch">
+          <span class="bookstore-topbar-search-icon" aria-hidden="true">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </span>
+          <input
+            v-model="searchQuery"
+            type="search"
+            name="search"
+            class="bookstore-topbar-search-input"
+            :class="{ 'is-focused': isSearchFocused }"
+            placeholder="Search books by title or tag…"
+            aria-label="Search books"
+            @focus="isSearchFocused = true"
+            @blur="isSearchFocused = false"
+          />
+          <button
+            v-if="searchQuery"
+            type="button"
+            class="bookstore-topbar-search-clear"
+            aria-label="Clear search"
+            @click="clearSearch"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </form>
+
+        <!-- Filter toggle button + dropdown -->
+        <div ref="filterRef" class="bookstore-topbar-filter-wrap">
+          <button
+            type="button"
+            class="bookstore-topbar-filter-btn"
+            :class="{ 'is-active': isFilterOpen }"
+            aria-label="Filters"
+            :title="t('bookstore.filter')"
+            @click="toggleFilterDropdown"
+          >
+            <i class="fa-solid fa-sliders"></i>
+          </button>
+
+          <div v-if="isFilterOpen" class="dd-panel bookstore-filter-panel">
+            <div class="filter-dd-section">
+              <span class="filter-dd-label">{{ t('bookstore.sortBy') }}</span>
+              <div class="filter-dd-pills">
+                <button
+                  v-for="opt in bookSortOptions"
+                  :key="opt.value"
+                  type="button"
+                  class="filter-dd-pill"
+                  :class="{ 'is-active': filterDraft.sort === opt.value }"
+                  @click="selectSort(opt.value)"
+                >
+                  {{ opt.label }}
+                </button>
+              </div>
+            </div>
+
+            <div class="filter-dd-section">
+              <span class="filter-dd-label">{{ t('bookstore.price') }}</span>
+              <div class="filter-dd-price">
+                <input
+                  v-model.number="filterDraft.minPrice"
+                  type="number"
+                  class="filter-dd-input"
+                  :placeholder="t('bookstore.minPrice')"
+                  min="0"
+                />
+                <span class="filter-dd-sep">–</span>
+                <input
+                  v-model.number="filterDraft.maxPrice"
+                  type="number"
+                  class="filter-dd-input"
+                  :placeholder="t('bookstore.maxPrice')"
+                  min="0"
+                />
+              </div>
+            </div>
+
+            <button type="button" class="filter-dd-apply" @click="applyFilterDraft">
+              <i class="fa-solid fa-check me-1"></i> {{ t('bookstore.apply') }}
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- Right: actions -->
       <nav class="bookstore-topbar-actions" aria-label="Book store actions">
@@ -208,4 +336,5 @@ async function handleLogout() {
   </div>
 </template>
 
+<style scoped src="../../assets/styles/dropdown.css"></style>
 <style scoped src="../../assets/styles/bookstore.css"></style>

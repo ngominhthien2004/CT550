@@ -140,6 +140,8 @@
   "sortPopular": "人気",
   "minPrice": "最小",
   "maxPrice": "最大",
+  "sortBy": "並び替え",
+  "filter": "フィルター",
   "apply": "適用",
   "sale": "セール",
   "unknownSeller": "不明な売り手",
