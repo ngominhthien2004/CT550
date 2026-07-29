@@ -26,9 +26,7 @@ const loading = computed(() => bookStore.booksLoading)
 const pagination = computed(() => bookStore.pagination)
 const popularTags = computed(() => bookStore.popularTags)
 
-const FEATURED_LIMIT = 10
-
-const featuredBooks = computed(() => books.value.slice(0, FEATURED_LIMIT))
+const FEATURED_LIMIT = 12
 
 const hasActiveFilters = computed(() => {
   const f = filters.value
@@ -50,7 +48,7 @@ function applyFilters() {
 
 function goToPage(page) {
   if (page < 1 || page > pagination.value.pages) return
-  bookStore.fetchBooks(page)
+  bookStore.fetchBooks(page, hasActiveFilters.value ? undefined : FEATURED_LIMIT)
   syncQueryToFilters()
 }
 
@@ -100,13 +98,13 @@ watch(
   (newQuery, oldQuery) => {
     if (!oldQuery) return
     syncFiltersFromQuery()
-    bookStore.fetchBooks(1)
+    bookStore.fetchBooks(1, hasActiveFilters.value ? undefined : FEATURED_LIMIT)
   }
 )
 
 onMounted(async () => {
   syncFiltersFromQuery()
-  await bookStore.fetchBooks(pagination.value.page)
+  await bookStore.fetchBooks(pagination.value.page, hasActiveFilters.value ? undefined : FEATURED_LIMIT)
 })
 </script>
 
@@ -163,16 +161,29 @@ onMounted(async () => {
         </div>
       </section>
 
-      <!-- No active filters: show featured / latest books -->
+      <!-- No active filters: show featured / latest books with pagination -->
       <section v-if="!hasActiveFilters" class="bookstore-section bookstore-section--featured">
         <BookSection
           :title="$t('bookstore.featured')"
           icon="fa-fire"
-          :books="featuredBooks"
+          :books="books"
           :loading="loading && books.length === 0"
           :limit="FEATURED_LIMIT"
           :show-more="false"
         />
+        <nav v-if="pagination.pages > 1" class="bookstore-pagination-wrap bookstore-pagination" :aria-label="$t('bookstore.featured')">
+          <ul class="pagination mb-0">
+            <li class="page-item" :class="{ disabled: pagination.page <= 1 }">
+              <button type="button" class="page-link" :disabled="pagination.page <= 1" @click="goToPage(pagination.page - 1)">{{ $t('bookstore.previous') }}</button>
+            </li>
+            <li v-for="page in pagination.pages" :key="page" class="page-item" :class="{ active: page === pagination.page }">
+              <button type="button" class="page-link" @click="goToPage(page)">{{ page }}</button>
+            </li>
+            <li class="page-item" :class="{ disabled: pagination.page >= pagination.pages }">
+              <button type="button" class="page-link" :disabled="pagination.page >= pagination.pages" @click="goToPage(pagination.page + 1)">{{ $t('bookstore.next') }}</button>
+            </li>
+          </ul>
+        </nav>
       </section>
 
       <!-- Active filters: show filter toolbar + filtered results -->
@@ -205,21 +216,6 @@ onMounted(async () => {
         </div>
       </section>
 
-      <!-- Sell your work CTA -->
-      <section class="bookstore-cta-sell page-block">
-        <div class="bookstore-cta-sell-glyph" aria-hidden="true">
-          <i class="fa-solid fa-bullhorn"></i>
-        </div>
-        <div class="bookstore-cta-sell-copy">
-          <h2 class="bookstore-cta-sell-title">{{ $t('bookstore.sellYourWork') }}</h2>
-          <p class="bookstore-cta-sell-sub">{{ $t('bookstore.sellSubtitle') }}</p>
-        </div>
-        <div class="bookstore-cta-sell-action">
-          <router-link to="/bookstore/upload" class="btn btn-warning bookstore-cta-sell-btn">
-            <i class="fa-solid fa-upload me-1"></i> {{ $t('bookstore.sellYourBook') }}
-          </router-link>
-        </div>
-      </section>
     </div>
   </BookstoreLayout>
 </template>

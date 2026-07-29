@@ -160,14 +160,14 @@ export const useBookStore = defineStore('book', {
       this.pagination.page = 1
     },
 
-    async fetchBooks(page = 1) {
+    async fetchBooks(page = 1, limit) {
       this.booksLoading = true
       this.booksError = ''
 
       try {
         const params = {
           page,
-          limit: this.pagination.limit,
+          limit: limit || this.pagination.limit,
           search: this.filters.search || undefined,
           sort: this.filters.sort || 'newest',
           minPrice: this.filters.minPrice || undefined,
