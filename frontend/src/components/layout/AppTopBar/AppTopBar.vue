@@ -77,14 +77,14 @@ const serviceLinks = computed(() => {
       label: t('nav.drawing'),
       description: t('topbar.createDigitalDrawings'),
       to: '/draw',
-      thumbnail: '/service-draw.png',
+      icon: 'fa-solid fa-pen-nib',
     },
     {
       key: 'bookstore',
       label: 'Book Store',
       description: 'Buy and sell digital books',
       to: '/bookstore',
-      thumbnail: '/service-bookstore.png',
+      icon: 'fa-solid fa-book-bookmark',
     },
   ]
 })

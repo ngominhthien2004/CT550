@@ -32,7 +32,7 @@ const emit = defineEmits(['toggle'])
         class="services-item"
         role="menuitem"
       >
-        <img :src="item.thumbnail" :alt="item.label" class="services-thumb" loading="lazy" />
+        <i :class="item.icon" class="services-icon" aria-hidden="true"></i>
         <span class="services-copy">
           <strong>{{ siteLabel }} {{ item.label }}</strong>
           <small>{{ item.description }}</small>
@@ -123,11 +123,16 @@ const emit = defineEmits(['toggle'])
   background: var(--surface-alt);
 }
 
-.services-thumb {
+.services-icon {
   width: 56px;
   height: 56px;
   border-radius: 8px;
-  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  background: var(--surface-alt);
+  color: var(--brand);
   flex-shrink: 0;
 }
 
