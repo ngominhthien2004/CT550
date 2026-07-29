@@ -730,6 +730,7 @@
 }
 
 .bookstore-topbar-cart-badge {
+  position: absolute;
   top: -4px;
   right: -4px;
   min-width: 16px;
@@ -741,6 +742,10 @@
   border: 2px solid var(--surface);
   border-radius: 999px;
   line-height: 1;
+  z-index: 1;
+  /* Override parent grid centering */
+  align-self: start;
+  justify-self: end;
 }
 
 /* --- Responsive: collapse the brand subtitle on small screens --- */
