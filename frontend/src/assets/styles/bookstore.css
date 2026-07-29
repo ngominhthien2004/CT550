@@ -731,11 +731,12 @@
 
 .bookstore-topbar-cart-badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 16px;
-  height: 16px;
+  top: -5px;
+  right: -5px;
+  min-width: 17px;
+  height: 17px;
   font-size: 0.6rem;
+  font-weight: 700;
   padding: 0 0.2rem;
   background: var(--danger, #ef4444);
   color: #fff;
@@ -743,6 +744,9 @@
   border-radius: 999px;
   line-height: 1;
   z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   /* Override parent grid centering */
   align-self: start;
   justify-self: end;
