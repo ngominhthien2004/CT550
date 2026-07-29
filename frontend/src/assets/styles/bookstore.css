@@ -730,9 +730,17 @@
 }
 
 .bookstore-topbar-cart-badge {
-  top: -6px;
-  right: -6px;
-  border-color: var(--surface);
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  font-size: 0.6rem;
+  padding: 0 0.2rem;
+  background: var(--danger, #ef4444);
+  color: #fff;
+  border: 2px solid var(--surface);
+  border-radius: 999px;
+  line-height: 1;
 }
 
 /* --- Responsive: collapse the brand subtitle on small screens --- */
