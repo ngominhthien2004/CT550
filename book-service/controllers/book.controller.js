@@ -131,6 +131,19 @@ const getBookById = async (req, res, next) => {
     }
 };
 
+const normalizeTag = (raw) => {
+    const trimmed = String(raw || '').trim().toLowerCase().replace(/^#/, '');
+    return trimmed;
+};
+
+const normalizeTags = (tags) => {
+    if (!Array.isArray(tags)) return [];
+    return tags
+        .map(normalizeTag)
+        .filter((t) => t.length > 0 && t.length <= 50)
+        .slice(0, 10);
+};
+
 const createBook = async (req, res, next) => {
     try {
         const { title, description, price, originalPrice, stock, status } = req.body;
@@ -138,6 +151,11 @@ const createBook = async (req, res, next) => {
         if (!title || !title.trim()) {
             res.status(400);
             return next(new Error('Title is required'));
+        }
+
+        if (title.trim().length > 100) {
+            res.status(400);
+            return next(new Error('Title must be 100 characters or less'));
         }
 
         const parsedPrice = parseNumber(price, null);
@@ -165,7 +183,7 @@ const createBook = async (req, res, next) => {
             coverImageUrls = [coverUpload.url];
         }
 
-        const tags = parseArrayInput(req.body.tags);
+        const tags = normalizeTags(parseArrayInput(req.body.tags));
 
         const book = await Book.create({
             title: title.trim(),
@@ -211,6 +229,14 @@ const updateBook = async (req, res, next) => {
         const { title, description, price, originalPrice, stock, status } = req.body;
 
         if (title !== undefined) {
+            if (!title.trim()) {
+                res.status(400);
+                return next(new Error('Title cannot be empty'));
+            }
+            if (title.trim().length > 100) {
+                res.status(400);
+                return next(new Error('Title must be 100 characters or less'));
+            }
             book.title = title.trim();
         }
         if (description !== undefined) {
@@ -234,7 +260,7 @@ const updateBook = async (req, res, next) => {
             book.status = status;
         }
 
-        const tags = parseArrayInput(req.body.tags);
+        const tags = normalizeTags(parseArrayInput(req.body.tags));
         if (tags.length > 0 || req.body.tags !== undefined) {
             book.tags = tags;
         }

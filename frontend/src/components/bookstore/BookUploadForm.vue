@@ -133,10 +133,17 @@ function commitTag(raw) {
   showTagSuggestions.value = false
 }
 
+function commitMultipleTags(raw) {
+  const parts = String(raw || '').split(',')
+  for (const part of parts) {
+    commitTag(part)
+  }
+}
+
 function handleTagKeydown(event) {
   if (event.key === 'Enter' || event.key === ',') {
     event.preventDefault()
-    commitTag(form.value.tagInput)
+    commitMultipleTags(form.value.tagInput)
   } else if (event.key === ' ') {
     if (String(form.value.tagInput || '').trim()) {
       event.preventDefault()
@@ -159,6 +166,23 @@ function onTagInputBlur(event) {
   if (!event.currentTarget?.contains(event.relatedTarget)) {
     showTagSuggestions.value = false
   }
+}
+
+function onPriceInput(event) {
+  let raw = event.target.value
+  // Strip everything except digits and dot
+  raw = raw.replace(/[^0-9.]/g, '')
+  // Ensure only one decimal point
+  const parts = raw.split('.')
+  if (parts.length > 2) {
+    raw = parts[0] + '.' + parts.slice(1).join('')
+  }
+  // Limit to 2 decimal places
+  if (parts.length === 2 && parts[1].length > 2) {
+    raw = parts[0] + '.' + parts[1].slice(0, 2)
+  }
+  form.value.price = raw === '' ? '' : Number(raw)
+  event.target.value = raw
 }
 
 function submit() {
@@ -210,7 +234,7 @@ function handleEbookDrop(e) {
   <form class="upload-form d-grid gap-3" @submit.prevent="submit">
     <div>
       <label class="form-label">Title</label>
-      <input v-model="form.title" type="text" class="form-control" placeholder="Book title" required />
+      <input v-model="form.title" type="text" class="form-control" placeholder="Book title" required maxlength="100" />
     </div>
 
     <div>
@@ -220,7 +244,15 @@ function handleEbookDrop(e) {
 
     <div>
       <label class="form-label">Price ($)</label>
-      <input v-model.number="form.price" type="number" class="form-control" min="0" step="0.01" required />
+      <input
+        :value="form.price"
+        type="text"
+        class="form-control"
+        inputmode="decimal"
+        placeholder="0.00"
+        required
+        @input="onPriceInput"
+      />
     </div>
 
     <div>
