@@ -21,7 +21,7 @@ const listTags = async (req, res, next) => {
 
             const query = { usageCount: { $gt: 0 } };
             if (keyword) {
-                query.name = { $regex: normalizeTagName(keyword), $options: 'i' };
+                query.name = { $regex: '^' + normalizeTagName(keyword), $options: 'i' };
             }
 
             return await Tag.find(query)
