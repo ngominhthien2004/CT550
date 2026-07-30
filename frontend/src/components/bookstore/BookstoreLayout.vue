@@ -95,6 +95,12 @@ watch(sidebarCollapsed, (collapsed) => {
               </router-link>
             </li>
             <li>
+              <router-link to="/bookstore/library" class="bookstore-sidebar-link">
+                <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                <span class="bookstore-sidebar-text">My Library</span>
+              </router-link>
+            </li>
+            <li>
               <router-link to="/bookstore/upload" class="bookstore-sidebar-link">
                 <i class="fa-solid fa-upload" aria-hidden="true"></i>
                 <span class="bookstore-sidebar-text">Sell a book</span>
