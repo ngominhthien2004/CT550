@@ -1,5 +1,6 @@
 const Book = require('../models/Book');
 const { uploadImage, uploadEbook } = require('../config/upload');
+const { upsertTags } = require('../utils/tagSync');
 
 const parsePositiveInt = (value, fallback) => {
     const parsed = parseInt(value, 10);
@@ -185,6 +186,8 @@ const createBook = async (req, res, next) => {
             tags
         });
 
+        await upsertTags(tags).catch(() => {});
+
         res.status(201).json(book);
     } catch (error) {
         next(error);
@@ -257,6 +260,11 @@ const updateBook = async (req, res, next) => {
         }
 
         await book.save();
+
+        if (req.body.tags !== undefined) {
+            await upsertTags(book.tags).catch(() => {});
+        }
+
         res.json(book);
     } catch (error) {
         next(error);
