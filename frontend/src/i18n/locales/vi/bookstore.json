@@ -31,6 +31,8 @@
   "orderId": "Mã Đơn hàng",
   "trackOrder": "Theo dõi Đơn hàng",
   "cancelOrder": "Hủy Đơn hàng",
+  "cancelOrderConfirm": "Bạn có chắc muốn hủy đơn hàng này?",
+  "orderCancelled": "Đã hủy đơn hàng",
   "price": "Giá",
   "author": "Tác giả",
   "publisher": "Nhà xuất bản",

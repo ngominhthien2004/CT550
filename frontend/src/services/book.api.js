@@ -105,6 +105,10 @@ export function getSellerOrders(params = {}) {
   return bookServiceApi.get('/orders/seller', { params })
 }
 
+export function cancelOrder(orderId) {
+  return bookServiceApi.patch(`/orders/${orderId}/cancel`)
+}
+
 export function updateOrderStatus(orderId, payload) {
   return bookServiceApi.patch(`/orders/${orderId}/status`, payload)
 }

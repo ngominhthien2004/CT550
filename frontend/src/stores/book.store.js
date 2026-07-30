@@ -15,6 +15,7 @@ import {
   getMyOrders,
   getOrderById,
   getSellerOrders,
+  cancelOrder,
   updateOrderStatus,
   downloadOrderItem,
   createCheckoutSession,
@@ -376,6 +377,15 @@ export const useBookStore = defineStore('book', {
       } finally {
         this.sellerOrdersLoading = false
       }
+    },
+
+    async cancelOrderById(orderId) {
+      const { data } = await cancelOrder(orderId)
+      const idx = this.orders.findIndex((o) => o._id === orderId)
+      if (idx !== -1) {
+        this.orders[idx] = data
+      }
+      return data
     },
 
     async updateSellerOrderStatus(orderId, status) {

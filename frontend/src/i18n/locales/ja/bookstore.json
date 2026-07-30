@@ -31,6 +31,8 @@
   "orderId": "注文ID",
   "trackOrder": "注文を追跡",
   "cancelOrder": "注文をキャンセル",
+  "cancelOrderConfirm": "この注文をキャンセルしてもよろしいですか？",
+  "orderCancelled": "注文がキャンセルされました",
   "price": "価格",
   "author": "著者",
   "publisher": "出版社",

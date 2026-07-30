@@ -6,11 +6,15 @@ import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import OrderItem from '@/components/bookstore/OrderItem.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { formatShortDate } from '@/utils/date.js'
+import { useToast } from '@/composables/useToast.js'
 
 const { t } = useI18n()
 const router = useRouter()
 const bookStore = useBookStore()
+const { showSuccess, showError } = useToast()
 const expandedOrderId = ref('')
+const cancellingOrderId = ref('')
+const confirmCancelOrderId = ref('')
 
 const orders = computed(() => bookStore.orders)
 const loading = computed(() => bookStore.ordersLoading)
@@ -47,6 +51,30 @@ function statusClass(status) {
 
 function viewBook(bookId) {
   router.push(`/bookstore/${bookId}`)
+}
+
+function confirmCancel(orderId) {
+  confirmCancelOrderId.value = orderId
+}
+
+function cancelConfirmDialog() {
+  confirmCancelOrderId.value = ''
+}
+
+async function cancelOrder() {
+  const orderId = confirmCancelOrderId.value
+  if (!orderId) return
+
+  cancellingOrderId.value = orderId
+  try {
+    await bookStore.cancelOrderById(orderId)
+    showSuccess(t('bookstore.orderCancelled'))
+  } catch (error) {
+    showError(error.response?.data?.message || error.message)
+  } finally {
+    cancellingOrderId.value = ''
+    confirmCancelOrderId.value = ''
+  }
 }
 
 onMounted(() => {
@@ -95,9 +123,37 @@ onMounted(() => {
               :order-id="order._id"
               :show-download="order.status === 'completed' || order.status === 'paid'"
             />
+            <div v-if="order.status === 'pending'" class="order-cancel-row">
+              <button
+                type="button"
+                class="btn btn-outline-danger btn-sm"
+                :disabled="cancellingOrderId === order._id"
+                @click.stop="confirmCancel(order._id)"
+              >
+                <i class="fa-solid fa-times me-1"></i>
+                {{ $t('bookstore.cancelOrder') }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Cancel confirmation dialog -->
+      <Teleport to="body">
+        <div v-if="confirmCancelOrderId" class="cancel-overlay" @click.self="cancelConfirmDialog">
+          <div class="cancel-dialog">
+            <p class="cancel-message">{{ $t('bookstore.cancelOrderConfirm') }}</p>
+            <div class="cancel-actions">
+              <button type="button" class="btn btn-outline-secondary btn-sm" @click="cancelConfirmDialog">
+                {{ $t('bookstore.cancelEdit') }}
+              </button>
+              <button type="button" class="btn btn-danger btn-sm" :disabled="cancellingOrderId" @click="cancelOrder">
+                {{ cancellingOrderId ? $t('bookstore.loading') : $t('bookstore.cancelOrder') }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Teleport>
     </section>
   </BookstoreLayout>
 </template>
@@ -188,5 +244,46 @@ onMounted(() => {
   font-size: 3rem;
   margin-bottom: 1rem;
   color: var(--line);
+}
+
+.order-cancel-row {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--line);
+  margin-top: 0.25rem;
+}
+
+.cancel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.cancel-dialog {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.cancel-message {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.cancel-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }
 </style>

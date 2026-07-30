@@ -254,11 +254,45 @@ const getDownloadUrl = async (req, res, next) => {
     }
 };
 
+const cancelMyOrder = async (req, res, next) => {
+    try {
+        const orderId = parseObjectId(req.params.id);
+        if (!orderId) {
+            res.status(400);
+            return next(new Error('Invalid order ID'));
+        }
+
+        const order = await Order.findOne({ _id: orderId, buyer: req.user._id });
+        if (!order) {
+            res.status(404);
+            return next(new Error('Order not found'));
+        }
+
+        if (order.status !== 'pending') {
+            res.status(400);
+            return next(new Error('Only pending orders can be cancelled'));
+        }
+
+        order.status = 'cancelled';
+        order.paymentStatus = 'failed';
+        await order.save();
+
+        const populatedOrder = await Order.findById(order._id)
+            .populate('items.book', 'title coverImages')
+            .populate('buyer', '_id username displayName avatar');
+
+        res.json(populatedOrder);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createOrder,
     getMyOrders,
     getOrderById,
     updateOrderStatus,
     getSellerOrders,
-    getDownloadUrl
+    getDownloadUrl,
+    cancelMyOrder
 };

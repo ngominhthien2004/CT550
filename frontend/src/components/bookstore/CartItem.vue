@@ -13,31 +13,15 @@ const props = defineProps({
 
 const bookStore = useBookStore()
 const { showError } = useToast()
-const updating = ref(false)
 const removing = ref(false)
 
 const book = computed(() => props.item?.book || {})
 const price = computed(() => Number(props.item?.priceAtAdd || book.value?.price || 0))
-const lineTotal = computed(() => price.value * Number(props.item?.quantity || 1))
 const coverUrl = computed(() => {
   const images = book.value?.coverImages
   if (Array.isArray(images) && images.length > 0) return images[0]
   return book.value?.coverImage || '/default-book-cover.png'
 })
-
-async function updateQuantity(delta) {
-  const newQty = Number(props.item?.quantity || 1) + delta
-  if (newQty < 1) return
-
-  updating.value = true
-  try {
-    await bookStore.updateCartItemQuantity(props.item._id, newQty)
-  } catch (error) {
-    showError(translateError(error, null, 'error.saveFailed'))
-  } finally {
-    updating.value = false
-  }
-}
 
 async function remove() {
   removing.value = true
@@ -60,16 +44,6 @@ async function remove() {
       <span class="cart-item-price">${{ price.toFixed(2) }}</span>
     </div>
     <div class="cart-item-actions">
-      <div class="qty-control">
-        <button type="button" class="qty-btn" :disabled="updating" @click="updateQuantity(-1)">
-          <i class="fa-solid fa-minus"></i>
-        </button>
-        <span class="qty-value">{{ item.quantity }}</span>
-        <button type="button" class="qty-btn" :disabled="updating" @click="updateQuantity(1)">
-          <i class="fa-solid fa-plus"></i>
-        </button>
-      </div>
-      <span class="line-total">${{ lineTotal.toFixed(2) }}</span>
       <button type="button" class="btn btn-outline-danger btn-sm remove-btn" :disabled="removing" @click="remove">
         <i class="fa-solid fa-trash-can"></i>
       </button>
@@ -127,40 +101,6 @@ async function remove() {
   justify-content: flex-end;
 }
 
-.qty-control {
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.qty-btn {
-  border: none;
-  background: var(--surface-alt);
-  color: var(--text);
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-}
-
-.qty-btn:disabled {
-  opacity: 0.5;
-}
-
-.qty-value {
-  min-width: 32px;
-  text-align: center;
-  font-weight: 600;
-}
-
-.line-total {
-  font-weight: 700;
-  font-size: 1.05rem;
-  min-width: 80px;
-  text-align: right;
-}
-
 .remove-btn {
   border-radius: 999px;
   width: 36px;
@@ -178,7 +118,7 @@ async function remove() {
 
   .cart-item-actions {
     width: 100%;
-    justify-content: space-between;
+    justify-content: flex-end;
   }
 }
 </style>

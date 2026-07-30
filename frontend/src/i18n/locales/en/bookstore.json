@@ -31,6 +31,8 @@
   "orderId": "Order ID",
   "trackOrder": "Track Order",
   "cancelOrder": "Cancel Order",
+  "cancelOrderConfirm": "Are you sure you want to cancel this order?",
+  "orderCancelled": "Order cancelled",
   "price": "Price",
   "author": "Author",
   "publisher": "Publisher",
