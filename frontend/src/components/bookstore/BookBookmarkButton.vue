@@ -93,8 +93,9 @@ async function handleToggle(e) {
 
 /* Detail variant — pill button on the detail page */
 .book-bookmark-btn--detail {
-  position: static;
+  position: relative;
   width: auto;
+  min-width: 150px;
   height: auto;
   padding: 0.6rem 1.2rem;
   background: var(--surface-alt);
@@ -102,6 +103,7 @@ async function handleToggle(e) {
   color: var(--text);
   font-size: 0.9rem;
   gap: 0.5rem;
+  justify-content: center;
 }
 
 .book-bookmark-btn--detail:hover {

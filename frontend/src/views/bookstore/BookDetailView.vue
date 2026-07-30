@@ -34,15 +34,6 @@ const discountPercent = computed(() => {
 })
 const isUnlimited = computed(() => book.value?.stock === -1)
 
-const stockText = computed(() => {
-  if (isUnlimited.value) return t('bookstore.unlimited')
-  const n = book.value?.stock
-  if (n === undefined || n === null) return ''
-  if (n === 0) return t('bookstore.outOfStock')
-  if (n === 1) return `1 ${t('bookstore.book')}`     // singular
-  return `${n} ${t('bookstore.books')}`               // plural
-})
-
 // Format prices using the current locale + book currency so the UI
 // reads naturally across en/vi/ja and respects non-USD currencies.
 function formatPrice(value) {
@@ -144,11 +135,8 @@ onMounted(() => {
             </div>
           </div>
 
-          <!-- BLOCK 2: Stock & Add to Cart (action) -->
+          <!-- BLOCK 2: Add to Cart (action) -->
           <div class="detail-purchase">
-            <p class="detail-stock" :class="{ 'detail-stock--empty': !isUnlimited && book.stock === 0 }">
-              {{ $t('bookstore.stock') }} <strong>{{ stockText }}</strong>
-            </p>
             <div class="detail-actions">
               <AddToCartButton
                 :book-id="book._id"
