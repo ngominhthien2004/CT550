@@ -93,8 +93,14 @@ app.use('/api/book-service/book-bookmarks', bookmarkRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const server = app.listen(PORT, () => {
-    console.log(`Book service is running on port ${PORT}`);
-});
+const connectDB = require('./config/db');
 
-module.exports = { app, server };
+connectDB().then(() => {
+    const server = app.listen(PORT, () => {
+        console.log(`Book service is running on port ${PORT}`);
+    });
+    module.exports = { app, server };
+}).catch((error) => {
+    console.error('Failed to start book-service:', error);
+    process.exit(1);
+});
