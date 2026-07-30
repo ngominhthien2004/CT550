@@ -169,17 +169,13 @@ function handleEbookDrop(e) {
     </div>
 
     <div class="row g-3">
-      <div class="col-md-4">
+      <div class="col-md-6">
         <label class="form-label">Price ($)</label>
         <input v-model.number="form.price" type="number" class="form-control" min="0" step="0.01" required />
       </div>
-      <div class="col-md-4">
+      <div class="col-md-6">
         <label class="form-label">Original Price ($)</label>
         <input v-model.number="form.originalPrice" type="number" class="form-control" min="0" step="0.01" />
-      </div>
-      <div class="col-md-4">
-        <label class="form-label">Stock (-1 for unlimited)</label>
-        <input v-model.number="form.stock" type="number" class="form-control" min="-1" />
       </div>
     </div>
 
