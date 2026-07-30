@@ -354,6 +354,39 @@ const getSellerPublishedBooks = async (req, res, next) => {
     }
 };
 
+const getRelatedBooks = async (req, res, next) => {
+    try {
+        const { bookId, tags, limit } = req.query;
+
+        if (!bookId) {
+            return res.status(400).json({ success: false, message: 'bookId query parameter is required' });
+        }
+
+        const query = {
+            isActive: true,
+            status: 'published',
+            _id: { $ne: bookId }
+        };
+
+        if (tags) {
+            const tagArray = tags.split(',').map((t) => t.trim().toLowerCase()).filter(Boolean);
+            if (tagArray.length > 0) {
+                query.tags = { $in: tagArray };
+            }
+        }
+
+        const limitNum = Math.min(Math.max(parsePositiveInt(limit, 8), 1), 20);
+        const books = await Book.find(query)
+            .populate('seller', '_id username displayName avatar')
+            .sort({ soldCount: -1 })
+            .limit(limitNum);
+
+        res.json({ success: true, data: books });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     listBooks,
     getBookById,
@@ -361,5 +394,6 @@ module.exports = {
     updateBook,
     deleteBook,
     getMyBooks,
-    getSellerPublishedBooks
+    getSellerPublishedBooks,
+    getRelatedBooks
 };

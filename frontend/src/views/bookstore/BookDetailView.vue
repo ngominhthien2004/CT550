@@ -6,6 +6,7 @@ import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import AddToCartButton from '@/components/bookstore/AddToCartButton.vue'
 import BookBookmarkButton from '@/components/bookstore/BookBookmarkButton.vue'
 import ReviewSection from '@/components/bookstore/ReviewSection.vue'
+import RelatedBooksSection from '@/components/bookstore/RelatedBooksSection.vue'
 import StarRating from '@/components/bookstore/StarRating.vue'
 import { useBookStore } from '@/stores/book.store.js'
 
@@ -176,6 +177,8 @@ onMounted(() => {
       </div>
       <!-- Reviews Section -->
       <ReviewSection v-if="book" :book-id="book._id" />
+      <!-- Related Books Section -->
+      <RelatedBooksSection v-if="book" :book-id="book._id" :tags="book.tags || []" />
     </section>
   </BookstoreLayout>
 </template>

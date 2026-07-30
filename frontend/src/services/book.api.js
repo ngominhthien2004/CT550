@@ -158,6 +158,14 @@ export function deleteReview(reviewId) {
   return bookServiceApi.delete(`/reviews/${reviewId}`)
 }
 
+// --- Related Books ---
+export const bookApi = {
+  getRelatedBooks(bookId, tags = []) {
+    const tagStr = Array.isArray(tags) ? tags.join(',') : tags
+    return bookServiceApi.get('/books/related', { params: { bookId, tags: tagStr } })
+  },
+}
+
 // --- Book Bookmarks ---
 export const bookBookmarkApi = {
   toggle: (bookId) => bookServiceApi.post('/book-bookmarks/toggle', { bookId }),

@@ -161,5 +161,7 @@
   "publishedBooks": "公開済みの本",
   "noBooksFromSeller": "このセラーはまだ本を公開していません",
   "sellerNotFound": "セラーが見つかりません",
-  "booksCount": "{count}冊"
+  "booksCount": "{count}冊",
+  "relatedBooks": "関連する本",
+  "noRelatedBooks": "関連する本は見つかりませんでした"
 }

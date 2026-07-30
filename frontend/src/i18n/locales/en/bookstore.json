@@ -161,5 +161,7 @@
   "publishedBooks": "Published Books",
   "noBooksFromSeller": "This seller hasn't published any books yet",
   "sellerNotFound": "Seller not found",
-  "booksCount": "{count} books"
+  "booksCount": "{count} books",
+  "relatedBooks": "Related Books",
+  "noRelatedBooks": "No related books found"
 }

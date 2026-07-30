@@ -161,5 +161,7 @@
   "publishedBooks": "Sách đã xuất bản",
   "noBooksFromSeller": "Người bán này chưa xuất bản cuốn sách nào",
   "sellerNotFound": "Không tìm thấy người bán",
-  "booksCount": "{count} cuốn sách"
+  "booksCount": "{count} cuốn sách",
+  "relatedBooks": "Sách liên quan",
+  "noRelatedBooks": "Không tìm thấy sách liên quan"
 }

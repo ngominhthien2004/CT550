@@ -7,7 +7,8 @@ const {
     createBook,
     updateBook,
     deleteBook,
-    getMyBooks
+    getMyBooks,
+    getRelatedBooks
 } = require('../controllers/book.controller');
 
 const router = express.Router();
@@ -19,6 +20,7 @@ const bookUpload = upload.fields([
 
 router.get('/', listBooks);
 router.get('/my-books', protect, getMyBooks);
+router.get('/related', getRelatedBooks);
 router.get('/:id', getBookById);
 router.post('/', protect, bookUpload, createBook);
 router.put('/:id', protect, bookUpload, updateBook);
