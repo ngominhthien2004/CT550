@@ -18,6 +18,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  showQuantity: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const { t } = useI18n()
@@ -63,7 +67,7 @@ async function addToCart() {
 
 <template>
   <div class="add-to-cart">
-    <div class="qty-control" role="group" :aria-label="t('bookstore.quantityLabel')">
+    <div v-if="showQuantity" class="qty-control" role="group" :aria-label="t('bookstore.quantityLabel')">
       <button
         type="button"
         class="qty-btn"

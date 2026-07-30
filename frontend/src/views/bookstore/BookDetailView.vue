@@ -141,7 +141,7 @@ onMounted(() => {
               <AddToCartButton
                 :book-id="book._id"
                 :disabled="book.status !== 'published' || (!isUnlimited && book.stock === 0)"
-                :max-quantity="isUnlimited ? 99 : (book.stock || 0)"
+                :show-quantity="false"
               />
               <BookBookmarkButton :book="book" variant="detail" />
             </div>
