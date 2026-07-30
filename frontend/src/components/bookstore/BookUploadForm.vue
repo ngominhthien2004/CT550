@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
+import { getTags } from '@/services/api.js'
 
 const props = defineProps({
   initialBook: {
@@ -13,6 +14,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['submit'])
+
+const MAX_TAGS = 10
 
 const form = ref({
   title: '',
@@ -33,6 +36,14 @@ const isDraggingEbook = ref(false)
 
 const coverInputRef = ref(null)
 const ebookInputRef = ref(null)
+
+// Tag autocomplete state
+const tagSuggestions = ref([])
+const tagSuggestionLoading = ref(false)
+const showTagSuggestions = ref(false)
+const tagWrapperRef = ref(null)
+
+let tagDebounceTimer = null
 
 const isEdit = computed(() => Boolean(props.initialBook))
 
@@ -57,6 +68,33 @@ watch(
   { immediate: true },
 )
 
+watch(
+  () => form.value.tagInput,
+  (keyword) => {
+    clearTimeout(tagDebounceTimer)
+    const trimmed = String(keyword || '').trim()
+    if (!trimmed) {
+      tagSuggestions.value = []
+      tagSuggestionLoading.value = false
+      showTagSuggestions.value = false
+      return
+    }
+    tagSuggestionLoading.value = true
+    showTagSuggestions.value = true
+    tagDebounceTimer = setTimeout(async () => {
+      try {
+        const { data } = await getTags({ q: trimmed, limit: 8 })
+        const items = Array.isArray(data) ? data : Array.isArray(data?.tags) ? data.tags : []
+        tagSuggestions.value = items.filter((s) => !form.value.tags.includes(s.name))
+      } catch {
+        tagSuggestions.value = []
+      } finally {
+        tagSuggestionLoading.value = false
+      }
+    }, 180)
+  },
+)
+
 function onCoverChange(event) {
   const file = event.target.files?.[0]
   if (!file) return
@@ -76,27 +114,50 @@ function onEbookChange(event) {
   ebookName.value = file.name
 }
 
-function addTag() {
-  const raw = String(form.value.tagInput || '').trim()
-  if (!raw) return
+function normalizeTag(raw) {
+  const trimmed = String(raw || '').trim()
+  if (!trimmed) return ''
+  return trimmed
+    .replace(/^#/, '')
+    .replace(/[\s-]+/g, '_')
+    .toLowerCase()
+}
 
-  const tags = raw.split(',').map((t) => t.trim().replace(/\s+/g, '_').toLowerCase()).filter(Boolean)
-  for (const tag of tags) {
-    if (!form.value.tags.includes(tag)) {
-      form.value.tags.push(tag)
-    }
-  }
+function commitTag(raw) {
+  const tag = normalizeTag(raw)
+  if (!tag || form.value.tags.includes(tag)) return
+  if (form.value.tags.length >= MAX_TAGS) return
+  form.value.tags.push(tag)
   form.value.tagInput = ''
+  tagSuggestions.value = []
+  showTagSuggestions.value = false
+}
+
+function handleTagKeydown(event) {
+  if (event.key === 'Enter' || event.key === ',') {
+    event.preventDefault()
+    commitTag(form.value.tagInput)
+  } else if (event.key === ' ') {
+    if (String(form.value.tagInput || '').trim()) {
+      event.preventDefault()
+      commitTag(form.value.tagInput)
+    }
+  } else if (event.key === 'Escape') {
+    showTagSuggestions.value = false
+  }
+}
+
+function selectSuggestion(name) {
+  commitTag(name)
 }
 
 function removeTag(index) {
   form.value.tags.splice(index, 1)
 }
 
-function handleTagKeydown(event) {
-  if (event.key === 'Enter' || event.key === ',') {
-    event.preventDefault()
-    addTag()
+function onTagInputBlur(event) {
+  if (!event.currentTarget?.contains(event.relatedTarget)) {
+    showTagSuggestions.value = false
   }
 }
 
@@ -164,20 +225,48 @@ function handleEbookDrop(e) {
 
     <div>
       <label class="form-label">Tags</label>
-      <div class="tag-input-wrap">
+      <div ref="tagWrapperRef" class="tag-input-wrap" @focusout="onTagInputBlur">
         <input
           v-model="form.tagInput"
           type="text"
-          class="form-control"
-          placeholder="Add tags separated by comma"
+          class="form-control tag-input-field"
+          :placeholder="form.tags.length >= MAX_TAGS ? 'Max tags reached' : 'Type a tag and press Enter'"
+          :disabled="form.tags.length >= MAX_TAGS"
           @keydown="handleTagKeydown"
+          @focus="form.tagInput.trim() && (showTagSuggestions = true)"
         />
-        <button type="button" class="btn btn-outline-secondary btn-sm" @click="addTag">Add</button>
+        <span class="counter-badge">{{ form.tags.length }}/{{ MAX_TAGS }}</span>
+
+        <!-- Suggestions dropdown -->
+        <div v-if="showTagSuggestions" class="tag-suggestion-panel" role="listbox" aria-label="Tag suggestions">
+          <p v-if="tagSuggestionLoading" class="suggestion-loading">Loading...</p>
+          <template v-else>
+            <button
+              v-for="suggestion in tagSuggestions"
+              :key="suggestion.name"
+              type="button"
+              class="tag-suggestion-item"
+              @mousedown.prevent="selectSuggestion(suggestion.name)"
+            >
+              <span class="tag-suggestion-name">#{{ suggestion.name }}</span>
+              <span class="tag-suggestion-count">{{ suggestion.usageCount || 0 }} uses</span>
+            </button>
+            <p v-if="!tagSuggestionLoading && tagSuggestions.length === 0" class="suggestion-empty">
+              No matching tags
+            </p>
+          </template>
+        </div>
       </div>
-      <div class="tag-list">
-        <span v-for="(tag, index) in form.tags" :key="tag" class="tag-chip">
-          {{ tag }}
-          <button type="button" class="tag-remove" @click="removeTag(index)"><i class="fa-solid fa-xmark"></i></button>
+
+      <div v-if="form.tags.length > 0" class="tag-list">
+        <span
+          v-for="(tag, index) in form.tags"
+          :key="`${tag}-${index}`"
+          class="tag-chip"
+          @click="removeTag(index)"
+        >
+          #{{ tag }}
+          <span class="tag-remove-x">&times;</span>
         </span>
       </div>
     </div>
@@ -265,12 +354,25 @@ function handleEbookDrop(e) {
 }
 
 .tag-input-wrap {
+  position: relative;
   display: flex;
   gap: 0.5rem;
 }
 
-.tag-input-wrap .form-control {
+.tag-input-wrap .tag-input-field {
   flex: 1;
+  padding-right: 3.5rem;
+}
+
+.counter-badge {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 0.8rem;
+  pointer-events: none;
+  user-select: none;
 }
 
 .tag-list {
@@ -290,15 +392,74 @@ function handleEbookDrop(e) {
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.tag-remove {
-  border: none;
-  background: transparent;
-  color: inherit;
+.tag-chip:hover {
+  background: #fce8e6;
+  border-color: #ea4335;
+  color: #c5221f;
+}
+
+.tag-remove-x {
+  font-size: 0.9rem;
+  line-height: 1;
+  font-weight: bold;
+}
+
+/* === Suggestion panel === */
+.tag-suggestion-panel {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  padding: 0.35rem;
+  box-shadow: var(--shadow-md);
+  display: grid;
+  gap: 0.2rem;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.tag-suggestion-item {
+  border: 0;
+  border-radius: 4px;
+  text-align: left;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.86rem;
+  background: var(--surface);
+  color: var(--text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   cursor: pointer;
-  padding: 0;
-  font-size: 0.75rem;
+}
+
+.tag-suggestion-item:hover {
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+.tag-suggestion-name {
+  font-weight: 500;
+}
+
+.tag-suggestion-count {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.suggestion-loading,
+.suggestion-empty {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0;
+  padding: 0.5rem 0.65rem;
 }
 
 .preview-wrap {
