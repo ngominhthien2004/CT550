@@ -48,7 +48,7 @@ async function download() {
     <div class="order-item-info">
       <h4 class="order-item-title">{{ book.title }}</h4>
       <p class="order-item-seller">{{ book.seller?.displayName || book.seller?.username }}</p>
-      <span class="order-item-price">${{ Number(item.priceAtPurchase || item.priceAtAdd || 0).toFixed(2) }}</span>
+      <span class="order-item-price">${{ Number(item.price || 0).toFixed(2) }}</span>
     </div>
     <div class="order-item-actions">
       <button v-if="isDownloadable" type="button" class="btn btn-primary btn-sm" @click="download">
