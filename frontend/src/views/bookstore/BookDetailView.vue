@@ -82,7 +82,7 @@ const sellerInfo = computed(() => {
 function visitSeller() {
   const sellerId = sellerInfo.value?.id
   if (!sellerId) return
-  router.push(`/account?user=${sellerId}`)
+  router.push({ name: 'book-seller-public', params: { id: sellerId } })
 }
 
 function onCoverError(e) {

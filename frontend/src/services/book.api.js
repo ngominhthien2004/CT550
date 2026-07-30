@@ -133,6 +133,14 @@ export function updateSellerProfile(payload) {
   return bookServiceApi.put('/seller/profile', payload)
 }
 
+export function getPublicSellerProfile(sellerId) {
+  return bookServiceApi.get(`/seller/public/${sellerId}`)
+}
+
+export function getSellerPublishedBooks(sellerId, params = {}) {
+  return bookServiceApi.get(`/seller/public/${sellerId}/books`, { params })
+}
+
 // ── Reviews ────────────────────────────────────────────────────────
 export function getBookReviews(bookId, params = {}) {
   return bookServiceApi.get(`/books/${bookId}/reviews`, { params })

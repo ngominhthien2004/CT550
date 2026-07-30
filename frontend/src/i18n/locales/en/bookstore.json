@@ -156,5 +156,10 @@
   "removeBookmark": "Remove bookmark",
   "bookmarks": "Bookmarks",
   "noBookmarksYet": "No bookmarks yet",
-  "loginToBookmark": "Log in to bookmark this book"
+  "loginToBookmark": "Log in to bookmark this book",
+  "sellerStorefront": "Seller Store",
+  "publishedBooks": "Published Books",
+  "noBooksFromSeller": "This seller hasn't published any books yet",
+  "sellerNotFound": "Seller not found",
+  "booksCount": "{count} books"
 }

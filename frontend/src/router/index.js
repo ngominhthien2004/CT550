@@ -136,6 +136,12 @@ const routes = [
     meta: { title: 'Book Store' },
   },
   {
+    path: '/bookstore/seller/:id',
+    name: 'book-seller-public',
+    component: () => import('@/views/bookstore/SellerStorefrontView.vue'),
+    meta: { title: 'Seller Store' },
+  },
+  {
     path: '/bookstore/:id',
     name: 'book-detail',
     component: () => import('../views/bookstore/BookDetailView.vue'),

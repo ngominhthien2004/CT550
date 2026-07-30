@@ -60,7 +60,17 @@ function navigateToDetail() {
     </div>
     <div class="book-meta">
       <h3 class="book-title">{{ book.title }}</h3>
-      <p class="book-seller">{{ book.seller?.displayName || book.seller?.username || t('bookstore.unknownSeller') }}</p>
+      <p class="book-seller">
+        <router-link
+          v-if="book.seller?._id"
+          :to="{ name: 'book-seller-public', params: { id: book.seller._id } }"
+          class="seller-link"
+          @click.stop
+        >
+          {{ book.seller.displayName || book.seller.username || t('bookstore.unknownSeller') }}
+        </router-link>
+        <span v-else>{{ t('bookstore.unknownSeller') }}</span>
+      </p>
       <div v-if="avgRating > 0" class="book-rating">
         <StarRating :value="avgRating" :max="5" size="small" />
         <span>{{ avgRating.toFixed(1) }}</span>
@@ -142,6 +152,16 @@ function navigateToDetail() {
   font-size: 0.8rem;
   color: var(--muted);
   margin: 0 0 0.45rem;
+}
+
+.seller-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.seller-link:hover {
+  color: var(--brand, #0096fa);
+  text-decoration: underline;
 }
 
 .book-price-row {

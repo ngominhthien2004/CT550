@@ -156,5 +156,10 @@
   "removeBookmark": "ブックマークを解除",
   "bookmarks": "ブックマーク",
   "noBookmarksYet": "ブックマークはまだありません",
-  "loginToBookmark": "ログインしてこの本をブックマーク"
+  "loginToBookmark": "ログインしてこの本をブックマーク",
+  "sellerStorefront": "セラーストア",
+  "publishedBooks": "公開済みの本",
+  "noBooksFromSeller": "このセラーはまだ本を公開していません",
+  "sellerNotFound": "セラーが見つかりません",
+  "booksCount": "{count}冊"
 }

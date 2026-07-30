@@ -156,5 +156,10 @@
   "removeBookmark": "Bỏ đánh dấu",
   "bookmarks": "Đánh dấu",
   "noBookmarksYet": "Chưa có đánh dấu nào",
-  "loginToBookmark": "Đăng nhập để đánh dấu cuốn sách này"
+  "loginToBookmark": "Đăng nhập để đánh dấu cuốn sách này",
+  "sellerStorefront": "Cửa hàng Người bán",
+  "publishedBooks": "Sách đã xuất bản",
+  "noBooksFromSeller": "Người bán này chưa xuất bản cuốn sách nào",
+  "sellerNotFound": "Không tìm thấy người bán",
+  "booksCount": "{count} cuốn sách"
 }

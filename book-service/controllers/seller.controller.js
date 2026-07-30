@@ -61,8 +61,24 @@ const becomeSeller = async (req, res, next) => {
     }
 };
 
+const getPublicSellerProfile = async (req, res, next) => {
+    try {
+        const profile = await SellerProfile.findOne({ user: req.params.sellerId })
+            .populate('user', '_id username displayName avatar');
+
+        if (!profile) {
+            return res.status(404).json({ success: false, message: 'Seller not found' });
+        }
+
+        res.json({ success: true, data: profile });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getMyProfile,
     updateProfile,
-    becomeSeller
+    becomeSeller,
+    getPublicSellerProfile
 };

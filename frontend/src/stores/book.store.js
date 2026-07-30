@@ -21,6 +21,8 @@ import {
   becomeSeller,
   getSellerProfile,
   updateSellerProfile,
+  getPublicSellerProfile,
+  getSellerPublishedBooks,
   getBookReviews,
   createReview,
   updateReview,
@@ -108,6 +110,15 @@ export const useBookStore = defineStore('book', {
     sellerLoading: false,
     sellerError: '',
     isSeller: false,
+
+    // Public seller storefront
+    publicSellerProfile: null,
+    publicSellerLoading: false,
+    publicSellerError: null,
+    sellerPublishedBooks: [],
+    sellerPublishedBooksLoading: false,
+    sellerPublishedBooksError: null,
+    sellerPublishedBooksPagination: { page: 1, limit: 12, total: 0, pages: 0 },
 
     // Reviews
     reviews: [],
@@ -434,6 +445,33 @@ export const useBookStore = defineStore('book', {
         throw error
       } finally {
         this.sellerLoading = false
+      }
+    },
+
+    async fetchPublicSellerProfile(sellerId) {
+      this.publicSellerLoading = true
+      this.publicSellerError = null
+      try {
+        const { data } = await getPublicSellerProfile(sellerId)
+        this.publicSellerProfile = data.data
+      } catch (err) {
+        this.publicSellerError = err.response?.data?.message || err.message
+      } finally {
+        this.publicSellerLoading = false
+      }
+    },
+
+    async fetchSellerPublishedBooks(sellerId, page = 1, limit = 12) {
+      this.sellerPublishedBooksLoading = true
+      this.sellerPublishedBooksError = null
+      try {
+        const { data } = await getSellerPublishedBooks(sellerId, { page, limit })
+        this.sellerPublishedBooks = data.data
+        this.sellerPublishedBooksPagination = data.pagination
+      } catch (err) {
+        this.sellerPublishedBooksError = err.response?.data?.message || err.message
+      } finally {
+        this.sellerPublishedBooksLoading = false
       }
     },
 

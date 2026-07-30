@@ -321,11 +321,45 @@ const getMyBooks = async (req, res, next) => {
     }
 };
 
+const getSellerPublishedBooks = async (req, res, next) => {
+    try {
+        const page = parsePositiveInt(req.query.page, 1);
+        const limit = parsePositiveInt(req.query.limit, 12);
+        const skip = (page - 1) * limit;
+
+        const query = { seller: req.params.sellerId, status: 'published', isActive: true };
+
+        const [books, total] = await Promise.all([
+            Book.find(query)
+                .populate('seller', '_id username displayName avatar')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            Book.countDocuments(query)
+        ]);
+
+        res.json({
+            success: true,
+            data: books,
+            pagination: {
+                page,
+                limit,
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     listBooks,
     getBookById,
     createBook,
     updateBook,
     deleteBook,
-    getMyBooks
+    getMyBooks,
+    getSellerPublishedBooks
 };
