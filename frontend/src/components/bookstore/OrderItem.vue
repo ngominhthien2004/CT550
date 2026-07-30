@@ -48,7 +48,10 @@ async function download() {
     <div class="order-item-info">
       <h4 class="order-item-title">{{ book.title }}</h4>
       <p class="order-item-seller">{{ book.seller?.displayName || book.seller?.username }}</p>
-      <span class="order-item-price">${{ Number(item.price || 0).toFixed(2) }}</span>
+      <span class="order-item-price">
+        ${{ Number(item.price || 0).toFixed(2) }}
+        <span v-if="item.quantity > 1" class="order-item-qty">× {{ item.quantity }}</span>
+      </span>
     </div>
     <div class="order-item-actions">
       <button v-if="isDownloadable" type="button" class="btn btn-primary btn-sm" @click="download">
@@ -99,6 +102,13 @@ async function download() {
   font-weight: 700;
   color: var(--accent);
   font-size: 0.9rem;
+}
+
+.order-item-qty {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-left: 0.35rem;
 }
 
 .order-item-actions {
