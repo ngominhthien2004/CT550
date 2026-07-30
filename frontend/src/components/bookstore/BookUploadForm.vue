@@ -18,9 +18,8 @@ const form = ref({
   title: '',
   description: '',
   price: 0,
-  originalPrice: 0,
   stock: -1,
-  status: 'draft',
+  status: 'published',
   tags: [],
   tagInput: '',
   coverImage: null,
@@ -45,9 +44,8 @@ watch(
       title: book.title || '',
       description: book.description || '',
       price: book.price || 0,
-      originalPrice: book.originalPrice || book.price || 0,
       stock: Number.isFinite(book.stock) ? book.stock : -1,
-      status: book.status || 'draft',
+      status: book.status || 'published',
       tags: Array.isArray(book.tags) ? book.tags : [],
       tagInput: '',
       coverImage: null,
@@ -149,18 +147,9 @@ function handleEbookDrop(e) {
 
 <template>
   <form class="upload-form d-grid gap-3" @submit.prevent="submit">
-    <div class="row g-3">
-      <div class="col-md-8">
-        <label class="form-label">Title</label>
-        <input v-model="form.title" type="text" class="form-control" placeholder="Book title" required />
-      </div>
-      <div class="col-md-4">
-        <label class="form-label">Status</label>
-        <select v-model="form.status" class="form-select">
-          <option value="draft">Draft</option>
-          <option value="published">Published</option>
-        </select>
-      </div>
+    <div>
+      <label class="form-label">Title</label>
+      <input v-model="form.title" type="text" class="form-control" placeholder="Book title" required />
     </div>
 
     <div>
@@ -168,15 +157,9 @@ function handleEbookDrop(e) {
       <textarea v-model="form.description" class="form-control" rows="4" placeholder="Tell readers what this book is about"></textarea>
     </div>
 
-    <div class="row g-3">
-      <div class="col-md-6">
-        <label class="form-label">Price ($)</label>
-        <input v-model.number="form.price" type="number" class="form-control" min="0" step="0.01" required />
-      </div>
-      <div class="col-md-6">
-        <label class="form-label">Original Price ($)</label>
-        <input v-model.number="form.originalPrice" type="number" class="form-control" min="0" step="0.01" />
-      </div>
+    <div>
+      <label class="form-label">Price ($)</label>
+      <input v-model.number="form.price" type="number" class="form-control" min="0" step="0.01" required />
     </div>
 
     <div>
