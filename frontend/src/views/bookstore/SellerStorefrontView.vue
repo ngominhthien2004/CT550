@@ -61,7 +61,7 @@ watch(
 
 <template>
   <BookstoreLayout>
-    <div class="bookstore-page page-block">
+    <div class="bookstore-page page-block p-3 p-md-4">
       <!-- Loading state -->
       <div v-if="loading" class="seller-loading">
         <div class="spinner-border text-primary" role="status"></div>
@@ -139,6 +139,11 @@ watch(
 </template>
 
 <style scoped>
+.bookstore-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
 .seller-loading {
   display: flex;
   justify-content: center;
@@ -201,15 +206,16 @@ watch(
   display: flex;
   align-items: flex-start;
   gap: 1.5rem;
-  padding: 1.5rem;
+  padding: 2rem;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 16px;
+  margin-bottom: 2rem;
 }
 
 .seller-avatar {
-  width: 64px;
-  height: 64px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
@@ -247,7 +253,7 @@ watch(
 /* ── Books section ── */
 .seller-books-section {
   display: grid;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .seller-books-section .bookstore-section-head {
@@ -310,11 +316,12 @@ watch(
     flex-direction: column;
     align-items: center;
     text-align: center;
+    padding: 1.5rem;
   }
 
   .seller-avatar {
-    width: 80px;
-    height: 80px;
+    width: 96px;
+    height: 96px;
   }
 }
 </style>
