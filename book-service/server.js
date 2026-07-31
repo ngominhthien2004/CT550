@@ -1,6 +1,6 @@
 const express = require('express');
-const cors = require('cors');
 const helmet = require('helmet');
+const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
@@ -93,14 +93,19 @@ app.use('/api/book-service/book-bookmarks', bookmarkRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const connectDB = require('./config/db');
+// Wait for the MongoDB connection from index.js before starting the server.
+// index.js calls connectDB() before requiring server.js, but mongoose.connect
+// is async. We listen for the 'connected' event to know when it's ready.
+if (mongoose.connection.readyState === 1) {
+    // Already connected
+    startServer();
+} else {
+    mongoose.connection.once('connected', startServer);
+}
 
-connectDB().then(() => {
+function startServer() {
     const server = app.listen(PORT, () => {
         console.log(`Book service is running on port ${PORT}`);
     });
     module.exports = { app, server };
-}).catch((error) => {
-    console.error('Failed to start book-service:', error);
-    process.exit(1);
-});
+}
