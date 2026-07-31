@@ -119,6 +119,10 @@ export function downloadOrderItem(orderId, itemId) {
   })
 }
 
+export function getDownloadUrl(orderId, itemId) {
+  return bookServiceApi.get(`/orders/${orderId}/download/${itemId}`)
+}
+
 // ── Checkout ───────────────────────────────────────────────────────
 export function createCheckoutSession(payload) {
   return bookServiceApi.post('/checkout', payload)

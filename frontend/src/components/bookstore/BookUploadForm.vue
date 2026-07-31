@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { getTags } from '@/services/api.js'
 
 const props = defineProps({
@@ -31,6 +31,7 @@ const form = ref({
 
 const coverPreview = ref('')
 const ebookName = ref('')
+const newPagePreviews = ref([])
 const isDraggingCover = ref(false)
 const isDraggingEbook = ref(false)
 
@@ -47,6 +48,11 @@ let tagDebounceTimer = null
 
 const isEdit = computed(() => Boolean(props.initialBook))
 
+const existingPages = computed(() => {
+  if (!props.initialBook?.pages?.length) return []
+  return [...props.initialBook.pages].sort((a, b) => a.pageNumber - b.pageNumber)
+})
+
 watch(
   () => props.initialBook,
   (book) => {
@@ -62,8 +68,8 @@ watch(
       coverImage: null,
       ebookFile: null,
     }
-    coverPreview.value = book.coverImage || ''
-    ebookName.value = book.ebookFileName || ''
+    coverPreview.value = book.coverImages?.[0] || ''
+    ebookName.value = book.ebookFile?.originalName || ''
   },
   { immediate: true },
 )
@@ -107,11 +113,23 @@ function onCoverChange(event) {
 }
 
 function onEbookChange(event) {
-  const file = event.target.files?.[0]
-  if (!file) return
+  const files = Array.from(event.target.files || [])
+  if (!files.length) return
 
-  form.value.ebookFile = file
-  ebookName.value = file.name
+  // Clean up old previews
+  newPagePreviews.value.forEach(p => URL.revokeObjectURL(p.url))
+  newPagePreviews.value = []
+
+  form.value.ebookFile = files.length === 1 ? files[0] : files
+  ebookName.value = files.length === 1 ? files[0].name : `${files.length} images`
+
+  // Create previews for image files (not ZIPs)
+  const imageFiles = files.filter(f => f.type.startsWith('image/'))
+  newPagePreviews.value = imageFiles.map((f, i) => ({
+    url: URL.createObjectURL(f),
+    name: f.name,
+    index: i + 1,
+  }))
 }
 
 function normalizeTag(raw) {
@@ -221,13 +239,21 @@ function handleEbookDragLeave() {
 function handleEbookDrop(e) {
   e.preventDefault()
   isDraggingEbook.value = false
-  const file = e.dataTransfer?.files?.[0]
-  if (!file) return
+  const files = Array.from(e.dataTransfer?.files || [])
+  if (!files.length) return
   const dt = new DataTransfer()
-  dt.items.add(file)
+  files.forEach(f => dt.items.add(f))
   const pseudoEvent = { target: { files: dt.files } }
   onEbookChange(pseudoEvent)
 }
+
+// Cleanup blob URLs on unmount
+onUnmounted(() => {
+  if (coverPreview.value?.startsWith('blob:')) {
+    URL.revokeObjectURL(coverPreview.value)
+  }
+  newPagePreviews.value.forEach(p => URL.revokeObjectURL(p.url))
+})
 </script>
 
 <template>
@@ -328,14 +354,51 @@ function handleEbookDrop(e) {
         @dragleave="handleEbookDragLeave"
         @drop="handleEbookDrop"
       >
-        <label class="form-label">E-book File</label>
-        <input ref="ebookInputRef" type="file" class="form-control" accept=".pdf,.epub,.mobi" @change="onEbookChange" />
+        <label class="form-label">Book Pages</label>
+        <p class="file-name mt-1 mb-2" style="color: var(--muted);">
+          Upload a ZIP archive of page images, or select multiple image files (JPG, PNG, GIF, WEBP).
+        </p>
+        <input
+          ref="ebookInputRef"
+          type="file"
+          class="form-control"
+          accept=".zip,image/jpeg,image/png,image/gif,image/webp"
+          multiple
+          @change="onEbookChange"
+        />
         <p v-if="ebookName" class="file-name mt-2 mb-0">
           <i class="fa-solid fa-file-lines me-1"></i> {{ ebookName }}
         </p>
         <div v-if="isDraggingEbook" class="drop-overlay">
           <i class="fa-solid fa-file-arrow-up"></i>
-          <span>Drop ebook file here</span>
+          <span>Drop book files here</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Existing pages preview (edit mode only) -->
+    <div v-if="isEdit && existingPages.length > 0" class="existing-pages-section">
+      <label class="form-label">
+        Current Pages ({{ existingPages.length }})
+        <span class="text-muted fw-normal ms-2">— upload new files above to replace</span>
+      </label>
+      <div class="existing-pages-grid">
+        <div v-for="page in existingPages" :key="page._id || page.pageNumber" class="existing-page-thumb">
+          <img :src="page.url" :alt="`Page ${page.pageNumber}`" loading="lazy" />
+          <span class="page-number-badge">{{ page.pageNumber }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- New pages preview (when selecting images) -->
+    <div v-if="newPagePreviews.length > 0" class="existing-pages-section">
+      <label class="form-label">
+        New Pages to Upload ({{ newPagePreviews.length }})
+      </label>
+      <div class="existing-pages-grid">
+        <div v-for="preview in newPagePreviews" :key="preview.index" class="existing-page-thumb">
+          <img :src="preview.url" :alt="preview.name" loading="lazy" />
+          <span class="page-number-badge">{{ preview.index }}</span>
         </div>
       </div>
     </div>
@@ -509,5 +572,49 @@ function handleEbookDrop(e) {
 .file-name {
   font-size: 0.85rem;
   color: var(--muted);
+}
+
+/* Existing pages preview */
+.existing-pages-section {
+  margin-top: 0.25rem;
+}
+
+.existing-pages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.existing-page-thumb {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.existing-page-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.page-number-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 4px;
+  line-height: 1.3;
 }
 </style>

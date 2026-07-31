@@ -1,5 +1,6 @@
 const multer = require('multer');
 const path = require('path');
+const AdmZip = require('adm-zip');
 const { v2: cloudinary } = require('cloudinary');
 const {
     getCloudinaryCloudName,
@@ -22,7 +23,7 @@ if (cloudName && apiKey && apiSecret) {
 const memoryStorage = multer.memoryStorage();
 
 const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-const allowedEbookTypes = ['application/pdf', 'application/epub+zip'];
+const allowedEbookTypes = ['application/zip'];
 
 const fileFilter = (req, file, cb) => {
     if (allowedImageTypes.includes(file.mimetype) || allowedEbookTypes.includes(file.mimetype)) {
@@ -30,7 +31,7 @@ const fileFilter = (req, file, cb) => {
     }
 
     const ext = path.extname(file.originalname || '').toLowerCase();
-    const allowedExts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.pdf', '.epub'];
+    const allowedExts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.zip'];
     if (allowedExts.includes(ext)) {
         return cb(null, true);
     }
@@ -42,7 +43,7 @@ const upload = multer({
     storage: memoryStorage,
     fileFilter,
     limits: {
-        fileSize: 50 * 1024 * 1024, // 50 MB
+        fileSize: 200 * 1024 * 1024, // 200 MB
     },
 });
 
@@ -92,8 +93,36 @@ const uploadEbook = async (buffer, filename) => {
     };
 };
 
+const uploadComicPage = async (buffer, pageNumber) => {
+    const publicId = `comic-page-${Date.now()}-${pageNumber}`;
+
+    const result = await uploadBuffer(buffer, {
+        resource_type: 'image',
+        public_id: publicId,
+        folder: 'book-service/pages',
+    });
+
+    return {
+        url: result.secure_url,
+        publicId: result.public_id,
+    };
+};
+
+function createZipFromImages(buffers, filenames) {
+    const zip = new AdmZip();
+    for (let i = 0; i < buffers.length; i++) {
+        const name = filenames[i] || `page-${i + 1}.png`;
+        const ext = path.extname(name) || '.png';
+        const entryName = `page-${String(i + 1).padStart(3, '0')}${ext}`;
+        zip.addFile(entryName, Buffer.from(buffers[i]));
+    }
+    return zip.toBuffer();
+}
+
 module.exports = {
     upload,
     uploadImage,
     uploadEbook,
+    uploadComicPage,
+    createZipFromImages,
 };

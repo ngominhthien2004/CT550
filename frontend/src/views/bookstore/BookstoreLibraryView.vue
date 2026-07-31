@@ -42,10 +42,11 @@ const purchasedBooks = computed(() => {
         orderId: order._id,
         itemId: item._id,
         title: item.book?.title || 'Untitled',
-        seller: item.book?.seller?.displayName || item.book?.seller?.username || t('bookstore.unknownSeller'),
+        seller: item.seller?.displayName || item.seller?.username || t('bookstore.unknownSeller'),
         coverImage: item.coverImage || item.book?.coverImages?.[0] || '/default-book-cover.png',
         price: Number(item.price || 0).toFixed(2),
         purchaseDate: order.createdAt,
+        ebookFileUrl: item.ebookFileUrl || null,
       })
     }
   }
@@ -64,7 +65,7 @@ async function downloadBook(book) {
   downloadingItemId.value = book.itemId
 
   try {
-    await bookStore.downloadPaidBook(book.orderId, book.itemId)
+    await bookStore.downloadPaidBook(book.orderId, book.itemId, book.title)
     showSuccess('Download started')
   } catch (error) {
     showError(translateError(error, null, 'error.loadFailed'))
@@ -149,16 +150,26 @@ onMounted(() => {
             <p class="library-card-date">
               {{ t('bookstore.purchasedOn') }} {{ formatShortDate(book.purchaseDate) }}
             </p>
-            <button
-              type="button"
-              class="btn action-pill action-pill--post action-pill--small library-card-download"
-              :disabled="downloadingItemId === book.itemId"
-              @click="downloadBook(book)"
-            >
-              <i v-if="downloadingItemId === book.itemId" class="fa-solid fa-spinner fa-spin me-1"></i>
-              <i v-else class="fa-solid fa-download me-1"></i>
-              {{ downloadingItemId === book.itemId ? t('bookstore.loading') : t('bookstore.download') }}
-            </button>
+            <div class="library-card-actions">
+              <button
+                type="button"
+                class="btn action-pill action-pill--post action-pill--small library-card-read"
+                @click="router.push({ name: 'book-read', query: { bookId: book.bookId, orderId: book.orderId, itemId: book.itemId, title: book.title } })"
+              >
+                <i class="fa-solid fa-book-open me-1"></i>
+                {{ t('bookstore.read') }}
+              </button>
+              <button
+                type="button"
+                class="btn action-pill action-pill--post action-pill--small library-card-download"
+                :disabled="downloadingItemId === book.itemId"
+                @click="downloadBook(book)"
+              >
+                <i v-if="downloadingItemId === book.itemId" class="fa-solid fa-spinner fa-spin me-1"></i>
+                <i v-else class="fa-solid fa-download me-1"></i>
+                {{ downloadingItemId === book.itemId ? t('bookstore.loading') : t('bookstore.download') }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -347,11 +358,19 @@ onMounted(() => {
   margin: 0;
 }
 
-.library-card-download {
+.library-card-actions {
   margin-top: auto;
+  display: flex;
+  gap: 0.35rem;
   padding-top: 0.45rem;
-  width: 100%;
+}
+
+.library-card-read,
+.library-card-download {
+  flex: 1;
   justify-content: center;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.5rem;
 }
 
 /* ── Empty ── */

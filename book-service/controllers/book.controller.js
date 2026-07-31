@@ -1,6 +1,7 @@
 const Book = require('../models/Book');
-const { uploadImage, uploadEbook } = require('../config/upload');
+const { uploadImage, uploadEbook, uploadComicPage, createZipFromImages } = require('../config/upload');
 const { upsertTags } = require('../utils/tagSync');
+const { extractComicPages } = require('../utils/comicZip');
 
 const parsePositiveInt = (value, fallback) => {
     const parsed = parseInt(value, 10);
@@ -166,13 +167,45 @@ const createBook = async (req, res, next) => {
 
         const ebookFileBuffer = req.files?.ebookFile?.[0]?.buffer;
         const ebookFileOriginalName = req.files?.ebookFile?.[0]?.originalname;
+        const imageBuffers = req.files?.images?.map(f => f.buffer) || [];
+        const imageNames = req.files?.images?.map(f => f.originalname) || [];
 
-        if (!ebookFileBuffer) {
+        const isZip = /\.zip$/i.test(ebookFileOriginalName || '') || req.files?.ebookFile?.[0]?.mimetype === 'application/zip';
+        const isMultiImage = imageBuffers.length > 0;
+
+        if (!ebookFileBuffer && !isMultiImage) {
             res.status(400);
-            return next(new Error('Ebook file is required'));
+            return next(new Error('At least one ebook file or images must be provided'));
         }
 
-        const ebookUpload = await uploadEbook(ebookFileBuffer, ebookFileOriginalName);
+        let ebookUpload;
+        let comicPages = [];
+
+        if (isZip) {
+            [ebookUpload, comicPages] = await Promise.all([
+                uploadEbook(ebookFileBuffer, ebookFileOriginalName),
+                extractComicPages(ebookFileBuffer)
+            ]);
+        } else if (isMultiImage) {
+            const pageUploadPromises = imageBuffers.map((buffer, i) => uploadComicPage(buffer, i + 1));
+            const zipBuffer = createZipFromImages(imageBuffers, imageNames);
+
+            const [uploadedPages, zipUpload] = await Promise.all([
+                Promise.all(pageUploadPromises),
+                uploadEbook(zipBuffer, 'comic-pages.zip')
+            ]);
+
+            comicPages = uploadedPages.map((uploaded, i) => ({
+                url: uploaded.url,
+                publicId: uploaded.publicId,
+                pageNumber: i + 1
+            }));
+            ebookUpload = zipUpload;
+        } else {
+            // Lone non-zip file on the ebookFile field: upload as a plain
+            // ebook with no page breakdown.
+            ebookUpload = await uploadEbook(ebookFileBuffer, ebookFileOriginalName);
+        }
 
         let coverImageUrls = [];
         const coverImageBuffer = req.files?.coverImage?.[0]?.buffer;
@@ -195,10 +228,11 @@ const createBook = async (req, res, next) => {
             ebookFile: {
                 url: ebookUpload.url,
                 publicId: ebookUpload.publicId,
-                originalName: ebookFileOriginalName || '',
-                mimeType: req.files.ebookFile[0].mimetype || '',
-                size: req.files.ebookFile[0].size || 0
+                originalName: ebookFileOriginalName || (isMultiImage ? 'comic-pages.zip' : ''),
+                mimeType: req.files?.ebookFile?.[0]?.mimetype || (isMultiImage ? 'application/zip' : ''),
+                size: req.files?.ebookFile?.[0]?.size || 0
             },
+            pages: comicPages,
             seller: req.user._id,
             status: ['draft', 'published', 'archived'].includes(status) ? status : 'draft',
             tags
@@ -274,14 +308,48 @@ const updateBook = async (req, res, next) => {
 
         const ebookFileBuffer = req.files?.ebookFile?.[0]?.buffer;
         const ebookFileOriginalName = req.files?.ebookFile?.[0]?.originalname;
-        if (ebookFileBuffer) {
-            const ebookUpload = await uploadEbook(ebookFileBuffer, ebookFileOriginalName);
+        const imageBuffers = req.files?.images?.map(f => f.buffer) || [];
+        const imageNames = req.files?.images?.map(f => f.originalname) || [];
+        const isMultiImage = imageBuffers.length > 0;
+
+        if (ebookFileBuffer || isMultiImage) {
+            const isZip = /\.zip$/i.test(ebookFileOriginalName || '') || req.files?.ebookFile?.[0]?.mimetype === 'application/zip';
+
+            let ebookUpload;
+            if (isZip) {
+                const [rawZipUpload, comicPages] = await Promise.all([
+                    uploadEbook(ebookFileBuffer, ebookFileOriginalName),
+                    extractComicPages(ebookFileBuffer)
+                ]);
+                ebookUpload = rawZipUpload;
+                book.pages = comicPages;
+            } else if (isMultiImage) {
+                const pageUploadPromises = imageBuffers.map((buffer, i) => uploadComicPage(buffer, i + 1));
+                const zipBuffer = createZipFromImages(imageBuffers, imageNames);
+
+                const [uploadedPages, zipUpload] = await Promise.all([
+                    Promise.all(pageUploadPromises),
+                    uploadEbook(zipBuffer, 'comic-pages.zip')
+                ]);
+
+                book.pages = uploadedPages.map((uploaded, i) => ({
+                    url: uploaded.url,
+                    publicId: uploaded.publicId,
+                    pageNumber: i + 1
+                }));
+                ebookUpload = zipUpload;
+            } else {
+                ebookUpload = await uploadEbook(ebookFileBuffer, ebookFileOriginalName);
+                // Replacing a comic with a plain ebook: drop stale page URLs.
+                book.pages = [];
+            }
+
             book.ebookFile = {
                 url: ebookUpload.url,
                 publicId: ebookUpload.publicId,
-                originalName: ebookFileOriginalName || '',
-                mimeType: req.files.ebookFile[0].mimetype || '',
-                size: req.files.ebookFile[0].size || 0
+                originalName: ebookFileOriginalName || (isMultiImage ? 'comic-pages.zip' : ''),
+                mimeType: req.files?.ebookFile?.[0]?.mimetype || (isMultiImage ? 'application/zip' : ''),
+                size: req.files?.ebookFile?.[0]?.size || 0
             };
         }
 
@@ -327,7 +395,7 @@ const getMyBooks = async (req, res, next) => {
         const limit = parsePositiveInt(req.query.limit, 12);
         const skip = (page - 1) * limit;
 
-        const query = { seller: req.user._id };
+        const query = { seller: req.user._id, isActive: true };
         if (req.query.status && ['draft', 'published', 'archived'].includes(req.query.status)) {
             query.status = req.query.status;
         }

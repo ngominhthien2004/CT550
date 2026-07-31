@@ -170,5 +170,21 @@
   "sellerNotFound": "セラーが見つかりません",
   "booksCount": "{count}冊",
   "relatedBooks": "関連する本",
-  "noRelatedBooks": "関連する本は見つかりませんでした"
+  "noRelatedBooks": "関連する本は見つかりませんでした",
+  "read": "読む",
+  "reading": "読書中",
+  "readBook": "本を読む",
+  "backToLibrary": "ライブラリに戻る",
+  "prevPage": "前のページ",
+  "nextPage": "次のページ",
+  "zoomIn": "拡大",
+  "zoomOut": "縮小",
+  "resetZoom": "ズームリセット",
+  "fullscreen": "フルスクリーン",
+  "exitFullscreen": "フルスクリーン終了",
+  "loadingEbook": "電子書籍を読み込み中...",
+  "ebookLoadFailed": "電子書籍の読み込みに失敗しました",
+  "downloadEbook": "電子書籍をダウンロード",
+  "noEbookAvailable": "電子書籍ファイルがありません",
+  "unreadableBook": "この本はブラウザで読めません。ダウンロードしてください。"
 }

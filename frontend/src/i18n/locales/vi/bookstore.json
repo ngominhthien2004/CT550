@@ -170,5 +170,21 @@
   "sellerNotFound": "Không tìm thấy người bán",
   "booksCount": "{count} cuốn sách",
   "relatedBooks": "Sách liên quan",
-  "noRelatedBooks": "Không tìm thấy sách liên quan"
+  "noRelatedBooks": "Không tìm thấy sách liên quan",
+  "read": "Đọc",
+  "reading": "Đang đọc",
+  "readBook": "Đọc sách",
+  "backToLibrary": "Quay lại thư viện",
+  "prevPage": "Trang trước",
+  "nextPage": "Trang sau",
+  "zoomIn": "Phóng to",
+  "zoomOut": "Thu nhỏ",
+  "resetZoom": "Đặt lại zoom",
+  "fullscreen": "Toàn màn hình",
+  "exitFullscreen": "Thoát toàn màn hình",
+  "loadingEbook": "Đang tải sách...",
+  "ebookLoadFailed": "Không thể tải sách",
+  "downloadEbook": "Tải sách",
+  "noEbookAvailable": "Không có file sách",
+  "unreadableBook": "Không thể đọc sách này trên trình duyệt. Vui lòng tải xuống."
 }

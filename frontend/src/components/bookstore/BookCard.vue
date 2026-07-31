@@ -71,13 +71,15 @@ function navigateToDetail() {
         </router-link>
         <span v-else>{{ t('bookstore.unknownSeller') }}</span>
       </p>
-      <div v-if="avgRating > 0" class="book-rating">
-        <StarRating :value="avgRating" :max="5" size="small" />
-        <span>{{ avgRating.toFixed(1) }}</span>
-      </div>
-      <div class="book-price-row">
-        <span class="book-price">{{ priceFormatted }}</span>
-        <span v-if="hasDiscount" class="book-original-price">{{ originalPriceFormatted }}</span>
+      <div class="book-footer">
+        <div class="book-price-row">
+          <span class="book-price">{{ priceFormatted }}</span>
+          <span v-if="hasDiscount" class="book-original-price">{{ originalPriceFormatted }}</span>
+        </div>
+        <div v-if="avgRating > 0" class="book-rating">
+          <StarRating :value="avgRating" :max="5" size="small" />
+          <span>{{ avgRating.toFixed(1) }}</span>
+        </div>
       </div>
     </div>
   </article>
@@ -92,6 +94,8 @@ function navigateToDetail() {
   cursor: pointer;
   transition: transform 0.22s ease, box-shadow 0.22s ease;
   box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
 }
 
 .book-card:hover {
@@ -134,6 +138,9 @@ function navigateToDetail() {
 
 .book-meta {
   padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .book-title {
@@ -146,12 +153,17 @@ function navigateToDetail() {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  /* Reserve exactly 2 lines so 1-line titles still align the author row below */
+  min-height: 2.6em;
 }
 
 .book-seller {
   font-size: 0.8rem;
   color: var(--muted);
   margin: 0 0 0.45rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .seller-link {
@@ -164,10 +176,20 @@ function navigateToDetail() {
   text-decoration: underline;
 }
 
-.book-price-row {
+.book-footer {
+  margin-top: auto;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
+  min-height: 1.4rem;
+}
+
+.book-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  min-width: 0;
 }
 
 .book-price {
@@ -188,6 +210,6 @@ function navigateToDetail() {
   gap: 0.25rem;
   font-size: 0.8rem;
   color: var(--muted);
-  margin-bottom: 0.35rem;
+  white-space: nowrap;
 }
 </style>

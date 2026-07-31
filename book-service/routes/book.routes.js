@@ -15,7 +15,8 @@ const router = express.Router();
 
 const bookUpload = upload.fields([
     { name: 'coverImage', maxCount: 1 },
-    { name: 'ebookFile', maxCount: 1 }
+    { name: 'ebookFile', maxCount: 1 },
+    { name: 'images', maxCount: 50 }
 ]);
 
 router.get('/', listBooks);

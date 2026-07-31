@@ -170,5 +170,21 @@
   "sellerNotFound": "Seller not found",
   "booksCount": "{count} books",
   "relatedBooks": "Related Books",
-  "noRelatedBooks": "No related books found"
+  "noRelatedBooks": "No related books found",
+  "read": "Read",
+  "reading": "Reading",
+  "readBook": "Read Book",
+  "backToLibrary": "Back to Library",
+  "prevPage": "Previous page",
+  "nextPage": "Next page",
+  "zoomIn": "Zoom In",
+  "zoomOut": "Zoom Out",
+  "resetZoom": "Reset Zoom",
+  "fullscreen": "Fullscreen",
+  "exitFullscreen": "Exit Fullscreen",
+  "loadingEbook": "Loading ebook...",
+  "ebookLoadFailed": "Failed to load ebook",
+  "downloadEbook": "Download Ebook",
+  "noEbookAvailable": "No ebook file available",
+  "unreadableBook": "This book cannot be read in the browser. Please download it instead."
 }

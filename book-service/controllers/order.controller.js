@@ -87,6 +87,7 @@ const createOrder = async (req, res, next) => {
 
         const populatedOrder = await Order.findById(order._id)
             .populate('items.book', 'title coverImages')
+            .populate('items.seller', '_id username displayName')
             .populate('buyer', '_id username displayName avatar');
 
         res.status(201).json(populatedOrder);
@@ -99,6 +100,7 @@ const getMyOrders = async (req, res, next) => {
     try {
         const orders = await Order.find({ buyer: req.user._id })
             .populate('items.book', 'title coverImages')
+            .populate('items.seller', '_id username displayName')
             .populate('buyer', '_id username displayName avatar')
             .sort({ createdAt: -1 })
             .lean();
@@ -119,6 +121,7 @@ const getOrderById = async (req, res, next) => {
 
         const order = await Order.findById(orderId)
             .populate('items.book', 'title coverImages')
+            .populate('items.seller', '_id username displayName')
             .populate('buyer', '_id username displayName avatar');
 
         if (!order) {
@@ -194,6 +197,7 @@ const updateOrderStatus = async (req, res, next) => {
 
         const populatedOrder = await Order.findById(order._id)
             .populate('items.book', 'title coverImages')
+            .populate('items.seller', '_id username displayName')
             .populate('buyer', '_id username displayName avatar');
 
         res.json(populatedOrder);
@@ -206,6 +210,7 @@ const getSellerOrders = async (req, res, next) => {
     try {
         const orders = await Order.find({ 'items.seller': req.user._id })
             .populate('items.book', 'title coverImages')
+            .populate('items.seller', '_id username displayName')
             .populate('buyer', '_id username displayName avatar')
             .sort({ createdAt: -1 })
             .lean();
@@ -279,6 +284,7 @@ const cancelMyOrder = async (req, res, next) => {
 
         const populatedOrder = await Order.findById(order._id)
             .populate('items.book', 'title coverImages')
+            .populate('items.seller', '_id username displayName')
             .populate('buyer', '_id username displayName avatar');
 
         res.json(populatedOrder);

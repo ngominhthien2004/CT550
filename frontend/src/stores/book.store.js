@@ -17,7 +17,6 @@ import {
   getSellerOrders,
   cancelOrder,
   updateOrderStatus,
-  downloadOrderItem,
   createCheckoutSession,
   becomeSeller,
   getSellerProfile,
@@ -49,8 +48,22 @@ function buildBookFormData(payload) {
     formData.append('coverImage', payload.coverImage)
   }
 
-  if (payload.ebookFile instanceof File) {
-    formData.append('ebookFile', payload.ebookFile)
+  const isImageFile = (file) => file?.type?.startsWith('image/')
+
+  if (Array.isArray(payload.ebookFile)) {
+    payload.ebookFile.forEach((file) => {
+      if (isImageFile(file)) {
+        formData.append('images', file)
+      } else if (!formData.has('ebookFile')) {
+        formData.append('ebookFile', file)
+      }
+    })
+  } else if (payload.ebookFile instanceof File) {
+    if (isImageFile(payload.ebookFile)) {
+      formData.append('images', payload.ebookFile)
+    } else {
+      formData.append('ebookFile', payload.ebookFile)
+    }
   }
 
   return formData
@@ -393,20 +406,38 @@ export const useBookStore = defineStore('book', {
       return data
     },
 
-    async downloadPaidBook(orderId, itemId) {
-      const response = await downloadOrderItem(orderId, itemId)
-      const blob = new Blob([response.data])
+    async downloadPaidBook(orderId, itemId, title) {
+      const { getDownloadUrl } = await import('../services/book.api.js')
+      const { data } = await getDownloadUrl(orderId, itemId)
+      const fileUrl = data?.downloadUrl
+      if (!fileUrl) throw new Error('No download URL')
+
+      const resp = await fetch(fileUrl)
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+      const blob = await resp.blob()
+
+      const mimeExt = {
+        'application/pdf': '.pdf',
+        'application/epub+zip': '.epub',
+        'application/zip': '.zip',
+      }
+      let ext = mimeExt[blob.type] || ''
+      // Cloudinary serves raw files as application/octet-stream, so fall back
+      // to the extension embedded in the file URL for a usable filename.
+      if (!ext && fileUrl) {
+        const m = fileUrl.match(/\.(zip|cbz|pdf|epub)(\?|$)/i)
+        if (m) ext = `.${m[1].toLowerCase()}`
+      }
+      const safeTitle = (title || 'book').replace(/[^\w\s.-]/g, '').trim() || 'book'
+      const filename = `${safeTitle}${ext}`
+
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `book-${itemId}.pdf`
+      link.download = filename
       document.body.appendChild(link)
       link.click()
       link.remove()
-      // Defer revoke: the browser reads the blob asynchronously after
-      // click(). Revoking immediately can cancel the download for large
-      // PDFs (intermittent failure). 1000ms is safe for Chrome/Firefox;
-      // Safari may need longer.
       setTimeout(() => window.URL.revokeObjectURL(url), 1000)
     },
 
