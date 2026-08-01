@@ -44,7 +44,7 @@ async function remove() {
       <span class="cart-item-price">${{ price.toFixed(2) }}</span>
     </div>
     <div class="cart-item-actions">
-      <button type="button" class="btn btn-outline-danger btn-sm remove-btn" :disabled="removing" @click="remove">
+      <button type="button" class="action-pill action-pill--danger action-pill--small remove-btn" :disabled="removing" @click="remove">
         <i class="fa-solid fa-trash-can"></i>
       </button>
     </div>

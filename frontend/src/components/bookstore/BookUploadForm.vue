@@ -320,7 +320,7 @@ onUnmounted(() => {
         <span
           v-for="(tag, index) in form.tags"
           :key="`${tag}-${index}`"
-          class="tag-chip"
+          class="tag-pill tag-pill--selected"
           @click="removeTag(index)"
         >
           #{{ tag }}
@@ -404,7 +404,7 @@ onUnmounted(() => {
     </div>
 
     <div class="d-flex gap-2 pt-2">
-      <button type="submit" class="btn btn-primary" :disabled="loading">
+      <button type="submit" class="action-pill action-pill--post" :disabled="loading">
         {{ loading ? 'Saving...' : (isEdit ? 'Update Book' : 'Upload Book') }}
       </button>
     </div>
@@ -477,21 +477,27 @@ onUnmounted(() => {
   margin-top: 0.5rem;
 }
 
-.tag-chip {
+.tag-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  color: var(--accent);
-  padding: 0.25rem 0.6rem;
+  gap: 0.35rem;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 0.84rem;
+  padding: 0.28rem 0.65rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.tag-chip:hover {
+.tag-pill--selected {
+  background: #e6f4ea;
+  border-color: #34a853;
+  color: #137333;
+}
+
+.tag-pill--selected:hover {
   background: #fce8e6;
   border-color: #ea4335;
   color: #c5221f;

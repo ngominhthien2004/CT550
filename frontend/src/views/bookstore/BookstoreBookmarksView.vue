@@ -58,7 +58,7 @@ onMounted(() => {
       <div v-else-if="books.length === 0 && !loading" class="empty-state">
         <i class="fa-regular fa-bookmark empty-icon"></i>
         <p class="empty-text">{{ t('bookstore.noBookmarks') }}</p>
-        <button type="button" class="btn btn-primary" @click="goToBookstore">
+        <button type="button" class="action-pill action-pill--post" @click="goToBookstore">
           <i class="fa-solid fa-store me-1"></i>
           {{ t('bookstore.browseBooks') }}
         </button>

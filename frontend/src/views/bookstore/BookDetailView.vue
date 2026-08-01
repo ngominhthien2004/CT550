@@ -157,7 +157,7 @@ onMounted(() => {
                 v-for="tag in book.tags"
                 :key="tag"
                 :to="{ path: '/bookstore', query: { tag } }"
-                class="tag-chip tag-chip-link"
+                class="tag-link"
               >{{ tag }}</router-link>
             </div>
           </div>
@@ -314,27 +314,16 @@ onMounted(() => {
   gap: 0.4rem;
 }
 
-.tag-chip {
-  background: var(--surface-alt);
-  border: 1px solid var(--line);
-  padding: 0.3rem 0.65rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  color: var(--muted);
+.tag-link {
+  text-decoration: none;
+  color: var(--accent);
+  font-weight: 400;
+  font-size: 0.875rem;
+  transition: color 0.15s;
 }
 
-.tag-chip-link {
-  cursor: pointer;
-  text-decoration: none;
-  color: var(--muted);
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-}
-
-.tag-chip-link:hover {
-  background: var(--brand);
-  color: #fff;
-  border-color: var(--brand);
-  text-decoration: none;
+.tag-link:hover {
+  text-decoration: underline;
 }
 
 .detail-rating {

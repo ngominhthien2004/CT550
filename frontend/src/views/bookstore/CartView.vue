@@ -67,7 +67,7 @@ onMounted(() => {
       <div v-else-if="items.length === 0" class="empty-state">
         <i class="fa-solid fa-cart-shopping empty-icon"></i>
         <p>{{ $t('bookstore.emptyCart') }}</p>
-        <router-link to="/bookstore" class="btn btn-primary">{{ $t('bookstore.browseBooks') }}</router-link>
+        <router-link to="/bookstore" class="action-pill action-pill--post">{{ $t('bookstore.browseBooks') }}</router-link>
       </div>
 
       <template v-else>
@@ -81,8 +81,8 @@ onMounted(() => {
             <span class="summary-total">${{ total.toFixed(2) }}</span>
           </div>
           <div class="summary-actions">
-            <button type="button" class="btn btn-outline-danger" @click="clearCart">{{ $t('bookstore.clearCart') }}</button>
-            <button type="button" class="btn btn-primary" :disabled="checkingOut" @click="handleCheckout">
+            <button type="button" class="action-pill action-pill--danger" @click="clearCart">{{ $t('bookstore.clearCart') }}</button>
+            <button type="button" class="action-pill action-pill--post" :disabled="checkingOut" @click="handleCheckout">
               {{ checkingOut ? $t('bookstore.redirecting') : $t('bookstore.checkout') }}
             </button>
           </div>

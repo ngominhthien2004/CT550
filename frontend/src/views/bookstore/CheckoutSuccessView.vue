@@ -28,8 +28,8 @@ onMounted(async () => {
       <p class="lead">{{ $t('bookstore.thankYouPurchase') }}</p>
 
       <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
-        <router-link to="/bookstore/orders" class="btn btn-primary">{{ $t('bookstore.viewOrders') }}</router-link>
-        <router-link to="/bookstore" class="btn btn-outline-secondary">{{ $t('bookstore.continueShopping') }}</router-link>
+        <router-link to="/bookstore/orders" class="action-pill action-pill--post">{{ $t('bookstore.viewOrders') }}</router-link>
+        <router-link to="/bookstore" class="action-pill">{{ $t('bookstore.continueShopping') }}</router-link>
       </div>
     </section>
   </BookstoreLayout>

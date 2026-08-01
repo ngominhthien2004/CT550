@@ -53,7 +53,7 @@ async function download() {
       </span>
     </div>
     <div class="order-item-actions">
-      <button v-if="isDownloadable" type="button" class="btn btn-primary btn-sm" @click="download">
+      <button v-if="isDownloadable" type="button" class="action-pill action-pill--post action-pill--small" @click="download">
         <i class="fa-solid fa-download me-1"></i> Download
       </button>
     </div>

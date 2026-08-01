@@ -97,7 +97,7 @@ onMounted(() => {
           <i class="fa-solid fa-store onboarding-icon"></i>
           <h2>{{ $t('bookstore.becomeSeller') }}</h2>
           <p>{{ $t('bookstore.sellDirectly') }}</p>
-          <button type="button" class="btn btn-primary" :disabled="becomingSeller" @click="becomeSeller">
+          <button type="button" class="action-pill action-pill--post" :disabled="becomingSeller" @click="becomeSeller">
             {{ becomingSeller ? $t('bookstore.settingUp') : $t('bookstore.startSelling') }}
           </button>
         </div>
@@ -120,10 +120,10 @@ onMounted(() => {
         </div>
 
         <div class="dashboard-actions">
-          <router-link to="/bookstore/upload" class="btn btn-primary btn-sm">
+          <router-link to="/bookstore/upload" class="action-pill action-pill--post action-pill--small">
             <i class="fa-solid fa-plus me-1"></i> {{ $t('bookstore.newBook') }}
           </router-link>
-          <router-link to="/bookstore/manage" class="btn btn-outline-secondary btn-sm">
+          <router-link to="/bookstore/manage" class="action-pill action-pill--small">
             {{ $t('bookstore.manageBooks') }}
           </router-link>
         </div>
@@ -167,10 +167,10 @@ onMounted(() => {
 
               <div class="status-actions">
                 <span class="status-label">{{ $t('bookstore.updateStatus') }}</span>
-                <button type="button" class="btn btn-outline-secondary btn-sm" @click="updateStatus(order._id, 'processing')">{{ $t('bookstore.processing') }}</button>
-                <button type="button" class="btn btn-outline-primary btn-sm" @click="updateStatus(order._id, 'shipped')">{{ $t('bookstore.shipped') }}</button>
-                <button type="button" class="btn btn-outline-success btn-sm" @click="updateStatus(order._id, 'completed')">{{ $t('bookstore.completed') }}</button>
-                <button type="button" class="btn btn-outline-danger btn-sm" @click="updateStatus(order._id, 'cancelled')">{{ $t('bookstore.cancelled') }}</button>
+                <button type="button" class="action-pill action-pill--small" @click="updateStatus(order._id, 'processing')">{{ $t('bookstore.processing') }}</button>
+                <button type="button" class="action-pill action-pill--post action-pill--small" @click="updateStatus(order._id, 'shipped')">{{ $t('bookstore.shipped') }}</button>
+                <button type="button" class="action-pill action-pill--small" @click="updateStatus(order._id, 'completed')">{{ $t('bookstore.completed') }}</button>
+                <button type="button" class="action-pill action-pill--danger action-pill--small" @click="updateStatus(order._id, 'cancelled')">{{ $t('bookstore.cancelled') }}</button>
               </div>
             </div>
           </div>

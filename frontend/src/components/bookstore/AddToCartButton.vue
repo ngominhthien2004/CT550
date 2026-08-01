@@ -88,7 +88,7 @@ async function addToCart() {
         <i class="fa-solid fa-plus" aria-hidden="true"></i>
       </button>
     </div>
-    <button type="button" class="btn btn-primary add-btn" :disabled="isDisabled" @click="addToCart">
+    <button type="button" class="action-pill action-pill--post add-btn" :disabled="isDisabled" @click="addToCart">
       <i class="fa-solid fa-cart-plus me-1" aria-hidden="true"></i>
       {{ adding ? t('bookstore.adding') : t('bookstore.addToCart') }}
     </button>

@@ -98,7 +98,7 @@ onMounted(() => {
       <div v-else-if="orders.length === 0" class="empty-state">
         <i class="fa-solid fa-receipt empty-icon"></i>
         <p>{{ $t('bookstore.noOrdersYet') }}</p>
-        <router-link to="/bookstore" class="btn btn-primary">{{ $t('bookstore.browseBooks') }}</router-link>
+        <router-link to="/bookstore" class="action-pill action-pill--post">{{ $t('bookstore.browseBooks') }}</router-link>
       </div>
 
       <div v-else class="order-list">
@@ -126,7 +126,7 @@ onMounted(() => {
             <div v-if="order.status === 'pending'" class="order-cancel-row">
               <button
                 type="button"
-                class="btn btn-outline-danger btn-sm"
+                class="action-pill action-pill--danger action-pill--small"
                 :disabled="cancellingOrderId === order._id"
                 @click.stop="confirmCancel(order._id)"
               >
@@ -144,10 +144,10 @@ onMounted(() => {
           <div class="cancel-dialog">
             <p class="cancel-message">{{ $t('bookstore.cancelOrderConfirm') }}</p>
             <div class="cancel-actions">
-              <button type="button" class="btn btn-outline-secondary btn-sm" @click="cancelConfirmDialog">
+              <button type="button" class="action-pill action-pill--small" @click="cancelConfirmDialog">
                 {{ $t('bookstore.cancelEdit') }}
               </button>
-              <button type="button" class="btn btn-danger btn-sm" :disabled="cancellingOrderId" @click="cancelOrder">
+              <button type="button" class="action-pill action-pill--danger action-pill--small" :disabled="cancellingOrderId" @click="cancelOrder">
                 {{ cancellingOrderId ? $t('bookstore.loading') : $t('bookstore.cancelOrder') }}
               </button>
             </div>

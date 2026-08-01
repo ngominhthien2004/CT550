@@ -152,7 +152,7 @@ onUnmounted(() => {
         <i class="fa-solid fa-lock"></i>
       </div>
       <p class="review-login-text">{{ t('bookstore.loginToReview') }}</p>
-      <router-link to="/login" class="btn btn-primary btn-sm">
+      <router-link to="/login" class="action-pill action-pill--post action-pill--small">
         <i class="fa-solid fa-right-to-bracket me-1"></i>
         {{ t('auth.loginButton') }}
       </router-link>

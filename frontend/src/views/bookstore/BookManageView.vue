@@ -22,7 +22,7 @@ onMounted(() => {
     <section class="bookstore-page page-block p-3 p-md-4">
       <div class="page-header">
         <h1 class="page-title">{{ $t('bookstore.myBooks') }}</h1>
-        <router-link to="/bookstore/upload" class="btn btn-primary btn-sm">
+        <router-link to="/bookstore/upload" class="action-pill action-pill--post action-pill--small">
           <i class="fa-solid fa-plus me-1"></i> {{ $t('bookstore.uploadNew') }}
         </router-link>
       </div>
@@ -38,7 +38,7 @@ onMounted(() => {
       <div v-else-if="bookStore.myBooks.length === 0" class="empty-state">
         <i class="fa-solid fa-book-open empty-icon"></i>
         <p>{{ $t('bookstore.noBooksYet') }}</p>
-        <router-link to="/bookstore/upload" class="btn btn-primary">{{ $t('bookstore.uploadFirstBook') }}</router-link>
+        <router-link to="/bookstore/upload" class="action-pill action-pill--post">{{ $t('bookstore.uploadFirstBook') }}</router-link>
       </div>
 
       <div v-else class="book-list">
