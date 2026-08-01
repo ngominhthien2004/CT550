@@ -67,7 +67,13 @@ function navigateToDetail() {
           class="seller-link"
           @click.stop
         >
-          {{ book.seller.displayName || book.seller.username || t('bookstore.unknownSeller') }}
+          <img
+            :src="book.seller.avatar || 'https://s.pximg.net/common/images/no_profile.png'"
+            class="seller-avatar"
+            :alt="book.seller.displayName || book.seller.username"
+            @error="(e) => (e.target.src = 'https://s.pximg.net/common/images/no_profile.png')"
+          />
+          <span>{{ book.seller.displayName || book.seller.username || t('bookstore.unknownSeller') }}</span>
         </router-link>
         <span v-else>{{ t('bookstore.unknownSeller') }}</span>
       </p>
@@ -167,13 +173,26 @@ function navigateToDetail() {
 }
 
 .seller-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   color: inherit;
   text-decoration: none;
   transition: color 0.2s;
+  min-width: 0;
 }
 .seller-link:hover {
   color: var(--brand, #0096fa);
   text-decoration: underline;
+}
+
+.seller-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--surface-alt);
 }
 
 .book-footer {

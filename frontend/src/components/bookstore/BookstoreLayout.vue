@@ -74,21 +74,6 @@ watch(sidebarCollapsed, (collapsed) => {
               </router-link>
             </li>
             <li>
-              <router-link to="/bookstore?sort=newest" class="bookstore-sidebar-link">
-                <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
-                <span class="bookstore-sidebar-text">Newest</span>
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/bookstore?sort=popular" class="bookstore-sidebar-link">
-                <i class="fa-solid fa-fire" aria-hidden="true"></i>
-                <span class="bookstore-sidebar-text">Popular</span>
-              </router-link>
-            </li>
-
-            <li><hr class="bookstore-sidebar-divider" /></li>
-
-            <li>
               <router-link to="/bookstore/manage" class="bookstore-sidebar-link">
                 <i class="fa-solid fa-book" aria-hidden="true"></i>
                 <span class="bookstore-sidebar-text">My Books</span>
@@ -98,6 +83,12 @@ watch(sidebarCollapsed, (collapsed) => {
               <router-link to="/bookstore/library" class="bookstore-sidebar-link">
                 <i class="fa-solid fa-book-open" aria-hidden="true"></i>
                 <span class="bookstore-sidebar-text">My Library</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/bookstore/bookmarks" class="bookstore-sidebar-link">
+                <i class="fa-solid fa-bookmark" aria-hidden="true"></i>
+                <span class="bookstore-sidebar-text">Bookmarks</span>
               </router-link>
             </li>
             <li>

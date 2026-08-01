@@ -76,6 +76,11 @@ const getMyBookmarks = async (req, res, next) => {
     const [items, total] = await Promise.all([
       Bookmark.find(filter)
         .populate('user', 'username displayName avatar')
+        .populate({
+          path: 'bookId',
+          select: 'title price coverImages coverImage seller rating tags',
+          populate: { path: 'seller', select: '_id username displayName' },
+        })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),

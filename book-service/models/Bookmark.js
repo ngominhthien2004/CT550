@@ -10,6 +10,7 @@ const bookmarkSchema = mongoose.Schema(
     bookId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
+      ref: 'Book',
     },
   },
   {
