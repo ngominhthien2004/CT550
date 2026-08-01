@@ -43,6 +43,8 @@ const purchasedBooks = computed(() => {
         itemId: item._id,
         title: item.book?.title || 'Untitled',
         seller: item.seller?.displayName || item.seller?.username || t('bookstore.unknownSeller'),
+        sellerId: item.seller?._id || null,
+        sellerAvatar: item.seller?.avatar || '',
         coverImage: item.coverImage || item.book?.coverImages?.[0] || '/default-book-cover.png',
         price: Number(item.price || 0).toFixed(2),
         purchaseDate: order.createdAt,
@@ -145,7 +147,15 @@ onMounted(() => {
             <router-link :to="`/bookstore/${book.bookId}`" class="library-card-title-link">
               <h3 class="library-card-title">{{ book.title }}</h3>
             </router-link>
-            <p class="library-card-seller">{{ book.seller }}</p>
+            <div class="library-card-seller">
+              <img
+                :src="book.sellerAvatar || 'https://s.pximg.net/common/images/no_profile.png'"
+                class="library-card-seller-avatar"
+                :alt="book.seller"
+                @error="(e) => (e.target.src = 'https://s.pximg.net/common/images/no_profile.png')"
+              />
+              <span>{{ book.seller }}</span>
+            </div>
             <p class="library-card-price">${{ book.price }}</p>
             <p class="library-card-date">
               {{ t('bookstore.purchasedOn') }} {{ formatShortDate(book.purchaseDate) }}
@@ -326,12 +336,25 @@ onMounted(() => {
 }
 
 .library-card-seller {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: 0.78rem;
   color: var(--muted);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.library-card-seller-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--surface-alt);
 }
 
 .library-card-price {
