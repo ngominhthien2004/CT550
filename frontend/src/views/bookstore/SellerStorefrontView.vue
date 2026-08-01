@@ -140,7 +140,7 @@ watch(
 
 <style scoped>
 .bookstore-page {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 

@@ -94,7 +94,7 @@ onMounted(() => {
 
 <style scoped>
 .bookstore-page {
-  max-width: 800px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
