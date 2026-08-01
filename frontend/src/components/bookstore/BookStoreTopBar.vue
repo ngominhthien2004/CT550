@@ -124,26 +124,20 @@ const userStats = computed(() => ({
   followers: followStore.followersCount,
 }))
 
-const userMainLinks = computed(() => {
-  const links = [
-    { label: t('nav.dashboard'), to: '/dashboard' },
-    { label: t('nav.myBooks'), to: '/bookstore/manage' },
-  ]
-  if (currentUser.value?.role === 'admin') {
-    links.unshift({ label: t('nav.adminManagement'), to: '/admin' })
-  }
-  return links
-})
+const userMainLinks = computed(() => [
+  { label: t('bookstore.myBooks'), to: '/bookstore/manage' },
+  { label: t('bookstore.myLibrary'), to: '/bookstore/library' },
+])
 
 const userLibraryLinks = computed(() => [
-  { label: t('nav.myFavorite'), to: '/favorites' },
-  { label: t('nav.bookmarks'), to: '/bookmarks' },
-  { label: t('nav.browsingHistory'), to: '/history' },
-  { label: t('nav.myOrders'), to: '/bookstore/orders' },
+  { label: t('bookstore.bookmarks'), to: '/bookstore/bookmarks' },
+  { label: t('bookstore.cart'), to: '/bookstore/cart' },
+  { label: t('bookstore.myOrders'), to: '/bookstore/orders' },
 ])
 
 const userSettingLinks = computed(() => [
-  { label: t('common.settings'), to: '/settings' },
+  { label: t('bookstore.sellABook'), to: '/bookstore/upload' },
+  { label: t('bookstore.backToIlluWrl'), to: '/' },
 ])
 
 // Trigger follow data load when user is authenticated (mirrors the main
