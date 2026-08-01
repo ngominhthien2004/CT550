@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   toggleBookmark,
   getBookmarkStatus,
+  getBookmarkStatuses,
   getMyBookmarks,
   deleteBookmark,
 } = require('../controllers/bookmark.controller');
@@ -16,6 +17,11 @@ router.route('/')
 
 router.route('/toggle')
   .post(toggleBookmark);
+
+// NOTE: `/status` must be registered BEFORE `/status/:bookId` so the batch
+// route is matched before the single-id route.
+router.route('/status')
+  .get(getBookmarkStatuses);
 
 router.route('/status/:bookId')
   .get(getBookmarkStatus);

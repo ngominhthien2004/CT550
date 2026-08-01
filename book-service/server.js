@@ -45,7 +45,13 @@ app.use((req, res, next) => {
 // Rate limiting
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    // Raised from 100 to 300: the bookstore frontend fires many requests per
+    // page load (bookmark status, cart, orders, seller/dashboard panels).
+    // Even with the batch bookmark-status endpoint, a single browsing session
+    // can exceed 100 requests in 15 minutes, and the limiter was 429-ing even
+    // public endpoints. 300 keeps legitimate browsing unthrottled while still
+    // blocking abusive traffic.
+    max: 300,
     standardHeaders: true,
     legacyHeaders: false,
 });
