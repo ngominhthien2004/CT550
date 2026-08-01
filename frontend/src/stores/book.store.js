@@ -23,6 +23,7 @@ import {
   updateSellerProfile,
   getPublicSellerProfile,
   getSellerPublishedBooks,
+  getSellerDashboardStats,
   getBookReviews,
   createReview,
   updateReview,
@@ -133,6 +134,11 @@ export const useBookStore = defineStore('book', {
     sellerPublishedBooksLoading: false,
     sellerPublishedBooksError: null,
     sellerPublishedBooksPagination: { page: 1, limit: 12, total: 0, pages: 0 },
+
+    // Seller dashboard analytics
+    sellerStats: null,
+    sellerStatsLoading: false,
+    sellerStatsError: '',
 
     // Reviews
     reviews: [],
@@ -448,7 +454,7 @@ export const useBookStore = defineStore('book', {
       try {
         const { data } = await getSellerProfile()
         this.sellerProfile = data
-        this.isSeller = Boolean(data?.isSeller)
+        this.isSeller = Boolean(data)
       } catch (error) {
         this.sellerProfile = null
         this.isSeller = false
@@ -479,7 +485,7 @@ export const useBookStore = defineStore('book', {
       try {
         const { data } = await updateSellerProfile(payload)
         this.sellerProfile = data
-        this.isSeller = Boolean(data?.isSeller)
+        this.isSeller = Boolean(data)
         return data
       } catch (error) {
         this.sellerError = getApiErrorMessage(error, 'Failed to update seller profile')
@@ -513,6 +519,22 @@ export const useBookStore = defineStore('book', {
         this.sellerPublishedBooksError = err.response?.data?.message || err.message
       } finally {
         this.sellerPublishedBooksLoading = false
+      }
+    },
+
+    async fetchSellerStats(params = {}) {
+      this.sellerStatsLoading = true
+      this.sellerStatsError = ''
+
+      try {
+        const { data } = await getSellerDashboardStats(params)
+        // The endpoint returns { success: true, summary, revenueTrend, bestSelling }.
+        // Store the whole payload so the view reads `sellerStats.summary` etc.
+        this.sellerStats = data
+      } catch (error) {
+        this.sellerStatsError = error.response?.data?.message || error.message || 'Failed'
+      } finally {
+        this.sellerStatsLoading = false
       }
     },
 

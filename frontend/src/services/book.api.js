@@ -149,6 +149,10 @@ export function getSellerPublishedBooks(sellerId, params = {}) {
   return bookServiceApi.get(`/seller/public/${sellerId}/books`, { params })
 }
 
+export function getSellerDashboardStats(params = {}) {
+  return bookServiceApi.get('/seller/dashboard/stats', { params })
+}
+
 // ── Reviews ────────────────────────────────────────────────────────
 export function getBookReviews(bookId, params = {}) {
   return bookServiceApi.get(`/books/${bookId}/reviews`, { params })

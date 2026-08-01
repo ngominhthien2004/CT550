@@ -3,6 +3,8 @@ import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
 import OrderItem from '@/components/bookstore/OrderItem.vue'
+import AnalyticsLineChart from '@/components/dashboard/AnalyticsLineChart.vue'
+import AnalyticsBarChart from '@/components/dashboard/AnalyticsBarChart.vue'
 import { useBookStore } from '@/stores/book.store.js'
 import { useToast } from '@/composables/useToast.js'
 import { formatShortDate } from '@/utils/date.js'
@@ -14,11 +16,91 @@ const { showSuccess, showError } = useToast()
 const expandedOrderId = ref('')
 const becomingSeller = ref(false)
 
+const statsPeriod = ref('30d')
+const statsGroupBy = ref('day')
+
 const sellerOrders = computed(() => bookStore.sellerOrders)
 const loading = computed(() => bookStore.sellerOrdersLoading)
+const sellerStats = computed(() => bookStore.sellerStats)
+const statsLoading = computed(() => bookStore.sellerStatsLoading)
+
+const summary = computed(() => sellerStats.value?.summary || {})
+const totalRevenue = computed(() => Number(summary.value.totalRevenue || 0))
+const totalSales = computed(() => Number(summary.value.totalSales || 0))
+const totalOrders = computed(() => Number(summary.value.totalOrders || 0))
+const conversionRate = computed(() => Number(summary.value.conversionRate || 0))
+
+const revenueTrend = computed(() => sellerStats.value?.revenueTrend || {})
+const revenueCurrentTotal = computed(() => {
+  const value = Number(revenueTrend.value.currentTotal)
+  return Number.isFinite(value) ? Math.round(value * 100) / 100 : null
+})
+const revenueChangePercent = computed(() => {
+  const value = revenueTrend.value.changePercent
+  return typeof value === 'number' ? value : null
+})
+
+const periodOptions = [
+  { value: '7d', label: t('bookstore.last7Days') },
+  { value: '30d', label: t('bookstore.last30Days') },
+  { value: '90d', label: t('bookstore.last90Days') },
+]
+
+const groupByOptions = computed(() => [
+  { value: 'day', label: t('bookstore.day') },
+  { value: 'week', label: t('bookstore.week') },
+  { value: 'month', label: t('bookstore.month') },
+])
+
+const revenueChartData = computed(() => {
+  const trend = revenueTrend.value
+  if (!trend.labels || !trend.values || trend.labels.length === 0) return null
+  return {
+    labels: trend.labels,
+    datasets: [
+      {
+        label: t('bookstore.revenue'),
+        data: trend.values,
+        borderColor: 'rgb(99, 102, 241)',
+        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 2,
+        pointHitRadius: 10,
+      },
+    ],
+  }
+})
+
+const bestSellingChartData = computed(() => {
+  const list = sellerStats.value?.bestSelling
+  if (!Array.isArray(list) || list.length === 0) return null
+  return {
+    labels: list.map((book) => book.title?.substring(0, 30) || 'Untitled'),
+    datasets: [
+      {
+        label: t('bookstore.revenue'),
+        data: list.map((book) => Number(book.revenue) || 0),
+        backgroundColor: 'rgba(99, 102, 241, 0.7)',
+        borderColor: 'rgb(99, 102, 241)',
+        borderWidth: 1,
+      },
+    ],
+  }
+})
 
 function toggleOrder(orderId) {
   expandedOrderId.value = expandedOrderId.value === orderId ? '' : orderId
+}
+
+function changePeriod(period) {
+  statsPeriod.value = period
+  bookStore.fetchSellerStats({ period, groupBy: statsGroupBy.value })
+}
+
+function changeGroupBy(groupBy) {
+  statsGroupBy.value = groupBy
+  bookStore.fetchSellerStats({ period: statsPeriod.value, groupBy })
 }
 
 async function becomeSeller() {
@@ -37,7 +119,10 @@ async function updateStatus(orderId, status) {
   try {
     await bookStore.updateSellerOrderStatus(orderId, status)
     showSuccess(t('bookstore.save'))
-    await bookStore.fetchSellerOrders()
+    await Promise.all([
+      bookStore.fetchSellerOrders(),
+      bookStore.fetchSellerStats({ period: statsPeriod.value, groupBy: statsGroupBy.value }),
+    ])
   } catch (error) {
     showError(translateError(error, t, 'bookstore.loadFailed'))
   }
@@ -47,9 +132,7 @@ function formatStatus(status) {
   const map = {
     pending: t('bookstore.pending'),
     paid: t('bookstore.paid'),
-    processing: t('bookstore.processing'),
-    shipped: t('bookstore.shipped'),
-    completed: t('bookstore.completed'),
+    fulfilled: t('bookstore.fulfilled'),
     cancelled: t('bookstore.cancelled'),
     refunded: t('bookstore.refunded'),
   }
@@ -60,30 +143,17 @@ function statusClass(status) {
   const map = {
     pending: 'bg-warning text-dark',
     paid: 'bg-info text-dark',
-    processing: 'bg-primary',
-    shipped: 'bg-primary',
-    completed: 'bg-success',
+    fulfilled: 'bg-success',
     cancelled: 'bg-secondary',
     refunded: 'bg-secondary',
   }
   return map[status] || 'bg-secondary'
 }
 
-const totalRevenue = computed(() => {
-  return sellerOrders.value
-    .filter((o) => o.status === 'completed' || o.status === 'paid')
-    .reduce((sum, o) => sum + Number(o.totalAmount || 0), 0)
-})
-
-const totalSales = computed(() => {
-  return sellerOrders.value
-    .filter((o) => o.status === 'completed' || o.status === 'paid')
-    .reduce((sum, o) => sum + (o.items?.length || 0), 0)
-})
-
 onMounted(() => {
   bookStore.fetchSellerProfile()
   bookStore.fetchSellerOrders()
+  bookStore.fetchSellerStats({ period: statsPeriod.value, groupBy: statsGroupBy.value })
 })
 </script>
 
@@ -115,7 +185,66 @@ onMounted(() => {
           </div>
           <div class="stat-card">
             <span class="stat-label">{{ $t('bookstore.orders') }}</span>
-            <span class="stat-value">{{ sellerOrders.length }}</span>
+            <span class="stat-value">{{ totalOrders }}</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">{{ $t('bookstore.conversionRate') }}</span>
+            <span class="stat-value">{{ conversionRate.toFixed(1) }}%</span>
+          </div>
+        </div>
+
+        <div class="analytics-section">
+          <div class="analytics-controls">
+            <div class="period-selector">
+              <button
+                v-for="opt in periodOptions"
+                :key="opt.value"
+                type="button"
+                :class="['period-btn', { active: statsPeriod === opt.value }]"
+                @click="changePeriod(opt.value)"
+              >
+                {{ opt.label }}
+              </button>
+            </div>
+            <div class="groupby-selector">
+              <span class="selector-label">{{ $t('bookstore.groupBy') }}</span>
+              <div class="period-selector">
+                <button
+                  v-for="opt in groupByOptions"
+                  :key="opt.value"
+                  type="button"
+                  :class="['period-btn', { active: statsGroupBy === opt.value }]"
+                  @click="changeGroupBy(opt.value)"
+                >
+                  {{ opt.label }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="statsLoading" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status"></div>
+          </div>
+
+          <div v-else-if="bookStore.sellerStatsError" class="alert alert-danger" role="alert">
+            {{ bookStore.sellerStatsError }}
+          </div>
+
+          <div v-else class="analytics-charts">
+            <AnalyticsLineChart
+              :title="$t('bookstore.revenueOverTime')"
+              :chart-data="revenueChartData"
+              :loading="statsLoading"
+              :current-total="revenueCurrentTotal"
+              :change-percent="revenueChangePercent"
+              :height="220"
+            />
+            <AnalyticsBarChart
+              :title="$t('bookstore.bestSelling')"
+              :chart-data="bestSellingChartData"
+              :loading="statsLoading"
+              :height="220"
+            />
           </div>
         </div>
 
@@ -165,12 +294,15 @@ onMounted(() => {
                 :show-download="false"
               />
 
-              <div class="status-actions">
+              <div v-if="order.status === 'pending' || order.status === 'paid'" class="status-actions">
                 <span class="status-label">{{ $t('bookstore.updateStatus') }}</span>
-                <button type="button" class="action-pill action-pill--small" @click="updateStatus(order._id, 'processing')">{{ $t('bookstore.processing') }}</button>
-                <button type="button" class="action-pill action-pill--post action-pill--small" @click="updateStatus(order._id, 'shipped')">{{ $t('bookstore.shipped') }}</button>
-                <button type="button" class="action-pill action-pill--small" @click="updateStatus(order._id, 'completed')">{{ $t('bookstore.completed') }}</button>
-                <button type="button" class="action-pill action-pill--danger action-pill--small" @click="updateStatus(order._id, 'cancelled')">{{ $t('bookstore.cancelled') }}</button>
+                <template v-if="order.status === 'pending'">
+                  <button type="button" class="action-pill action-pill--danger action-pill--small" @click="updateStatus(order._id, 'cancelled')">{{ $t('bookstore.cancelled') }}</button>
+                </template>
+                <template v-else-if="order.status === 'paid'">
+                  <button type="button" class="action-pill action-pill--post action-pill--small" @click="updateStatus(order._id, 'fulfilled')">{{ $t('bookstore.markFulfilled') }}</button>
+                  <button type="button" class="action-pill action-pill--danger action-pill--small" @click="updateStatus(order._id, 'refunded')">{{ $t('bookstore.refund') }}</button>
+                </template>
               </div>
             </div>
           </div>
@@ -241,6 +373,75 @@ onMounted(() => {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--accent);
+}
+
+.analytics-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.analytics-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.period-selector {
+  display: flex;
+  gap: 0.35rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.25rem;
+}
+
+.period-btn {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.period-btn:hover {
+  color: var(--text);
+  background: var(--bg);
+}
+
+.period-btn.active {
+  color: var(--surface);
+  background: var(--accent);
+}
+
+.groupby-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.selector-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.analytics-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .analytics-charts {
+    grid-template-columns: 1fr;
+  }
 }
 
 .dashboard-actions {
