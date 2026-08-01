@@ -154,20 +154,20 @@ onMounted(() => {
               <button
                 type="button"
                 class="btn action-pill action-pill--post action-pill--small library-card-read"
+                :title="t('bookstore.read')"
                 @click="router.push({ name: 'book-read', query: { bookId: book.bookId, orderId: book.orderId, itemId: book.itemId, title: book.title } })"
               >
-                <i class="fa-solid fa-book-open me-1"></i>
-                {{ t('bookstore.read') }}
+                <i class="fa-solid fa-book-open"></i>
               </button>
               <button
                 type="button"
                 class="btn action-pill action-pill--post action-pill--small library-card-download"
+                :title="downloadingItemId === book.itemId ? t('bookstore.loading') : t('bookstore.download')"
                 :disabled="downloadingItemId === book.itemId"
                 @click="downloadBook(book)"
               >
-                <i v-if="downloadingItemId === book.itemId" class="fa-solid fa-spinner fa-spin me-1"></i>
-                <i v-else class="fa-solid fa-download me-1"></i>
-                {{ downloadingItemId === book.itemId ? t('bookstore.loading') : t('bookstore.download') }}
+                <i v-if="downloadingItemId === book.itemId" class="fa-solid fa-spinner fa-spin"></i>
+                <i v-else class="fa-solid fa-download"></i>
               </button>
             </div>
           </div>
