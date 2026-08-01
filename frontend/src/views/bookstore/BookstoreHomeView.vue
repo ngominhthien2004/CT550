@@ -84,12 +84,6 @@ function selectTag(tagName) {
   bookStore.fetchBooks(1)
 }
 
-function scrollToSection(selector) {
-  const el = document.querySelector(selector)
-  if (!el) return
-  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-}
-
 // React to browser back/forward navigation by re-syncing filters from
 // the URL. The initial load is handled in onMounted, so skip the
 // first invocation (when oldQuery is undefined).
@@ -111,33 +105,6 @@ onMounted(async () => {
 <template>
   <BookstoreLayout>
     <div class="bookstore-page">
-      <!-- Hero / Banner -->
-      <section class="bookstore-hero page-block">
-        <div class="bookstore-hero-grid">
-          <div class="bookstore-hero-copy">
-            <span class="bookstore-hero-eyebrow">{{ $t('bookstore.bookstore') }}</span>
-            <h1 class="bookstore-hero-title">{{ $t('bookstore.heroTitle') }}</h1>
-            <p class="bookstore-hero-subtitle">{{ $t('bookstore.heroSubtitle') }}</p>
-            <div class="bookstore-hero-actions">
-              <button type="button" class="bookstore-hero-cta" @click="scrollToSection('.bookstore-section--featured')">
-                <i class="fa-solid fa-compass me-1"></i> {{ $t('bookstore.exploreBooks') }}
-              </button>
-              <router-link to="/bookstore/upload" class="bookstore-hero-cta bookstore-hero-cta--ghost">
-                <i class="fa-solid fa-upload me-1"></i> {{ $t('bookstore.sellABook') }}
-              </router-link>
-            </div>
-          </div>
-          <div class="bookstore-hero-art" aria-hidden="true">
-            <div class="bookstore-hero-stack">
-              <div class="bookstore-hero-tile bookstore-hero-tile--1"></div>
-              <div class="bookstore-hero-tile bookstore-hero-tile--2"></div>
-              <div class="bookstore-hero-tile bookstore-hero-tile--3"></div>
-              <div class="bookstore-hero-glyph"><i class="fa-solid fa-book-open"></i></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <!-- Popular Tags -->
       <section class="bookstore-section">
         <header class="bookstore-section-head">
