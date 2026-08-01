@@ -182,6 +182,7 @@ export const bookApi = {
 export const bookBookmarkApi = {
   toggle: (bookId) => bookServiceApi.post('/book-bookmarks/toggle', { bookId }),
   getStatus: (bookId) => bookServiceApi.get(`/book-bookmarks/status/${bookId}`),
+  getStatuses: (bookIds) => bookServiceApi.get('/book-bookmarks/status', { params: { ids: bookIds.join(',') } }),
   getMine: (params = {}) => bookServiceApi.get('/book-bookmarks', { params }),
   delete: (bookmarkId) => bookServiceApi.delete(`/book-bookmarks/${bookmarkId}`),
 }

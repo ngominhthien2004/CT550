@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useBookStore } from '@/stores/book.store.js'
 import { formatShortDate, formatRelativeTime } from '@/utils/date.js'
@@ -128,8 +128,27 @@ function getStarLabel(n) {
   return labels[n - 1] || ''
 }
 
+// The route reuses BookDetailView across /bookstore/<id> navigations, so the
+// bookId prop can change in place. Fetch reviews reactively instead of only in
+// onMounted, and reset the review form so the previous book's UI never lingers.
+watch(
+  () => props.bookId,
+  () => {
+    reviewText.value = ''
+    starRating.value = 0
+    hoverRating.value = 0
+    isEditing.value = false
+    editReviewId.value = null
+    deleteConfirmId.value = null
+    bookStore.fetchReviews(props.bookId)
+  },
+  { immediate: true }
+)
+
+// The outside-click listener is a mount-lifecycle concern: it must be attached
+// exactly once for the component's lifetime (and detached on unmount). The
+// review fetch above is handled by the watch, so this only wires the listener.
 onMounted(() => {
-  bookStore.fetchReviews(props.bookId)
   document.addEventListener('click', onDocumentClick)
 })
 

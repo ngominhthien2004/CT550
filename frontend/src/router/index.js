@@ -214,6 +214,15 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    // back/forward: khôi phục vị trí đã lưu
+    if (savedPosition) return savedPosition
+    // Trang không có hash: scroll về đầu trang
+    if (to.hash) {
+      return { el: to.hash, behavior: 'smooth' }
+    }
+    return { top: 0 }
+  },
 })
 
 router.beforeEach((to) => {

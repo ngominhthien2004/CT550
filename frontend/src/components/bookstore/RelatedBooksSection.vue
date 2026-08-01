@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { bookApi } from '@/services/book.api'
 import BookCard from './BookCard.vue'
@@ -28,7 +28,18 @@ async function loadRelated() {
   }
 }
 
-onMounted(loadRelated)
+// The route reuses BookDetailView across /bookstore/<id> navigations, so the
+// bookId prop can change in place. Reload reactively instead of only in
+// onMounted, and clear the previous list so stale books never flash.
+watch(
+  () => props.bookId,
+  () => {
+    relatedBooks.value = []
+    loading.value = true
+    loadRelated()
+  },
+  { immediate: true }
+)
 </script>
 
 <template>

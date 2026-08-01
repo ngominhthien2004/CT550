@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookBookmarkStore } from '@/stores/bookBookmark.store.js'
 import { useAuthStore } from '@/stores/auth.store.js'
@@ -22,12 +22,6 @@ const authStore = useAuthStore()
 const bookId = computed(() => props.book?._id || props.book?.id)
 const isBookmarked = computed(() => bookmarkStore.isBookmarked(bookId.value))
 const isToggling = computed(() => bookmarkStore.isToggling(bookId.value))
-
-onMounted(() => {
-  if (bookId.value && authStore.isAuthenticated) {
-    bookmarkStore.fetchStatus(bookId.value)
-  }
-})
 
 async function handleToggle(e) {
   e.preventDefault()

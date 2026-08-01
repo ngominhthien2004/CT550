@@ -1,7 +1,9 @@
 <script setup>
+import { watch } from 'vue'
 import BookCard from './BookCard.vue'
+import { useBookBookmarkStore } from '@/stores/bookBookmark.store.js'
 
-defineProps({
+const props = defineProps({
   books: {
     type: Array,
     default: () => [],
@@ -11,6 +13,26 @@ defineProps({
     default: false,
   },
 })
+
+const bookmarkStore = useBookBookmarkStore()
+
+// Batch-fetch bookmark statuses for every book in the grid so each
+// BookBookmarkButton renders from store state instead of firing its own
+// GET /status/:bookId request (which exhausted the rate limiter). The store
+// action guards on auth and skips ids it already knows, so re-renders and
+// pagination do not produce extra requests or loops.
+watch(
+  () => props.books,
+  (books) => {
+    const ids = (books || [])
+      .map((book) => book._id || book.id)
+      .filter(Boolean)
+    if (ids.length > 0) {
+      bookmarkStore.fetchStatuses(ids)
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>

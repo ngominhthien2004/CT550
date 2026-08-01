@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import BookstoreLayout from '@/components/bookstore/BookstoreLayout.vue'
@@ -9,11 +9,15 @@ import ReviewSection from '@/components/bookstore/ReviewSection.vue'
 import RelatedBooksSection from '@/components/bookstore/RelatedBooksSection.vue'
 import StarRating from '@/components/bookstore/StarRating.vue'
 import { useBookStore } from '@/stores/book.store.js'
+import { useBookBookmarkStore } from '@/stores/bookBookmark.store.js'
+import { useAuthStore } from '@/stores/auth.store.js'
 
 const { t, locale } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const bookStore = useBookStore()
+const bookmarkStore = useBookBookmarkStore()
+const authStore = useAuthStore()
 
 const bookId = computed(() => route.params.id)
 const book = computed(() => bookStore.currentBook)
@@ -84,11 +88,24 @@ function onCoverError(e) {
   }
 }
 
-onMounted(() => {
-  if (bookId.value) {
-    bookStore.fetchBookDetail(bookId.value)
-  }
-})
+// Reload the book whenever the route's :id changes. The route reuses this
+// component instance across /bookstore/<id> navigations, so onMounted alone
+// would not re-fetch when only the param changes — a watch with immediate
+// covers both the first render and subsequent id swaps.
+watch(
+  bookId,
+  (id) => {
+    if (!id) return
+    bookStore.fetchBookDetail(id)
+    // Single-id status fetch for the detail page's bookmark button. Grids
+    // get their statuses in bulk from BookGrid; this page renders the button
+    // directly, so it fetches just its own id.
+    if (authStore.isAuthenticated) {
+      bookmarkStore.fetchStatus(id)
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
