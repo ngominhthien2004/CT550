@@ -28,7 +28,7 @@ const props = defineProps({
   },
 })
 
-defineEmits(['toggle', 'mark-read'])
+defineEmits(['toggle', 'mark-all-read'])
 
 const processedItems = computed(() =>
   props.items.map(item => ({
@@ -63,7 +63,18 @@ const processedItems = computed(() =>
           Messages
           <span v-if="unreadCount" class="quick-panel-count">({{ unreadCount > 9 ? '9+' : unreadCount }})</span>
         </p>
-        <router-link to="/messages" class="quick-view-all" role="menuitem">View all</router-link>
+        <div class="quick-panel-head-actions">
+          <button
+            v-if="unreadCount"
+            type="button"
+            class="action-pill action-pill--small"
+            aria-label="Mark all messages as read"
+            @click.stop="$emit('mark-all-read')"
+          >
+            Mark all read
+          </button>
+          <router-link to="/messages" class="quick-view-all" role="menuitem">View all</router-link>
+        </div>
       </div>
 
       <p v-if="loading" class="quick-panel-note">Loading...</p>
@@ -90,15 +101,6 @@ const processedItems = computed(() =>
               </div>
             </div>
           </router-link>
-          <button
-            v-if="!item.isRead"
-            type="button"
-            class="action-pill action-pill--small"
-            aria-label="Mark message as read"
-            @click.stop="$emit('mark-read', item._id)"
-          >
-            Mark read
-          </button>
         </div>
       </div>
       <p v-else class="quick-panel-note">No messages yet.</p>
@@ -120,6 +122,12 @@ const processedItems = computed(() =>
   text-transform: none;
   color: var(--text);
   margin-left: 0.2rem;
+}
+
+.quick-panel-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .quick-item-meta {

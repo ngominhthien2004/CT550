@@ -8,7 +8,7 @@ import ThreadListPane from '../components/messages/ThreadListPane.vue'
 import ThreadChatPane from '../components/messages/ThreadChatPane.vue'
 
 import { useAuthStore } from '../stores/auth.store'
-import { getMyMessages, markMessageRead, userApi, messageApi, reportApi } from '../services/api'
+import { getMyMessages, userApi, messageApi, reportApi } from '../services/api'
 import { useMessageStore } from '../stores/message.store'
 import { useSocket } from '../composables/useSocket'
 
@@ -301,7 +301,10 @@ function startMessagePolling() {
   }
   newMessageInterval = setInterval(tick, 10 * 1000)
   messageVisibilityHandler = () => {
-    if (!document.hidden) tick()
+    if (!document.hidden) {
+      tick()
+      markThreadReadIfNeeded()
+    }
   }
   document.addEventListener('visibilitychange', messageVisibilityHandler)
 }
@@ -325,7 +328,10 @@ function handleIncomingMessage(message) {
 
   inboxMessages.value = [message, ...inboxMessages.value]
 
-  if (selectedThreadId.value !== String(message.sender?._id || '')) {
+  const threadIsOpen = selectedThreadId.value === String(message.sender?._id || '')
+  if (threadIsOpen) {
+    markThreadReadIfNeeded()
+  } else {
     playNotificationSound()
   }
 }
@@ -453,26 +459,52 @@ async function reportUser() {
   } catch (e) { alert(e?.response?.data?.message || t('chat.reportFailed')) }
 }
 
-async function markAsRead(messageId) {
+let threadReadInFlight = false
+async function markThreadReadIfNeeded() {
+  const peerId = selectedThreadId.value
+  if (!peerId || !authStore.isAuthenticated || threadReadInFlight) return
+  const hasUnread = threadMessages.value.some(
+    (item) => !item.isRead && String(item?.recipient?._id || '') === currentUserId.value,
+  )
+  if (!hasUnread) return
+  threadReadInFlight = true
   try {
-    await markMessageRead(messageId)
+    await messageStore.readThread(peerId)
+    // mirror into the view's own inbox cache so the UI updates immediately
     inboxMessages.value = inboxMessages.value.map((item) => {
-      if (item._id !== messageId) return item
-      return { ...item, isRead: true, readAt: new Date().toISOString() }
+      const incoming = String(item.recipient?._id || '') === currentUserId.value
+      const fromPeer = String(item.sender?._id || '') === String(peerId)
+      if (incoming && fromPeer && !item.isRead) {
+        return { ...item, isRead: true, readAt: new Date().toISOString() }
+      }
+      return item
     })
   } catch {
-    console.error('Failed to mark message as read')
+    // transient failure — next poll / message / selection retries
+  } finally {
+    threadReadInFlight = false
   }
+}
+
+function handleReadReceipt(payload) {
+  const readerId = String(payload?.readerId || '')
+  if (!readerId) return
+  messageStore.applyReadReceipt(readerId)
+  sentMessages.value = sentMessages.value.map((item) => {
+    const outgoing = String(item.sender?._id || '') === currentUserId.value
+    const toReader = String(item.recipient?._id || '') === readerId
+    if (outgoing && toReader && !item.isRead) {
+      return { ...item, isRead: true, readAt: new Date().toISOString() }
+    }
+    return item
+  })
 }
 
 async function selectThread(peerId) {
   selectedThreadId.value = peerId
-  const unreadRows = threadMessages.value.filter(
-    (item) => !item.isRead && String(item?.recipient?._id || '') === currentUserId.value,
-  )
-  await Promise.all(unreadRows.map((item) => markAsRead(item._id)))
   replyingTo.value = null; showEmojiPicker.value = false
   scrollChatToBottom()
+  await markThreadReadIfNeeded()
 }
 
 const chatPaneRef = ref(null)
@@ -501,12 +533,27 @@ onMounted(() => {
   loadMessages()
   connectSocket()
   socketOn('message:new', handleIncomingMessage)
+  socketOn('message:read', handleReadReceipt)
 })
 watch(threads, () => { scrollThreadListToTop() })
 watch(threadMessages, () => {
   // Only auto-scroll when the user is already at the bottom. If they have
   // scrolled up to read history, leave their viewport alone.
   if (isAtBottom.value) scrollChatToBottom()
+  markThreadReadIfNeeded()
+})
+// Mirror store-wide read state into this view's local cache (e.g. when the
+// topbar "Mark all read" action fires while we are on /messages).
+watch(() => messageStore.inboxUnreadCount, (newVal, oldVal) => {
+  if (typeof oldVal === 'number' && newVal < oldVal) {
+    inboxMessages.value = inboxMessages.value.map((item) => {
+      const incoming = String(item.recipient?._id || '') === currentUserId.value
+      if (incoming && !item.isRead) {
+        return { ...item, isRead: true, readAt: new Date().toISOString() }
+      }
+      return item
+    })
+  }
 })
 watch(() => inboxMessages.value.length, (newCount, oldCount) => {
   if (oldCount !== undefined && newCount > oldCount) {
@@ -528,6 +575,7 @@ onUnmounted(() => {
   stopPresencePolling()
   stopMessagePolling()
   socketOff('message:new', handleIncomingMessage)
+  socketOff('message:read', handleReadReceipt)
   disconnectSocket()
 })
 </script>
@@ -568,7 +616,6 @@ onUnmounted(() => {
         @update:thread-search-query="threadSearchQuery = $event"
         @reply="replyingTo = $event"
         @delete="deleteMessage"
-        @mark-read="markAsRead"
         @scroll-images="scrollChatToBottom"
         @scroll="handleChatScroll"
         @report="reportUser"

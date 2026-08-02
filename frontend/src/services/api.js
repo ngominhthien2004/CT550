@@ -248,6 +248,8 @@ export const messageApi = {
   getMine: (params = {}) => api.get('/messages', { params }),
   create: (payload) => api.post('/messages', payload),
   markRead: (messageId) => api.patch(`/messages/${messageId}/read`),
+  markThreadRead: (peerId) => api.patch(`/messages/threads/${peerId}/read`),
+  markAllRead: () => api.patch('/messages/read-all'),
   searchThread: (threadId, q) => api.get(`/messages/${threadId}/search`, { params: { q } }),
   softDelete: (messageId) => api.patch(`/messages/${messageId}/delete`),
 }
@@ -291,6 +293,8 @@ export const getUserSeries = (userId, params) => userApi.getUserSeries(userId, p
 export const getMyMessages = (params = {}) => messageApi.getMine(params)
 export const createMessage = (payload) => messageApi.create(payload)
 export const markMessageRead = (messageId) => messageApi.markRead(messageId)
+export const markThreadRead = (peerId) => messageApi.markThreadRead(peerId)
+export const markAllMessagesRead = () => messageApi.markAllRead()
 
 export const getMyNotifications = (params = {}) => notificationApi.getMine(params)
 export const markNotificationRead = (notificationId) => notificationApi.markRead(notificationId)

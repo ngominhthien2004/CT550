@@ -23,7 +23,7 @@ const props = defineProps({
 
 const emit = defineEmits([
   'back', 'search', 'clear-search', 'update:threadSearchQuery',
-  'reply', 'delete', 'mark-read', 'scroll-images', 'scroll',
+  'reply', 'delete', 'scroll-images', 'scroll',
   'update:content', 'send', 'typing', 'image-select', 'clear-images',
   'dragover', 'dragleave', 'drop',
   'report', 'block',
@@ -151,7 +151,6 @@ defineExpose({ scrollToBottom })
             :current-user-id="currentUserId"
             @reply="emit('reply', $event)"
             @delete="emit('delete', $event)"
-            @mark-read="emit('mark-read', $event)"
             @scroll-images="scrollToBottom"
           />
         </template>

@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { getMyMessages, createMessage, markMessageRead, searchThread, softDeleteMessage } = require('../controllers/message.controller');
+const { getMyMessages, createMessage, markMessageRead, markThreadRead, markAllRead, searchThread, softDeleteMessage } = require('../controllers/message.controller');
 const { protect } = require('../middlewares/auth.middleware');
 const { checkBlocked } = require('../middlewares/blockCheck.middleware');
 const { getMaxUploadFileSizeBytes } = require('../config/env');
@@ -46,6 +46,12 @@ const upload = multer({
 router.route('/')
     .get(protect, getMyMessages)
     .post(protect, upload.array('images', 5), checkBlocked({ bodyField: 'recipientId' }), createMessage);
+
+router.route('/read-all')
+    .patch(protect, markAllRead);
+
+router.route('/threads/:peerId/read')
+    .patch(protect, markThreadRead);
 
 router.route('/:id/read')
     .patch(protect, markMessageRead);

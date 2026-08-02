@@ -6,7 +6,7 @@ const props = defineProps({
   currentUserId: { type: String, default: '' },
 })
 
-const emit = defineEmits(['reply', 'delete', 'mark-read', 'scroll-images'])
+const emit = defineEmits(['reply', 'delete', 'scroll-images'])
 
 const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.currentUserId
 </script>
@@ -60,15 +60,6 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
         <i class="fa-solid fa-trash"></i>
       </button>
     </div>
-
-    <button
-      v-if="String(row.item?.recipient?._id || '') === currentUserId && !row.item.isRead"
-      type="button"
-      class="mark-read"
-      @click="emit('mark-read', row.item._id)"
-    >
-      Mark read
-    </button>
   </article>
 </template>
 
@@ -233,14 +224,6 @@ const isOutgoing = () => String(props.row.item?.sender?._id || '') === props.cur
   background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
   border-color: rgba(239, 68, 68, 0.3);
-}
-
-.mark-read {
-  border: none;
-  background: transparent;
-  color: var(--accent);
-  font-size: 0.72rem;
-  cursor: pointer;
 }
 </style>
 

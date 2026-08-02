@@ -206,16 +206,6 @@
   border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
-.mark-read {
-  border: 0;
-  background: transparent;
-  color: var(--accent);
-  font-size: 0.72rem;
-  font-weight: 600;
-  justify-self: start;
-  padding: 0;
-}
-
 .compose-row {
   padding: 0.75rem;
   border-top: 1px solid var(--line);

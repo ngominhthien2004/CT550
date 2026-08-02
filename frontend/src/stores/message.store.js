@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth.store'
-import { createMessage, getMyMessages, markMessageRead, messageApi } from '../services/api.js'
+import { createMessage, getMyMessages, markMessageRead, markThreadRead, markAllMessagesRead, messageApi } from '../services/api.js'
 
 function threadKey(message, currentUserId) {
   if (!message) return null
@@ -191,6 +191,67 @@ export const useMessageStore = defineStore('messages', {
       } finally {
         this.loading = false
       }
+    },
+    async readThread(peerId) {
+      this.error = ''
+      try {
+        const { data } = await markThreadRead(peerId)
+        const nowIso = new Date().toISOString()
+        const markArr = (arr) => arr.map((item) => {
+          const isIncomingToMe = String(item.recipient?._id || '') === String(this._getMe())
+          const fromPeer = String(item.sender?._id || '') === String(peerId)
+          if (isIncomingToMe && fromPeer && !item.isRead) {
+            return { ...item, isRead: true, readAt: nowIso }
+          }
+          return item
+        })
+        this.items = markArr(this.items)
+        this.inboxItems = markArr(this.inboxItems)
+        this.inboxUnreadCount = Number(data?.unreadCount ?? this.inboxItems.filter((i) => !i.isRead).length)
+        this.unreadCount = this.inboxUnreadCount
+        return data
+      } catch (error) {
+        this.error = error?.response?.data?.message || 'Failed to mark thread as read'
+        throw error
+      }
+    },
+    async markAllRead() {
+      this.error = ''
+      try {
+        const { data } = await markAllMessagesRead()
+        const nowIso = new Date().toISOString()
+        const markArr = (arr) => arr.map((item) => {
+          if (String(item.recipient?._id || '') === String(this._getMe()) && !item.isRead) {
+            return { ...item, isRead: true, readAt: nowIso }
+          }
+          return item
+        })
+        this.items = markArr(this.items)
+        this.inboxItems = markArr(this.inboxItems)
+        this.inboxUnreadCount = Number(data?.unreadCount ?? 0)
+        this.unreadCount = this.inboxUnreadCount
+        return data
+      } catch (error) {
+        this.error = error?.response?.data?.message || 'Failed to mark all messages as read'
+        throw error
+      }
+    },
+    applyReadReceipt(readerId) {
+      const rid = String(readerId || '')
+      if (!rid) return
+      const markArr = (arr) => arr.map((item) => {
+        const isOutgoing = String(item.sender?._id || '') === String(this._getMe())
+        const toReader = String(item.recipient?._id || '') === rid
+        if (isOutgoing && toReader && !item.isRead) {
+          return { ...item, isRead: true, readAt: new Date().toISOString() }
+        }
+        return item
+      })
+      this.items = markArr(this.items)
+      this.sentItems = markArr(this.sentItems)
+    },
+    _getMe() {
+      return useAuthStore().user?._id || ''
     },
   },
 })

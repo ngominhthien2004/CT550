@@ -339,9 +339,10 @@ function handleUserMenuToggle(event) {
   }
 }
 
-async function handleMarkMessageRead(messageId) {
+async function handleMarkAllMessagesRead() {
   try {
-    await messageStore.readMessage(messageId)
+    await messageStore.markAllRead()
+    await loadMessagePreview()
   } catch {
     // Error is surfaced through messageStore.error in template binding
   }
@@ -434,7 +435,7 @@ async function applySearchOptions(payload) {
         :error="messageStore.error"
         :format-time="formatPanelTime"
         @toggle="handleMessageMenuToggle"
-        @mark-read="handleMarkMessageRead"
+        @mark-all-read="handleMarkAllMessagesRead"
       />
       <router-link v-else to="/messages" class="icon-round" :aria-label="$t('topbar.messages')" :title="$t('topbar.messages')">
         <i class="fa-regular fa-envelope" aria-hidden="true"></i>

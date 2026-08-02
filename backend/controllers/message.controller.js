@@ -1,5 +1,6 @@
 const Message = require('../models/Message');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 const path = require('path');
 const { getSocketIO } = require('../utils/socket');
 const { createNotification } = require('../utils/notification');
@@ -233,7 +234,113 @@ const markMessageRead = async (req, res, next) => {
         message.readAt = new Date();
         await message.save();
 
+        // Sync related notification + push real-time read receipt
+        await Notification.updateMany(
+            { user: req.user._id, type: 'message', 'metadata.messageId': message._id },
+            { $set: { isRead: true } }
+        );
+        const io = getSocketIO();
+        if (io) {
+            io.to(`user:${message.sender}`).emit('message:read', {
+                readerId: req.user._id,
+                count: 1,
+            });
+        }
+
         res.json({ message: 'Message marked as read' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const markThreadRead = async (req, res, next) => {
+    try {
+        const peerId = req.params.peerId;
+        if (!peerId || peerId === req.user._id.toString()) {
+            res.status(400);
+            return next(new Error('Invalid thread'));
+        }
+        const me = req.user._id;
+        const now = new Date();
+
+        // Collect unread incoming messages from this peer (skip soft-deleted)
+        const unread = await Message.find(
+            { recipient: me, sender: peerId, isRead: false, deletedFor: { $ne: me } },
+            { _id: 1 }
+        );
+        const ids = unread.map((m) => m._id);
+        let modifiedCount = 0;
+        if (ids.length > 0) {
+            const result = await Message.updateMany(
+                { _id: { $in: ids } },
+                { $set: { isRead: true, readAt: now } }
+            );
+            modifiedCount = result.modifiedCount || ids.length;
+
+            // Keep message notifications in sync (bell clears when the DM is read)
+            await Notification.updateMany(
+                { user: me, type: 'message', 'metadata.messageId': { $in: ids } },
+                { $set: { isRead: true } }
+            );
+        }
+
+        const unreadCount = await Message.countDocuments({ recipient: me, isRead: false });
+
+        // Real-time read receipt to the peer (the sender of those messages)
+        const io = getSocketIO();
+        if (io && modifiedCount > 0) {
+            io.to(`user:${peerId}`).emit('message:read', {
+                readerId: me,
+                count: modifiedCount,
+            });
+        }
+
+        res.json({ modifiedCount, unreadCount, threadId: peerId });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const markAllRead = async (req, res, next) => {
+    try {
+        const me = req.user._id;
+        const now = new Date();
+
+        const unread = await Message.find(
+            { recipient: me, isRead: false, deletedFor: { $ne: me } },
+            { _id: 1 }
+        );
+        const ids = unread.map((m) => m._id);
+        let modifiedCount = 0;
+        if (ids.length > 0) {
+            const result = await Message.updateMany(
+                { _id: { $in: ids } },
+                { $set: { isRead: true, readAt: now } }
+            );
+            modifiedCount = result.modifiedCount || ids.length;
+
+            await Notification.updateMany(
+                { user: me, type: 'message', 'metadata.messageId': { $in: ids } },
+                { $set: { isRead: true } }
+            );
+        }
+
+        const unreadCount = await Message.countDocuments({ recipient: me, isRead: false });
+
+        // Broadcast read receipts to each sender who had messages newly read
+        if (modifiedCount > 0) {
+            const io = getSocketIO();
+            if (io) {
+                const senders = await Message.distinct('sender', { recipient: me, isRead: true, readAt: now });
+                for (const senderId of senders) {
+                    if (String(senderId) !== String(me)) {
+                        io.to(`user:${senderId}`).emit('message:read', { readerId: me, count: 1 });
+                    }
+                }
+            }
+        }
+
+        res.json({ modifiedCount, unreadCount });
     } catch (error) {
         next(error);
     }
@@ -242,6 +349,9 @@ const markMessageRead = async (req, res, next) => {
 module.exports = {
     getMyMessages,
     createMessage,
-    markMessageRead
-    ,searchThread, softDeleteMessage
+    markMessageRead,
+    markThreadRead,
+    markAllRead,
+    searchThread,
+    softDeleteMessage
 };
