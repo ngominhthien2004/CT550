@@ -43,6 +43,21 @@ const processedArtworks = computed(() => {
   }))
 })
 
+// Số artwork của series được user like tại thời điểm load (snapshot ban đầu).
+const likedCountAtLoad = ref(0)
+
+// Số artwork của series hiện đang được user like (reactive theo likeStore).
+const currentlyLiked = computed(() => {
+  if (!series.value?.artworks?.length) return 0
+  return series.value.artworks.filter((a) => likeStore.getLikeStatus(a._id)).length
+})
+
+// Tổng like hiển thị trên hero: base + delta (dương/âm khi like/unlike ngay trên trang).
+const displayTotalLikes = computed(() => {
+  const base = series.value?.totalLikes ?? 0
+  return base - likedCountAtLoad.value + currentlyLiked.value
+})
+
 const isOwner = computed(() => {
   if (!series.value || !authStore.user) return false
   const seriesUser = series.value.user?._id || series.value.user
@@ -79,8 +94,9 @@ async function loadSeries() {
   try {
     await seriesStore.fetchSeriesById(seriesId.value)
     if (authStore.isAuthenticated) {
-      likeStore.fetchMyLikes({ limit: 120 })
+      await likeStore.fetchMyLikes({ limit: 120 })
     }
+    likedCountAtLoad.value = currentlyLiked.value
   } catch (err) {
     seriesLoadError.value = translateError(err, t, 'artwork.noData')
   }
@@ -117,7 +133,7 @@ watch(seriesId, loadSeries, { immediate: true })
           <button type="button" class="btn-close" @click="seriesLoadError = ''" aria-label="Close"></button>
         </div>
 
-        <SeriesHero :series="series" />
+        <SeriesHero :series="series" :total-likes-override="displayTotalLikes" />
 
         <SeriesArtworksGrid
           :artworks="processedArtworks"

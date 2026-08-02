@@ -1,14 +1,21 @@
 <script setup>
+import { computed } from 'vue'
 import { formatShortDate } from '../../utils/date.js'
 import { useSeriesCover } from '@/composables/useSeriesCover'
 import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   series: { type: Object, required: true },
+  totalLikesOverride: { type: Number, default: null },
 })
 
 const { t, locale } = useI18n()
 const coverUrl = useSeriesCover(props.series)
+
+const likesDisplay = computed(() => {
+  const n = props.totalLikesOverride ?? props.series.totalLikes ?? 0
+  return n.toLocaleString()
+})
 
 function formatDate(dateStr) {
   return formatShortDate(dateStr, locale.value)
@@ -60,7 +67,7 @@ function getSeriesIcon(type) {
         </div>
         <div class="hero-stat">
           <i class="fa-solid fa-heart"></i>
-          <span>{{ series.totalLikes?.toLocaleString() || 0 }}</span>
+          <span>{{ likesDisplay }}</span>
           <span class="hero-stat-label">{{ $t('series.likes') }}</span>
         </div>
         <div class="hero-stat">
