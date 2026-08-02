@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSeriesStore } from '@/stores/series.store'
 import { useAuthStore } from '@/stores/auth.store'
+import { useLikeStore } from '@/stores/like.store'
 import api from '@/services/api'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import SeriesHero from '@/components/series/SeriesHero.vue'
@@ -15,6 +16,7 @@ const route = useRoute()
 const router = useRouter()
 const seriesStore = useSeriesStore()
 const authStore = useAuthStore()
+const likeStore = useLikeStore()
 const { t, locale } = useI18n()
 
 const isNavCollapsed = ref(true)
@@ -76,6 +78,9 @@ async function loadSeries() {
   seriesLoadError.value = ''
   try {
     await seriesStore.fetchSeriesById(seriesId.value)
+    if (authStore.isAuthenticated) {
+      likeStore.fetchMyLikes({ limit: 120 })
+    }
   } catch (err) {
     seriesLoadError.value = translateError(err, t, 'artwork.noData')
   }
