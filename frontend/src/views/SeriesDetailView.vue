@@ -81,6 +81,20 @@ function goToArtwork(artworkId) {
   router.push(`/artworks/${artworkId}`)
 }
 
+function goToAddArtwork() {
+  if (!series.value?._id) return
+  const allowedKinds = ['illust', 'manga', 'novel']
+  const kind = allowedKinds.includes(series.value.type) ? series.value.type : 'illust'
+  const query = { seriesId: series.value._id }
+  const tagNames = (series.value.tags || [])
+    .map((tag) => (typeof tag === 'string' ? tag : tag?.name))
+    .filter(Boolean)
+  if (tagNames.length > 0) {
+    query.tags = tagNames.join(',')
+  }
+  router.push({ name: 'upload-kind', params: { kind }, query })
+}
+
 function navigateTo(path) {
   router.push(path)
 }
@@ -137,7 +151,9 @@ watch(seriesId, loadSeries, { immediate: true })
 
         <SeriesArtworksGrid
           :artworks="processedArtworks"
+          :is-owner="isOwner"
           @select="goToArtwork"
+          @add-artwork="goToAddArtwork"
         />
 
         <div v-if="isOwner" class="owner-actions">

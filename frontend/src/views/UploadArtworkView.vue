@@ -412,6 +412,25 @@ async function loadSeriesForUpload() {
   }
 }
 
+function applyQueryPrefill() {
+  const seriesId = String(route.query.seriesId || '')
+  if (seriesId) {
+    selectedSeriesId.value = seriesId
+  }
+  const rawTags = route.query.tags
+  const tagsValue = Array.isArray(rawTags) ? rawTags[0] : rawTags
+  if (typeof tagsValue === 'string' && tagsValue.trim()) {
+    const names = tagsValue
+      .split(',')
+      .map((name) => normalizeTagName(name))
+      .filter(Boolean)
+    const unique = [...new Set(names)].slice(0, 10)
+    for (const name of unique) {
+      if (!form.tags.includes(name)) form.tags.push(name)
+    }
+  }
+}
+
 async function submitArtwork() {
   localError.value = ''
 
@@ -506,6 +525,7 @@ watch(
 onMounted(() => {
   artworkStore.resetCreateState()
   loadSeriesForUpload()
+  applyQueryPrefill()
 })
 
 onBeforeUnmount(() => {
