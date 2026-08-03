@@ -45,6 +45,7 @@
   "oldestFirst": "Oldest first",
   "deleteSeries": "Delete series",
   "deleteArtwork": "Delete artwork",
+  "menuOptions": "Options",
   "reorderUp": "Move up",
   "reorderDown": "Move down",
   "reorderFailed": "Failed to reorder artworks",

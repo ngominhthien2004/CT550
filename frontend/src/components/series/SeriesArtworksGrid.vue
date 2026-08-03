@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ArtworkCard from '@/components/artwork/ArtworkCard.vue'
 
@@ -43,6 +43,26 @@ function moveDown(index) {
   if (index >= localArtworks.value.length - 1) return
   swapArtwork(index, index + 1)
 }
+
+const openMenuId = ref(null)
+
+function toggleMenu(id) {
+  openMenuId.value = openMenuId.value === id ? null : id
+}
+
+function handleClickOutside(e) {
+  if (openMenuId.value && !e.target.closest('.card-menu-wrapper')) {
+    openMenuId.value = null
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside, true)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside, true)
+})
 </script>
 
 <template>
@@ -58,38 +78,46 @@ function moveDown(index) {
           :item="artwork"
           hide-series-badge
         />
-        <div v-if="isOwner" class="reorder-controls">
+        <div v-if="isOwner" class="card-menu-wrapper">
           <button
-            v-if="index > 0"
             type="button"
-            class="reorder-btn reorder-btn--up"
-            :aria-label="t('series.reorderUp')"
-            :title="t('series.reorderUp')"
-            @click.stop="moveUp(index)"
+            class="card-menu-btn"
+            :aria-label="$t('series.menuOptions')"
+            :title="$t('series.menuOptions')"
+            @click.stop="toggleMenu(artwork._id)"
           >
-            <i class="fa-solid fa-chevron-up"></i>
+            <i class="fa-solid fa-ellipsis-vertical"></i>
           </button>
-          <button
-            v-if="index < localArtworks.length - 1"
-            type="button"
-            class="reorder-btn reorder-btn--down"
-            :aria-label="t('series.reorderDown')"
-            :title="t('series.reorderDown')"
-            @click.stop="moveDown(index)"
-          >
-            <i class="fa-solid fa-chevron-down"></i>
-          </button>
+          <div v-if="openMenuId === artwork._id" class="dd-panel" @click.stop>
+            <button
+              v-if="index > 0"
+              type="button"
+              class="dd-item"
+              @click="moveUp(index); openMenuId = null"
+            >
+              <span class="dd-item-icon"><i class="fa-solid fa-arrow-up"></i></span>
+              {{ $t('series.reorderUp') }}
+            </button>
+            <button
+              v-if="index < localArtworks.length - 1"
+              type="button"
+              class="dd-item"
+              @click="moveDown(index); openMenuId = null"
+            >
+              <span class="dd-item-icon"><i class="fa-solid fa-arrow-down"></i></span>
+              {{ $t('series.reorderDown') }}
+            </button>
+            <div v-if="index > 0 && index < localArtworks.length - 1" class="dd-separator"></div>
+            <button
+              type="button"
+              class="dd-item dd-item--danger"
+              @click="confirmRemoveArtwork(artwork); openMenuId = null"
+            >
+              <span class="dd-item-icon"><i class="fa-solid fa-xmark"></i></span>
+              {{ $t('series.removeFromSeries') }}
+            </button>
+          </div>
         </div>
-        <button
-          v-if="isOwner"
-          type="button"
-          class="remove-btn"
-          :aria-label="t('series.removeFromSeries')"
-          :title="t('series.removeFromSeries')"
-          @click.stop="confirmRemoveArtwork(artwork)"
-        >
-          <i class="fa-solid fa-xmark"></i>
-        </button>
       </div>
       <button
         v-if="isOwner"
@@ -107,6 +135,8 @@ function moveDown(index) {
     </div>
   </div>
 </template>
+
+<style scoped src="../../assets/styles/dropdown.css"></style>
 
 <style scoped>
 .section-title {
@@ -126,60 +156,21 @@ function moveDown(index) {
   position: relative;
 }
 
-.reorder-controls {
+.card-menu-wrapper {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-  z-index: 2;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
 }
 
-.card-wrapper:hover .reorder-controls {
-  opacity: 1;
-}
-
-.reorder-btn {
-  width: 26px;
-  height: 26px;
+.card-menu-btn {
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.55);
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.7rem;
-  cursor: pointer;
-  padding: 0;
-  backdrop-filter: blur(4px);
-  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
-}
-
-.reorder-btn:hover {
-  background: var(--brand);
-  color: #fff;
-  transform: scale(1.1);
-}
-
-.reorder-btn:active {
-  transform: scale(0.95);
-}
-
-.remove-btn {
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 6px;
+  border-radius: 50%;
   background: rgba(0, 0, 0, 0.55);
   color: rgba(255, 255, 255, 0.85);
   font-size: 0.75rem;
@@ -187,21 +178,19 @@ function moveDown(index) {
   padding: 0;
   backdrop-filter: blur(4px);
   opacity: 0;
-  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease, transform 0.1s ease;
-  z-index: 2;
+  transition: opacity 0.15s ease, background 0.15s ease, transform 0.1s ease;
 }
 
-.card-wrapper:hover .remove-btn {
+.card-wrapper:hover .card-menu-btn {
   opacity: 1;
 }
 
-.remove-btn:hover {
-  background: #ef4444;
-  color: #fff;
+.card-menu-btn:hover {
+  background: rgba(0, 0, 0, 0.75);
   transform: scale(1.1);
 }
 
-.remove-btn:active {
+.card-menu-btn:active {
   transform: scale(0.95);
 }
 
