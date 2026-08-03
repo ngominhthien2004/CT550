@@ -22,6 +22,7 @@ const fs = require('fs');
 const path = require('path');
 const cloudinary = require('cloudinary').v2;
 const { getOrSet, getOrSetWithL2, delByPrefix, TTL, buildKey } = require('../utils/cache');
+const { recomputeSeriesTags } = require('../utils/recomputeSeriesTags');
 
 const normalizeTagName = (rawTagName = '') =>
     String(rawTagName)
@@ -571,6 +572,12 @@ const updateArtwork = async (req, res, next) => {
 
         // Invalidate cached listings
         delByPrefix('artworks:list');
+
+        // Keep series detail + series.tags in sync when artworks in a series are edited
+        if (artwork.series) {
+            await recomputeSeriesTags(artwork.series);
+            delByPrefix(`series:detail:${artwork.series.toString()}`);
+        }
 
         const updated = await Artwork.findById(artwork._id)
             .populate('user', 'username displayName avatar')
