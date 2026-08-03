@@ -241,13 +241,13 @@ function getSeriesIcon(type) {
   text-transform: uppercase;
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
-  background: #eef2ff;
-  color: #6366f1;
+  background: var(--surface-alt, #eff6ff);
+  color: var(--accent);
 }
 
 .type-novel { background: #fdf2f8; color: #ec4899; }
 .type-manga { background: #f0fdf4; color: #22c55e; }
-.type-illust { background: #eef2ff; color: #6366f1; }
+.type-illust { background: var(--surface-alt, #eff6ff); color: var(--accent); }
 
 .status-badge {
   display: inline-flex;
@@ -289,7 +289,7 @@ function getSeriesIcon(type) {
   align-items: center;
   font-size: 0.78rem;
   font-weight: 500;
-  color: #6366f1;
+  color: var(--accent);
   background: var(--surface-alt, #f3f4f6);
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
@@ -298,7 +298,7 @@ function getSeriesIcon(type) {
 }
 
 .series-tag-item:hover {
-  background: #6366f1;
+  background: var(--accent);
   color: #ffffff;
 }
 
@@ -318,7 +318,7 @@ function getSeriesIcon(type) {
 }
 
 .hero-stat i { font-size: 0.8rem; width: 16px; text-align: center; }
-.hero-stat i.fa-eye { color: #6366f1; }
+.hero-stat i.fa-eye { color: var(--accent); }
 .hero-stat i.fa-heart { color: #ef4444; }
 .hero-stat i.fa-comment { color: #10b981; }
 

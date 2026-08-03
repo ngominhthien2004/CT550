@@ -268,7 +268,7 @@ watch(seriesId, loadSeries, { immediate: true })
   gap: 0.4rem;
   border: none;
   background: transparent;
-  color: #6366f1;
+  color: var(--accent);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
