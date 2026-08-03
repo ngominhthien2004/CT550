@@ -5,6 +5,7 @@ const cloudinary = require('cloudinary').v2;
 const mongoose = require('mongoose');
 const { getOrSet, getOrSetWithL2, delByPrefix, TTL, buildKey } = require('../utils/cache');
 const { computeSeriesStats } = require('../utils/seriesStats');
+const { recomputeSeriesTags } = require('../utils/recomputeSeriesTags');
 
 function validateObjectId(id, name = 'ID') {
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -95,13 +96,39 @@ const getSeriesById = async (req, res, next) => {
       const series = await Series.findById(req.params.id)
         .populate('user', 'username avatar')
         .populate('tags', 'name')
-        .populate('artworks', 'title images type viewCount likeCount bookmarkCount commentCount')
+        .populate({
+          path: 'artworks',
+          select: 'title images type viewCount likeCount bookmarkCount commentCount tags createdAt',
+          populate: { path: 'tags', select: 'name' },
+        })
         .lean();
 
       if (!series) return null;
 
       // Compute aggregated stats.
-      return computeSeriesStats(series);
+      const enriched = computeSeriesStats(series);
+
+      // Suggest tags from the NEWEST artwork (by createdAt) so the author can
+      // pre-fill tags when adding a new work to this series.
+      const rawArtworks = series.artworks || [];
+      let newest = null;
+      for (const artwork of rawArtworks) {
+        const at = new Date(artwork.createdAt || 0);
+        if (!newest || at > new Date(newest.createdAt || 0)) newest = artwork;
+      }
+      const suggestedTags = (newest?.tags || [])
+        .map((tag) => tag?.name)
+        .filter(Boolean)
+        .slice(0, 10);
+      enriched.suggestedTags = suggestedTags;
+
+      // tags/createdAt only needed for the suggestion — keep payload lean.
+      rawArtworks.forEach((artwork) => {
+        delete artwork.tags;
+        delete artwork.createdAt;
+      });
+
+      return enriched;
     }, TTL.PUBLIC_PROFILE);
 
     if (!seriesData) {
@@ -272,6 +299,9 @@ const addArtworkToSeries = async (req, res, next) => {
     artwork.series = series._id;
     await artwork.save({ validateBeforeSave: false });
 
+    // Recompute series tags from all artworks
+    await recomputeSeriesTags(series._id);
+
     const populated = await Series.findById(series._id)
       .populate('user', 'username avatar')
       .populate('tags', 'name')
@@ -330,6 +360,9 @@ const removeArtworkFromSeries = async (req, res, next) => {
 
     // Unlink the artwork from this series
     await Artwork.findByIdAndUpdate(artworkId, { $unset: { series: '' } });
+
+    // Recompute series tags from all remaining artworks
+    await recomputeSeriesTags(series._id);
 
     const populated = await Series.findById(series._id)
       .populate('user', 'username avatar')

@@ -86,9 +86,8 @@ function goToAddArtwork() {
   const allowedKinds = ['illust', 'manga', 'novel']
   const kind = allowedKinds.includes(series.value.type) ? series.value.type : 'illust'
   const query = { seriesId: series.value._id }
-  const tagNames = (series.value.tags || [])
-    .map((tag) => (typeof tag === 'string' ? tag : tag?.name))
-    .filter(Boolean)
+  const suggested = series.value.suggestedTags
+  const tagNames = Array.isArray(suggested) ? suggested.filter(Boolean) : []
   if (tagNames.length > 0) {
     query.tags = tagNames.join(',')
   }

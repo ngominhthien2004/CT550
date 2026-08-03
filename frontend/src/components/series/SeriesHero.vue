@@ -59,6 +59,17 @@ function getSeriesIcon(type) {
       <h1 class="series-hero-title">{{ series.title }}</h1>
       <p v-if="series.description" class="series-hero-desc">{{ series.description }}</p>
 
+      <div v-if="series.tags && series.tags.length > 0" class="series-hero-tags">
+        <router-link
+          v-for="tag in series.tags"
+          :key="tag._id || tag.name || tag"
+          :to="{ path: '/search', query: { q: tag.name || tag } }"
+          class="series-tag-item"
+        >
+          #{{ tag.name || tag }}
+        </router-link>
+      </div>
+
       <div class="series-hero-stats">
         <div class="hero-stat">
           <i class="fa-solid fa-eye"></i>
@@ -178,6 +189,31 @@ function getSeriesIcon(type) {
   color: var(--muted);
   line-height: 1.5;
   margin: 0 0 1rem;
+}
+
+.series-hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+}
+
+.series-tag-item {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #6366f1;
+  background: var(--surface-alt, #f3f4f6);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.series-tag-item:hover {
+  background: #6366f1;
+  color: #ffffff;
 }
 
 .series-hero-stats {

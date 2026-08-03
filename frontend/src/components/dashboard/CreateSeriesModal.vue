@@ -142,33 +142,37 @@ async function handleSubmit() {
 
       emit('updated')
     } else {
-      // Create mode: existing logic
+      // Create mode: create series, upload cover if any, add artworks if any, then notify parent
       const { data: series } = await seriesApi.create({
         title: title.value.trim(),
         description: description.value.trim(),
         type: seriesType.value,
       })
 
-      // Series is created — emit immediately so UI updates
-      emit('created', series)
+      let finalSeries = series
 
-      // Upload cover if selected (non-critical)
+      // Upload cover if selected
       if (coverImageFile.value && series._id) {
         try {
           const formData = new FormData()
           formData.append('coverImage', coverImageFile.value)
-          await seriesApi.uploadCover(series._id, formData)
+          const { data: updated } = await seriesApi.uploadCover(series._id, formData)
+          if (updated) finalSeries = updated
         } catch { /* cover upload failed but series exists */ }
       }
 
-      // Add selected artworks to series (non-critical)
+      // Add selected artworks to series
       if (selectedArtworks.value.length > 0 && series._id) {
         for (const artwork of selectedArtworks.value) {
           try {
-            await seriesApi.addArtwork(series._id, artwork._id)
+            const { data: updated } = await seriesApi.addArtwork(series._id, artwork._id)
+            if (updated) finalSeries = updated
           } catch { /* artwork add failed but series exists */ }
         }
       }
+
+      // Series creation, cover upload, and artwork linking are fully completed — emit updated object
+      emit('created', finalSeries)
     }
   } catch (err) {
     errorMsg.value = translateError(err, t, 'error.saveFailed')
