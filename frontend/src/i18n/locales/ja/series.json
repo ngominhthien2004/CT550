@@ -50,5 +50,8 @@
   "reorderFailed": "作品の並べ替えに失敗しました",
   "removeFromSeries": "シリーズから削除",
   "removeFromSeriesConfirm": "この作品をシリーズから削除しますか？",
-  "removeFailed": "シリーズからの作品削除に失敗しました"
+  "removeFailed": "シリーズからの作品削除に失敗しました",
+  "editCover": "カバーを編集",
+  "coverUploadFailed": "カバーのアップロードに失敗しました",
+  "coverUpdated": "カバーが正常に更新されました"
 }

@@ -105,6 +105,19 @@ function goBack() {
   router.back()
 }
 
+async function handleCoverUpload({ formData, onDone, fileInput }) {
+  try {
+    const res = await seriesApi.uploadCover(series.value._id, formData)
+    seriesStore.currentSeries = { ...series.value, coverImage: res.data.coverImage }
+    showSuccess(t('series.coverUpdated'))
+  } catch {
+    showError(t('series.coverUploadFailed'))
+  } finally {
+    onDone()
+    if (fileInput?.value) fileInput.value.value = ''
+  }
+}
+
 async function handleReorder(newArtworkIds) {
   if (!series.value?._id) return
 
@@ -202,7 +215,13 @@ watch(seriesId, loadSeries, { immediate: true })
           <button type="button" class="btn-close" @click="seriesLoadError = ''" aria-label="Close"></button>
         </div>
 
-        <SeriesHero :series="series" :total-likes-override="displayTotalLikes" />
+        <SeriesHero
+          :series="series"
+          :total-likes-override="displayTotalLikes"
+          :is-owner="isOwner"
+          :series-id="series._id"
+          @upload-cover="handleCoverUpload"
+        />
 
         <SeriesArtworksGrid
           :artworks="processedArtworks"

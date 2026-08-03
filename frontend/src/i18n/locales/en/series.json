@@ -50,5 +50,8 @@
   "reorderFailed": "Failed to reorder artworks",
   "removeFromSeries": "Remove from series",
   "removeFromSeriesConfirm": "Remove this artwork from the series?",
-  "removeFailed": "Failed to remove artwork from series"
+  "removeFailed": "Failed to remove artwork from series",
+  "editCover": "Edit cover",
+  "coverUploadFailed": "Failed to upload cover",
+  "coverUpdated": "Cover updated successfully"
 }

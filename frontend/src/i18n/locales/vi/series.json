@@ -50,5 +50,8 @@
   "reorderFailed": "Sắp xếp lại tác phẩm thất bại",
   "removeFromSeries": "Xóa khỏi bộ sưu tập",
   "removeFromSeriesConfirm": "Xóa tác phẩm này khỏi bộ sưu tập?",
-  "removeFailed": "Xóa tác phẩm khỏi bộ sưu tập thất bại"
+  "removeFailed": "Xóa tác phẩm khỏi bộ sưu tập thất bại",
+  "editCover": "Sửa ảnh bìa",
+  "coverUploadFailed": "Tải ảnh bìa thất bại",
+  "coverUpdated": "Cập nhật ảnh bìa thành công"
 }

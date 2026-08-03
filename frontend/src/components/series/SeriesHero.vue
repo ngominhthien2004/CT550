@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { formatShortDate } from '../../utils/date.js'
 import { useSeriesCover } from '@/composables/useSeriesCover'
 import { useI18n } from 'vue-i18n'
@@ -7,10 +7,32 @@ import { useI18n } from 'vue-i18n'
 const props = defineProps({
   series: { type: Object, required: true },
   totalLikesOverride: { type: Number, default: null },
+  isOwner: { type: Boolean, default: false },
+  seriesId: { type: String, default: '' },
 })
+
+const emit = defineEmits(['upload-cover'])
 
 const { t, locale } = useI18n()
 const coverUrl = useSeriesCover(props.series)
+
+const fileInput = ref(null)
+const isUploading = ref(false)
+
+function openFilePicker() {
+  fileInput.value?.click()
+}
+
+function handleFileChange(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+
+  const formData = new FormData()
+  formData.append('coverImage', file)
+
+  isUploading.value = true
+  emit('upload-cover', { formData, onDone: () => { isUploading.value = false }, fileInput })
+}
 
 const likesDisplay = computed(() => {
   const n = props.totalLikesOverride ?? props.series.totalLikes ?? 0
@@ -42,6 +64,24 @@ function getSeriesIcon(type) {
       <div v-else class="series-hero-nothumb">
         <i :class="getSeriesIcon(series.type)"></i>
       </div>
+      <button
+        v-if="isOwner"
+        type="button"
+        class="cover-edit-btn"
+        :aria-label="t('series.editCover')"
+        :disabled="isUploading"
+        @click="openFilePicker"
+      >
+        <i v-if="isUploading" class="fa-solid fa-spinner fa-spin"></i>
+        <i v-else class="fa-solid fa-pen"></i>
+      </button>
+      <input
+        ref="fileInput"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        class="sr-only"
+        @change="handleFileChange"
+      />
     </div>
     <div class="series-hero-info">
       <div class="series-hero-type">
@@ -117,6 +157,7 @@ function getSeriesIcon(type) {
   border-radius: 8px;
   overflow: hidden;
   background: var(--surface-alt);
+  position: relative;
 }
 
 .series-hero-cover img {
@@ -132,6 +173,51 @@ function getSeriesIcon(type) {
   place-items: center;
   color: var(--line);
   font-size: 3rem;
+}
+
+.cover-edit-btn {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  z-index: 1;
+  border: none;
+  background: rgba(15, 23, 42, 0.45);
+  color: #fff;
+  font-size: 0.9rem;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.series-hero-cover:hover .cover-edit-btn {
+  opacity: 1;
+}
+
+.cover-edit-btn:hover {
+  background: rgba(15, 23, 42, 0.65);
+}
+
+.cover-edit-btn:disabled {
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .series-hero-info {
