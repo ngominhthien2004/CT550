@@ -130,6 +130,12 @@ async function loadSeries() {
   try {
     await seriesStore.fetchSeriesById(seriesId.value)
     if (authStore.isAuthenticated) {
+      // Batch like-status for accurate hearts (replaces 120-limit fallback)
+      const artworkIds = (series.value?.artworks || []).map((a) => a._id)
+      if (artworkIds.length > 0) {
+        await likeStore.fetchLikeStatuses(artworkIds)
+      }
+      // Keep fetchMyLikes for backwards compat with other views
       await likeStore.fetchMyLikes({ limit: 120 })
     }
     likedCountAtLoad.value = currentlyLiked.value

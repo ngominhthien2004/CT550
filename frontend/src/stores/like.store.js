@@ -51,6 +51,24 @@ export const useLikeStore = defineStore('likes', {
         throw error
       }
     },
+    async fetchLikeStatuses(artworkIds) {
+      if (!Array.isArray(artworkIds) || artworkIds.length === 0) {
+        return {}
+      }
+
+      this.error = ''
+      try {
+        const { data } = await likeApi.getStatuses(artworkIds)
+        const statuses = data?.statuses || {}
+        for (const [artworkId, status] of Object.entries(statuses)) {
+          this.statusByArtwork[artworkId] = Boolean(status?.isLiked)
+        }
+        return statuses
+      } catch (error) {
+        this.error = error?.response?.data?.message || 'Failed to fetch like statuses'
+        throw error
+      }
+    },
     async toggleLikeByArtwork(artworkId) {
       if (!artworkId) {
         throw new Error('artworkId is required')

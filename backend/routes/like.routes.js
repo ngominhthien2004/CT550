@@ -4,6 +4,7 @@ const {
     createLike,
     getMyLikes,
     getLikeStatus,
+    getBatchLikeStatus,
     toggleLike,
     deleteLike
 } = require('../controllers/like.controller');
@@ -15,6 +16,9 @@ router.route('/')
 
 router.route('/toggle')
     .post(protect, toggleLike);
+
+router.route('/status')
+    .get(protect, getBatchLikeStatus);
 
 router.route('/status/:artworkId')
     .get(protect, getLikeStatus);

@@ -154,6 +154,7 @@ export const likeApi = {
   create: (payload) => api.post('/likes', payload),
   delete: (likeId) => api.delete(`/likes/${likeId}`),
   getStatus: (artworkId) => api.get(`/likes/status/${artworkId}`),
+  getStatuses: (artworkIds) => api.get('/likes/status', { params: { ids: artworkIds.join(',') } }),
   toggle: (artworkId) => api.post('/likes/toggle', { artworkId }),
 }
 
