@@ -53,5 +53,10 @@
   "removeFailed": "Failed to remove artwork from series",
   "editCover": "Edit cover",
   "coverUploadFailed": "Failed to upload cover",
-  "coverUpdated": "Cover updated successfully"
+  "coverUpdated": "Cover updated successfully",
+  "addToSeries": "Add to series",
+  "noSeriesFound": "No series found. Create one first.",
+  "addToSeriesSuccess": "Added to series",
+  "addToSeriesFailed": "Failed to add to series",
+  "alreadyInSeries": "This artwork is already in a series"
 }

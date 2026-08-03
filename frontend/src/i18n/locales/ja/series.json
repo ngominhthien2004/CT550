@@ -53,5 +53,10 @@
   "removeFailed": "シリーズからの作品削除に失敗しました",
   "editCover": "カバーを編集",
   "coverUploadFailed": "カバーのアップロードに失敗しました",
-  "coverUpdated": "カバーが正常に更新されました"
+  "coverUpdated": "カバーが正常に更新されました",
+  "addToSeries": "シリーズに追加",
+  "noSeriesFound": "シリーズが見つかりません。まず作成してください。",
+  "addToSeriesSuccess": "シリーズに追加しました",
+  "addToSeriesFailed": "シリーズへの追加に失敗しました",
+  "alreadyInSeries": "この作品は既にシリーズに含まれています"
 }

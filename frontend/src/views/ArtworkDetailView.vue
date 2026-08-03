@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArtworkDetailCard, ArtworkDetailSidebar, ArtworkDetailCommentsCard, ArtworkDetailRelatedGrid } from '@/components/artwork'
 import { NovelReader } from '@/components/novel'
@@ -11,8 +11,10 @@ import { useArtworkStore } from '../stores/artwork.store'
 import { useBookmarkStore } from '../stores/bookmark.store'
 import { useLikeStore } from '../stores/like.store'
 import { useFollowStore } from '../stores/follow.store'
+import { useSeriesStore } from '../stores/series.store'
 import { useI18n } from 'vue-i18n'
 import { translateError } from '../utils/translateError.js'
+import { useToast } from '../composables/useToast'
 
 const route = useRoute()
 const router = useRouter()
@@ -21,7 +23,9 @@ const artworkStore = useArtworkStore()
 const bookmarkStore = useBookmarkStore()
 const likeStore = useLikeStore()
 const followStore = useFollowStore()
+const seriesStore = useSeriesStore()
 const { t } = useI18n()
+const { showSuccess, showError } = useToast()
 const isNavCollapsed = ref(true)
 const relatedWorks = ref([])
 const isBookmarked = ref(false)
@@ -41,6 +45,13 @@ const seriesArtworkIds = ref([])
 const seriesPrevId = ref(null)
 const seriesNextId = ref(null)
 const seriesInfo = ref(null)
+
+// "Add to series" feature state
+const showAddToSeries = ref(false)
+const userSeriesList = ref([])
+const seriesListLoading = ref(false)
+const addingToSeries = ref(false)
+const addToSeriesRef = ref(null)
 
 const artworkId = computed(() => route.params.id)
 const artwork = computed(() => artworkStore.detail)
@@ -83,6 +94,16 @@ const isOwnArtist = computed(() => {
 
 const hasSeriesNavigation = computed(() => {
   return seriesArtworkIds.value.length > 0
+})
+
+const showAddToSeriesButton = computed(() => {
+  return authStore.isAuthenticated && isOwnArtist.value && !artwork.value?.series
+})
+
+const matchingUserSeries = computed(() => {
+  const type = artwork.value?.type
+  if (!type) return []
+  return userSeriesList.value.filter(s => s.type === type)
 })
 
 const sameAuthorWorks = computed(() => {
@@ -266,6 +287,50 @@ async function loadSeriesNavigation() {
   }
 }
 
+async function loadUserSeries() {
+  seriesListLoading.value = true
+  try {
+    const { data } = await seriesApi.getMySeries()
+    userSeriesList.value = Array.isArray(data) ? data : []
+  } catch (_err) {
+    userSeriesList.value = []
+  } finally {
+    seriesListLoading.value = false
+  }
+}
+
+function toggleAddToSeries() {
+  const opening = !showAddToSeries.value
+  showAddToSeries.value = opening
+  if (opening && userSeriesList.value.length === 0) {
+    loadUserSeries()
+  }
+}
+
+async function handleAddToSeries(seriesId) {
+  if (addingToSeries.value) return
+  addingToSeries.value = true
+  try {
+    await seriesApi.addArtwork(seriesId, artwork.value._id)
+    // Update the artwork's series field locally
+    artworkStore.detail = { ...artworkStore.detail, series: seriesId }
+    showAddToSeries.value = false
+    // Reload series navigation for the newly added series
+    await loadSeriesNavigation()
+    showSuccess(t('series.addToSeriesSuccess'))
+  } catch (error) {
+    showError(translateError(error, t, 'series.addToSeriesFailed'))
+  } finally {
+    addingToSeries.value = false
+  }
+}
+
+function handleClickOutsideAddToSeries(event) {
+  if (addToSeriesRef.value && !addToSeriesRef.value.contains(event.target)) {
+    showAddToSeries.value = false
+  }
+}
+
 async function handleProgressChange({ progressPercent, scrollPosition }) {
   if (!authStore.isAuthenticated) return
   try {
@@ -416,6 +481,14 @@ watch(
     loadFollowStats()
   },
 )
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutsideAddToSeries, true)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutsideAddToSeries, true)
+})
 </script>
 
 <template>
@@ -423,6 +496,38 @@ watch(
     <section class="detail-page-content d-grid gap-3">
       <p v-if="artworkStore.loading" class="text-secondary mb-0">{{ $t('artwork.loadingDetail') }}</p>
       <p v-else-if="artworkStore.error" class="text-danger mb-0">{{ artworkStore.error }}</p>
+
+      <!-- Add to series button + dropdown (shared for all artwork types) -->
+      <div v-if="showAddToSeriesButton" ref="addToSeriesRef" class="add-to-series-container">
+        <button
+          type="button"
+          class="add-to-series-btn"
+          @click.stop="toggleAddToSeries"
+        >
+          <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+          {{ $t('series.addToSeries') }}
+        </button>
+        <div v-if="showAddToSeries" class="add-to-series-dropdown" @click.stop>
+          <div v-if="seriesListLoading" class="dropdown-loading">
+            <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+            {{ $t('artwork.loadingDetail') }}
+          </div>
+          <template v-else-if="matchingUserSeries.length > 0">
+            <button
+              v-for="series in matchingUserSeries"
+              :key="series._id"
+              type="button"
+              class="dropdown-series-item"
+              :disabled="addingToSeries"
+              @click="handleAddToSeries(series._id)"
+            >
+              <span class="series-item-title">{{ series.title }}</span>
+              <span class="series-item-count">{{ series.artworkCount ?? (series.artworks?.length ?? 0) }}</span>
+            </button>
+          </template>
+          <p v-else class="dropdown-empty">{{ $t('series.noSeriesFound') }}</p>
+        </div>
+      </div>
 
       <!-- Novel Reader -->
       <template v-else-if="displayArtwork && artwork?.type === 'novel'">
@@ -735,5 +840,107 @@ watch(
   .novel-detail-layout {
     padding: 0 1rem;
   }
+}
+
+/* Add to series button */
+.add-to-series-container {
+  position: relative;
+}
+
+.add-to-series-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.add-to-series-btn:hover {
+  border-color: var(--accent);
+  background: var(--surface-alt);
+}
+
+.add-to-series-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 260px;
+  max-width: 360px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  padding: 0.375rem;
+  animation: dropdown-fade-in 0.15s ease-out;
+}
+
+@keyframes dropdown-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.625rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.dropdown-series-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 0;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text);
+  font-size: 0.875rem;
+  transition: background 0.15s;
+}
+
+.dropdown-series-item:hover {
+  background: var(--surface-alt);
+}
+
+.dropdown-series-item:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.series-item-title {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.series-item-count {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-left: 0.75rem;
+  flex-shrink: 0;
+}
+
+.dropdown-empty {
+  padding: 0.75rem 0.625rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
 }
 </style>

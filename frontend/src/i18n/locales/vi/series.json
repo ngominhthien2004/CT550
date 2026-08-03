@@ -53,5 +53,10 @@
   "removeFailed": "Xóa tác phẩm khỏi bộ sưu tập thất bại",
   "editCover": "Sửa ảnh bìa",
   "coverUploadFailed": "Tải ảnh bìa thất bại",
-  "coverUpdated": "Cập nhật ảnh bìa thành công"
+  "coverUpdated": "Cập nhật ảnh bìa thành công",
+  "addToSeries": "Thêm vào bộ sưu tập",
+  "noSeriesFound": "Không tìm thấy bộ sưu tập nào. Hãy tạo một bộ sưu tập trước.",
+  "addToSeriesSuccess": "Đã thêm vào bộ sưu tập",
+  "addToSeriesFailed": "Thêm vào bộ sưu tập thất bại",
+  "alreadyInSeries": "Tác phẩm này đã nằm trong một bộ sưu tập"
 }
