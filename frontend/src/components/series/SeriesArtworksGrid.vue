@@ -154,6 +154,7 @@ onUnmounted(() => {
 
 .card-wrapper {
   position: relative;
+  overflow: visible;
 }
 
 .card-menu-wrapper {
@@ -161,6 +162,15 @@ onUnmounted(() => {
   top: 8px;
   right: 8px;
   z-index: 5;
+}
+
+.dd-panel {
+  min-width: max-content;
+  overflow: visible;
+}
+
+.dd-item {
+  white-space: nowrap;
 }
 
 .card-menu-btn {
