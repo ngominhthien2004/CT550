@@ -497,7 +497,8 @@ onUnmounted(() => {
       <p v-if="artworkStore.loading" class="text-secondary mb-0">{{ $t('artwork.loadingDetail') }}</p>
       <p v-else-if="artworkStore.error" class="text-danger mb-0">{{ artworkStore.error }}</p>
 
-      <!-- Add to series button + dropdown (shared for all artwork types) -->
+      <template v-else>
+      <!-- Add to series button + dropdown (independent, only for owner with no series) -->
       <div v-if="showAddToSeriesButton" ref="addToSeriesRef" class="add-to-series-container">
         <button
           type="button"
@@ -530,7 +531,7 @@ onUnmounted(() => {
       </div>
 
       <!-- Novel Reader -->
-      <template v-else-if="displayArtwork && artwork?.type === 'novel'">
+      <template v-if="displayArtwork && artwork?.type === 'novel'">
         <div class="novel-detail-layout d-grid gap-4 mx-auto">
           <div class="detail-main">
             <div class="left-col">
@@ -680,6 +681,7 @@ onUnmounted(() => {
         />
       </div>
       <p v-else class="text-secondary mb-0">{{ $t('artwork.noData') }}</p>
+      </template>
     </section>
   </MainLayoutTemplate>
 </template>
