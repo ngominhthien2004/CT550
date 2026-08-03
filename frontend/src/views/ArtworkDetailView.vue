@@ -505,7 +505,7 @@ onUnmounted(() => {
           class="add-to-series-btn"
           @click.stop="toggleAddToSeries"
         >
-          <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
           {{ $t('series.addToSeries') }}
         </button>
         <div v-if="showAddToSeries" class="add-to-series-dropdown" @click.stop>
