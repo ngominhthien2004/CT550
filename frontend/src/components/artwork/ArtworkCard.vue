@@ -14,6 +14,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  titlePrefix: {
+    type: String,
+    default: '',
+  },
 })
 
 const router = useRouter()
@@ -110,7 +114,7 @@ function getImageCount(item) {
 
     <div class="card-meta">
       <router-link :to="`/artworks/${item._id}`" class="card-title">
-        {{ item.title }}
+        <span v-if="titlePrefix" class="card-title-prefix">{{ titlePrefix }}</span>{{ item.title }}
       </router-link>
       <router-link
         v-if="item.user?._id"
@@ -299,6 +303,12 @@ function getImageCount(item) {
 
 .card-title:hover {
   text-decoration: underline;
+}
+
+.card-title-prefix {
+  color: var(--muted);
+  font-weight: 400;
+  margin-right: 0.3em;
 }
 
 .card-author {

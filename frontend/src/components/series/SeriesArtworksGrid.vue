@@ -77,6 +77,7 @@ onUnmounted(() => {
         <ArtworkCard
           :item="artwork"
           hide-series-badge
+          :title-prefix="`${index + 1}. `"
         />
         <div v-if="isOwner" class="card-menu-wrapper">
           <button
