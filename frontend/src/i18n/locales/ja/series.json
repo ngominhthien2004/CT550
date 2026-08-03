@@ -47,5 +47,8 @@
   "deleteArtwork": "作品を削除",
   "reorderUp": "上に移動",
   "reorderDown": "下に移動",
-  "reorderFailed": "作品の並べ替えに失敗しました"
+  "reorderFailed": "作品の並べ替えに失敗しました",
+  "removeFromSeries": "シリーズから削除",
+  "removeFromSeriesConfirm": "この作品をシリーズから削除しますか？",
+  "removeFailed": "シリーズからの作品削除に失敗しました"
 }

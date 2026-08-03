@@ -8,9 +8,16 @@ const props = defineProps({
   isOwner: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['add-artwork', 'reorder'])
+const emit = defineEmits(['add-artwork', 'reorder', 'remove-artwork'])
 
 const { t } = useI18n()
+
+function confirmRemoveArtwork(artwork) {
+  const confirmed = window.confirm(t('series.removeFromSeriesConfirm'))
+  if (confirmed) {
+    emit('remove-artwork', artwork._id)
+  }
+}
 
 const localArtworks = ref([...props.artworks])
 
@@ -73,6 +80,16 @@ function moveDown(index) {
             <i class="fa-solid fa-chevron-down"></i>
           </button>
         </div>
+        <button
+          v-if="isOwner"
+          type="button"
+          class="remove-btn"
+          :aria-label="t('series.removeFromSeries')"
+          :title="t('series.removeFromSeries')"
+          @click.stop="confirmRemoveArtwork(artwork)"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
       <button
         v-if="isOwner"
@@ -149,6 +166,42 @@ function moveDown(index) {
 }
 
 .reorder-btn:active {
+  transform: scale(0.95);
+}
+
+.remove-btn {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0;
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  z-index: 2;
+}
+
+.card-wrapper:hover .remove-btn {
+  opacity: 1;
+}
+
+.remove-btn:hover {
+  background: #ef4444;
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.remove-btn:active {
   transform: scale(0.95);
 }
 

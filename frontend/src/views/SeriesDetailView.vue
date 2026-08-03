@@ -125,6 +125,33 @@ async function handleReorder(newArtworkIds) {
   }
 }
 
+async function handleRemoveArtwork(artworkId) {
+  if (!series.value?._id) return
+
+  const originalArtworks = [...series.value.artworks]
+  const originalArtworkCount = series.value.artworkCount ?? originalArtworks.length
+
+  // Optimistic update: remove artwork and decrement count immediately
+  const filtered = originalArtworks.filter((a) => a._id !== artworkId)
+  seriesStore.currentSeries = {
+    ...series.value,
+    artworks: filtered,
+    artworkCount: originalArtworkCount - 1,
+  }
+
+  try {
+    await seriesApi.removeArtwork(series.value._id, artworkId)
+  } catch {
+    // Revert on failure
+    seriesStore.currentSeries = {
+      ...series.value,
+      artworks: originalArtworks,
+      artworkCount: originalArtworkCount,
+    }
+    showError(t('series.removeFailed'))
+  }
+}
+
 async function loadSeries() {
   seriesLoadError.value = ''
   try {
@@ -183,6 +210,7 @@ watch(seriesId, loadSeries, { immediate: true })
           @select="goToArtwork"
           @add-artwork="goToAddArtwork"
           @reorder="handleReorder"
+          @remove-artwork="handleRemoveArtwork"
         />
 
         <div v-if="isOwner" class="owner-actions">

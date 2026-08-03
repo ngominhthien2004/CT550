@@ -47,5 +47,8 @@
   "deleteArtwork": "Delete artwork",
   "reorderUp": "Move up",
   "reorderDown": "Move down",
-  "reorderFailed": "Failed to reorder artworks"
+  "reorderFailed": "Failed to reorder artworks",
+  "removeFromSeries": "Remove from series",
+  "removeFromSeriesConfirm": "Remove this artwork from the series?",
+  "removeFailed": "Failed to remove artwork from series"
 }

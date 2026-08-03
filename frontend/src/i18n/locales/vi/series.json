@@ -47,5 +47,8 @@
   "deleteArtwork": "Xóa tác phẩm",
   "reorderUp": "Di chuyển lên",
   "reorderDown": "Di chuyển xuống",
-  "reorderFailed": "Sắp xếp lại tác phẩm thất bại"
+  "reorderFailed": "Sắp xếp lại tác phẩm thất bại",
+  "removeFromSeries": "Xóa khỏi bộ sưu tập",
+  "removeFromSeriesConfirm": "Xóa tác phẩm này khỏi bộ sưu tập?",
+  "removeFailed": "Xóa tác phẩm khỏi bộ sưu tập thất bại"
 }
