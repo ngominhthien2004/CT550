@@ -253,8 +253,8 @@ defineExpose({ scrollToBottom })
 
 .thread-search-box:focus-within,
 .thread-search-box.active {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 2px rgba(99,102,241,0.15);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 15%, transparent);
   background: var(--surface);
 }
 
@@ -291,7 +291,7 @@ defineExpose({ scrollToBottom })
 }
 
 .search-clear-btn:hover {
-  color: #6366f1;
+  color: var(--accent);
 }
 
 .thread-menu-wrapper {
@@ -332,7 +332,7 @@ defineExpose({ scrollToBottom })
 .drag-drop-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(99, 102, 241, 0.12);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
   display: grid;
   place-items: center;
   z-index: 10;
@@ -340,7 +340,7 @@ defineExpose({ scrollToBottom })
 
 .drag-drop-box {
   background: var(--surface);
-  border: 2px dashed #6366f1;
+  border: 2px dashed var(--accent);
   border-radius: 12px;
   padding: 2rem;
   text-align: center;
@@ -348,7 +348,7 @@ defineExpose({ scrollToBottom })
 
 .drag-icon {
   font-size: 2rem;
-  color: #6366f1;
+  color: var(--accent);
   margin-bottom: 0.5rem;
 }
 
@@ -382,7 +382,7 @@ defineExpose({ scrollToBottom })
 }
 
 .skeleton-bubble-wrap.outgoing .skeleton-bubble {
-  background: rgba(99, 102, 241, 0.2);
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 .shimmer {
@@ -417,8 +417,8 @@ defineExpose({ scrollToBottom })
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1rem;
-  background: rgba(99, 102, 241, 0.08);
-  border-top: 1px solid rgba(99, 102, 241, 0.2);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 .reply-context-info {
@@ -427,11 +427,11 @@ defineExpose({ scrollToBottom })
   gap: 0.5rem;
 }
 
-.reply-icon { color: #6366f1; }
+.reply-icon { color: var(--accent); }
 
 .reply-to-user {
   font-size: 0.82rem;
-  color: #6366f1;
+  color: var(--accent);
 }
 
 .reply-to-snippet {

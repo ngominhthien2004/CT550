@@ -182,7 +182,7 @@ onMounted(() => {
 
 .period-btn.active {
   color: var(--surface, #fff);
-  background: var(--accent, #6366f1);
+  background: var(--accent);
 }
 
 .loading-indicator {
@@ -241,7 +241,7 @@ onMounted(() => {
 
 .trend-type-btn.active {
   color: var(--surface, #fff);
-  background: var(--accent, #6366f1);
+  background: var(--accent);
 }
 
 .breakdown-section {

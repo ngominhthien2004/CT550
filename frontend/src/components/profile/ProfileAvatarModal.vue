@@ -232,7 +232,7 @@ function handleDragLeave() {
 }
 
 .avatar-preview.drag-over {
-  outline: 3px dashed #6366f1;
+  outline: 3px dashed var(--accent);
   outline-offset: -3px;
 }
 
@@ -255,7 +255,7 @@ function handleDragLeave() {
 
 .avatar-drag-indicator i {
   font-size: 1.5rem;
-  color: #6366f1;
+  color: var(--accent);
 }
 
 .upload-trigger-icon {

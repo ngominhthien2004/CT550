@@ -182,7 +182,7 @@ function handleDragLeave() {
 }
 
 .cover-preview.drag-over {
-  outline: 3px dashed #6366f1;
+  outline: 3px dashed var(--accent);
   outline-offset: -3px;
 }
 
@@ -204,7 +204,7 @@ function handleDragLeave() {
 
 .cover-drag-indicator i {
   font-size: 2rem;
-  color: #6366f1;
+  color: var(--accent);
 }
 
 .specs-list {

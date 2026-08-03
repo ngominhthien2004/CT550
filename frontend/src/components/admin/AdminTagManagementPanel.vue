@@ -251,6 +251,6 @@ const formattedTags = computed(() =>
 
 .tag-edit-form .form-control:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 15%, transparent);
 }
 </style>

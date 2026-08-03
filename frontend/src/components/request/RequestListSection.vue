@@ -170,7 +170,7 @@ function statusLabel(value) {
 
 .status-pending { background: rgba(234, 179, 8, 0.15); color: #f59e0b; }
 .status-accepted { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-.status-in_progress { background: rgba(99, 102, 241, 0.15); color: #6366f1; }
+.status-in_progress { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
 .status-completed { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
 .status-rejected { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
 .status-cancelled { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
@@ -197,8 +197,8 @@ function statusLabel(value) {
   display: inline-block;
   padding: 0.1rem 0.45rem;
   border-radius: 4px;
-  background: rgba(99, 102, 241, 0.12);
-  color: #6366f1;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
   font-size: 0.72rem;
   font-weight: 700;
   margin-right: 0.25rem;

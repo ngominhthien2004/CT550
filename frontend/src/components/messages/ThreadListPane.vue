@@ -76,7 +76,7 @@ const emit = defineEmits(['select'])
 
 .pane-link {
   font-size: 0.78rem;
-  color: #6366f1;
+  color: var(--accent);
   text-decoration: none;
 }
 
@@ -152,7 +152,7 @@ const emit = defineEmits(['select'])
 }
 
 .thread-item:hover { background: var(--surface-alt); }
-.thread-item.active { background: rgba(99, 102, 241, 0.1); }
+.thread-item.active { background: color-mix(in srgb, var(--accent) 10%, transparent); }
 
 .thread-avatar {
   flex-shrink: 0;
@@ -201,7 +201,7 @@ const emit = defineEmits(['select'])
 }
 
 .thread-badge {
-  background: #6366f1;
+  background: var(--accent);
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;

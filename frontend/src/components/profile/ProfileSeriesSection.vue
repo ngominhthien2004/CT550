@@ -269,7 +269,7 @@ function getSeriesCover(s) {
 }
 
 .series-card-type.type-illust {
-  background: #6366f1;
+  background: var(--accent);
 }
 
 .series-card-title {

@@ -421,7 +421,7 @@ onUnmounted(() => {
 }
 
 .col-md-6.drop-zone--active {
-  outline: 2px dashed #6366f1;
+  outline: 2px dashed var(--accent);
   outline-offset: 4px;
   border-radius: 8px;
 }
@@ -445,7 +445,7 @@ onUnmounted(() => {
 
 .drop-overlay i {
   font-size: 2rem;
-  color: #6366f1;
+  color: var(--accent);
 }
 
 .tag-input-wrap {

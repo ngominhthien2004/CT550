@@ -199,7 +199,7 @@ function insertEmoji(emoji) {
 }
 
 .compose-input-actions .icon-btn.active {
-  color: #6366f1;
+  color: var(--accent);
 }
 
 .compose-input-actions .icon-btn.disabled {
@@ -282,7 +282,7 @@ function insertEmoji(emoji) {
 }
 
 .emoji-tab-btn.active {
-  background: rgba(99, 102, 241, 0.15);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
   color: var(--accent);
 }
 

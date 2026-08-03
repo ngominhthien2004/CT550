@@ -443,8 +443,8 @@ watch(activeType, () => {
 
 .series-sort-select:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
 .create-dropdown {
@@ -646,7 +646,7 @@ watch(activeType, () => {
 
 .stat-item:nth-child(1) i { color: #f59e0b; }
 .stat-item:nth-child(2) i { color: var(--danger); }
-.stat-item:nth-child(3) i { color: #6366f1; }
+.stat-item:nth-child(3) i { color: var(--accent); }
 .stat-item:nth-child(4) i { color: #10b981; }
 
 .series-card-status {

@@ -26,7 +26,7 @@ import { computed } from 'vue'
 const props = defineProps({
   label: { type: String, required: true },
   icon: { type: String, default: 'fa-solid fa-chart-simple' },
-  color: { type: String, default: 'var(--indigo, #6366f1)' },
+  color: { type: String, default: 'var(--accent)' },
   current: { type: Number, default: 0 },
   previous: { type: Number, default: 0 },
   total: { type: Number, default: 0 },
