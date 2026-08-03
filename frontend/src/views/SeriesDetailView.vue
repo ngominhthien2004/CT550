@@ -4,11 +4,12 @@ import { useRoute, useRouter } from 'vue-router'
 import { useSeriesStore } from '@/stores/series.store'
 import { useAuthStore } from '@/stores/auth.store'
 import { useLikeStore } from '@/stores/like.store'
-import api from '@/services/api'
+import { seriesApi } from '@/services/api'
 import MainLayoutTemplate from '@/components/layout/MainLayoutTemplate.vue'
 import SeriesHero from '@/components/series/SeriesHero.vue'
 import SeriesArtworksGrid from '@/components/series/SeriesArtworksGrid.vue'
 import { useI18n } from 'vue-i18n'
+import { useToast } from '@/composables/useToast'
 import { translateError } from '../utils/translateError.js'
 import { formatShortDate } from '../utils/date.js'
 
@@ -18,6 +19,8 @@ const seriesStore = useSeriesStore()
 const authStore = useAuthStore()
 const likeStore = useLikeStore()
 const { t, locale } = useI18n()
+
+const { showError } = useToast()
 
 const isNavCollapsed = ref(true)
 const seriesLoadError = ref('')
@@ -102,6 +105,26 @@ function goBack() {
   router.back()
 }
 
+async function handleReorder(newArtworkIds) {
+  if (!series.value?._id) return
+
+  const originalArtworks = [...series.value.artworks]
+
+  // Optimistic update: reorder artworks in the store immediately
+  const reorderedArtworks = newArtworkIds
+    .map((id) => originalArtworks.find((a) => a._id === id))
+    .filter(Boolean)
+  seriesStore.currentSeries = { ...series.value, artworks: reorderedArtworks }
+
+  try {
+    await seriesApi.reorder(series.value._id, newArtworkIds)
+  } catch {
+    // Revert to original order on failure
+    seriesStore.currentSeries = { ...series.value, artworks: originalArtworks }
+    showError(t('series.reorderFailed'))
+  }
+}
+
 async function loadSeries() {
   seriesLoadError.value = ''
   try {
@@ -153,6 +176,7 @@ watch(seriesId, loadSeries, { immediate: true })
           :is-owner="isOwner"
           @select="goToArtwork"
           @add-artwork="goToAddArtwork"
+          @reorder="handleReorder"
         />
 
         <div v-if="isOwner" class="owner-actions">

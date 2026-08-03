@@ -1,27 +1,79 @@
 <script setup>
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ArtworkCard from '@/components/artwork/ArtworkCard.vue'
 
-defineProps({
+const props = defineProps({
   artworks: { type: Array, required: true },
   isOwner: { type: Boolean, default: false },
 })
 
-defineEmits(['add-artwork'])
+const emit = defineEmits(['add-artwork', 'reorder'])
 
 const { t } = useI18n()
+
+const localArtworks = ref([...props.artworks])
+
+watch(() => props.artworks, (val) => {
+  localArtworks.value = [...val]
+})
+
+function swapArtwork(fromIndex, toIndex) {
+  const arr = [...localArtworks.value]
+  const temp = arr[fromIndex]
+  arr[fromIndex] = arr[toIndex]
+  arr[toIndex] = temp
+  localArtworks.value = arr
+  emit('reorder', arr.map((a) => a._id))
+}
+
+function moveUp(index) {
+  if (index <= 0) return
+  swapArtwork(index, index - 1)
+}
+
+function moveDown(index) {
+  if (index >= localArtworks.value.length - 1) return
+  swapArtwork(index, index + 1)
+}
 </script>
 
 <template>
   <div class="series-works-section">
     <h2 class="section-title">{{ $t('series.worksInSeries') }}</h2>
-    <div v-if="artworks.length > 0 || isOwner" class="artworks-grid">
-      <ArtworkCard
-        v-for="artwork in artworks"
+    <div v-if="localArtworks.length > 0 || isOwner" class="artworks-grid">
+      <div
+        v-for="(artwork, index) in localArtworks"
         :key="artwork._id"
-        :item="artwork"
-        hide-series-badge
-      />
+        class="card-wrapper"
+      >
+        <ArtworkCard
+          :item="artwork"
+          hide-series-badge
+        />
+        <div v-if="isOwner" class="reorder-controls">
+          <button
+            v-if="index > 0"
+            type="button"
+            class="reorder-btn reorder-btn--up"
+            :aria-label="t('series.reorderUp')"
+            :title="t('series.reorderUp')"
+            @click.stop="moveUp(index)"
+          >
+            <i class="fa-solid fa-chevron-up"></i>
+          </button>
+          <button
+            v-if="index < localArtworks.length - 1"
+            type="button"
+            class="reorder-btn reorder-btn--down"
+            :aria-label="t('series.reorderDown')"
+            :title="t('series.reorderDown')"
+            @click.stop="moveDown(index)"
+          >
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+        </div>
+      </div>
       <button
         v-if="isOwner"
         type="button"
@@ -51,6 +103,53 @@ const { t } = useI18n()
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 1rem;
+}
+
+.card-wrapper {
+  position: relative;
+}
+
+.reorder-controls {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 2;
+}
+
+.card-wrapper:hover .reorder-controls {
+  opacity: 1;
+}
+
+.reorder-btn {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 0;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.reorder-btn:hover {
+  background: var(--brand);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.reorder-btn:active {
+  transform: scale(0.95);
 }
 
 .add-work-card {

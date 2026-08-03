@@ -44,5 +44,8 @@
   "newestFirst": "Newest first",
   "oldestFirst": "Oldest first",
   "deleteSeries": "Delete series",
-  "deleteArtwork": "Delete artwork"
+  "deleteArtwork": "Delete artwork",
+  "reorderUp": "Move up",
+  "reorderDown": "Move down",
+  "reorderFailed": "Failed to reorder artworks"
 }

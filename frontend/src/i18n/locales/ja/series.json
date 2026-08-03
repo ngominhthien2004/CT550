@@ -44,5 +44,8 @@
   "newestFirst": "最新順",
   "oldestFirst": "古い順",
   "deleteSeries": "シリーズを削除",
-  "deleteArtwork": "作品を削除"
+  "deleteArtwork": "作品を削除",
+  "reorderUp": "上に移動",
+  "reorderDown": "下に移動",
+  "reorderFailed": "作品の並べ替えに失敗しました"
 }

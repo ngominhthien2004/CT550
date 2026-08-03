@@ -44,5 +44,8 @@
   "newestFirst": "Mới nhất trước",
   "oldestFirst": "Cũ nhất trước",
   "deleteSeries": "Xóa bộ sưu tập",
-  "deleteArtwork": "Xóa tác phẩm"
+  "deleteArtwork": "Xóa tác phẩm",
+  "reorderUp": "Di chuyển lên",
+  "reorderDown": "Di chuyển xuống",
+  "reorderFailed": "Sắp xếp lại tác phẩm thất bại"
 }
