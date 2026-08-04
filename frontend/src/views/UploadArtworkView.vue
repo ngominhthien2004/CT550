@@ -194,7 +194,15 @@ function handleFilesChange(targetKey, event) {
   localError.value = ''
   form[targetKey] = merged
   setPreviewItems(targetKey, merged)
-  handlePrimaryFileChange(targetKey === 'images' ? merged[0] : null)
+  if (targetKey === 'coverImages') {
+    // Update cover preview directly
+    if (previewUrl.value && previewUrl.value.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl.value)
+    }
+    previewUrl.value = merged[0] ? URL.createObjectURL(merged[0]) : ''
+  } else {
+    handlePrimaryFileChange(merged[0])
+  }
 }
 
 function clearPreviewItems(itemsRef) {
