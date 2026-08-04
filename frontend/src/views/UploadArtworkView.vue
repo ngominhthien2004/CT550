@@ -582,7 +582,7 @@ onBeforeUnmount(() => {
         @cover-change="handleFilesChange('coverImages', $event)"
       />
 
-      <div v-if="isMediaPage && previewUrl" class="mt-2">
+      <div v-if="previewUrl" class="mt-2">
         <button type="button" class="btn btn-outline-secondary btn-sm" @click="openCropModal">
           <i class="fa-solid fa-crop-simple me-1"></i>
           {{ $t('upload.adjustThumbnail') || 'Adjust thumbnail' }}

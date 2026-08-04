@@ -15,6 +15,7 @@ const isDragging = ref(false)
 const dragStart = ref({ x: 0, y: 0 })
 const dragStartPosition = ref({ x: 0.5, y: 0.5 })
 const previewRef = ref(null)
+const previewImgRef = ref(null)
 
 watch(
   () => props.show,
@@ -43,6 +44,10 @@ function onDragStart(e) {
   const pos = getEventPosition(e)
   dragStart.value = { x: pos.clientX, y: pos.clientY }
   dragStartPosition.value = { ...position.value }
+  document.addEventListener('mousemove', onDragMove)
+  document.addEventListener('mouseup', onDragEnd)
+  document.addEventListener('touchmove', onDragMove, { passive: false })
+  document.addEventListener('touchend', onDragEnd)
 }
 
 function onDragMove(e) {
@@ -57,8 +62,22 @@ function onDragMove(e) {
   const frameSize = Math.min(rect.width, rect.height)
   if (frameSize === 0) return
 
-  const deltaX = dx / frameSize
-  const deltaY = dy / frameSize
+  // Calculate actual overflow: with object-fit: cover, the image is larger than the frame
+  // objectPosition % maps to overflow pixels, not frame pixels
+  let overflowX = frameSize
+  let overflowY = frameSize
+  if (previewImgRef.value) {
+    const imgW = previewImgRef.value.naturalWidth
+    const imgH = previewImgRef.value.naturalHeight
+    if (imgW > 0 && imgH > 0) {
+      const scale = Math.max(frameSize / imgW, frameSize / imgH)
+      overflowX = Math.max(0, imgW * scale - frameSize)
+      overflowY = Math.max(0, imgH * scale - frameSize)
+    }
+  }
+
+  const deltaX = overflowX > 0 ? dx / overflowX : 0
+  const deltaY = overflowY > 0 ? dy / overflowY : 0
 
   position.value = {
     x: clamp(dragStartPosition.value.x + deltaX, 0, 1),
@@ -69,6 +88,10 @@ function onDragMove(e) {
 function onDragEnd() {
   if (!isDragging.value) return
   isDragging.value = false
+  document.removeEventListener('mousemove', onDragMove)
+  document.removeEventListener('mouseup', onDragEnd)
+  document.removeEventListener('touchmove', onDragMove)
+  document.removeEventListener('touchend', onDragEnd)
   emit('update:position', { ...position.value })
 }
 
@@ -107,12 +130,24 @@ watch(
     } else {
       document.removeEventListener('keydown', handleKeydown)
       document.body.style.overflow = ''
+      // Cleanup drag listeners if modal closes mid-drag
+      if (isDragging.value) {
+        isDragging.value = false
+        document.removeEventListener('mousemove', onDragMove)
+        document.removeEventListener('mouseup', onDragEnd)
+        document.removeEventListener('touchmove', onDragMove)
+        document.removeEventListener('touchend', onDragEnd)
+      }
     }
   },
 )
 
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('mousemove', onDragMove)
+  document.removeEventListener('mouseup', onDragEnd)
+  document.removeEventListener('touchmove', onDragMove)
+  document.removeEventListener('touchend', onDragEnd)
   document.body.style.overflow = ''
 })
 </script>
@@ -122,19 +157,19 @@ onBeforeUnmount(() => {
     <Transition name="crop-modal">
       <div
         v-if="show"
-        class="crop-modal-backdrop"
+        class="modal-backdrop"
         role="dialog"
         aria-modal="true"
         aria-label="Thumbnail crop"
         @click="handleBackdropClick"
       >
-        <div class="crop-modal-card">
+        <div class="modal-card crop-card">
           <!-- Header -->
-          <header class="crop-modal-header">
-            <h2 class="crop-modal-title">Adjust Thumbnail</h2>
+          <header class="modal-header">
+            <h2 class="modal-title">Adjust Thumbnail</h2>
             <button
               type="button"
-              class="crop-modal-close"
+              class="modal-close"
               aria-label="Close"
               @click="handleCancel"
             >
@@ -143,7 +178,7 @@ onBeforeUnmount(() => {
           </header>
 
           <!-- Body -->
-          <div class="crop-modal-body">
+          <div class="modal-body crop-body">
             <!-- Main crop preview -->
             <div class="crop-preview-area">
               <div
@@ -154,6 +189,7 @@ onBeforeUnmount(() => {
               >
                 <img
                   v-if="imageUrl"
+                  ref="previewImgRef"
                   :src="imageUrl"
                   :alt="imageAlt"
                   class="crop-preview-image"
@@ -204,10 +240,10 @@ onBeforeUnmount(() => {
           </div>
 
           <!-- Footer -->
-          <footer class="crop-modal-footer">
+          <footer class="modal-footer crop-footer">
             <button
               type="button"
-              class="crop-btn crop-btn--reset"
+              class="action-pill action-pill--small"
               @click="handleReset"
             >
               <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
@@ -216,14 +252,14 @@ onBeforeUnmount(() => {
             <div class="crop-footer-actions">
               <button
                 type="button"
-                class="crop-btn crop-btn--cancel"
+                class="action-pill action-pill--small"
                 @click="handleCancel"
               >
                 Cancel
               </button>
               <button
                 type="button"
-                class="crop-btn crop-btn--apply"
+                class="action-pill action-pill--small action-pill--post"
                 @click="handleApply"
               >
                 Apply
@@ -237,84 +273,22 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* --- Backdrop --- */
-.crop-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(8px);
-}
+@import '../../assets/styles/modal.css';
+@import '../../assets/styles/buttons.css';
 
-/* --- Card --- */
-.crop-modal-card {
-  width: min(480px, 100%);
-  background: var(--surface);
-  border-radius: 16px;
-  box-shadow:
-    0 24px 80px rgba(0, 0, 0, 0.28),
-    0 0 0 1px rgba(255, 255, 255, 0.06);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+/* --- Modal overrides for crop --- */
+.crop-card {
   max-height: 90vh;
+  width: min(480px, 100%);
 }
 
-/* --- Header --- */
-.crop-modal-header {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 52px;
-  flex-shrink: 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.crop-modal-title {
-  font-family: 'Space Grotesk', 'Sora', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--brand);
-  margin: 0;
-}
-
-.crop-modal-close {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 30px;
-  height: 30px;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--muted);
-  font-size: 1.1rem;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.crop-modal-close:hover {
-  background: var(--surface-alt);
-  color: var(--text);
-}
-
-/* --- Body --- */
-.crop-modal-body {
-  padding: 20px;
+.crop-body {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  flex: 1;
-  overflow-y: auto;
+  overflow: hidden;
+  padding: 20px;
 }
 
 /* --- Main crop preview --- */
@@ -334,9 +308,7 @@ onBeforeUnmount(() => {
   user-select: none;
   -webkit-user-select: none;
   background: var(--surface-alt);
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.08),
-    var(--shadow-md);
+  box-shadow: var(--shadow-md);
 }
 
 .crop-preview-frame:active {
@@ -424,9 +396,7 @@ onBeforeUnmount(() => {
   border-radius: 6px;
   overflow: hidden;
   background: var(--surface-alt);
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.08),
-    0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
   flex-shrink: 0;
 }
 
@@ -455,69 +425,15 @@ onBeforeUnmount(() => {
 }
 
 /* --- Footer --- */
-.crop-modal-footer {
-  display: flex;
-  align-items: center;
+.crop-footer {
+  flex-direction: row;
   justify-content: space-between;
   padding: 14px 20px;
-  border-top: 1px solid var(--line);
-  flex-shrink: 0;
 }
 
 .crop-footer-actions {
   display: flex;
   gap: 8px;
-}
-
-/* --- Buttons --- */
-.crop-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 18px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
-  white-space: nowrap;
-}
-
-.crop-btn:active {
-  transform: scale(0.96);
-}
-
-.crop-btn--reset {
-  background: transparent;
-  color: var(--muted);
-  padding: 8px 12px;
-}
-
-.crop-btn--reset:hover {
-  background: var(--surface-alt);
-  color: var(--text);
-}
-
-.crop-btn--cancel {
-  background: var(--surface-alt);
-  color: var(--text);
-}
-
-.crop-btn--cancel:hover {
-  background: var(--line);
-}
-
-.crop-btn--apply {
-  background: linear-gradient(135deg, #0f172a, #2563eb);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
-}
-
-.crop-btn--apply:hover {
-  background: linear-gradient(135deg, #1e293b, #3b82f6);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
 }
 
 /* --- Transition --- */
@@ -526,8 +442,8 @@ onBeforeUnmount(() => {
   transition: opacity 0.25s ease;
 }
 
-.crop-modal-enter-active .crop-modal-card,
-.crop-modal-leave-active .crop-modal-card {
+.crop-modal-enter-active .modal-card,
+.crop-modal-leave-active .modal-card {
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
@@ -536,20 +452,15 @@ onBeforeUnmount(() => {
   opacity: 0;
 }
 
-.crop-modal-enter-from .crop-modal-card,
-.crop-modal-leave-to .crop-modal-card {
+.crop-modal-enter-from .modal-card,
+.crop-modal-leave-to .modal-card {
   transform: scale(0.95) translateY(8px);
   opacity: 0;
 }
 
 /* --- Responsive --- */
 @media (max-width: 640px) {
-  .crop-modal-backdrop {
-    padding: 12px;
-    align-items: flex-end;
-  }
-
-  .crop-modal-card {
+  .crop-card {
     width: 100%;
     max-height: 85vh;
     border-radius: 16px 16px 0 0;
@@ -559,13 +470,8 @@ onBeforeUnmount(() => {
     width: min(320px, calc(100vw - 64px));
   }
 
-  .crop-modal-footer {
+  .crop-footer {
     padding: 12px 16px;
-  }
-
-  .crop-btn {
-    padding: 8px 14px;
-    font-size: 0.82rem;
   }
 }
 </style>

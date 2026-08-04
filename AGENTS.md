@@ -112,6 +112,7 @@ Screenshots captured during testing / debugging sessions MUST be saved to `test-
 - Full layout architecture documented in `docs/layout-architecture.md`.
 - **Drawing Tool module**: `DrawingView.vue` composes 6 child components under `components/drawing/`: `DrawingTopBar`, `DrawingToolPanel`, `DrawingCanvas`, `DrawingLayersPanel`, `PostDrawingModal`, `SaveSlotsModal`. State lives in `stores/drawing.store.js` (Pinia). Drawing uses Konva.js via vue-konva — see quirk #7.
 - **Shared CSS extraction pattern**: When identical CSS appears across multiple components, extract shared selectors to a file in `src/assets/styles/` (e.g., `quick-panel.css`, `upload-form.css`, `dashboard-panel.css`). Import it in each component via `<style scoped src="../../assets/styles/<name>.css">` before the component's own `<style scoped>` block. Vue's scoped attribute ensures isolation — the shared CSS only applies within the importing component. For components with minor CSS differences from the shared baseline, add override rules in the component's own scoped block.
+- **Use global CSS and system colors**: Khi tạo component mới, ưu tiên dùng shared CSS classes (`action-pill`, `modal.css`, `btn-*`, `icon-btn`...) và CSS variables (`--accent`, `--brand`, `--text`, `--muted`, `--surface`, `--surface-alt`, `--line`...) thay vì viết custom button/color riêng. Không hardcode màu sắc. Luôn import shared CSS (VD: `@import '../../assets/styles/buttons.css'`).
 
 ## Deployment
 

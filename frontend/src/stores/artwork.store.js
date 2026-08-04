@@ -54,7 +54,7 @@ export const useArtworkStore = defineStore('artwork', {
         if (payload.ageRating) formData.append('ageRating', payload.ageRating)
         if (payload.novelContent) formData.append('novelContent', payload.novelContent)
         if (payload.thumbnailPosition !== undefined && payload.thumbnailPosition !== null) {
-          formData.append('thumbnailPosition', payload.thumbnailPosition)
+          formData.append('thumbnailPosition', JSON.stringify(payload.thumbnailPosition))
         }
 
         const tags = Array.isArray(payload.tags)
