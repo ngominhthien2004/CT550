@@ -170,17 +170,25 @@ function handleCropModalClose() {
 }
 
 function handleFilesChange(targetKey, event) {
-  const files = Array.from(event.target.files || [])
-  if (files.length > maxArtworkImages) {
+  const newFiles = Array.from(event.target.files || [])
+  if (newFiles.length === 0) return
+
+  // Append new files to existing ones (deduplicate by name + lastModified)
+  const existingFiles = form[targetKey] || []
+  const existingKeys = new Set(existingFiles.map(f => `${f.name}-${f.lastModified}`))
+  const uniqueNew = newFiles.filter(f => !existingKeys.has(`${f.name}-${f.lastModified}`))
+  const merged = [...existingFiles, ...uniqueNew]
+
+  if (merged.length > maxArtworkImages) {
     localError.value = t('upload.maxImagesError', { max: maxArtworkImages })
     event.target.value = ''
     return
   }
 
   localError.value = ''
-  form[targetKey] = files
-  setPreviewItems(targetKey, files)
-  handlePrimaryFileChange(files[0])
+  form[targetKey] = merged
+  setPreviewItems(targetKey, merged)
+  handlePrimaryFileChange(merged[0])
 }
 
 function clearPreviewItems(itemsRef) {
