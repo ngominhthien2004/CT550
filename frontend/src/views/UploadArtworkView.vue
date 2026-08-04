@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
 import { UploadTypeHero, UploadTagSelector, UploadContentDetails, UploadPublicationSettings } from '@/components/upload'
+import ThumbnailCropModal from '@/components/upload/ThumbnailCropModal.vue'
 
 import api, { autoTagImage, getTags } from '../services/api'
 import { useArtworkStore } from '../stores/artwork.store'
@@ -60,6 +61,12 @@ const autoTagLoading = ref(false)
 const autoTagError = ref('')
 let autoTagRequestId = 0
 
+// Thumbnail crop state
+const showCropModal = ref(false)
+const cropImageUrl = ref('')
+const cropImageAlt = ref('')
+const thumbnailPosition = ref({ x: 0.5, y: 0.5 })
+
 const createDefaultForm = () => ({
   title: '',
   caption: '',
@@ -75,6 +82,7 @@ const createDefaultForm = () => ({
   scheduleTime: '',
   images: [],
   coverImages: [],
+  thumbnailPosition: { x: 0.5, y: 0.5 },
 })
 
 const form = reactive(createDefaultForm())
@@ -143,6 +151,22 @@ function resetForm() {
   clearPreviewItems(mediaPreviewItems)
   clearPreviewItems(coverPreviewItems)
   resetTagSuggestionState()
+  thumbnailPosition.value = { x: 0.5, y: 0.5 }
+}
+
+function openCropModal() {
+  if (!previewUrl.value) return
+  cropImageUrl.value = previewUrl.value
+  cropImageAlt.value = form.title || 'Thumbnail preview'
+  showCropModal.value = true
+}
+
+function handleCropPositionUpdate(position) {
+  thumbnailPosition.value = position
+}
+
+function handleCropModalClose() {
+  showCropModal.value = false
 }
 
 function handleFilesChange(targetKey, event) {
@@ -455,6 +479,7 @@ async function submitArtwork() {
       tags: form.tags,
       images: isNovel.value ? form.coverImages : form.images,
       novelContent: isNovel.value ? form.novelText.trim() : undefined,
+      thumbnailPosition: thumbnailPosition.value,
     })
 
     const responseAiDetection = createdArtwork?.aiDetection
@@ -557,6 +582,13 @@ onBeforeUnmount(() => {
         @cover-change="handleFilesChange('coverImages', $event)"
       />
 
+      <div v-if="isMediaPage && previewUrl" class="mt-2">
+        <button type="button" class="btn btn-outline-secondary btn-sm" @click="openCropModal">
+          <i class="fa-solid fa-crop-simple me-1"></i>
+          {{ $t('upload.adjustThumbnail') || 'Adjust thumbnail' }}
+        </button>
+      </div>
+
       <form class="d-grid gap-3 mt-3" @submit.prevent="submitArtwork" novalidate>
         <UploadContentDetails
           v-model:form="form"
@@ -607,6 +639,15 @@ onBeforeUnmount(() => {
         </div>
       </form>
     </section>
+
+    <ThumbnailCropModal
+      :show="showCropModal"
+      :image-url="cropImageUrl"
+      :image-alt="cropImageAlt"
+      :initial-position="thumbnailPosition"
+      @update:position="handleCropPositionUpdate"
+      @close="handleCropModalClose"
+    />
   </MainLayoutTemplate>
 </template>
 

@@ -66,7 +66,7 @@ function hasTagId(tagIds, tagId) {
 // Create Artwork
 const createArtwork = async (req, res, next) => {
     try {
-        const { title, description, type, ageRating, tags, novelContent } = req.body;
+        const { title, description, type, ageRating, tags, novelContent, thumbnailPosition } = req.body;
 
         if (!req.files || req.files.length === 0) {
             res.status(400);
@@ -181,6 +181,7 @@ const createArtwork = async (req, res, next) => {
             images: finalImages,
             tags: tagIds,
             ageRating,
+            ...(thumbnailPosition && { thumbnailPosition }),
         };
 
         // Set novel-specific fields
@@ -522,12 +523,13 @@ const updateArtwork = async (req, res, next) => {
             return next(new AppError('Not authorized to update this artwork', 'FORBIDDEN', 403));
         }
 
-        const { title, description, ageRating, tags, commentsEnabled } = req.body;
+        const { title, description, ageRating, tags, commentsEnabled, thumbnailPosition } = req.body;
 
         if (title !== undefined) artwork.title = title;
         if (description !== undefined) artwork.description = description;
         if (ageRating !== undefined) artwork.ageRating = ageRating;
         if (commentsEnabled !== undefined) artwork.commentsEnabled = Boolean(commentsEnabled);
+        if (thumbnailPosition !== undefined) artwork.thumbnailPosition = thumbnailPosition;
 
         // Handle tag updates if provided
         if (tags !== undefined) {

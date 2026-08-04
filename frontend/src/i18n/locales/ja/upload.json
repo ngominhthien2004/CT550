@@ -47,5 +47,6 @@
   "posting": "投稿中...",
   "maxImagesError": "1つの作品につき最大{max}画像までアップロードできます。",
   "series": "シリーズ",
-  "aiDetectionEnabled": "\"AI生成作品\"で\"はい\"を有効にしました。誤りの場合は手動で無効にしてください。"
+  "aiDetectionEnabled": "\"AI生成作品\"で\"はい\"を有効にしました。誤りの場合は手動で無効にしてください。",
+  "adjustThumbnail": "サムネイルを調整"
 }

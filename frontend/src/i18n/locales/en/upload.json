@@ -47,5 +47,6 @@
   "posting": "Posting...",
   "maxImagesError": "You can upload up to {max} images in one artwork.",
   "series": "Series",
-  "aiDetectionEnabled": "We have enabled \"Yes\" under \"AI-generated work\". If you believe this is a mistake, please disable it manually."
+  "aiDetectionEnabled": "We have enabled \"Yes\" under \"AI-generated work\". If you believe this is a mistake, please disable it manually.",
+  "adjustThumbnail": "Adjust thumbnail"
 }

@@ -97,6 +97,7 @@ function getImageCount(item) {
             :src="getImage(item)"
             :alt="item.title"
             loading="lazy"
+            :style="{ objectPosition: `${(item.thumbnailPosition?.x ?? 0.5) * 100}% ${(item.thumbnailPosition?.y ?? 0.5) * 100}%` }"
           />
           <div v-else class="card-placeholder"></div>
         </router-link>

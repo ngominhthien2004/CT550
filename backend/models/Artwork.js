@@ -26,6 +26,11 @@ const artworkSchema = mongoose.Schema({
         type: String,
         required: true
     }],
+    // Thumbnail focal point (0-1 normalized coordinates)
+    thumbnailPosition: {
+        x: { type: Number, default: 0.5, min: 0, max: 1 },
+        y: { type: Number, default: 0.5, min: 0, max: 1 },
+    },
     tags: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Tag'

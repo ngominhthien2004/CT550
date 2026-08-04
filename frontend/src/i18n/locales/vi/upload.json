@@ -47,5 +47,6 @@
   "posting": "Đang đăng...",
   "maxImagesError": "Bạn có thể tải lên tối đa {max} hình ảnh trong một tác phẩm.",
   "series": "Bộ sưu tập",
-  "aiDetectionEnabled": "Chúng tôi đã bật \"Có\" trong mục \"Tác phẩm AI\". Nếu bạn cho rằng đây là nhầm lẫn, vui lòng tắt thủ công."
+  "aiDetectionEnabled": "Chúng tôi đã bật \"Có\" trong mục \"Tác phẩm AI\". Nếu bạn cho rằng đây là nhầm lẫn, vui lòng tắt thủ công.",
+  "adjustThumbnail": "Điều chỉnh ảnh đại diện"
 }
