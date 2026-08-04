@@ -10,6 +10,7 @@ import api from '../services/api'
 import { useFollowStore } from '../stores/follow.store'
 import { useAuthStore } from '../stores/auth.store'
 import { useLikeStore } from '../stores/like.store'
+import FollowingUsersStrip from '@/components/follow/FollowingUsersStrip.vue'
 
 const { t } = useI18n()
 const isNavCollapsed = ref(true)
@@ -183,6 +184,7 @@ async function toggleFollowFromHome(userId) {
       <div class="home-main-column">
         <HomeTabs />
         <HomeTagStrip :tags="liveTags" />
+        <FollowingUsersStrip />
         <HomeHeroBanner :slide="heroSlide" :banner-link="bannerLink" :loading="isLoading" />
         <HomeArtworkGrid :works="spotlightWorks" :loading="isLoading" />
 

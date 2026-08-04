@@ -7,6 +7,7 @@ import { getArtworks, bannerApi, userApi } from '../services/api'
 import { useFollowStore } from '../stores/follow.store'
 import { useAuthStore } from '../stores/auth.store'
 import { useLikeStore } from '../stores/like.store'
+import FollowingUsersStrip from '@/components/follow/FollowingUsersStrip.vue'
 
 const props = defineProps({
   workType: {
@@ -202,6 +203,7 @@ watch(
         <HomeTabs />
 
         <HomeTagStrip :tags="liveTags" />
+        <FollowingUsersStrip />
         <HomeHeroBanner :slide="heroSlide" :banner-link="bannerLink" />
         <p v-if="isLoading" class="type-loading">{{ $t('common.loading') }} {{ pageTitle.toLowerCase() }}...</p>
         <HomeArtworkGrid :works="spotlightWorks" />
