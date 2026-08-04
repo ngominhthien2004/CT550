@@ -9,6 +9,7 @@ import { HomeTabs, HomeHeroBanner, HomeTagStrip } from '@/components/home'
 import { getArtworks, bannerApi } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useFollowStore } from '../stores/follow.store'
+import FollowingUsersStrip from '@/components/follow/FollowingUsersStrip.vue'
 
 import { formatShortDate } from '../utils/date.js'
 
@@ -284,6 +285,7 @@ onMounted(async () => {
     <div class="novel-top-page">
       <HomeTabs />
       <HomeTagStrip :tags="liveTags" compact />
+      <FollowingUsersStrip />
 
       <HomeHeroBanner
         :slide="heroSlide"
