@@ -14,6 +14,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  hideBadge: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const isRevealed = ref(false)
@@ -62,7 +66,7 @@ watch(
   <template v-else-if="showBadgeOnly">
     <div class="r18-wrapper">
       <slot />
-      <div class="r18-badge-static">
+      <div v-if="!hideBadge" class="r18-badge-static">
         <span>R-18</span>
       </div>
     </div>

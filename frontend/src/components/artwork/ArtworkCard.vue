@@ -33,6 +33,8 @@ const isLiked = computed(() => {
 
 const isToggling = computed(() => likeStore.isTogglingLike(props.item._id))
 
+const isR18 = computed(() => props.item?.ageRating === 'r-18')
+
 async function handleLike(e) {
   e.preventDefault()
   e.stopPropagation()
@@ -81,7 +83,14 @@ function getImageCount(item) {
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
         <span>{{ $t('artwork.hiddenByAdmin') }}</span>
       </div>
-      <R18BlurOverlay :artwork="item" :showBadgeOnly="true">
+      <div v-if="getImageCount(item) > 1 || isR18" class="card-badges">
+        <span v-if="getImageCount(item) > 1" class="badge-count">
+          <i class="fa-regular fa-clone"></i> {{ getImageCount(item) }}
+        </span>
+        <span v-if="isR18" class="badge-r18">R-18</span>
+      </div>
+
+      <R18BlurOverlay :artwork="item" :showBadgeOnly="true" :hideBadge="true">
         <router-link :to="`/artworks/${item._id}`" class="card-cover-link">
           <img
             v-if="getImage(item)"
@@ -90,9 +99,6 @@ function getImageCount(item) {
             loading="lazy"
           />
           <div v-else class="card-placeholder"></div>
-          <span v-if="getImageCount(item) > 1" class="badge-count">
-            <i class="fa-regular fa-clone"></i> {{ getImageCount(item) }}
-          </span>
         </router-link>
       </R18BlurOverlay>
 
@@ -187,10 +193,18 @@ function getImageCount(item) {
   overflow: hidden;
 }
 
-.badge-count {
+.card-badges {
   position: absolute;
   top: 8px;
   right: 8px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.badge-count {
   background: rgba(0, 0, 0, 0.55);
   color: #fff;
   font-size: 11px;
@@ -201,6 +215,16 @@ function getImageCount(item) {
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.badge-r18 {
+  background: var(--danger);
+  color: var(--surface);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  line-height: 1.4;
 }
 
 /* Triangle corner ribbon for "Series" pinned to the top-left of the cover.
