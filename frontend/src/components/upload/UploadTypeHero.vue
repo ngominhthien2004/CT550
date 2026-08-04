@@ -52,7 +52,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['media-change', 'cover-change'])
+const emit = defineEmits(['media-change', 'cover-change', 'media-remove'])
 
 const mediaAccept = '.jpg,.jpeg,.png,.webp,.gif,image/*'
 
@@ -166,6 +166,9 @@ function handleCoverDrop(e) {
       </div>
       <div class="page-preview-grid" aria-label="Selected artwork pages">
         <figure v-for="(item, index) in props.mediaPreviews" :key="item.id || `${item.name}-${index}`" class="page-preview-card">
+          <button type="button" class="preview-remove-btn" @click.stop="emit('media-remove', index)" :aria-label="`Remove page ${index + 1}`">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
           <img :src="item.url" :alt="`Selected page ${index + 1}: ${item.name}`" class="preview-image" />
           <figcaption>
             <span>{{ index + 1 }}</span>
@@ -361,6 +364,35 @@ function handleCoverDrop(e) {
   border-radius: 0.55rem;
   overflow: hidden;
   background: #0f1724;
+  position: relative;
+}
+
+.preview-remove-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 2;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.page-preview-card:hover .preview-remove-btn {
+  opacity: 1;
+}
+
+.preview-remove-btn:hover {
+  background: #e53e3e;
 }
 
 .preview-image {

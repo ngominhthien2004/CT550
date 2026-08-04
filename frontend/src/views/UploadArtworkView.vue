@@ -210,6 +210,19 @@ function setPreviewItems(targetKey, files) {
   }))
 }
 
+function handleMediaRemove(index) {
+  const removed = form.images[index]
+  form.images.splice(index, 1)
+  // Revoke the blob URL to avoid memory leak
+  const item = mediaPreviewItems.value[index]
+  if (item?.url?.startsWith('blob:')) {
+    URL.revokeObjectURL(item.url)
+  }
+  mediaPreviewItems.value.splice(index, 1)
+  // Update primary preview to the first remaining image
+  handlePrimaryFileChange(form.images[0] || null)
+}
+
 function resetPreviewState() {
   if (previewUrl.value && previewUrl.value.startsWith('blob:')) {
     URL.revokeObjectURL(previewUrl.value)
@@ -588,6 +601,7 @@ onBeforeUnmount(() => {
         :preview-alt="form.title ? `Preview for ${form.title}` : $t('upload.coverPreview')"
         @media-change="handleFilesChange('images', $event)"
         @cover-change="handleFilesChange('coverImages', $event)"
+        @media-remove="handleMediaRemove"
       />
 
       <div v-if="previewUrl" class="mt-2">
