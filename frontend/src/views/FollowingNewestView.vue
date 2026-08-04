@@ -9,6 +9,7 @@ import { getFeed } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useLikeStore } from '../stores/like.store'
 import { buildTypeTabs, filterByType } from '@/utils/typeTabs.js'
+import FollowingUsersStrip from '@/components/follow/FollowingUsersStrip.vue'
 
 const { t } = useI18n()
 const isNavCollapsed = ref(true)
@@ -91,6 +92,9 @@ onMounted(() => {
   <MainLayoutTemplate :is-nav-collapsed="isNavCollapsed" @toggle-sidebar="toggleLeftNav">
     <section class="following-page">
       <div class="following-main">
+          <!-- Followed users strip -->
+          <FollowingUsersStrip />
+
           <!-- Type filter tabs (pills) -->
           <div v-if="typeTabs.length" class="type-tabs" role="tablist" aria-label="Type filter tabs">
             <button
