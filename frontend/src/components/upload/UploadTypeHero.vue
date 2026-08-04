@@ -64,7 +64,12 @@ function handleMediaFilesChange(event) {
 }
 
 function handleCoverFilesChange(event) {
-  emit('cover-change', event)
+  // Novel cover should only be 1 image — take first file only
+  const files = Array.from(event.target.files || [])
+  if (files.length === 0) return
+  const dt = new DataTransfer()
+  dt.items.add(files[0])
+  emit('cover-change', { target: { files: dt.files } })
 }
 
 function handleMediaDragOver(e) {
@@ -192,7 +197,6 @@ function handleCoverDrop(e) {
           type="file"
           class="form-control"
           accept=".jpg,.jpeg,.png,.webp,.gif,image/*"
-          multiple
           aria-describedby="upload-cover-help"
           @change="handleCoverFilesChange"
           aria-label="Upload cover image"

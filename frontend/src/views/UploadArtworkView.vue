@@ -173,11 +173,17 @@ function handleFilesChange(targetKey, event) {
   const newFiles = Array.from(event.target.files || [])
   if (newFiles.length === 0) return
 
-  // Append new files to existing ones (deduplicate by name + lastModified)
-  const existingFiles = form[targetKey] || []
-  const existingKeys = new Set(existingFiles.map(f => `${f.name}-${f.lastModified}`))
-  const uniqueNew = newFiles.filter(f => !existingKeys.has(`${f.name}-${f.lastModified}`))
-  const merged = [...existingFiles, ...uniqueNew]
+  // Cover images: always replace (novel cover is single image)
+  // Media images: append with deduplication
+  let merged
+  if (targetKey === 'coverImages') {
+    merged = newFiles.slice(0, 1) // Only keep first file
+  } else {
+    const existingFiles = form[targetKey] || []
+    const existingKeys = new Set(existingFiles.map(f => `${f.name}-${f.lastModified}`))
+    const uniqueNew = newFiles.filter(f => !existingKeys.has(`${f.name}-${f.lastModified}`))
+    merged = [...existingFiles, ...uniqueNew]
+  }
 
   if (merged.length > maxArtworkImages) {
     localError.value = t('upload.maxImagesError', { max: maxArtworkImages })
@@ -188,7 +194,7 @@ function handleFilesChange(targetKey, event) {
   localError.value = ''
   form[targetKey] = merged
   setPreviewItems(targetKey, merged)
-  handlePrimaryFileChange(merged[0])
+  handlePrimaryFileChange(targetKey === 'images' ? merged[0] : null)
 }
 
 function clearPreviewItems(itemsRef) {
