@@ -15,9 +15,9 @@ const activeFilter = ref('all')
 
 const filterTabs = computed(() => [
   { key: 'all', label: t('series.all') },
+  { key: 'illust', label: t('series.illustration') },
   { key: 'manga', label: t('series.manga') },
   { key: 'novel', label: t('series.novel') },
-  { key: 'illust', label: t('series.illustration') },
 ])
 
 const filteredItems = computed(() => {
@@ -178,7 +178,7 @@ onMounted(() => {
                 :title="$t('series.unwatch')"
                 @click="removeFromWatchlist(item.series._id)"
               >
-                <i class="fa-solid fa-bell-slash"></i>
+                <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
           </div>
