@@ -13,11 +13,21 @@ const watchlistStore = useWatchlistStore()
 const isNavCollapsed = ref(true)
 const activeFilter = ref('all')
 
+const typeCounts = computed(() => {
+  const counts = { all: 0, illust: 0, manga: 0, novel: 0 }
+  for (const item of watchlistStore.items) {
+    const type = item.series?.type
+    counts.all++
+    if (type in counts) counts[type]++
+  }
+  return counts
+})
+
 const filterTabs = computed(() => [
-  { key: 'all', label: t('series.all') },
-  { key: 'illust', label: t('series.illustration') },
-  { key: 'manga', label: t('series.manga') },
-  { key: 'novel', label: t('series.novel') },
+  { key: 'all', label: t('series.all'), count: typeCounts.value.all },
+  { key: 'illust', label: t('series.illustration'), count: typeCounts.value.illust },
+  { key: 'manga', label: t('series.manga'), count: typeCounts.value.manga },
+  { key: 'novel', label: t('series.novel'), count: typeCounts.value.novel },
 ])
 
 const filteredItems = computed(() => {
@@ -96,16 +106,16 @@ onMounted(() => {
       </h2>
 
       <!-- Filter tabs -->
-      <div class="filter-tabs">
+      <div class="type-tabs">
         <button
           v-for="tab in filterTabs"
           :key="tab.key"
           type="button"
-          class="filter-tab"
+          class="type-tab"
           :class="{ active: activeFilter === tab.key }"
           @click="activeFilter = tab.key"
         >
-          {{ tab.label }}
+          {{ tab.label }}<span v-if="tab.count > 0" class="tab-count">{{ tab.count }}</span>
         </button>
       </div>
 
@@ -116,18 +126,14 @@ onMounted(() => {
       </div>
 
       <!-- Error state -->
-      <div v-else-if="watchlistStore.error" class="state-error">
-        <div class="error-icon">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-        </div>
+      <div v-else-if="watchlistStore.error" class="error-state">
+        <i class="fa-solid fa-triangle-exclamation"></i>
         <p>{{ watchlistStore.error }}</p>
       </div>
 
       <!-- Empty state -->
-      <div v-else-if="filteredItems.length === 0" class="state-empty">
-        <div class="empty-icon">
-          <i class="fa-regular fa-eye"></i>
-        </div>
+      <div v-else-if="filteredItems.length === 0" class="empty-state">
+        <i class="fa-regular fa-eye"></i>
         <h3>{{ $t('series.watchlistEmpty') }}</h3>
         <p>{{ $t('series.watchlistEmptyDesc') }}</p>
       </div>
@@ -187,7 +193,7 @@ onMounted(() => {
             <div class="watchlist-card-actions">
               <button
                 type="button"
-                class="read-latest-btn"
+                class="action-pill action-pill--small"
                 @click="goToLatestEpisode(item.series)"
               >
                 <i class="fa-solid fa-book-open"></i>
@@ -195,22 +201,20 @@ onMounted(() => {
               </button>
               <button
                 type="button"
-                class="bell-toggle-btn"
-                :class="{ active: item.notificationsEnabled !== false }"
+                class="icon-btn"
+                :class="{ 'icon-btn--active': item.notificationsEnabled !== false }"
                 :title="item.notificationsEnabled !== false ? $t('series.notificationsOn') : $t('series.notificationsOff')"
                 @click="toggleNotifications(item)"
               >
-                <i class="fa-solid fa-bell"></i>
+                <i :class="item.notificationsEnabled !== false ? 'fa-solid fa-bell' : 'fa-solid fa-bell-slash'"></i>
               </button>
-            </div>
-            <div class="watchlist-card-actions-secondary">
               <button
                 type="button"
-                class="view-btn"
-                @click="goToSeries(item.series._id)"
+                class="remove-btn"
+                :title="$t('series.unwatch')"
+                @click="removeFromWatchlist(item.series._id)"
               >
-                <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                {{ $t('series.viewSeries') }}
+                <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
           </div>
@@ -221,7 +225,7 @@ onMounted(() => {
       <div v-if="watchlistStore.hasMore && !watchlistStore.loading" class="load-more">
         <button
           type="button"
-          class="load-more-btn"
+          class="btn-filter"
           :disabled="watchlistStore.loadingMore"
           @click="watchlistStore.loadMoreWatchlist()"
         >
@@ -232,6 +236,9 @@ onMounted(() => {
     </div>
   </MainLayoutTemplate>
 </template>
+
+<style scoped src="../assets/styles/content-grid.css"></style>
+<style scoped src="../assets/styles/buttons.css"></style>
 
 <style scoped>
 .watchlist-page {
@@ -256,46 +263,7 @@ onMounted(() => {
   font-size: 1.3rem;
 }
 
-/* ── Filter Tabs ── */
-.filter-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.filter-tab {
-  padding: 0.4rem 1rem;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--muted);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: inherit;
-}
-
-.filter-tab:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.filter-tab.active {
-  background: var(--accent);
-  color: #ffffff;
-  border-color: var(--accent);
-}
-
 /* ── States ── */
-.state-loading,
-.state-error,
-.state-empty {
-  text-align: center;
-  padding: 4rem 1rem;
-  color: var(--muted);
-}
-
 .loading-spinner {
   width: 32px;
   height: 32px;
@@ -322,35 +290,6 @@ onMounted(() => {
   vertical-align: middle;
 }
 
-.error-icon {
-  font-size: 2.5rem;
-  color: var(--danger);
-  margin-bottom: 1rem;
-}
-
-.empty-icon {
-  font-size: 4rem;
-  margin-bottom: 1.25rem;
-  color: var(--line);
-}
-
-.state-empty h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text);
-  margin: 0 0 0.5rem;
-}
-
-.state-empty p {
-  font-size: 0.9rem;
-  color: var(--muted);
-  margin: 0;
-  max-width: 340px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.5;
-}
-
 /* ── Watchlist List ── */
 .watchlist-list {
   display: flex;
@@ -362,6 +301,7 @@ onMounted(() => {
 .watchlist-card {
   display: flex;
   width: 496px;
+  flex: 0 0 496px;
   height: 212px;
   gap: 1rem;
   padding: 0;
@@ -433,9 +373,8 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  justify-content: center;
   padding: 0.75rem 0.75rem 0.75rem 0;
-  min-width: 0;
+  justify-content: space-between;
 }
 
 .series-label {
@@ -508,117 +447,49 @@ onMounted(() => {
 .watchlist-card-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: auto;
-  padding-top: 0.4rem;
+  gap: 0.4rem;
 }
 
-.view-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.8rem;
-  font-size: 0.78rem;
-  font-weight: 600;
-  border-radius: 8px;
-  background: var(--accent);
-  color: #ffffff;
-  border: none;
-  cursor: pointer;
-  transition: background 0.15s ease;
-  font-family: inherit;
-}
-
-.view-btn:hover {
-  background: var(--accent-hover);
-}
-
-/* ── Bell Toggle ── */
-.bell-toggle-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--line);
-  cursor: pointer;
-  transition: all 0.15s ease;
-  font-size: 0.8rem;
-  flex-shrink: 0;
-}
-
-.bell-toggle-btn:hover {
+/* ── Icon Button Active State ── */
+.icon-btn--active {
   color: var(--accent);
-  border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
-}
-
-.bell-toggle-btn.active {
-  color: var(--accent);
-  border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
-/* ── Read Latest Button ── */
-.read-latest-btn {
+.icon-btn--active:hover {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+/* ── Remove Button ── */
+.remove-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.8rem;
-  font-size: 0.78rem;
-  font-weight: 600;
-  border-radius: 8px;
-  background: var(--text);
-  color: var(--surface);
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--line);
   border: none;
   cursor: pointer;
-  transition: opacity 0.15s ease;
-  font-family: inherit;
-  white-space: nowrap;
+  transition: all 0.15s ease;
+  font-size: 0.65rem;
+  opacity: 0;
+  flex-shrink: 0;
 }
 
-.read-latest-btn:hover {
-  opacity: 0.85;
+.watchlist-card:hover .remove-btn {
+  opacity: 1;
 }
 
-/* ── Secondary Actions ── */
-.watchlist-card-actions-secondary {
-  display: flex;
-  gap: 0.5rem;
+.remove-btn:hover {
+  color: #fff;
+  background: #ef4444;
 }
 
 /* ── Load More ── */
 .load-more {
   text-align: center;
   margin-top: 1.5rem;
-}
-
-.load-more-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1.5rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-  transition: all 0.15s ease;
-  font-family: inherit;
-}
-
-.load-more-btn:hover {
-  background: var(--surface-alt);
-  border-color: var(--accent);
-}
-
-.load-more-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 </style>
