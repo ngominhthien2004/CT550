@@ -64,5 +64,11 @@
   "watching": "Đang theo dõi",
   "watchers": "người theo dõi",
   "watchlistEmpty": "Bạn chưa theo dõi series nào",
-  "watchlistEmptyDesc": "Khi bạn theo dõi một series, bạn sẽ nhận được thông báo khi có chương mới."
+  "watchlistEmptyDesc": "Khi bạn theo dõi một series, bạn sẽ nhận được thông báo khi có chương mới.",
+  "viewSeries": "Xem series",
+  "unwatch": "Bỏ theo dõi",
+  "all": "Tất cả",
+  "manga": "Manga",
+  "novel": "Tiểu thuyết",
+  "illustration": "Minh họa"
 }

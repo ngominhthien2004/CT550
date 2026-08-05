@@ -64,5 +64,11 @@
   "watching": "Watching",
   "watchers": "watchers",
   "watchlistEmpty": "Your watchlist is empty",
-  "watchlistEmptyDesc": "When you follow a series, you'll receive notifications when new chapters are added."
+  "watchlistEmptyDesc": "When you follow a series, you'll receive notifications when new chapters are added.",
+  "viewSeries": "View Series",
+  "unwatch": "Remove from watchlist",
+  "all": "All",
+  "manga": "Manga",
+  "novel": "Novel",
+  "illustration": "Illustration"
 }

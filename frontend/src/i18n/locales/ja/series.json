@@ -64,5 +64,11 @@
   "watching": "ウォッチ中",
   "watchers": "ウォッチャー",
   "watchlistEmpty": "ウォッチリストは空です",
-  "watchlistEmptyDesc": "シリーズをウォッチすると、新しい章が追加されたときに通知を受け取ることができます。"
+  "watchlistEmptyDesc": "シリーズをウォッチすると、新しい章が追加されたときに通知を受け取ることができます。",
+  "viewSeries": "シリーズを見る",
+  "unwatch": "ウォッチ解除",
+  "all": "すべて",
+  "manga": "マンガ",
+  "novel": "小説",
+  "illustration": "イラスト"
 }
