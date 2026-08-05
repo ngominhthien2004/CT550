@@ -59,5 +59,10 @@
   "noSeriesFound": "Không tìm thấy bộ sưu tập nào. Hãy tạo một bộ sưu tập trước.",
   "addToSeriesSuccess": "Đã thêm vào bộ sưu tập",
   "addToSeriesFailed": "Thêm vào bộ sưu tập thất bại",
-  "alreadyInSeries": "Tác phẩm này đã nằm trong một bộ sưu tập"
+  "alreadyInSeries": "Tác phẩm này đã nằm trong một bộ sưu tập",
+  "addToWatchlist": "Theo dõi series",
+  "watching": "Đang theo dõi",
+  "watchers": "người theo dõi",
+  "watchlistEmpty": "Bạn chưa theo dõi series nào",
+  "watchlistEmptyDesc": "Khi bạn theo dõi một series, bạn sẽ nhận được thông báo khi có chương mới."
 }

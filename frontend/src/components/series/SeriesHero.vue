@@ -1,8 +1,10 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { formatShortDate } from '../../utils/date.js'
 import { useSeriesCover } from '@/composables/useSeriesCover'
 import { useI18n } from 'vue-i18n'
+import { watchlistApi } from '@/services/api.js'
+import { useAuthStore } from '@/stores/auth.store.js'
 
 const props = defineProps({
   series: { type: Object, required: true },
@@ -15,9 +17,13 @@ const emit = defineEmits(['upload-cover'])
 
 const { t, locale } = useI18n()
 const coverUrl = useSeriesCover(props.series)
+const authStore = useAuthStore()
 
 const fileInput = ref(null)
 const isUploading = ref(false)
+const isWatching = ref(false)
+const watchlistLoading = ref(false)
+const watchlistCount = ref(0)
 
 function openFilePicker() {
   fileInput.value?.click()
@@ -51,6 +57,51 @@ function getSeriesIcon(type) {
     default: return 'fa-solid fa-book'
   }
 }
+
+async function checkWatchlistStatus() {
+  if (!authStore.isAuthenticated || !props.seriesId) return
+  try {
+    const { data } = await watchlistApi.checkStatus(props.seriesId)
+    isWatching.value = data?.isWatching || false
+  } catch {
+    // Silently fail
+  }
+}
+
+async function getWatchlistCount() {
+  if (!props.seriesId) return
+  try {
+    const { data } = await watchlistApi.getCount(props.seriesId)
+    watchlistCount.value = data?.count || 0
+  } catch {
+    // Silently fail
+  }
+}
+
+async function toggleWatchlist() {
+  if (!authStore.isAuthenticated) return
+  watchlistLoading.value = true
+  try {
+    if (isWatching.value) {
+      await watchlistApi.remove(props.seriesId)
+      isWatching.value = false
+      watchlistCount.value = Math.max(0, watchlistCount.value - 1)
+    } else {
+      await watchlistApi.add(props.seriesId)
+      isWatching.value = true
+      watchlistCount.value += 1
+    }
+  } catch {
+    // Silently fail
+  } finally {
+    watchlistLoading.value = false
+  }
+}
+
+onMounted(() => {
+  checkWatchlistStatus()
+  getWatchlistCount()
+})
 </script>
 
 <template>
@@ -134,6 +185,23 @@ function getSeriesIcon(type) {
 
       <div class="series-hero-episodes">
         {{ series.artworkCount || 0 }} {{ series.type === 'novel' ? $t('series.chapters') : $t('series.episodes') }}
+      </div>
+
+      <div class="series-hero-actions" v-if="authStore.isAuthenticated && !isOwner">
+        <button
+          class="watchlist-btn"
+          :class="{ 'is-watching': isWatching }"
+          :disabled="watchlistLoading"
+          @click="toggleWatchlist"
+        >
+          <i v-if="watchlistLoading" class="fa-solid fa-spinner fa-spin"></i>
+          <i v-else-if="isWatching" class="fa-solid fa-eye"></i>
+          <i v-else class="fa-regular fa-eye"></i>
+          {{ isWatching ? $t('series.watching') : $t('series.addToWatchlist') }}
+        </button>
+        <span class="watchlist-count" v-if="watchlistCount > 0">
+          {{ watchlistCount }} {{ $t('series.watchers') }}
+        </span>
       </div>
     </div>
   </div>
@@ -325,4 +393,52 @@ function getSeriesIcon(type) {
 .hero-stat-label { font-size: 0.75rem; color: var(--muted); }
 
 .series-hero-episodes { font-size: 0.8rem; color: var(--muted); }
+
+.series-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.watchlist-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.watchlist-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--surface-alt);
+}
+
+.watchlist-btn.is-watching {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.watchlist-btn.is-watching:hover {
+  background: color-mix(in srgb, var(--accent) 85%, #000);
+}
+
+.watchlist-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.watchlist-count {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
 </style>

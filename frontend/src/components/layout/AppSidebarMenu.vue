@@ -98,6 +98,7 @@ const illuWrlStyleSections = computed(() => {
         { id: 'rankings', label: 'Rankings', i18nKey: 'nav.rankings', to: '/rankings', icon: 'fa-solid fa-chart-line' },
         { id: 'favorites', label: 'My Favorite', i18nKey: 'nav.myFavorite', to: '/favorites', icon: 'fa-regular fa-heart' },
         { id: 'bookmarks', label: 'Bookmarks', i18nKey: 'nav.bookmarks', to: '/bookmarks', icon: 'fa-regular fa-bookmark' },
+        { id: 'watchlist', label: 'Watchlist', i18nKey: 'nav.watchlist', to: '/watchlist', icon: 'fa-regular fa-eye' },
       ],
     },
     {

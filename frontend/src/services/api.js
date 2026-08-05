@@ -325,4 +325,13 @@ export const seriesApi = {
   reorder: (seriesId, artworkIds) => api.put(`/series/${seriesId}/reorder`, { artworkIds }),
 }
 
+// Watchlist APIs
+export const watchlistApi = {
+  getMy: (params = {}) => api.get('/watchlist', { params }),
+  add: (seriesId) => api.post(`/series/${seriesId}/watchlist`),
+  remove: (seriesId) => api.delete(`/series/${seriesId}/watchlist`),
+  checkStatus: (seriesId) => api.get(`/series/${seriesId}/watchlist/status`),
+  getCount: (seriesId) => api.get(`/series/${seriesId}/watchlist/count`),
+}
+
 export default api

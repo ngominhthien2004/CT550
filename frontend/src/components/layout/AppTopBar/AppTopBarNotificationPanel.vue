@@ -60,6 +60,11 @@ function computeNotificationLink(item) {
   if (type === 'request') {
     return '/requests/manage'
   }
+  if (type === 'series_new_chapter') {
+    const seriesId = item.metadata?.seriesId
+    if (seriesId) return `/series/${seriesId}`
+    if (artworkId) return `/artworks/${artworkId}`
+  }
   if (type.startsWith('system:')) {
     if (type === 'system:artwork_report') return '/admin?tab=reports&type=artwork'
     if (type === 'system:comment_report') return '/admin?tab=reports&type=comment'

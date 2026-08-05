@@ -59,5 +59,10 @@
   "noSeriesFound": "No series found. Create one first.",
   "addToSeriesSuccess": "Added to series",
   "addToSeriesFailed": "Failed to add to series",
-  "alreadyInSeries": "This artwork is already in a series"
+  "alreadyInSeries": "This artwork is already in a series",
+  "addToWatchlist": "Add to Watchlist",
+  "watching": "Watching",
+  "watchers": "watchers",
+  "watchlistEmpty": "Your watchlist is empty",
+  "watchlistEmptyDesc": "When you follow a series, you'll receive notifications when new chapters are added."
 }

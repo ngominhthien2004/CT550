@@ -35,6 +35,7 @@ const seriesRoutes = require('./routes/series.routes');
 const userReportRoutes = require('./routes/userReport.routes');
 const bannerRoutes = require('./routes/banner.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
+const watchlistRoutes = require('./routes/watchlist.routes');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
 
@@ -141,6 +142,11 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/chat-sessions', chatSessionRoutes);
 app.use('/api/settings', settingRoutes);
 app.use('/api/requests', requestRoutes);
+// Watchlist routes MUST be mounted before series routes because they share
+// the /api/series/:id/watchlist/* path prefix. Mounting at /api lets the
+// watchlist router match first; non-watchlist requests fall through to the
+// series router below.
+app.use('/api', watchlistRoutes);
 app.use('/api/series', seriesRoutes);
 app.use('/api/user-reports', userReportRoutes);
 app.use('/api/banners', bannerRoutes);
@@ -169,6 +175,7 @@ app.use('/api/bookmarks', noCache);
 app.use('/api/likes', noCache);
 app.use('/api/comments', noCache);
 app.use('/api/requests', noCache);
+app.use('/api/watchlist', noCache);
 app.use('/api/chat-sessions', noCache);
 app.use('/api/user-reports', noCache);
 app.use('/api/ai', noCache);

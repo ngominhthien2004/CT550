@@ -1,11 +1,13 @@
 const Series = require('../models/Series');
 const Artwork = require('../models/Artwork');
+const Watchlist = require('../models/Watchlist');
 
 const cloudinary = require('cloudinary').v2;
 const mongoose = require('mongoose');
 const { getOrSet, getOrSetWithL2, delByPrefix, TTL, buildKey } = require('../utils/cache');
 const { computeSeriesStats } = require('../utils/seriesStats');
 const { recomputeSeriesTags } = require('../utils/recomputeSeriesTags');
+const { createNotification } = require('../utils/notification');
 
 function validateObjectId(id, name = 'ID') {
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -312,6 +314,30 @@ const addArtworkToSeries = async (req, res, next) => {
 
     // Invalidate user's series list cache
     delByPrefix(`user:series:${req.user._id}`);
+
+    // Notify all users who have this series in their watchlist
+    try {
+      const watchers = await Watchlist.find({ series: series._id }).select('user');
+      const chapterIndex = series.artworkCount;
+
+      for (const watcher of watchers) {
+        await createNotification({
+          userId: watcher.user,
+          actorId: req.user._id,
+          artworkId: artworkId,
+          type: 'series_new_chapter',
+          message: `New chapter "${artwork.title}" added to "${series.title}" (Chapter ${chapterIndex})`,
+          metadata: {
+            seriesId: series._id,
+            seriesTitle: series.title,
+            artworkId: artworkId,
+            chapterIndex
+          }
+        });
+      }
+    } catch (_notifError) {
+      // Notification errors should not fail the main request
+    }
 
     res.json(computeSeriesStats(populated));
   } catch (error) {

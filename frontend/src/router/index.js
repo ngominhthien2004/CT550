@@ -32,6 +32,7 @@ import DrawingView from '../views/DrawingView.vue'
 import SettingsView from '../views/SettingsView.vue'
 import RequestManagementView from '../views/RequestManagementView.vue'
 import SeriesDetailView from '../views/SeriesDetailView.vue'
+import WatchlistView from '../views/WatchlistView.vue'
 
 import { useAuthStore } from '../stores/auth.store'
 
@@ -127,6 +128,7 @@ const routes = [
   { path: '/novels/:id', name: 'novel-detail', component: ArtworkDetailView },
   { path: '/artworks/:id', name: 'artwork-detail', component: ArtworkDetailView },
   { path: '/series/:id', name: 'series-detail', component: SeriesDetailView },
+  { path: '/watchlist', name: 'watchlist', component: WatchlistView, meta: { requiresAuth: true } },
   { path: '/setting', redirect: '/settings' },
   { path: '/settings', name: 'settings', component: SettingsView, meta: { requiresAuth: true } },
   {
