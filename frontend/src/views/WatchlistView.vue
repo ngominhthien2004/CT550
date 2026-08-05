@@ -40,6 +40,18 @@ function goToSeries(seriesId) {
   router.push(`/series/${seriesId}`)
 }
 
+function goToLatestEpisode(series) {
+  router.push(`/series/${series._id}`)
+}
+
+async function toggleNotifications(item) {
+  try {
+    await watchlistStore.toggleNotifications(item._id, item.series.notificationsEnabled)
+  } catch {
+    // Error handled by store
+  }
+}
+
 async function removeFromWatchlist(seriesId) {
   try {
     await watchlistStore.removeFromWatchlist(seriesId)
@@ -175,19 +187,30 @@ onMounted(() => {
             <div class="watchlist-card-actions">
               <button
                 type="button"
+                class="read-latest-btn"
+                @click="goToLatestEpisode(item.series)"
+              >
+                <i class="fa-solid fa-book-open"></i>
+                {{ $t('series.readLatestEpisode') }}
+              </button>
+              <button
+                type="button"
+                class="bell-toggle-btn"
+                :class="{ active: item.notificationsEnabled !== false }"
+                :title="item.notificationsEnabled !== false ? $t('series.notificationsOn') : $t('series.notificationsOff')"
+                @click="toggleNotifications(item)"
+              >
+                <i class="fa-solid fa-bell"></i>
+              </button>
+            </div>
+            <div class="watchlist-card-actions-secondary">
+              <button
+                type="button"
                 class="view-btn"
                 @click="goToSeries(item.series._id)"
               >
                 <i class="fa-solid fa-arrow-right-to-bracket"></i>
                 {{ $t('series.viewSeries') }}
-              </button>
-              <button
-                type="button"
-                class="unwatch-btn"
-                :title="$t('series.unwatch')"
-                @click="removeFromWatchlist(item.series._id)"
-              >
-                <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
           </div>
@@ -331,20 +354,22 @@ onMounted(() => {
 /* ── Watchlist List ── */
 .watchlist-list {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 /* ── Card ── */
 .watchlist-card {
   display: flex;
-  width: 100%;
-  gap: 1.25rem;
-  padding: 1rem 1.25rem;
+  width: 496px;
+  height: 212px;
+  gap: 1rem;
+  padding: 0;
   background: var(--surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
   transition: box-shadow 0.2s ease, transform 0.2s ease;
+  overflow: hidden;
 }
 
 .watchlist-card:hover {
@@ -355,9 +380,9 @@ onMounted(() => {
 /* ── Cover ── */
 .watchlist-card-cover {
   flex-shrink: 0;
-  width: 140px;
-  height: 190px;
-  border-radius: 10px;
+  width: 160px;
+  height: 212px;
+  border-radius: 0;
   overflow: hidden;
   background: var(--surface-alt);
   position: relative;
@@ -407,8 +432,10 @@ onMounted(() => {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.2rem;
   justify-content: center;
+  padding: 0.75rem 0.75rem 0.75rem 0;
+  min-width: 0;
 }
 
 .series-label {
@@ -420,7 +447,7 @@ onMounted(() => {
 }
 
 .watchlist-card-title {
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text);
   margin: 0;
@@ -466,7 +493,7 @@ onMounted(() => {
 
 /* ── Meta ── */
 .watchlist-card-meta {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--muted);
   display: flex;
   align-items: center;
@@ -480,9 +507,10 @@ onMounted(() => {
 /* ── Actions ── */
 .watchlist-card-actions {
   display: flex;
+  align-items: center;
   gap: 0.5rem;
   margin-top: auto;
-  padding-top: 0.3rem;
+  padding-top: 0.4rem;
 }
 
 .view-btn {
@@ -505,24 +533,61 @@ onMounted(() => {
   background: var(--accent-hover);
 }
 
-.unwatch-btn {
+/* ── Bell Toggle ── */
+.bell-toggle-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.35rem 0.6rem;
-  font-size: 0.78rem;
-  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   background: transparent;
   color: var(--muted);
   border: 1px solid var(--line);
   cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
-  font-family: inherit;
+  transition: all 0.15s ease;
+  font-size: 0.8rem;
+  flex-shrink: 0;
 }
 
-.unwatch-btn:hover {
-  color: var(--danger);
-  border-color: var(--danger);
+.bell-toggle-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.bell-toggle-btn.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+/* ── Read Latest Button ── */
+.read-latest-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--surface);
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.read-latest-btn:hover {
+  opacity: 0.85;
+}
+
+/* ── Secondary Actions ── */
+.watchlist-card-actions-secondary {
+  display: flex;
+  gap: 0.5rem;
 }
 
 /* ── Load More ── */

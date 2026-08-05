@@ -10,6 +10,10 @@ const watchlistSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'Series'
+    },
+    notificationsEnabled: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true

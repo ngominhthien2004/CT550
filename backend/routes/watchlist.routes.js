@@ -6,7 +6,8 @@ const {
   removeFromWatchlist,
   getMyWatchlist,
   checkWatchlistStatus,
-  getSeriesWatchlistCount
+  getSeriesWatchlistCount,
+  toggleNotifications
 } = require('../controllers/watchlist.controller');
 
 // ── Public ──────────────────────────────────────────────────────
@@ -21,5 +22,8 @@ router.get('/watchlist', protect, getMyWatchlist);
 router.post('/series/:id/watchlist', protect, addToWatchlist);
 router.delete('/series/:id/watchlist', protect, removeFromWatchlist);
 router.get('/series/:id/watchlist/status', protect, checkWatchlistStatus);
+
+// Toggle notifications for a watchlist entry
+router.patch('/watchlist/:id/notifications', protect, toggleNotifications);
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const Watchlist = require('../models/Watchlist');
 const Series = require('../models/Series');
+const Artwork = require('../models/Artwork');
 const mongoose = require('mongoose');
 const { delByPrefix, getOrSetWithL2, TTL } = require('../utils/cache');
 
@@ -120,8 +121,30 @@ const getMyWatchlist = async (req, res, next) => {
         Watchlist.countDocuments({ user: req.user._id })
       ]);
 
+      const filteredItems = items.filter(w => w.series); // Filter out deleted series
+
+      // For series with empty artworks array, look up artwork images directly
+      const itemsNeedingFallback = filteredItems.filter(w => !w.series.artworks || w.series.artworks.length === 0);
+      if (itemsNeedingFallback.length > 0) {
+        const seriesIds = itemsNeedingFallback.map(w => w.series._id);
+        const fallbackArtworks = await Artwork.find({ series: { $in: seriesIds } })
+          .select('series images')
+          .lean();
+        const artworkBySeries = {};
+        for (const art of fallbackArtworks) {
+          const sid = String(art.series);
+          if (!artworkBySeries[sid]) artworkBySeries[sid] = art;
+        }
+        for (const w of itemsNeedingFallback) {
+          const sid = String(w.series._id);
+          if (artworkBySeries[sid]) {
+            w.series.artworks = [artworkBySeries[sid]];
+          }
+        }
+      }
+
       return {
-        items: items.filter(w => w.series), // Filter out deleted series
+        items: filteredItems,
         pagination: {
           page,
           limit,
@@ -173,10 +196,36 @@ const getSeriesWatchlistCount = async (req, res, next) => {
   }
 };
 
+// @desc    Toggle notification preference for a watchlist entry
+// @route   PATCH /api/watchlist/:id/notifications
+// @access  Private
+const toggleNotifications = async (req, res, next) => {
+  try {
+    validateObjectId(req.params.id, 'watchlist ID');
+
+    const watchlist = await Watchlist.findOne({ _id: req.params.id, user: req.user._id });
+    if (!watchlist) {
+      res.status(404);
+      return next(new Error('Watchlist entry not found'));
+    }
+
+    watchlist.notificationsEnabled = !watchlist.notificationsEnabled;
+    await watchlist.save();
+
+    res.json({
+      success: true,
+      notificationsEnabled: watchlist.notificationsEnabled
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addToWatchlist,
   removeFromWatchlist,
   getMyWatchlist,
   checkWatchlistStatus,
-  getSeriesWatchlistCount
+  getSeriesWatchlistCount,
+  toggleNotifications
 };

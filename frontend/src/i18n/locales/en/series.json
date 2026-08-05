@@ -70,5 +70,8 @@
   "all": "All",
   "manga": "Manga",
   "novel": "Novel",
-  "illustration": "Illustration"
+  "illustration": "Illustration",
+  "readLatestEpisode": "Read latest episode",
+  "notificationsOn": "Notifications on",
+  "notificationsOff": "Notifications off"
 }

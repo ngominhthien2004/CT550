@@ -70,5 +70,8 @@
   "all": "Tất cả",
   "manga": "Manga",
   "novel": "Tiểu thuyết",
-  "illustration": "Minh họa"
+  "illustration": "Minh họa",
+  "readLatestEpisode": "Đọc chapter mới nhất",
+  "notificationsOn": "Bật thông báo",
+  "notificationsOff": "Tắt thông báo"
 }

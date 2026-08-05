@@ -70,5 +70,19 @@ export const useWatchlistStore = defineStore('watchlist', {
         throw error
       }
     },
+    async toggleNotifications(watchlistId, currentEnabled) {
+      try {
+        const { data } = await watchlistApi.toggleNotifications(watchlistId)
+        // Update local state
+        const item = this.items.find(i => i._id === watchlistId)
+        if (item) {
+          item.notificationsEnabled = data.notificationsEnabled
+        }
+        return data.notificationsEnabled
+      } catch (error) {
+        this.error = error?.response?.data?.message || 'Failed to toggle notifications'
+        throw error
+      }
+    },
   },
 })

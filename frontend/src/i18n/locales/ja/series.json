@@ -70,5 +70,8 @@
   "all": "すべて",
   "manga": "マンガ",
   "novel": "小説",
-  "illustration": "イラスト"
+  "illustration": "イラスト",
+  "readLatestEpisode": "最新エピソードを読む",
+  "notificationsOn": "通知をオン",
+  "notificationsOff": "通知をオフ"
 }

@@ -332,6 +332,7 @@ export const watchlistApi = {
   remove: (seriesId) => api.delete(`/series/${seriesId}/watchlist`),
   checkStatus: (seriesId) => api.get(`/series/${seriesId}/watchlist/status`),
   getCount: (seriesId) => api.get(`/series/${seriesId}/watchlist/count`),
+  toggleNotifications: (watchlistId) => api.patch(`/watchlist/${watchlistId}/notifications`),
 }
 
 export default api
