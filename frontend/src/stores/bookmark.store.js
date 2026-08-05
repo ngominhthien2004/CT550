@@ -14,6 +14,13 @@ export const useBookmarkStore = defineStore('bookmarks', {
     isTogglingBookmark: (state) => (artworkId) => Boolean(state.togglingByArtwork[artworkId]),
   },
   actions: {
+    resetState() {
+      this.items = []
+      this.statusByArtwork = {}
+      this.togglingByArtwork = {}
+      this.loading = false
+      this.error = ''
+    },
     async fetchMyBookmarks(params = {}) {
       this.loading = true
       this.error = ''

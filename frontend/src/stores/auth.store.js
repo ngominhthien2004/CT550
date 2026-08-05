@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { loginAuthUser, registerAuthUser } from '../services/api.js'
 import { disconnectSocketNow } from '../composables/useSocket.js'
+import { useLikeStore } from './like.store.js'
+import { useBookmarkStore } from './bookmark.store.js'
 
 const TOKEN_KEY = 'token'
 const USER_KEY = 'authUser'
@@ -51,6 +53,9 @@ export const useAuthStore = defineStore('auth', {
       // Ensure any open socket is torn down on logout, even if a
       // component forgot to release its reference.
       disconnectSocketNow()
+      // Reset user-specific stores to prevent stale data leaking between accounts
+      useLikeStore().resetState()
+      useBookmarkStore().resetState()
     },
     async register(payload) {
       this.loading = true

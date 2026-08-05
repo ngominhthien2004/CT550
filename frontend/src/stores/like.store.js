@@ -14,6 +14,13 @@ export const useLikeStore = defineStore('likes', {
     isTogglingLike: (state) => (artworkId) => Boolean(state.togglingByArtwork[artworkId]),
   },
   actions: {
+    resetState() {
+      this.items = []
+      this.statusByArtwork = {}
+      this.togglingByArtwork = {}
+      this.loading = false
+      this.error = ''
+    },
     async fetchMyLikes(params = {}) {
       this.loading = true
       this.error = ''
