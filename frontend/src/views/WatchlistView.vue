@@ -203,9 +203,9 @@ onMounted(() => {
 
 <style scoped>
 .watchlist-page {
-  max-width: 800px;
+  width: 100%;
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 0;
   min-height: 60vh;
 }
 
@@ -329,6 +329,7 @@ onMounted(() => {
 /* ── Card ── */
 .watchlist-card {
   display: flex;
+  width: 100%;
   gap: 1.25rem;
   padding: 1rem 1.25rem;
   background: var(--surface);
@@ -345,8 +346,8 @@ onMounted(() => {
 /* ── Cover ── */
 .watchlist-card-cover {
   flex-shrink: 0;
-  width: 100px;
-  height: 140px;
+  width: 140px;
+  height: 190px;
   border-radius: 10px;
   overflow: hidden;
   background: var(--surface-alt);
