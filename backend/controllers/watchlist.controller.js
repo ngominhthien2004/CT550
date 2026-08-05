@@ -110,10 +110,11 @@ const getMyWatchlist = async (req, res, next) => {
           .lean()
           .populate({
             path: 'series',
-            select: 'title type coverImage artworkCount isCompleted createdAt updatedAt',
+            select: 'title type coverImage artworkCount isCompleted createdAt updatedAt artworks',
             populate: [
               { path: 'user', select: 'username displayName avatar' },
-              { path: 'tags', select: 'name' }
+              { path: 'tags', select: 'name' },
+              { path: 'artworks', select: 'images', options: { limit: 1 } }
             ]
           }),
         Watchlist.countDocuments({ user: req.user._id })

@@ -61,6 +61,15 @@ function getRelativeDate(series) {
   return formatRelativeTime(date)
 }
 
+function getCoverUrl(series) {
+  if (series.coverImage) return series.coverImage
+  const artworks = series.artworks
+  if (artworks && artworks.length > 0 && artworks[0]?.images?.length > 0) {
+    return artworks[0].images[0]
+  }
+  return ''
+}
+
 onMounted(() => {
   watchlistStore.fetchWatchlist()
 })
@@ -120,8 +129,8 @@ onMounted(() => {
         >
           <div class="watchlist-card-cover" @click="goToSeries(item.series._id)">
             <img
-              v-if="item.series.coverImage"
-              :src="item.series.coverImage"
+              v-if="getCoverUrl(item.series)"
+              :src="getCoverUrl(item.series)"
               :alt="item.series.title"
             />
             <div v-else class="watchlist-card-nothumb">
