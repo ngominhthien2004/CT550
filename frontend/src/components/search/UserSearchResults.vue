@@ -15,7 +15,7 @@ const props = defineProps({
   total: { type: Number, default: 0 },
 })
 
-const emit = defineEmits(['toggle-follow', 'toggle-menu', 'close-menu', 'block-user', 'load-more', 'avatar-error'])
+const emit = defineEmits(['toggle-follow', 'toggle-menu', 'close-menu', 'block-user', 'report-user', 'load-more', 'avatar-error'])
 
 const followStore = useFollowStore()
 </script>
@@ -55,7 +55,7 @@ const followStore = useFollowStore()
                 <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
               </button>
               <div v-if="activeUserMenuId === user._id" class="dd-panel" role="menu">
-                <button type="button" class="dd-item" role="menuitem" @click="emit('close-menu')">
+                <button type="button" class="dd-item" role="menuitem" @click="emit('report-user', user)">
                   <i class="fa-solid fa-flag"></i> {{ $t('profile.reportUser') }}
                 </button>
                 <button type="button" class="dd-item dd-item--danger" role="menuitem" :disabled="blockSubmittingId === user._id" @click="emit('block-user', user)">

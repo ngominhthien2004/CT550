@@ -41,12 +41,12 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
       <i class="fa-solid fa-ellipsis"></i>
     </button>
     <Transition name="menu-fade">
-      <div v-if="isOpen" class="card-menu-dropdown">
-        <button type="button" class="card-menu-item" @click="handleShare">
+      <div v-if="isOpen" class="dd-panel">
+        <button type="button" class="dd-item" @click="handleShare">
           <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
           <span>{{ $t('artwork.share') }}</span>
         </button>
-        <button type="button" class="card-menu-item" @click="handleReport">
+        <button type="button" class="dd-item" @click="handleReport">
           <i class="fa-regular fa-flag" aria-hidden="true"></i>
           <span>{{ $t('artwork.report') }}</span>
         </button>
@@ -55,6 +55,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   </div>
 </template>
 
+<style scoped src="../../assets/styles/dropdown.css"></style>
 <style scoped>
 .card-menu-wrapper {
   position: absolute;
@@ -88,43 +89,11 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   background: rgba(0, 0, 0, 0.6);
 }
 
-.card-menu-dropdown {
-  position: absolute;
-  top: 38px;
+/* Override dd-panel positioning for card context */
+.card-menu-wrapper .dd-panel {
+  top: calc(100% + 4px);
   right: 0;
-  min-width: 160px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-  padding: 4px 0;
-  overflow: hidden;
-}
-
-.card-menu-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 10px 16px;
-  border: none;
-  background: none;
-  color: var(--text);
-  font-size: 0.88rem;
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.15s;
-}
-
-.card-menu-item:hover {
-  background: var(--surface-alt);
-}
-
-.card-menu-item i {
-  width: 16px;
-  text-align: center;
-  font-size: 0.85rem;
-  color: var(--muted);
+  left: auto;
 }
 
 .menu-fade-enter-active,

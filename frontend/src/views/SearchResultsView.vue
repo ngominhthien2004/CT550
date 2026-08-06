@@ -12,6 +12,7 @@ import ArtworkSearchResults from '../components/search/ArtworkSearchResults.vue'
 import DateRangeFilter from '../components/common/DateRangeFilter.vue'
 import { getArtworks, userApi } from '../services/api'
 import MainLayoutTemplate from '../components/layout/MainLayoutTemplate.vue'
+import ReportModal from '../components/common/ReportModal.vue'
 
 import { useAuthStore } from '../stores/auth.store'
 import { useFollowStore } from '../stores/follow.store'
@@ -39,6 +40,8 @@ const userError = ref('')
 const activeUserMenuId = ref('')
 const blockedUserIds = ref([])
 const blockSubmittingId = ref('')
+const showReportModal = ref(false)
+const reportTargetUser = ref(null)
 const sortMode = computed(() => {
   const order = typeof route.query.order === 'string' ? route.query.order : 'newest'
   return order === 'popular' ? 'popular' : 'newest'
@@ -425,6 +428,17 @@ function closeUserMenu() {
   activeUserMenuId.value = ''
 }
 
+function openReportUserModal(user) {
+  reportTargetUser.value = user
+  showReportModal.value = true
+  closeUserMenu()
+}
+
+function onUserReported() {
+  showReportModal.value = false
+  reportTargetUser.value = null
+}
+
 async function ensureAuthenticated() {
   if (authStore.isAuthenticated) return true
   await router.push({ name: 'login', query: { redirect: route.fullPath } })
@@ -745,6 +759,7 @@ watch(dateRange, () => {
         @toggle-menu="toggleUserMenu"
         @close-menu="closeUserMenu"
         @block-user="blockSearchUser"
+        @report-user="openReportUserModal"
         @load-more="loadMoreUsers"
         @avatar-error="handleAvatarError"
       />
@@ -772,6 +787,13 @@ watch(dateRange, () => {
         @apply="applySearchOptions"
       />
     </section>
+    <ReportModal
+      :visible="showReportModal"
+      report-type="user"
+      :target="reportTargetUser"
+      @close="showReportModal = false"
+      @reported="onUserReported"
+    />
   </MainLayoutTemplate>
 </template>
 
