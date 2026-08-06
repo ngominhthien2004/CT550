@@ -111,7 +111,7 @@ const seriesOptions = computed(() => [
 
 <template>
   <Teleport to="body">
-    <div v-if="modelValue" class="search-options-backdrop" @click.self="closeModal" @keydown.esc="closeModal" tabindex="0" role="dialog" aria-modal="true">
+    <div v-if="modelValue" class="search-options-backdrop" @keydown.esc="closeModal" tabindex="0" role="dialog" aria-modal="true">
       <section class="search-options-modal" role="dialog" aria-modal="true" :aria-label="$t('search.searchOption')">
         <header class="search-options-header">
           <h2 class="mb-0">{{ $t('search.searchOption') }}</h2>

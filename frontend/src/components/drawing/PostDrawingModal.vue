@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <div v-if="store.showPostDialog" class="modal-overlay" @click.self="store.closePostDialog" @keydown.esc="store.closePostDialog" tabindex="0" role="dialog" aria-modal="true">
+    <div v-if="store.showPostDialog" class="modal-overlay" @keydown.esc="store.closePostDialog" tabindex="0" role="dialog" aria-modal="true">
       <div class="modal-content">
         <div class="modal-header">
           <h2>{{ $t('drawing.postDrawing') }}</h2>

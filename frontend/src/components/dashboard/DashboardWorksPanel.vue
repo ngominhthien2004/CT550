@@ -183,7 +183,7 @@ function handleArtworkUpdated() {
     </div>
 
     <!-- Delete confirmation -->
-    <div v-if="showDeleteConfirm" class="del-backdrop" @click.self="showDeleteConfirm = false">
+    <div v-if="showDeleteConfirm" class="del-backdrop">
       <div class="delete-confirm-dialog">
         <h3 class="delete-confirm-title">{{ $t('dashboard.deleteArtworkHeading') }}</h3>
         <p class="delete-confirm-text">{{ $t('dashboard.deleteArtworkConfirm', { name: deletingArtwork?.title }) }}</p>

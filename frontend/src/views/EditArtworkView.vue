@@ -368,7 +368,7 @@ onBeforeUnmount(() => {
         </template>
       </div>
 
-      <div v-if="showDeleteConfirm" class="modal-backdrop" @click.self="showDeleteConfirm = false">
+      <div v-if="showDeleteConfirm" class="modal-backdrop">
         <div class="modal-dialog">
           <h3 class="modal-title">{{ $t('artwork.deleteArtwork') }}</h3>
           <p class="modal-text">{{ $t('artwork.deleteConfirm', { title: artwork?.title }) }}</p>

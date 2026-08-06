@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <div v-if="visible" class="shortcuts-overlay" @click.self="$emit('close')" @keydown.enter.prevent="$emit('close')" @keydown.space.prevent="$emit('close')" tabindex="0" role="button">
+    <div v-if="visible" class="shortcuts-overlay" @keydown.enter.prevent="$emit('close')" @keydown.space.prevent="$emit('close')" tabindex="0" role="button">
       <div class="shortcuts-modal">
         <div class="shortcuts-header">
           <h2>{{ $t('drawing.keyboardShortcuts') }}</h2>

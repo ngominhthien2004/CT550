@@ -78,7 +78,7 @@ function handleDragLeave() {
 </script>
 
 <template>
-  <div v-if="show" class="modal-backdrop" @click.self="handleClose">
+  <div v-if="show" class="modal-backdrop">
     <div class="modal-card avatar-card">
       <header class="modal-header">
         <h2 class="modal-title">{{ $t('profile.editProfileImage') }}</h2>

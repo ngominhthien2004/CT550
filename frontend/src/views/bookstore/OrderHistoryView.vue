@@ -140,7 +140,7 @@ onMounted(() => {
 
       <!-- Cancel confirmation dialog -->
       <Teleport to="body">
-        <div v-if="confirmCancelOrderId" class="cancel-overlay" @click.self="cancelConfirmDialog">
+        <div v-if="confirmCancelOrderId" class="cancel-overlay">
           <div class="cancel-dialog">
             <p class="cancel-message">{{ $t('bookstore.cancelOrderConfirm') }}</p>
             <div class="cancel-actions">

@@ -128,7 +128,7 @@
 
   <!-- New Canvas Confirm Modal -->
   <Teleport to="body">
-    <div v-if="store.showNewCanvasConfirm" class="confirm-overlay" @click.self="store.showNewCanvasConfirm = false" @keydown.enter.prevent="store.showNewCanvasConfirm = false" @keydown.space.prevent="store.showNewCanvasConfirm = false" tabindex="0" role="button">
+    <div v-if="store.showNewCanvasConfirm" class="confirm-overlay" @keydown.enter.prevent="store.showNewCanvasConfirm = false" @keydown.space.prevent="store.showNewCanvasConfirm = false" tabindex="0" role="button">
       <div class="confirm-modal">
         <div class="confirm-header">
           <h3>{{ $t('drawing.newDrawing') }}</h3>
@@ -147,7 +147,7 @@
 
   <!-- Restore Autosave Confirm Modal -->
   <Teleport to="body">
-    <div v-if="store.showRestoreAutosaveConfirm" class="confirm-overlay" @click.self="store.showRestoreAutosaveConfirm = false" @keydown.enter.prevent="store.showRestoreAutosaveConfirm = false" @keydown.space.prevent="store.showRestoreAutosaveConfirm = false" tabindex="0" role="button">
+    <div v-if="store.showRestoreAutosaveConfirm" class="confirm-overlay" @keydown.enter.prevent="store.showRestoreAutosaveConfirm = false" @keydown.space.prevent="store.showRestoreAutosaveConfirm = false" tabindex="0" role="button">
       <div class="confirm-modal">
         <div class="confirm-header">
           <h3>{{ $t('drawing.autosaveFound') }}</h3>
@@ -166,7 +166,7 @@
 
   <!-- Go Home Confirm Modal -->
   <Teleport to="body">
-    <div v-if="store.showGoHomeConfirm" class="confirm-overlay" @click.self="store.showGoHomeConfirm = false" @keydown.enter.prevent="store.showGoHomeConfirm = false" @keydown.space.prevent="store.showGoHomeConfirm = false" tabindex="0" role="button">
+    <div v-if="store.showGoHomeConfirm" class="confirm-overlay" @keydown.enter.prevent="store.showGoHomeConfirm = false" @keydown.space.prevent="store.showGoHomeConfirm = false" tabindex="0" role="button">
       <div class="confirm-modal">
         <div class="confirm-header">
           <h3>{{ $t('drawing.leaveDrawing') }}</h3>

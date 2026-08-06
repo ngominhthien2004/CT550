@@ -97,7 +97,7 @@ async function goLogin() {
 
     <!-- Delete Cover Confirmation Modal -->
     <Teleport to="body">
-      <div v-if="state.showDeleteCoverConfirm.value" class="confirm-overlay" @click.self="state.showDeleteCoverConfirm.value = false" @keydown.esc="state.showDeleteCoverConfirm.value = false" tabindex="0" role="dialog" aria-modal="true">
+      <div v-if="state.showDeleteCoverConfirm.value" class="confirm-overlay" @keydown.esc="state.showDeleteCoverConfirm.value = false" tabindex="0" role="dialog" aria-modal="true">
         <div class="confirm-modal">
           <div class="confirm-header">
             <h3>{{ $t('profile.deleteCover') }}</h3>

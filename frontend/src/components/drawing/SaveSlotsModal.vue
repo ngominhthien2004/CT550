@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <div v-if="store.showSlotsDialog" class="modal-overlay" @click.self="handleOverlayClick" @keydown.enter.prevent="store.showSlotsDialog = false" @keydown.space.prevent="store.showSlotsDialog = false" tabindex="0" role="button">
+    <div v-if="store.showSlotsDialog" class="modal-overlay" @keydown.enter.prevent="store.showSlotsDialog = false" @keydown.space.prevent="store.showSlotsDialog = false" tabindex="0" role="button">
       <div class="modal-content modal-content--wide">
         <div class="modal-header">
           <h2 ref="dialogHeaderRef">{{ $t('drawing.savedDrawings') }}</h2>
@@ -96,7 +96,7 @@
 
   <!-- Load Slot Confirm Modal -->
   <Teleport to="body">
-    <div v-if="store.showLoadSlotConfirm" class="confirm-overlay" @click.self="store.showLoadSlotConfirm = false" @keydown.enter.prevent="store.showLoadSlotConfirm = false" @keydown.space.prevent="store.showLoadSlotConfirm = false" tabindex="0" role="button">
+    <div v-if="store.showLoadSlotConfirm" class="confirm-overlay" @keydown.enter.prevent="store.showLoadSlotConfirm = false" @keydown.space.prevent="store.showLoadSlotConfirm = false" tabindex="0" role="button">
       <div class="confirm-modal">
         <div class="confirm-header">
           <h3>{{ $t('drawing.loadDrawing') }}</h3>
@@ -115,7 +115,7 @@
 
   <!-- Delete Slot Confirm Modal -->
   <Teleport to="body">
-    <div v-if="store.showDeleteSlotConfirm" class="confirm-overlay" @click.self="store.showDeleteSlotConfirm = false" @keydown.enter.prevent="store.showDeleteSlotConfirm = false" @keydown.space.prevent="store.showDeleteSlotConfirm = false" tabindex="0" role="button">
+    <div v-if="store.showDeleteSlotConfirm" class="confirm-overlay" @keydown.enter.prevent="store.showDeleteSlotConfirm = false" @keydown.space.prevent="store.showDeleteSlotConfirm = false" tabindex="0" role="button">
       <div class="confirm-modal">
         <div class="confirm-header">
           <h3>{{ $t('drawing.deleteDrawing') }}</h3>

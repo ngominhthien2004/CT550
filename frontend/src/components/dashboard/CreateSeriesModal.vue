@@ -217,7 +217,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="cs-backdrop" @click.self="emit('close')" @keydown.esc="emit('close')" tabindex="0" role="dialog" aria-modal="true">
+  <div class="cs-backdrop" @keydown.esc="emit('close')" tabindex="0" role="dialog" aria-modal="true">
     <div class="cs-dialog" role="dialog" aria-modal="true" :aria-label="isEditMode ? $t('series.editSeries', { type: typeLabel }) : $t('series.createSeries', { type: typeLabel })">
       <!-- Header -->
       <div class="cs-header">

@@ -332,7 +332,7 @@ watch(activeType, () => {
     />
 
     <!-- Delete confirmation -->
-    <div v-if="showDeleteConfirm" class="del-backdrop" @click.self="showDeleteConfirm = false" @keydown.enter.prevent="showDeleteConfirm = false" @keydown.space.prevent="showDeleteConfirm = false" tabindex="0" role="button">
+    <div v-if="showDeleteConfirm" class="del-backdrop" @keydown.enter.prevent="showDeleteConfirm = false" @keydown.space.prevent="showDeleteConfirm = false" tabindex="0" role="button">
       <div class="delete-confirm-dialog">
         <h3 class="delete-confirm-title">{{ $t('dashboard.deleteSeriesHeading') }}</h3>
         <p class="delete-confirm-text">{{ $t('dashboard.deleteSeriesConfirm', { name: deletingSeries?.title }) }}</p>

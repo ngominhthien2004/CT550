@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <div v-if="visible" class="report-modal-overlay" @click="$emit('close')">
+    <div v-if="visible" class="report-modal-overlay">
       <div class="report-modal-container" role="dialog" aria-modal="true" :aria-labelledby="modalId + '-title'" @click.stop>
         <div class="report-modal-header">
           <h3 :id="modalId + '-title'">{{ config.title }}</h3>

@@ -161,7 +161,6 @@ onBeforeUnmount(() => {
         role="dialog"
         aria-modal="true"
         aria-label="Thumbnail crop"
-        @click="handleBackdropClick"
       >
         <div class="modal-card crop-card">
           <!-- Header -->

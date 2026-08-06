@@ -154,7 +154,7 @@ watch(
 
     <!-- Coachmark modal -->
     <Teleport to="body">
-      <div v-if="onboardingStep > 0" class="coachmark-overlay" @click.self="finishOnboarding">
+      <div v-if="onboardingStep > 0" class="coachmark-overlay">
         <div class="coachmark-modal">
           <div class="coachmark-header">
             <h2>{{ onboardingStep === 1 ? $t('dashboard.welcome') : $t('dashboard.discoverMore') }}</h2>

@@ -13,7 +13,7 @@ const emit = defineEmits(['confirm', 'cancel'])
 
 <template>
   <Teleport to="body">
-    <div v-if="show" class="modal-backdrop" @click.self="emit('cancel')">
+    <div v-if="show" class="modal-backdrop">
       <div class="modal-card">
         <div class="modal-header">
           <h3 class="modal-title">{{ title }}</h3>
