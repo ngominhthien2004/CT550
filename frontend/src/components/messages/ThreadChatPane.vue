@@ -87,7 +87,8 @@ defineExpose({ scrollToBottom })
         </button>
         <img v-if="headerAvatar" class="thread-head-avatar" :src="headerAvatar" :alt="headerTitle || 'Conversation partner'" @error="(e) => e.target.style.display = 'none'" />
         <h2 class="h6 mb-0 thread-head-title">
-          {{ headerTitle }}
+          <router-link v-if="selectedThreadId" :to="`/account?user=${selectedThreadId}`" class="thread-head-name-link">{{ headerTitle }}</router-link>
+          <span v-else>{{ headerTitle }}</span>
           <span v-if="selectedThreadId && presenceState.online" class="presence-indicator">
             <span class="presence-dot" :class="{ online: !presenceState.typing, typing: presenceState.typing }"></span>
             <span class="presence-text">{{ presenceState.typing ? 'typing...' : 'Online' }}</span>
@@ -222,6 +223,15 @@ defineExpose({ scrollToBottom })
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.thread-head-name-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.thread-head-name-link:hover {
+  text-decoration: underline;
 }
 
 .thread-head-avatar {

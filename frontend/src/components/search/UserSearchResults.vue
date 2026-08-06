@@ -47,18 +47,20 @@ const followStore = useFollowStore()
             <div class="user-more-wrap">
               <button
                 type="button"
-                class="more-user-btn"
+                class="icon-btn ghost"
                 :aria-label="`More actions for ${user._displayName}`"
                 :aria-expanded="activeUserMenuId === user._id"
                 @click="emit('toggle-menu', user._id)"
               >
-              <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+                <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
               </button>
-              <div v-if="activeUserMenuId === user._id" class="user-action-menu" role="menu">
-                <button type="button" role="menuitem" :disabled="blockSubmittingId === user._id" @click="emit('block-user', user)">
-                  {{ blockSubmittingId === user._id ? $t('profile.unblocking') : $t('profile.block') }}
+              <div v-if="activeUserMenuId === user._id" class="dd-panel" role="menu">
+                <button type="button" class="dd-item" role="menuitem" @click="emit('close-menu')">
+                  <i class="fa-solid fa-flag"></i> {{ $t('profile.reportUser') }}
                 </button>
-                <button type="button" role="menuitem" @click="emit('close-menu')">{{ $t('profile.reportUser') }}</button>
+                <button type="button" class="dd-item dd-item--danger" role="menuitem" :disabled="blockSubmittingId === user._id" @click="emit('block-user', user)">
+                  <i class="fa-solid fa-ban"></i> {{ blockSubmittingId === user._id ? $t('profile.unblocking') : $t('profile.block') }}
+                </button>
               </div>
             </div>
           </div>
@@ -101,6 +103,7 @@ const followStore = useFollowStore()
   <p v-else class="state-note">{{ $t('search.noUsersSearch') }}</p>
 </template>
 
+<style scoped src="../../assets/styles/dropdown.css"></style>
 <style scoped>
 .user-result-section h2 {
   font-size: 1.1rem;
@@ -191,51 +194,6 @@ const followStore = useFollowStore()
 
 .user-more-wrap {
   position: relative;
-}
-
-.more-user-btn {
-  border: none;
-  background: transparent;
-  padding: 0.5rem;
-  cursor: pointer;
-  color: var(--muted);
-  font-size: 1rem;
-}
-
-.user-action-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: var(--shadow-md);
-  min-width: 180px;
-  z-index: 10;
-  padding: 0.35rem 0;
-}
-
-.user-action-menu button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 0.55rem 1rem;
-  border: none;
-  background: transparent;
-  font-size: 0.85rem;
-  color: var(--text);
-  cursor: pointer;
-}
-
-.user-action-menu button:hover {
-  background: var(--surface-alt);
-}
-
-.menu-separator {
-  display: block;
-  height: 1px;
-  background: var(--line);
-  margin: 0.25rem 0;
 }
 
 .user-preview-rail {
