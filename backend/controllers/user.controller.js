@@ -856,16 +856,29 @@ const getRecommendedUsers = async (req, res, next) => {
             return res.json([]);
         }
 
+        // Step 1b: Get all blocked user IDs (both directions) to exclude from recommendations
+        const blocksAsBlocker = await UserBlock.find({ blocker: userId }).select('blocked');
+        const blocksAsBlocked = await UserBlock.find({ blocked: userId }).select('blocker');
+        const blockedIds = [
+            ...blocksAsBlocker.map(b => b.blocked),
+            ...blocksAsBlocked.map(b => b.blocker),
+        ];
+
         // Step 2: Find users that "people I follow" also follow (follow graph)
-        // Count how many of my follows follow each candidate, exclude self + already-followed
+        // Count how many of my follows follow each candidate, exclude self + already-followed + blocked
+        const excludedIds = [
+            ...followingIds.map(id => id._id || id),
+            userId,
+            ...blockedIds,
+        ];
         const pipeline = [
             // Only consider follows by people I follow
             { $match: { follower: { $in: followingIds } } },
-            // Exclude myself and people I already follow
+            // Exclude myself, people I already follow, and blocked users
             {
                 $match: {
                     following: {
-                        $nin: [...followingIds.map(id => id._id || id), userId],
+                        $nin: excludedIds,
                     },
                 },
             },
