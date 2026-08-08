@@ -488,6 +488,8 @@ async function applySearchOptions(payload) {
 
 <style scoped>
 .top-nav {
+  position: relative;
+  z-index: 50;
   padding: 0.55rem 0;
   display: flex;
   align-items: center;
