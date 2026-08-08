@@ -11,6 +11,7 @@
   "titleRequired": "タイトルが必要です。",
 
   "TAG_NAME_REQUIRED": "タグ名が必要です",
+  "TAG_NOT_FOUND": "タグが見つかりません",
   "COMMENT_NOT_FOUND": "コメントが見つかりません",
   "ARTWORK_NOT_FOUND": "作品が見つかりません",
   "USER_NOT_FOUND": "ユーザーが見つかりません",

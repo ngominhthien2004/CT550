@@ -62,6 +62,8 @@ function extractSearchQuery(message) {
         .replace(/\b(illust|illustration|manga|novel|gif|thể loại|loại)\s*/gi, '')
         .replace(/\b(all ages|safe|r18|all)\s*/gi, '')
         .replace(/\b(mới nhất|phổ biến|nổi bật|popular|newest)\s*/gi, '')
+        .replace(/^(?:có )?(?:tag|thẻ)\s+/i, '')
+        .replace(/^["']|["']$/g, '')
         .trim() || message.trim();
 }
 

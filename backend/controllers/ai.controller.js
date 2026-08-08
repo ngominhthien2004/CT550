@@ -509,6 +509,8 @@ function extractSearchQuery(message) {
         .replace(/search\s*/i, '')
         .replace(/có artwork nào về\s*/i, '')
         .replace(/cho (tôi )?xem\s*/i, '')
+        .replace(/^(?:có )?(?:tag|thẻ)\s+/i, '')
+        .replace(/^["']|["']$/g, '')
         .trim() || message.trim();
 }
 
