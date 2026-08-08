@@ -79,14 +79,7 @@ const groupedMessages = computed(() => {
 const characterCount = computed(() => userInput.value.length)
 const canSend = computed(() => userInput.value.trim().length > 0 && !isSending.value)
 
-const welcomeFeatures = [
-  { icon: '🔍', title: 'Tìm kiếm artwork', desc: 'Tra cứu tác phẩm theo từ khóa, thể loại, màu sắc' },
-  { icon: '💡', title: 'Gợi ý tác phẩm', desc: 'Nhận đề xuất artwork dựa trên sở thích của bạn' },
-  { icon: '📝', title: 'Tóm tắt nội dung', desc: 'Tóm tắt chi tiết và cảm nhận về artwork' },
-  { icon: '🎨', title: 'Tư vấn nghệ thuật', desc: 'Hỏi về kỹ thuật vẽ, phong cách & hội họa' },
-  { icon: '👤', title: 'Tìm kiếm người dùng', desc: 'Khám phá nghệ sĩ và cộng đồng IlluWrl' },
-  { icon: '📋', title: 'Commission plan', desc: 'Tìm kiếm gói commission phù hợp' },
-]
+const welcomeFeatures = []
 
 function formatChatTimestamp(ts) {
   if (!ts) return ''
@@ -189,7 +182,25 @@ function autoResize() {
 
 function handleQuickPrompt(prompt) {
   userInput.value = prompt
-  sendMessage()
+  // Focus input and position cursor between quotes if present
+  nextTick(() => {
+    const el = chatInputRef.value?.textareaRef
+    if (el) {
+      el.focus()
+      // Find "" pattern (empty quotes) and position cursor between them
+      const emptyQuoteIdx = prompt.indexOf('""')
+      if (emptyQuoteIdx !== -1) {
+        const cursorPos = emptyQuoteIdx + 1
+        el.setSelectionRange(cursorPos, cursorPos)
+      } else {
+        // Fallback: find first quote and position after it
+        const quoteIdx = prompt.indexOf('"')
+        if (quoteIdx !== -1) {
+          el.setSelectionRange(quoteIdx + 1, quoteIdx + 1)
+        }
+      }
+    }
+  })
 }
 
 async function handleNewChat() {
@@ -360,7 +371,6 @@ watch(
                   :is-sending="isSending"
                   :is-streaming="isStreaming"
                   :streaming-message="chatStore.streamingMessage"
-                  :welcome-features="welcomeFeatures"
                   @quick-prompt="handleQuickPrompt"
                   @copy="copyMessageContent"
                   @scroll="handleScroll"

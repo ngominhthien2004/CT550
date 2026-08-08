@@ -4,22 +4,6 @@
     <div v-if="showWelcome" class="welcome-screen">
       <h2 class="welcome-heading">Xin chào!</h2>
       <p class="welcome-desc">Tôi là trợ lý AI của IlluWrl. Hỏi tôi bất cứ điều gì!</p>
-
-      <div class="feature-cards">
-        <div
-          v-for="(feature, idx) in welcomeFeatures"
-          :key="feature.title"
-          class="feature-card"
-          :style="{ animationDelay: `${idx * 0.05}s` }"
-          @click="$emit('quick-prompt', feature.title)"
-        >
-          <div class="feature-card-icon">{{ feature.icon }}</div>
-          <div class="feature-card-text">
-            <div class="feature-card-title">{{ feature.title }}</div>
-            <div class="feature-card-desc">{{ feature.desc }}</div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Date separator + Messages -->
@@ -128,15 +112,14 @@
     </div>
   </div>
 
-  <!-- Suggested Prompts (only at start) -->
-  <div v-if="showWelcome && !isSending" class="suggested-prompts">
+  <!-- Suggested Prompts (always visible) -->
+  <div v-if="!isSending" class="suggested-prompts">
     <div class="prompt-chips">
       <button
         type="button"
         v-for="(prompt, idx) in suggestedPrompts"
         :key="prompt.prompt"
         class="prompt-chip"
-        :style="{ animationDelay: `${0.3 + idx * 0.08}s` }"
         @click="$emit('quick-prompt', prompt.prompt)"
       >
         <span class="prompt-chip-icon">{{ prompt.icon }}</span>
@@ -162,7 +145,6 @@ defineProps({
   isSending: { type: Boolean, default: false },
   isStreaming: { type: Boolean, default: false },
   streamingMessage: { type: String, default: '' },
-  welcomeFeatures: { type: Array, default: () => [] }
 })
 
 defineEmits(['quick-prompt', 'copy', 'scroll'])
@@ -170,10 +152,9 @@ defineEmits(['quick-prompt', 'copy', 'scroll'])
 const chatBodyRef = ref(null)
 
 const suggestedPrompts = [
-  { icon: '🔍', label: 'Tìm artwork', prompt: 'Tìm artwork về phong cảnh thiên nhiên' },
-  { icon: '👤', label: 'Tìm user', prompt: 'Tìm user có tên là minh' },
-  { icon: '💡', label: 'Gợi ý cho tôi', prompt: 'Gợi ý cho tôi artwork hay về fantasy' },
-  { icon: '🎨', label: 'Hỏi về nghệ thuật', prompt: 'Cho tôi hỏi về phong cách vẽ manga' },
+  { icon: '🔍', label: 'Tìm theo title', prompt: 'Tìm artwork có tiêu đề ""' },
+  { icon: '🏷️', label: 'Tìm theo tag', prompt: 'Tìm artwork có tag ""' },
+  { icon: '💡', label: 'Gợi ý cho tôi', prompt: 'Giới thiệu cho tôi vài tác phẩm hay' },
 ]
 
 function renderMarkdown(text) {
@@ -278,64 +259,6 @@ defineExpose({ chatBodyRef })
   color: var(--muted);
   margin: 0 0 1rem;
   max-width: 300px;
-}
-
-.feature-cards {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.375rem;
-  width: 100%;
-}
-
-.feature-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 8px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  animation: cardFadeIn 0.4s ease-out both;
-  text-align: left;
-}
-
-.feature-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
-  border-color: var(--accent);
-}
-
-@keyframes cardFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.feature-card-icon {
-  font-size: 1rem;
-  flex-shrink: 0;
-  line-height: 1;
-}
-
-.feature-card-text {
-  flex: 1;
-  min-width: 0;
-}
-
-.feature-card-title {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 1px;
-  line-height: 1.2;
-}
-
-.feature-card-desc {
-  font-size: 0.6rem;
-  color: var(--muted);
-  line-height: 1.3;
-  display: none;
 }
 
 /* ═══════════════════════════════════════
@@ -765,8 +688,8 @@ defineExpose({ chatBodyRef })
 }
 
 @media (max-width: 640px) {
-  .feature-cards {
-    grid-template-columns: 1fr;
+  .prompt-chips {
+    flex-wrap: wrap;
   }
 }
 </style>
