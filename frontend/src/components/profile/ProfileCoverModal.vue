@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch, inject } from 'vue'
+import { computed, ref, watch, inject, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useImageUpload } from '@/composables/useImageUpload'
 
@@ -34,7 +34,7 @@ const upload = useImageUpload({
 
 const isDraggingCover = ref(false)
 
-const currentCover = computed(() => coverImage || user.value?.coverImage || '')
+const currentCover = computed(() => unref(coverImage) || user.value?.coverImage || '')
 
 watch(
   show,
