@@ -639,7 +639,7 @@ onMounted(() => {
   }
   loadSearchItems()
   loadUserResults()
-  if (searchKeyword.value) {
+  if (searchKeyword.value && !isUserSearch.value) {
     tagStore.fetchTagDetail(searchKeyword.value)
     loadFavoriteTagStatus()
   }
@@ -675,7 +675,7 @@ watch(searchKey, () => {
   }
   loadSearchItems()
   loadUserResults()
-  if (searchKeyword.value) {
+  if (searchKeyword.value && !isUserSearch.value) {
     tagStore.fetchTagDetail(searchKeyword.value)
     loadFavoriteTagStatus()
   }
