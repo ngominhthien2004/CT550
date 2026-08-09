@@ -150,7 +150,6 @@ const authorLink = computed(() => {
     <div class="novel-compact-body">
       <div class="novel-compact-head">
         <router-link :to="`/novels/${item._id}`" class="novel-compact-title">{{ item.title || 'Untitled novel' }}</router-link>
-        <span v-if="item.createdLabel" class="novel-compact-date">{{ item.createdLabel }}</span>
       </div>
 
       <router-link v-if="authorLink" :to="authorLink" class="novel-compact-author">
@@ -176,6 +175,7 @@ const authorLink = computed(() => {
         <span><i class="fa-regular fa-bookmark" aria-hidden="true"></i> {{ Number(item.bookmarkCount || 0).toLocaleString() }}</span>
         <span v-if="item.wordCount">{{ Number(item.wordCount).toLocaleString() }} words</span>
       </footer>
+      <span v-if="item.createdLabel" class="novel-compact-date">{{ item.createdLabel }}</span>
     </div>
 
     <ReportModal
@@ -357,7 +357,7 @@ const authorLink = computed(() => {
 }
 
 .novel-compact-date {
-  flex: 0 0 auto;
+  justify-self: end;
   color: var(--muted);
   font-size: 0.74rem;
   font-weight: 700;
