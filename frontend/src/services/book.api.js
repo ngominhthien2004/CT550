@@ -18,6 +18,29 @@ function attachAuthInterceptor(client) {
     }
     return config
   })
+
+  client.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      if (error.response?.status === 401) {
+        try {
+          const { useAuthStore } = await import('../stores/auth.store.js')
+          const { useRouter } = await import('vue-router')
+          const authStore = useAuthStore()
+          const router = useRouter()
+          authStore.clearSession()
+          if (router.currentRoute.value.path !== '/login') {
+            await router.push({ path: '/login', query: { reason: 'session_expired' } })
+          }
+        } catch (redirectError) {
+          localStorage.removeItem('token')
+          localStorage.removeItem('authUser')
+        }
+      }
+      return Promise.reject(error)
+    },
+  )
+
   return client
 }
 
