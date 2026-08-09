@@ -9,6 +9,7 @@ import { HomeTabs, HomeHeroBanner, HomeTagStrip } from '@/components/home'
 import { getArtworks, bannerApi } from '../services/api'
 import { useAuthStore } from '../stores/auth.store'
 import { useFollowStore } from '../stores/follow.store'
+import { useLikeStore } from '../stores/like.store'
 import FollowingUsersStrip from '@/components/follow/FollowingUsersStrip.vue'
 
 import { formatShortDate } from '../utils/date.js'
@@ -23,6 +24,7 @@ const novelItems = ref([])
 const liveTags = ref([])
 const authStore = useAuthStore()
 const followStore = useFollowStore()
+const likeStore = useLikeStore()
 const router = useRouter()
 
 const heroSlide = ref({
@@ -218,6 +220,12 @@ async function loadNovelTopPage() {
     const { data } = await getArtworks({ limit: 96, type: 'novel' })
     const source = Array.isArray(data) ? data : []
     novelItems.value = source.filter((item) => item?.type === 'novel')
+
+    if (authStore.isAuthenticated && novelItems.value.length) {
+      try {
+        await likeStore.fetchLikeStatuses(novelItems.value.map((item) => item._id).filter(Boolean))
+      } catch (_e) {}
+    }
 
     liveTags.value = tagChips.value.map((tag) => `#${tag.label}`)
 

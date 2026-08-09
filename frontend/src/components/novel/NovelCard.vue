@@ -1,6 +1,8 @@
 <script setup>
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth.store'
+import { useLikeStore } from '../../stores/like.store'
 import CardMenuDropdown from '@/components/common/CardMenuDropdown.vue'
 import ReportModal from '@/components/common/ReportModal.vue'
 
@@ -11,9 +13,45 @@ const props = defineProps({
   },
 })
 
+const router = useRouter()
+const likeStore = useLikeStore()
 const authStore = useAuthStore()
 const showReportModal = ref(false)
 const isLoggedIn = computed(() => !!authStore.user)
+
+const isLiked = computed(() => {
+  if (likeStore.statusByArtwork[props.item._id] !== undefined) return likeStore.getLikeStatus(props.item._id)
+  return Boolean(props.item.isLiked)
+})
+
+const isToggling = computed(() => likeStore.isTogglingLike(props.item._id))
+
+async function handleLike(e) {
+  e.preventDefault()
+  e.stopPropagation()
+
+  if (!authStore.isAuthenticated) {
+    router.push('/login')
+    return
+  }
+  if (isToggling.value) return
+
+  const previousStatus = isLiked.value
+  const nextStatus = !previousStatus
+
+  // Optimistic: flip immediately
+  if (likeStore.statusByArtwork[props.item._id] === undefined) {
+    likeStore.statusByArtwork[props.item._id] = previousStatus
+  }
+  likeStore.statusByArtwork[props.item._id] = nextStatus
+
+  try {
+    await likeStore.toggleLikeByArtwork(props.item._id)
+  } catch {
+    // Rollback on failure
+    likeStore.statusByArtwork[props.item._id] = previousStatus
+  }
+}
 
 function handleShare() {
   const url = `${window.location.origin}/novels/${props.item._id}`
@@ -78,23 +116,36 @@ const authorLink = computed(() => {
       @share="handleShare"
       @report="showReportModal = true"
     />
-    <router-link :to="`/novels/${item._id}`" class="novel-compact-cover">
-      <img v-if="item.image" :src="item.image" :alt="item.title" loading="lazy" />
-      <div v-else class="novel-compact-fallback">
-        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
-      </div>
-      <span v-if="item.wordCount > 0" class="novel-compact-wordcount">{{ Number(item.wordCount).toLocaleString() }}w</span>
-      <router-link
-        v-if="item.series"
-        :to="`/series/${item.series}`"
-        class="novel-series-badge"
-        :aria-label="$t('series.series')"
-        :title="$t('series.series')"
-        @click.stop
-      >
-        <span class="novel-series-badge-text">{{ $t('series.series') }}</span>
+    <div class="novel-cover-wrap">
+      <router-link :to="`/novels/${item._id}`" class="novel-compact-cover">
+        <img v-if="item.image" :src="item.image" :alt="item.title" loading="lazy" />
+        <div v-else class="novel-compact-fallback">
+          <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+        </div>
+        <span v-if="item.wordCount > 0" class="novel-compact-wordcount">{{ Number(item.wordCount).toLocaleString() }}w</span>
+        <router-link
+          v-if="item.series"
+          :to="`/series/${item.series}`"
+          class="novel-series-badge"
+          :aria-label="$t('series.series')"
+          :title="$t('series.series')"
+          @click.stop
+        >
+          <span class="novel-series-badge-text">{{ $t('series.series') }}</span>
+        </router-link>
       </router-link>
-    </router-link>
+
+      <button
+        type="button"
+        class="novel-compact-like"
+        :class="{ 'is-active': isLiked }"
+        :aria-label="isLiked ? $t('artwork.unlike') : $t('artwork.like')"
+        :disabled="isToggling"
+        @click="handleLike"
+      >
+        <i :class="isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'" aria-hidden="true"></i>
+      </button>
+    </div>
 
     <div class="novel-compact-body">
       <div class="novel-compact-head">
@@ -139,6 +190,7 @@ const authorLink = computed(() => {
 
 <style scoped>
 .novel-compact-card {
+  position: relative;
   display: grid;
   grid-template-columns: 112px minmax(0, 1fr);
   gap: 0.82rem;
@@ -147,6 +199,11 @@ const authorLink = computed(() => {
   border: 1px solid var(--line);
   background: var(--surface);
   box-shadow: var(--shadow-sm);
+}
+
+.novel-cover-wrap {
+  position: relative;
+  min-width: 0;
 }
 
 .novel-compact-cover {
@@ -221,7 +278,8 @@ const authorLink = computed(() => {
 .novel-compact-wordcount {
   position: absolute;
   bottom: 6px;
-  right: 6px;
+  left: 6px;
+  right: auto;
   padding: 2px 7px;
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.58);
@@ -230,6 +288,46 @@ const authorLink = computed(() => {
   font-weight: 700;
   line-height: 1.3;
   pointer-events: none;
+}
+
+/* Mirrors .btn-like in ArtworkCard, sized for the compact novel cover */
+.novel-compact-like {
+  position: absolute;
+  right: 0.4rem;
+  bottom: 0.4rem;
+  z-index: 6;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--surface);
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.15s, color 0.15s;
+  box-shadow: var(--shadow-md);
+  font-size: 0.85rem;
+}
+
+.novel-compact-like:hover {
+  transform: scale(1.08);
+}
+
+.novel-compact-like.is-active {
+  color: #ef4444;
+}
+
+/* keep a liked heart red even when the card area is hovered */
+.novel-compact-card:hover .novel-compact-like.is-active,
+.novel-compact-like.is-active:hover {
+  color: #ef4444;
+}
+
+.novel-compact-like:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 .novel-compact-body {
