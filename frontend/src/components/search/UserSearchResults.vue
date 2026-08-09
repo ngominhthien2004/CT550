@@ -237,6 +237,7 @@ const followStore = useFollowStore()
   right: 4px;
   color: rgba(255,255,255,0.8);
   font-size: 0.75rem;
+  pointer-events: none;
 }
 
 .user-preview-card strong {
