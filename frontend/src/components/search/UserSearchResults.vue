@@ -77,7 +77,7 @@ const followStore = useFollowStore()
           <div class="user-preview-thumb">
             <img v-if="item.image" :src="item.image" :alt="item.title || $t('search.artworkPreview')" loading="lazy" />
             <div v-else class="user-preview-fallback"></div>
-            <i class="fa-regular fa-heart preview-heart" aria-hidden="true"></i>
+
           </div>
           <strong>{{ item.title || $t('search.untitledWork') }}</strong>
         </router-link>
@@ -229,15 +229,6 @@ const followStore = useFollowStore()
   width: 100%;
   height: 100%;
   background: var(--surface-alt);
-}
-
-.preview-heart {
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  color: rgba(255,255,255,0.8);
-  font-size: 0.75rem;
-  pointer-events: none;
 }
 
 .user-preview-card strong {
