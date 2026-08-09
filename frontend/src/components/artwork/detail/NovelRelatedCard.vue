@@ -1,5 +1,8 @@
 <script setup>
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useLikeStore } from '../../../stores/like.store'
+import { useAuthStore } from '../../../stores/auth.store'
 
 const props = defineProps({
   item: {
@@ -7,6 +10,46 @@ const props = defineProps({
     required: true,
   },
 })
+
+const router = useRouter()
+const likeStore = useLikeStore()
+const authStore = useAuthStore()
+
+const isLiked = computed(() => {
+  if (likeStore.statusByArtwork[props.item._id] !== undefined) {
+    return likeStore.getLikeStatus(props.item._id)
+  }
+  return Boolean(props.item.isLiked)
+})
+
+const isToggling = computed(() => likeStore.isTogglingLike(props.item._id))
+
+async function handleLike(e) {
+  e.preventDefault()
+  e.stopPropagation()
+
+  if (!authStore.isAuthenticated) {
+    router.push('/login')
+    return
+  }
+  if (isToggling.value) return
+
+  const previousStatus = isLiked.value
+  const nextStatus = !previousStatus
+
+  // Optimistic: flip immediately
+  if (likeStore.statusByArtwork[props.item._id] === undefined) {
+    likeStore.statusByArtwork[props.item._id] = previousStatus
+  }
+  likeStore.statusByArtwork[props.item._id] = nextStatus
+
+  try {
+    await likeStore.toggleLikeByArtwork(props.item._id)
+  } catch {
+    // Rollback on failure
+    likeStore.statusByArtwork[props.item._id] = previousStatus
+  }
+}
 
 const coverUrl = computed(() => {
   const i = props.item
@@ -72,9 +115,16 @@ const visibleTags = computed(() => {
       <p v-if="excerpt" class="nrc-excerpt">{{ excerpt }}</p>
     </div>
 
-    <div class="nrc-heart">
-      <i class="fa-regular fa-heart" aria-hidden="true"></i>
-    </div>
+    <button
+      type="button"
+      class="nrc-heart"
+      :class="{ 'is-active': isLiked }"
+      :aria-label="isLiked ? $t('artwork.unlike') : $t('artwork.like')"
+      :disabled="isToggling"
+      @click="handleLike"
+    >
+      <i :class="isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'" aria-hidden="true"></i>
+    </button>
   </article>
 </template>
 
@@ -175,15 +225,40 @@ const visibleTags = computed(() => {
 }
 
 .nrc-heart {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
   padding-top: 0.1rem;
   color: var(--muted);
   font-size: 0.95rem;
-  flex-shrink: 0;
-  transition: color 0.15s;
+  transition: color 0.15s, transform 0.15s;
 }
 
 .nrc:hover .nrc-heart {
   color: var(--accent);
+}
+
+.nrc-heart:hover {
+  color: var(--accent);
+  transform: scale(1.08);
+}
+
+.nrc-heart.is-active {
+  color: #ef4444;
+}
+
+.nrc:hover .nrc-heart.is-active,
+.nrc-heart.is-active:hover {
+  color: #ef4444;
+}
+
+.nrc-heart:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 @media (max-width: 600px) {

@@ -242,6 +242,13 @@ async function loadRelatedWorks() {
       relatedWorks.value = []
     }
   }
+
+  // Preload like statuses for recommended works so hearts show the right state
+  if (authStore.isAuthenticated && relatedWorks.value.length) {
+    try {
+      await likeStore.fetchLikeStatuses(relatedWorks.value.map((item) => item._id))
+    } catch (_e) {}
+  }
 }
 
 async function loadNovelData() {
