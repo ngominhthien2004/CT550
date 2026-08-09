@@ -48,7 +48,7 @@ const sortMode = computed(() => {
 })
 const showTags = ref(true)
 const isSearchOptionsOpen = ref(false)
-const userFilterType = ref('creator')
+const userFilterType = ref('user')
 const userSortMode = ref('newest')
 const userPage = ref(1)
 const userHasMore = ref(false)
