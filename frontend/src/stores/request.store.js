@@ -42,6 +42,19 @@ export const useRequestStore = defineStore('requests', {
         this.loading = false
       }
     },
+    async deleteTerm(termId) {
+      this.loading = true
+      this.error = ''
+      try {
+        await requestApi.deleteTerm(termId)
+        this.terms = this.terms.filter((term) => term._id !== termId)
+      } catch (error) {
+        this.error = error?.response?.data?.message || 'Failed to delete request term'
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
     async submitRequest(formData) {
       this.loading = true
       this.error = ''

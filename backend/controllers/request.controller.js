@@ -184,6 +184,66 @@ const createRequestTerm = async (req, res, next) => {
     }
 };
 
+const deleteRequestTerm = async (req, res, next) => {
+    try {
+        const term = await RequestTerm.findById(req.params.id);
+        if (!term) {
+            res.status(404);
+            return next(new Error('Request term not found'));
+        }
+
+        if (term.creator.toString() !== req.user._id.toString()) {
+            res.status(403);
+            return next(new Error('Not authorized to delete this request term'));
+        }
+
+        // Soft delete: mark as deleted and close
+        term.isOpen = false;
+        term.deletedAt = new Date();
+        await term.save();
+
+        // Find all active requests referencing this term
+        const activeRequests = await Request.find({
+            term: term._id,
+            status: { $in: ['pending', 'in_progress', 'draft_submitted', 'revision'] },
+        });
+
+        // Cancel each active request and notify the requester
+        for (const request of activeRequests) {
+            const fromStatus = request.status;
+            request.status = 'cancelled';
+            request.chatClosedAt = new Date();
+            await request.save();
+
+            await logRequestEvent({
+                requestId: request._id,
+                actorId: req.user._id,
+                type: 'request_cancelled',
+                fromStatus,
+                toStatus: 'cancelled',
+                metadata: { reason: 'Request plan was deleted by the creator.' },
+            });
+
+            await addSystemChat(
+                request._id,
+                req.user._id,
+                'This request has been cancelled because the request plan was removed by the creator.'
+            );
+
+            await createNotification({
+                userId: request.requester,
+                actorId: req.user._id,
+                type: 'request',
+                message: `Your request "${request.title}" was cancelled because the request plan "${term.title}" was removed.`,
+            });
+        }
+
+        res.json({ message: 'Request term deleted successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const updateRequestTerm = async (req, res, next) => {
     try {
         const term = await RequestTerm.findById(req.params.id);
@@ -235,6 +295,9 @@ const getRequestTerms = async (req, res, next) => {
             filter.isOpen = true;
         }
 
+        // Exclude soft-deleted terms
+        filter.deletedAt = null;
+
         const terms = await RequestTerm.find(filter)
             .populate('creator', 'username displayName avatar')
             .sort({ createdAt: -1 });
@@ -260,7 +323,7 @@ const getRequestTerms = async (req, res, next) => {
 const createRequest = async (req, res, next) => {
     try {
         const term = await RequestTerm.findById(req.body.termId);
-        if (!term || !term.isOpen) {
+        if (!term || !term.isOpen || term.deletedAt) {
             res.status(404);
             return next(new Error('Creator is not accepting this request plan'));
         }
@@ -892,4 +955,5 @@ module.exports = {
     resolveReport,
     submitDraft,
     updateRequestTerm,
+    deleteRequestTerm,
 };

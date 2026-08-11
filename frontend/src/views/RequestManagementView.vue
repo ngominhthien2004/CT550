@@ -98,6 +98,14 @@ async function handleChatMessage(formData) {
   } finally { detailPanelRef.value?.setChatLoading(false) }
 }
 
+async function handleDeleteTerm(termId) {
+  try {
+    await requestStore.deleteTerm(termId)
+  } catch {
+    // error is set in store
+  }
+}
+
 onMounted(loadAll)
 </script>
 
@@ -137,6 +145,7 @@ onMounted(loadAll)
           v-if="activeRole === 'creator'"
           :terms="terms"
           @create="showCreateForm = true"
+          @delete="handleDeleteTerm"
         />
 
         <CreatePlanForm

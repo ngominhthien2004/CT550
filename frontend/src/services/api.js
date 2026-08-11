@@ -265,6 +265,7 @@ export const requestApi = {
   getTerms: (params = {}) => api.get('/requests/terms', { params }),
   createTerm: (payload) => api.post('/requests/terms', payload),
   updateTerm: (termId, payload) => api.patch(`/requests/terms/${termId}`, payload),
+  deleteTerm: (termId) => api.delete(`/requests/terms/${termId}`),
   create: (formData) => api.post('/requests', formData),
   getMine: (params = {}) => api.get('/requests/mine', { params }),
   getPublic: (params = {}) => api.get('/requests/public', { params }),

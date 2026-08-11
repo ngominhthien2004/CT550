@@ -24,6 +24,7 @@ const {
     resolveReport,
     submitDraft,
     updateRequestTerm,
+    deleteRequestTerm,
 } = require('../controllers/request.controller');
 const { protect, admin } = require('../middlewares/auth.middleware');
 const { getMaxUploadFileSizeBytes } = require('../config/env');
@@ -84,7 +85,8 @@ router.route('/terms')
     .post(protect, createRequestTerm);
 
 router.route('/terms/:id')
-    .patch(protect, updateRequestTerm);
+    .patch(protect, updateRequestTerm)
+    .delete(protect, deleteRequestTerm);
 
 router.get('/public', listPublicRequests);
 router.get('/mine', protect, listMyRequests);
