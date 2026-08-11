@@ -50,9 +50,17 @@ function buildAgentActions(intent, message, toolResult) {
 }
 
 /**
- * Extract search query by removing trigger words and type/age hints.
+ * Extract search query from user message.
+ * Uses robust quoted-content extraction: if the message contains a quoted
+ * segment (e.g. "Wondering" or 'fantasy'), that is the query — regardless
+ * of surrounding filler words like "có tiêu đề".
  */
 function extractSearchQuery(message) {
+    // First, check if there is a quoted segment — use that as the query
+    const quoted = message.match(/["']([^"']+)["']/);
+    if (quoted) return quoted[1].trim();
+
+    // Fallback: strip trigger phrases
     return message
         .replace(/^tìm\s+(?:artwork|tác phẩm|tranh|ảnh|về|kiếm)?\s*/i, '')
         .replace(/tìm kiếm\s*/i, '')
@@ -62,8 +70,6 @@ function extractSearchQuery(message) {
         .replace(/\b(illust|illustration|manga|novel|gif|thể loại|loại)\s*/gi, '')
         .replace(/\b(all ages|safe|r18|all)\s*/gi, '')
         .replace(/\b(mới nhất|phổ biến|nổi bật|popular|newest)\s*/gi, '')
-        .replace(/^(?:có )?(?:tag|thẻ)\s+/i, '')
-        .replace(/^["']|["']$/g, '')
         .trim() || message.trim();
 }
 
