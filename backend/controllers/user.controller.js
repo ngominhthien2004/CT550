@@ -282,7 +282,7 @@ const blockUser = async (req, res, next) => {
         await UserBlock.findOneAndUpdate(
             { blocker: blockerId, blocked: blockedUserId },
             { blocker: blockerId, blocked: blockedUserId },
-            { upsert: true, new: true, setDefaultsOnInsert: true }
+            { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
         );
 
         await Follow.deleteMany({

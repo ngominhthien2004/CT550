@@ -165,7 +165,7 @@ const createArtwork = async (req, res, next) => {
                     const aiTag = await Tag.findOneAndUpdate(
                         { name: AI_TAG_NAME },
                         { $setOnInsert: { name: AI_TAG_NAME, usageCount: 0 } },
-                        { new: true, upsert: true }
+                        { returnDocument: 'after', upsert: true }
                     );
 
                     if (!hasTagId(tagIds, aiTag._id)) {
@@ -663,7 +663,7 @@ const saveReadingProgress = async (req, res, next) => {
                 scrollPosition: scrollPosition || 0,
                 lastReadAt: new Date(),
             },
-            { upsert: true, new: true }
+            { upsert: true, returnDocument: 'after' }
         );
 
         res.json(progress);
@@ -804,7 +804,7 @@ const hideArtwork = async (req, res, next) => {
                 hiddenAt: new Date(),
                 hiddenReason: req.body.reason || 'Violated platform guidelines',
             },
-            { new: true }
+            { returnDocument: 'after' }
         );
         if (!artwork) {
             res.status(404);
@@ -842,7 +842,7 @@ const unhideArtwork = async (req, res, next) => {
                 hiddenAt: null,
                 hiddenReason: '',
             },
-            { new: true }
+            { returnDocument: 'after' }
         );
         if (!artwork) {
             res.status(404);

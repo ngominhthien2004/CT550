@@ -22,7 +22,7 @@ settingSchema.statics.updateSettings = async function (updates) {
   const settings = await this.findByIdAndUpdate(
     'global',
     { $set: updates },
-    { new: true, upsert: true }
+    { returnDocument: 'after', upsert: true }
   );
   cache = settings; // invalidate cache
   return settings;

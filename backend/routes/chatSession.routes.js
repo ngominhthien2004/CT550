@@ -72,7 +72,7 @@ router.patch('/:id', protect, asyncHandler(async (req, res) => {
   const session = await ChatSession.findOneAndUpdate(
     { _id: req.params.id, user: req.user._id },
     { title, updatedAt: new Date() },
-    { new: true }
+    { returnDocument: 'after' }
   ).lean();
 
   if (!session) {
