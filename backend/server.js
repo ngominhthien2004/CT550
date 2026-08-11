@@ -12,7 +12,7 @@ const { getAllowedOrigins, getJwtSecret } = require('./config/env');
 const { errorHandler, notFound } = require('./middlewares/error.middleware');
 const { verifyToken } = require('./middlewares/auth.middleware');
 const {
-  globalLimiter, authLimiter, aiLimiter,
+  authLimiter, aiLimiter,
   uploadLimiter, generalLimiter
 } = require('./middlewares/rateLimit.middleware');
 const { cacheControl, noCache } = require('./middlewares/cacheHeaders.middleware');
@@ -104,7 +104,10 @@ app.use('/api/book-service', createProxyMiddleware({
 app.use(express.json());
 
 // ── Rate Limiting ──────────────────────────────────────────────
-app.use(globalLimiter);
+// NOTE: globalLimiter (200 req/min/IP) is temporarily DISABLED because it was
+// breaking global search — too restrictive for search-heavy usage.
+// To re-enable: import globalLimiter (see rateLimit.middleware.js) and add:
+//   app.use(globalLimiter);
 
 // Auth limiter — chống brute force login/register
 app.use('/api/auth/login', authLimiter);
