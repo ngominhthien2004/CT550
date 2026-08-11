@@ -27,9 +27,7 @@ let activeEbookFile = null
 const comicPages = ref([])
 const currentPage = ref(1)
 const downloadUrl = ref('')
-const readerContainer = ref(null)
 const isComic = computed(() => comicPages.value.length > 0)
-let comicObserver = null
 let comicProgressRestored = false
 
 const bookTitle = computed(() => route.query.title || t('bookstore.readBook'))
@@ -41,6 +39,11 @@ const itemId = computed(() => route.query.itemId)
 // depends on upload order.
 const sortedComicPages = computed(() =>
   [...comicPages.value].sort((a, b) => (a.pageNumber || 0) - (b.pageNumber || 0))
+)
+
+// The currently displayed comic page object.
+const currentComicPage = computed(() =>
+  sortedComicPages.value.find((p) => p.pageNumber === currentPage.value) || null
 )
 
 // Zoom acts on the image width as a percentage of the container.
@@ -195,51 +198,6 @@ function persistComicProgress(pageNumber) {
   }
 }
 
-function setupComicObserver() {
-  disconnectComicObserver()
-  const container = readerContainer.value
-  if (!container || sortedComicPages.value.length === 0) return
-  comicObserver = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue
-        const pageNumber = Number(entry.target.dataset.page)
-        if (!Number.isInteger(pageNumber) || pageNumber === currentPage.value) continue
-        currentPage.value = pageNumber
-        persistComicProgress(pageNumber)
-      }
-    },
-    {
-      root: container,
-      rootMargin: '-45% 0px -45% 0px',
-      threshold: 0,
-    }
-  )
-  container.querySelectorAll('[data-page]').forEach((el) => comicObserver.observe(el))
-}
-
-function disconnectComicObserver() {
-  if (comicObserver) {
-    comicObserver.disconnect()
-    comicObserver = null
-  }
-}
-
-function scrollToPage(pageNumber) {
-  const container = readerContainer.value
-  if (!container) return
-  const el = container.querySelector(`[data-page="${pageNumber}"]`)
-  if (!el) return
-  if (el.offsetTop === 0 && el.offsetHeight === 0 && sortedComicPages.value.length > 1) {
-    // Lazy images above have not sized in yet — estimate by proportion.
-    const index = sortedComicPages.value.findIndex((p) => p.pageNumber === pageNumber)
-    const ratio = index / Math.max(sortedComicPages.value.length - 1, 1)
-    container.scrollTop = Math.round(ratio * (container.scrollHeight - container.clientHeight))
-  } else {
-    el.scrollIntoView({ block: 'start' })
-  }
-}
-
 function tryRestoreComicProgress() {
   if (comicProgressRestored) return
   comicProgressRestored = true
@@ -253,11 +211,11 @@ function tryRestoreComicProgress() {
   }
   if (!Number.isInteger(saved) || saved < 1) return
   if (!sortedComicPages.value.some((p) => p.pageNumber === saved)) return
-  scrollToPage(saved)
+  currentPage.value = saved
+  persistComicProgress(saved)
 }
 
 function onComicPageLoad() {
-  // First image sizing in is a good moment to restore reading progress.
   tryRestoreComicProgress()
 }
 
@@ -267,7 +225,6 @@ function goToComicPage(index) {
   const clamped = Math.min(Math.max(index, 0), pages.length - 1)
   const page = pages[clamped]
   currentPage.value = page.pageNumber
-  scrollToPage(page.pageNumber)
   persistComicProgress(page.pageNumber)
 }
 
@@ -331,9 +288,7 @@ async function loadEbook() {
       // background (non-blocking) so it is ready when the user clicks.
       prepareComicDownload(download?.data?.downloadUrl, bookEbookFile)
       await nextTick()
-      setupComicObserver()
-      // Give the first images a moment to size in before restoring progress.
-      setTimeout(tryRestoreComicProgress, 400)
+      tryRestoreComicProgress()
       return
     }
 
@@ -395,7 +350,6 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  disconnectComicObserver()
   document.removeEventListener('fullscreenchange', handleFullscreenChange)
   document.removeEventListener('keydown', handleKeydown)
   clearTimeout(controlsTimer)
@@ -473,17 +427,15 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- Comic viewer -->
-      <div v-else-if="isComic" ref="readerContainer" class="comic-viewer">
+      <!-- Comic viewer — single page at a time -->
+      <div v-else-if="isComic" class="comic-viewer">
         <img
-          v-for="page in sortedComicPages"
-          :key="page.pageNumber"
-          :src="page.url"
-          :data-page="page.pageNumber"
-          :alt="`${bookTitle} - ${page.pageNumber}`"
+          v-if="currentComicPage"
+          :key="currentComicPage.pageNumber"
+          :src="currentComicPage.url"
+          :alt="`${bookTitle} - ${currentComicPage.pageNumber}`"
           class="comic-page"
           :style="comicZoomStyle"
-          loading="lazy"
           @load="onComicPageLoad"
         />
       </div>
@@ -687,27 +639,24 @@ onUnmounted(() => {
   display: block;
 }
 
-/* ── Comic viewer ── */
+/* ── Comic viewer (single-page) ── */
 .comic-viewer {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
-  background: #17181b;
-  scrollbar-width: none;
-}
-
-.comic-viewer::-webkit-scrollbar {
-  display: none;
+  justify-content: center;
+  background: #1a1a2e;
+  overflow: hidden;
+  padding: 0.5rem;
 }
 
 .comic-page {
   max-width: 100%;
-  width: 100%;
+  max-height: 100%;
+  object-fit: contain;
   display: block;
+  border-radius: 2px;
+  user-select: none;
 }
 
 /* ── Zoom controls ── */
@@ -840,6 +789,10 @@ onUnmounted(() => {
 
   .reader-title {
     font-size: 0.82rem;
+  }
+
+  .comic-viewer {
+    padding: 0;
   }
 }
 </style>
