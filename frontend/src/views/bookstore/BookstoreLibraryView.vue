@@ -14,6 +14,13 @@ const bookStore = useBookStore()
 const { showSuccess, showError } = useToast()
 const searchQuery = ref('')
 const downloadingItemId = ref('')
+const DEFAULT_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
+
+function onAvatarError(e) {
+  if (e.target?.src !== DEFAULT_AVATAR) {
+    e.target.src = DEFAULT_AVATAR
+  }
+}
 
 const loading = computed(() => bookStore.ordersLoading)
 
@@ -44,7 +51,7 @@ const purchasedBooks = computed(() => {
         title: item.book?.title || 'Untitled',
         seller: item.seller?.displayName || item.seller?.username || t('bookstore.unknownSeller'),
         sellerId: item.seller?._id || null,
-        sellerAvatar: item.seller?.avatar || '',
+        sellerAvatar: (typeof item.seller === 'object' && item.seller?.avatar) || '',
         coverImage: item.coverImage || item.book?.coverImages?.[0] || '/default-book-cover.png',
         price: Number(item.price || 0).toFixed(2),
         purchaseDate: order.createdAt,
@@ -149,10 +156,10 @@ onMounted(() => {
             </router-link>
             <div class="library-card-seller">
               <img
-                :src="book.sellerAvatar || 'https://s.pximg.net/common/images/no_profile.png'"
+                :src="book.sellerAvatar || DEFAULT_AVATAR"
                 class="library-card-seller-avatar"
                 :alt="book.seller"
-                @error="(e) => (e.target.src = 'https://s.pximg.net/common/images/no_profile.png')"
+                @error="onAvatarError"
               />
               <span>{{ book.seller }}</span>
             </div>
