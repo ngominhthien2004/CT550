@@ -332,6 +332,7 @@ onMounted(async () => {
 .novel-top-page {
   display: block;
   padding: 0.4rem 0;
+  min-width: 0;
 }
 
 .novel-top-page > :deep(*:not(:last-child)) {
