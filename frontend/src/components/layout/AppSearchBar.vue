@@ -111,9 +111,6 @@ async function submitSearch() {
     if (scopeType) {
       query.type = scopeType
     }
-    if (scopeType === 'novel') {
-      query.s_mode = 'tag_tc'
-    }
   }
 
   await router.push({

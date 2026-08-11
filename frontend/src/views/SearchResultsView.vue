@@ -170,8 +170,9 @@ const searchTypeTabs = computed(() => [
 ])
 
 const currentSearchOptions = computed(() => {
-  const sMode = typeof route.query.s_mode === 'string' ? route.query.s_mode : ''
-  const defaultTarget = sMode === 'tag_tc' ? 'tag_exact' : 'all'
+  // Target only comes from the explicit route query (set via the Search
+  // Options Modal); never derived implicitly from s_mode.
+  const defaultTarget = 'all'
   return {
     includeAll: typeof route.query.qall === 'string' ? route.query.qall : (typeof route.query.q === 'string' ? route.query.q : ''),
     includeAny: typeof route.query.qany === 'string' ? route.query.qany : '',
@@ -386,11 +387,10 @@ function buildTypeRoute(type) {
     }
   }
 
-  // Preserve s_mode from current route query
+  // Preserve s_mode from the current route query — do NOT force 'tag_tc' for
+  // novels. Filter criteria (target) changes only via the Search Options Modal.
   const currentS_mode = typeof route.query.s_mode === 'string' ? route.query.s_mode : ''
-  const s_mode = type === 'novel'
-    ? (currentS_mode || 'tag_tc')
-    : currentS_mode
+  const s_mode = currentS_mode
 
   const query = {
     ...baseSearchQuery.value,
@@ -510,10 +510,9 @@ async function loadSearchItems() {
     const includeAllRaw = typeof route.query.qall === 'string' ? route.query.qall : ''
     const includeAnyRaw = typeof route.query.qany === 'string' ? route.query.qany : ''
     const excludeRaw = typeof route.query.qnot === 'string' ? route.query.qnot : ''
-    const sMode = typeof route.query.s_mode === 'string' ? route.query.s_mode : ''
-    const target = typeof route.query.target === 'string'
-      ? route.query.target
-      : (sMode === 'tag_tc' ? 'tag_exact' : 'all')
+    // Target only comes from the explicit route query (set via the Search
+    // Options Modal) — default to all fields, never derived from s_mode.
+    const target = typeof route.query.target === 'string' ? route.query.target : 'all'
     const apiParams = { limit: 200 }
     if (q && q.trim()) apiParams.q = q.trim()
     if (dateRange.value.from) apiParams.from = dateRange.value.from
