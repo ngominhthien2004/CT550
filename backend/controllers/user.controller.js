@@ -481,9 +481,17 @@ const searchUsers = async (req, res, next) => {
             effectiveRole = 'user';
         }
 
-        // Cache key MUST include caller identity + role scope, otherwise
-        // the 60s TTL re-opens the admin-enumeration hole.
-        const cacheKey = buildKey('users:search', callerId, isAdminCaller ? 'admin' : 'user', req.query);
+        // Cache key MUST include caller identity + role scope + the parsed
+        // search params (q/page/limit/sort), otherwise the 60s TTL would serve
+        // one user's search results for every other search term they type.
+        const cacheKey = buildKey('users:search', {
+            caller: callerId,
+            role: effectiveRole,
+            q,
+            page,
+            limit,
+            sort,
+        });
 
         const result = await getOrSet(cacheKey, async () => {
             const filter = {};
