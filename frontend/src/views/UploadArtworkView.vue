@@ -110,9 +110,14 @@ const aiThreshold = computed(() => {
 const showAiWarning = computed(() => {
   return aiDetection.value?.isAI === true
 })
-const aiWarningMessage = computed(() =>
-  showAiWarning.value ? 'Ảnh của bạn được nhận diện là AI-generated. Nếu bạn thấy sai, hãy tắt trường này.' : '',
-)
+const aiWarningMessage = computed(() => {
+  if (!showAiWarning.value) return ''
+  const confidence = aiDetection.value?.confidence
+  const percent = Number.isFinite(confidence) ? Math.round(confidence) : null
+  return percent !== null
+    ? `Ảnh của bạn được nhận diện là ${percent}% AI-generated. Nếu bạn thấy sai, hãy tắt trường này.`
+    : 'Ảnh của bạn được nhận diện là AI-generated. Nếu bạn thấy sai, hãy tắt trường này.'
+})
 
 watch(showAiWarning, (newValue) => {
   if (newValue) {
