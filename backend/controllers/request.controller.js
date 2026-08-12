@@ -302,10 +302,11 @@ const getRequestTerms = async (req, res, next) => {
             .populate('creator', 'username displayName avatar')
             .sort({ createdAt: -1 });
 
-        // Attach open request count for each term's creator
+        // Attach open request count for each term
         const termsWithCount = await Promise.all(terms.map(async (term) => {
             const openCount = await Request.countDocuments({
                 creator: term.creator._id || term.creator,
+                term: term._id,
                 status: { $in: ACTIVE_REQUEST_STATUSES },
             });
             return {
