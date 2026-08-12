@@ -17,6 +17,7 @@
   "noItemsInCart": "カートは空です。",
   "addToCart": "カートに追加",
   "addedToCart": "カートに追加しました",
+  "alreadyInCart": "カートにあります",
   "adding": "追加中...",
   "removeFromCart": "カートから削除",
   "buyNow": "今すぐ購入",

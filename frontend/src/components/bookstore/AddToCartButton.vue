@@ -30,7 +30,13 @@ const { showSuccess, showError } = useToast()
 const quantity = ref(1)
 const adding = ref(false)
 
-const isDisabled = computed(() => props.disabled || adding.value)
+const isInCart = computed(() => {
+  return (bookStore.cartItems || []).some(
+    (item) => (item.book?._id || item.book) === props.bookId
+  )
+})
+
+const isDisabled = computed(() => props.disabled || adding.value || isInCart.value)
 
 function increase() {
   if (quantity.value < props.maxQuantity) {
@@ -67,7 +73,7 @@ async function addToCart() {
 
 <template>
   <div class="add-to-cart">
-    <div v-if="showQuantity" class="qty-control" role="group" :aria-label="t('bookstore.quantityLabel')">
+    <div v-if="showQuantity && !isInCart" class="qty-control" role="group" :aria-label="t('bookstore.quantityLabel')">
       <button
         type="button"
         class="qty-btn"
@@ -88,9 +94,9 @@ async function addToCart() {
         <i class="fa-solid fa-plus" aria-hidden="true"></i>
       </button>
     </div>
-    <button type="button" class="action-pill action-pill--post add-btn" :disabled="isDisabled" @click="addToCart">
-      <i class="fa-solid fa-cart-plus me-1" aria-hidden="true"></i>
-      {{ adding ? t('bookstore.adding') : t('bookstore.addToCart') }}
+    <button type="button" class="action-pill action-pill--post add-btn" :class="{ 'add-btn--in-cart': isInCart }" :disabled="isDisabled" @click="addToCart">
+      <i :class="isInCart ? 'fa-solid fa-check me-1' : 'fa-solid fa-cart-plus me-1'" aria-hidden="true"></i>
+      {{ adding ? t('bookstore.adding') : isInCart ? t('bookstore.alreadyInCart') : t('bookstore.addToCart') }}
     </button>
   </div>
 </template>
@@ -141,5 +147,10 @@ async function addToCart() {
   border-radius: 999px;
   padding: 0.55rem 1.2rem;
   font-weight: 600;
+}
+
+.add-btn--in-cart {
+  background: var(--muted, #64748b);
+  cursor: default;
 }
 </style>
