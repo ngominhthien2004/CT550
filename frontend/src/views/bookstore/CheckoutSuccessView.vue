@@ -12,6 +12,8 @@ onMounted(async () => {
   loading.value = true
   try {
     await bookStore.fetchOrders({ limit: 1 })
+    // Payment confirmed — safe to clear the cart
+    await bookStore.emptyCart()
   } finally {
     loading.value = false
   }

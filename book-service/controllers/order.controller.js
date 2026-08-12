@@ -36,6 +36,15 @@ const getCoverImage = (book) => {
 
 const createOrder = async (req, res, next) => {
     try {
+        // Clean up any stale pending orders from previous cancelled checkouts
+        const existingPendingOrder = await Order.findOne({
+            buyer: req.user._id,
+            status: 'pending'
+        });
+        if (existingPendingOrder) {
+            await Order.deleteOne({ _id: existingPendingOrder._id });
+        }
+
         const cart = await Cart.findOne({ user: req.user._id })
             .populate('items.book');
 
@@ -82,8 +91,6 @@ const createOrder = async (req, res, next) => {
             status: 'pending',
             paymentStatus: 'pending'
         });
-
-        await Cart.deleteOne({ user: req.user._id });
 
         const populatedOrder = await Order.findById(order._id)
             .populate('items.book', 'title coverImages')
