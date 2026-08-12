@@ -160,6 +160,7 @@ onMounted(loadAll)
           :request="selectedRequestDetail"
           :loading="detailLoading"
           :active-role="activeRole"
+          :action-error="actionError"
           @close="selectRequest(null)"
           @send-chat="handleChatMessage"
           @action="runAction"

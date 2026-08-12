@@ -6,6 +6,7 @@ const props = defineProps({
   request: { type: Object, default: null },
   loading: { type: Boolean, default: false },
   activeRole: { type: String, default: 'creator' },
+  actionError: { type: String, default: '' },
 })
 
 const emit = defineEmits(['close', 'action', 'send-chat', 'submit-draft'])
@@ -110,7 +111,7 @@ async function requestRevision() {
   if (requestingRevision.value || !revisionNote.value.trim()) return
   requestingRevision.value = true
   try {
-    emit('action', props.request._id, 'createRevision', { note: revisionNote.value.trim() })
+    emit('action', props.request._id, 'createRevision', { notes: revisionNote.value.trim() })
     revisionNote.value = ''
   } finally {
     requestingRevision.value = false
@@ -229,6 +230,7 @@ defineExpose({ updateChatMessages, setChatLoading })
             <button type="button" class="action-btn ghost" @click="requestingRevision = false; revisionNote = ''">Cancel</button>
           </div>
         </div>
+        <p v-if="actionError" class="action-error">{{ actionError }}</p>
       </section>
     </div>
 
@@ -660,5 +662,11 @@ defineExpose({ updateChatMessages, setChatLoading })
 .revision-actions {
   display: flex;
   gap: 0.5rem;
+}
+
+.action-error {
+  color: var(--danger, #dc3545);
+  font-size: 0.82rem;
+  margin-top: 0.5rem;
 }
 </style>

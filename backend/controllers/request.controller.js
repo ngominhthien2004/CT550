@@ -616,7 +616,7 @@ const createRevision = async (req, res, next) => {
             message: `Revision requested for "${request.title}".`,
         });
 
-        res.status(201).json(revision);
+        res.status(201).json(await populateRequest(Request.findById(request._id)));
     } catch (error) {
         next(error);
     }
