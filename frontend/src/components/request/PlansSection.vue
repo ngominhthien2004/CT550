@@ -46,6 +46,9 @@ async function executeDelete(termId) {
         </div>
         <p class="plan-meta">
           {{ term.currency }} {{ term.targetPrice }} · {{ term.estimatedDays }} days · {{ (term.acceptedWorkTypes || []).join(', ') }}
+          <span v-if="term.maxOpenRequests" class="plan-slot-badge">
+            {{ term.openRequestCount !== undefined ? (term.maxOpenRequests - term.openRequestCount) + ' / ' + term.maxOpenRequests + ' slots' : term.maxOpenRequests + ' slots' }}
+          </span>
         </p>
         <div class="plan-card-actions">
           <button type="button" class="delete-btn" @click="confirmDelete(term)">Delete</button>
@@ -127,6 +130,17 @@ async function executeDelete(termId) {
 }
 
 .plan-meta { margin: 0; font-size: 0.82rem; color: var(--muted); }
+
+.plan-slot-badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.12);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
 
 .empty { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.88rem; }
 
