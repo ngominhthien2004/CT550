@@ -9,6 +9,7 @@ import { getArtworks, getMyBookmarks, getMyLikes, getUserSeries, userApi, getFol
 import { getApiErrorMessage } from '../utils/apiErrors'
 import { typeLabelMap, buildTypeTabs, filterByType } from '../utils/typeTabs'
 import { useToast } from './useToast'
+import { isAIArtwork } from '../utils/aiFilter.js'
 
 const ARTWORKS_PER_PAGE = 24
 const BOOKMARKS_PER_PAGE = 24
@@ -110,9 +111,11 @@ export function useProfilePage() {
     buildTypeTabs(artworks.value, (item) => String(item.type || '').toLowerCase()),
   )
 
-  const visibleArtworks = computed(() =>
-    filterByType(artworks.value, activeType.value, (item) => String(item.type || '').toLowerCase()),
-  )
+  const visibleArtworks = computed(() => {
+    const hideAI = localStorage.getItem('hide_ai_content') === 'true'
+    const source = hideAI ? artworks.value.filter((a) => !isAIArtwork(a)) : artworks.value
+    return filterByType(source, activeType.value, (item) => String(item.type || '').toLowerCase())
+  })
 
   const bookmarkTypeTabs = computed(() =>
     buildTypeTabs(bookmarkStore.items, (item) => String(item?.artwork?.type || '').toLowerCase()),

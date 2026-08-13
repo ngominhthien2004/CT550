@@ -11,6 +11,7 @@ import { useFollowStore } from '../stores/follow.store'
 import { useAuthStore } from '../stores/auth.store'
 import { useLikeStore } from '../stores/like.store'
 import FollowingUsersStrip from '@/components/follow/FollowingUsersStrip.vue'
+import { isAIArtwork } from '../utils/aiFilter.js'
 
 const { t } = useI18n()
 const isNavCollapsed = ref(true)
@@ -86,7 +87,8 @@ async function loadHomeArtworks() {
     if (Array.isArray(data) && data.length > 0) {
       // Filter out novels — novels only show in the Novel tab
       const filtered = data.filter(item => item?.type !== 'novel')
-      liveWorks.value = filtered
+      const hideAI = localStorage.getItem('hide_ai_content') === 'true'
+      liveWorks.value = hideAI ? filtered.filter((item) => !isAIArtwork(item)) : filtered
 
       // Try follow-graph recommendations for authenticated users
       if (authStore.isAuthenticated) {
@@ -152,7 +154,8 @@ async function loadForYou() {
   try {
     const { data } = await api.get('/feed/for-you?limit=14')
     if (data?.artworks?.length) {
-      forYouWorks.value = data.artworks
+      const hideAI2 = localStorage.getItem('hide_ai_content') === 'true'
+      forYouWorks.value = hideAI2 ? (data.artworks || []).filter((item) => !isAIArtwork(item)) : (data.artworks || [])
     }
   } catch (_error) {
     // Silently fall back to default feed

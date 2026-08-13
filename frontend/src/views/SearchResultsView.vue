@@ -20,6 +20,7 @@ import { useLikeStore } from '../stores/like.store'
 
 import { formatShortDate } from '../utils/date.js'
 import { translateError } from '../utils/translateError.js'
+import { isAIArtwork } from '../utils/aiFilter.js'
 import { useTagStore } from '../stores/tag.store'
 
 const DEFAULT_PROFILE_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
@@ -250,6 +251,8 @@ const displayTags = computed(() => {
 const typeCounts = computed(() => {
   const counts = { illust: 0, manga: 0, gif: 0, novel: 0 }
   for (const item of searchItems.value) {
+    // Hide AI content if preference is set
+    if (localStorage.getItem('hide_ai_content') === 'true' && isAIArtwork(item)) continue
     const type = String(item.type || '').toLowerCase()
     if (Object.hasOwn(counts, type)) {
       counts[type] += 1
@@ -279,6 +282,8 @@ const visibleItems = computed(() => {
     const isR18 = item.ageRating === 'r-18' || item.isR18 === true
     if (ageFilter.value === 'safe' && isR18) return false
     if (ageFilter.value === 'r18' && !isR18) return false
+    // Hide AI content if preference is set
+    if (localStorage.getItem('hide_ai_content') === 'true' && isAIArtwork(item)) return false
     return true
   })
   if (sortMode.value === 'popular') {

@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/auth.store'
 import { useArtworkStore } from '@/stores/artwork.store'
 import { getArtworks } from '@/services/api'
 import { typeLabelMap } from '../../utils/typeTabs'
+import { isAIArtwork } from '../../utils/aiFilter.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -50,8 +51,11 @@ const typeFilters = computed(() => {
 })
 
 const filteredArtworks = computed(() => {
-  if (activeType.value === 'all') return artworks.value
-  return artworks.value.filter(a => String(a.type || '').toLowerCase() === activeType.value)
+  const hideAI = localStorage.getItem('hide_ai_content') === 'true'
+  let items = artworks.value
+  if (hideAI) items = items.filter((a) => !isAIArtwork(a))
+  if (activeType.value === 'all') return items
+  return items.filter(a => String(a.type || '').toLowerCase() === activeType.value)
 })
 
 async function loadArtworks() {

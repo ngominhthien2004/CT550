@@ -8,6 +8,7 @@ import { useFollowStore } from '../stores/follow.store'
 import { useAuthStore } from '../stores/auth.store'
 import { useLikeStore } from '../stores/like.store'
 import FollowingUsersStrip from '@/components/follow/FollowingUsersStrip.vue'
+import { isAIArtwork } from '../utils/aiFilter.js'
 
 const props = defineProps({
   workType: {
@@ -114,7 +115,8 @@ async function loadTypedArtworks() {
     const source = Array.isArray(data) ? data : []
     const normalizedWorks = source.filter((item) => item?.type === props.workType)
 
-    liveWorks.value = normalizedWorks
+    const hideAI = localStorage.getItem('hide_ai_content') === 'true'
+    liveWorks.value = hideAI ? normalizedWorks.filter((item) => !isAIArtwork(item)) : normalizedWorks
     normalizeTags(normalizedWorks)
 
     // Try follow-graph recommendations for authenticated users

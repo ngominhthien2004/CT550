@@ -15,6 +15,7 @@ import { useSeriesStore } from '../stores/series.store'
 import { useI18n } from 'vue-i18n'
 import { translateError } from '../utils/translateError.js'
 import { useToast } from '../composables/useToast'
+import { isAIArtwork } from '../utils/aiFilter.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -226,16 +227,18 @@ async function loadRelatedWorks() {
       return
     }
 
+    const hideAI = localStorage.getItem('hide_ai_content') === 'true'
     relatedWorks.value = data
-      .filter((item) => item?._id && item._id !== artworkId.value)
+      .filter((item) => item?._id && item._id !== artworkId.value && (!hideAI || !isAIArtwork(item)))
       .slice(0, 24)
   } catch (_error) {
     // Fallback: if CF endpoint fails, fetch recent artworks as before
     try {
       const { data: fallbackData } = await getArtworks()
       if (Array.isArray(fallbackData)) {
+        const hideAI = localStorage.getItem('hide_ai_content') === 'true'
         relatedWorks.value = fallbackData
-          .filter((item) => item?._id && item._id !== artworkId.value)
+          .filter((item) => item?._id && item._id !== artworkId.value && (!hideAI || !isAIArtwork(item)))
           .slice(0, 24)
       }
     } catch {

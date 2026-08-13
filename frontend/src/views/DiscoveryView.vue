@@ -9,6 +9,7 @@ import { ArtworkCard } from '@/components/artwork'
 import DateRangeFilter from '../components/common/DateRangeFilter.vue'
 import { useAuthStore } from '../stores/auth.store'
 import { useLikeStore } from '../stores/like.store'
+import { isAIArtwork } from '../utils/aiFilter.js'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -85,9 +86,17 @@ async function loadArtworks() {
 
 const visibleItems = computed(() => {
   if (r18Filter.value === 'r18') {
-    return artworks.value.filter((item) => item.ageRating === 'r-18')
+    return artworks.value.filter((item) => {
+      if (item.ageRating !== 'r-18') return false
+      if (localStorage.getItem('hide_ai_content') === 'true' && isAIArtwork(item)) return false
+      return true
+    })
   }
-  return artworks.value.filter((item) => item.ageRating !== 'r-18')
+  return artworks.value.filter((item) => {
+    if (item.ageRating === 'r-18') return false
+    if (localStorage.getItem('hide_ai_content') === 'true' && isAIArtwork(item)) return false
+    return true
+  })
 })
 
 const pageNumbers = computed(() => {

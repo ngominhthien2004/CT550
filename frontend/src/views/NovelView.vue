@@ -13,6 +13,7 @@ import { useLikeStore } from '../stores/like.store'
 import FollowingUsersStrip from '@/components/follow/FollowingUsersStrip.vue'
 
 import { formatShortDate } from '../utils/date.js'
+import { isAIArtwork } from '../utils/aiFilter.js'
 
 const DEFAULT_AVATAR = 'https://s.pximg.net/common/images/no_profile.png'
 
@@ -219,7 +220,8 @@ async function loadNovelTopPage() {
   try {
     const { data } = await getArtworks({ limit: 96, type: 'novel' })
     const source = Array.isArray(data) ? data : []
-    novelItems.value = source.filter((item) => item?.type === 'novel')
+    const hideAI = localStorage.getItem('hide_ai_content') === 'true'
+    novelItems.value = hideAI ? source.filter((item) => item?.type === 'novel' && !isAIArtwork(item)) : source.filter((item) => item?.type === 'novel')
 
     if (authStore.isAuthenticated && novelItems.value.length) {
       try {
