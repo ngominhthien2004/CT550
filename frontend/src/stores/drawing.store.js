@@ -290,6 +290,17 @@ export const useDrawingStore = defineStore('drawing', () => {
       if (tool.value === 'brush' || tool.value === 'eraser') {
         isDrawing.value = true
         const pos = screenToCanvas(nativeEvent.clientX, nativeEvent.clientY)
+        if (tool.value === 'eraser') {
+          const removed = removeHitShapes(pos)
+          if (removed.length > 0) {
+            const lid = activeLayer.value.id
+            if (!undoMap[lid]) undoMap[lid] = []
+            for (const shape of removed) {
+              undoMap[lid].push({ type: 'shape-erase', data: shape })
+            }
+            redoMap[lid] = []
+          }
+        }
         const lineConfig = createLineConfig(pos)
         activeLayer.value.lines.push(lineConfig)
       }
@@ -323,6 +334,18 @@ export const useDrawingStore = defineStore('drawing', () => {
       const lastLine = lines[lines.length - 1]
       if (lastLine) {
         lastLine.points = [...lastLine.points, pos.x, pos.y]
+      }
+      // Eraser: remove shapes while dragging
+      if (tool.value === 'eraser') {
+        const removed = removeHitShapes(pos)
+        if (removed.length > 0) {
+          const lid = activeLayer.value.id
+          if (!undoMap[lid]) undoMap[lid] = []
+          for (const shape of removed) {
+            undoMap[lid].push({ type: 'shape-erase', data: shape })
+          }
+          redoMap[lid] = []
+        }
       }
     }
   }
@@ -410,6 +433,11 @@ export const useDrawingStore = defineStore('drawing', () => {
     if (!redoMap[lid]) redoMap[lid] = []
     redoMap[lid].push(entry)
 
+    if (entry && entry.type === 'shape-erase') {
+      activeLayer.value.shapes.push(JSON.parse(JSON.stringify(entry.data)))
+      return
+    }
+
     if (entry && entry.type === 'shape') {
       var shapes = activeLayer.value.shapes
       for (var i = shapes.length - 1; i >= 0; i--) {
@@ -432,6 +460,14 @@ export const useDrawingStore = defineStore('drawing', () => {
     var entry = stack.pop()
     if (!undoMap[lid]) undoMap[lid] = []
     undoMap[lid].push(entry)
+
+    if (entry && entry.type === 'shape-erase') {
+      var shapes = activeLayer.value.shapes
+      for (var i = shapes.length - 1; i >= 0; i--) {
+        if (shapesEqual(shapes[i], entry.data)) { shapes.splice(i, 1); return }
+      }
+      return
+    }
 
     if (entry && entry.type === 'shape') {
       activeLayer.value.shapes.push(JSON.parse(JSON.stringify(entry.data)))
@@ -564,6 +600,64 @@ export const useDrawingStore = defineStore('drawing', () => {
       default:
         return null
     }
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  //  ERASER — SHAPE INTERSECTION DETECTION
+  // ════════════════════════════════════════════════════════════════════
+  function eraserHitsRect(point, eraserR, shape) {
+    var c = shape.config
+    var closestX = Math.max(c.x, Math.min(point.x, c.x + c.width))
+    var closestY = Math.max(c.y, Math.min(point.y, c.y + c.height))
+    var dx = point.x - closestX
+    var dy = point.y - closestY
+    return (dx * dx + dy * dy) <= (eraserR * eraserR)
+  }
+
+  function eraserHitsEllipse(point, eraserR, shape) {
+    var c = shape.config
+    var dx = point.x - c.x
+    var dy = point.y - c.y
+    var rx = c.radiusX + eraserR
+    var ry = c.radiusY + eraserR
+    return (dx * dx) / (rx * rx) + (dy * dy) / (ry * ry) <= 1
+  }
+
+  function eraserHitsLine(point, eraserR, shape) {
+    var pts = shape.config.points
+    var ax = pts[0], ay = pts[1]
+    var bx = pts[2], by = pts[3]
+    var abx = bx - ax, aby = by - ay
+    var apx = point.x - ax, apy = point.y - ay
+    var abLenSq = abx * abx + aby * aby
+    var t = abLenSq === 0 ? 0 : Math.max(0, Math.min(1, (apx * abx + apy * aby) / abLenSq))
+    var closestX = ax + t * abx
+    var closestY = ay + t * aby
+    var dx = point.x - closestX
+    var dy = point.y - closestY
+    return (dx * dx + dy * dy) <= (eraserR * eraserR)
+  }
+
+  function eraserHitsShape(point, eraserR, shape) {
+    switch (shape.type) {
+      case 'rect': return eraserHitsRect(point, eraserR, shape)
+      case 'circle': return eraserHitsEllipse(point, eraserR, shape)
+      case 'line':
+      case 'arrow': return eraserHitsLine(point, eraserR, shape)
+      default: return false
+    }
+  }
+
+  function removeHitShapes(pos) {
+    var eraserR = eraserSize.value / 2
+    var shapes = activeLayer.value.shapes
+    var removed = []
+    for (var i = shapes.length - 1; i >= 0; i--) {
+      if (eraserHitsShape(pos, eraserR, shapes[i])) {
+        removed.push(shapes.splice(i, 1)[0])
+      }
+    }
+    return removed
   }
 
   // ════════════════════════════════════════════════════════════════════
