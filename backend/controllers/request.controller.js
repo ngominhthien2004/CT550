@@ -15,6 +15,7 @@ const {
 const { createNotification } = require('../utils/notification');
 const { buildDateFilter } = require('../utils/dateFilter');
 const path = require('path');
+const cloudinary = require('cloudinary').v2;
 
 const REQUEST_POPULATE = [
     { path: 'creator', select: 'username displayName avatar' },
@@ -22,23 +23,40 @@ const REQUEST_POPULATE = [
     { path: 'term' },
 ];
 
-function fileToPublicAsset(file) {
-    const publicDir = path.join(__dirname, '..', 'public');
-    const relativePath = path.relative(publicDir, file.path).replace(/\\/g, '/');
-    return {
-        url: `/${relativePath}`,
-        originalName: file.originalname || '',
-        mimeType: file.mimetype || '',
-        size: file.size || 0,
-    };
+async function fileToPublicAsset(file) {
+    try {
+        const result = await cloudinary.uploader.upload(file.path, {
+            folder: process.env.CLOUDINARY_FOLDER || 'illuwrl-requests',
+            resource_type: 'auto',
+        });
+        return {
+            url: result.secure_url,
+            originalName: file.originalname || '',
+            mimeType: file.mimetype || '',
+            size: file.size || 0,
+        };
+    } catch (err) {
+        console.error('Cloudinary upload failed for request file:', file.path, err.message);
+        const publicDir = path.join(__dirname, '..', 'public');
+        const relativePath = path.relative(publicDir, file.path).replace(/\\/g, '/');
+        return {
+            url: `/${relativePath}`,
+            originalName: file.originalname || '',
+            mimeType: file.mimetype || '',
+            size: file.size || 0,
+        };
+    }
 }
 
-function filesFor(req, fieldName) {
+async function filesFor(req, fieldName) {
     if (Array.isArray(req.files)) {
-        return fieldName === 'referenceImages' ? req.files.map(fileToPublicAsset) : [];
+        return fieldName === 'referenceImages'
+            ? await Promise.all(req.files.map(fileToPublicAsset))
+            : [];
     }
 
-    return (req.files?.[fieldName] || []).map(fileToPublicAsset);
+    const fieldFiles = req.files?.[fieldName] || [];
+    return Promise.all(fieldFiles.map(fileToPublicAsset));
 }
 
 function parseStringList(value) {
@@ -346,7 +364,7 @@ const createRequest = async (req, res, next) => {
             proposedAmount: Number(req.body.proposedAmount),
             visibility: req.body.visibility || 'private',
             ageRating: req.body.ageRating || 'all',
-            referenceImages: filesFor(req, 'referenceImages'),
+            referenceImages: await filesFor(req, 'referenceImages'),
         };
 
         const validation = validateRequestSubmission(payload, term, { openRequestCount });
@@ -549,7 +567,7 @@ const submitDraft = async (req, res, next) => {
         const request = await findRequestOrFail(req.params.id);
         authorizeOrFail(ensureCreator(request, req.user._id), 'Only the creator can submit a draft');
 
-        const draftFiles = filesFor(req, 'draftFiles');
+        const draftFiles = await filesFor(req, 'draftFiles');
         if (!draftFiles.length) {
             res.status(400);
             return next(new Error('At least one draft file is required'));
@@ -628,13 +646,13 @@ const completeRequest = async (req, res, next) => {
         const request = await findRequestOrFail(req.params.id);
         authorizeOrFail(ensureCreator(request, req.user._id), 'Only the creator can complete this request');
 
-        const finalFiles = filesFor(req, 'finalFiles');
+        const finalFiles = await filesFor(req, 'finalFiles');
         if (!finalFiles.length) {
             res.status(400);
             return next(new Error('At least one final file is required'));
         }
         request.finalFiles = finalFiles;
-        request.giftFiles = filesFor(req, 'giftFiles');
+        request.giftFiles = await filesFor(req, 'giftFiles');
         request.chatClosedAt = new Date();
         await transitionRequest({
             request,
@@ -742,7 +760,7 @@ const createRequestChatMessage = async (req, res, next) => {
             return next(new Error('Request chat room is closed'));
         }
 
-        const attachments = filesFor(req, 'attachments');
+        const attachments = await filesFor(req, 'attachments');
         if (!attachments.length && (!req.body.content || !req.body.content.trim())) {
             res.status(400);
             return next(new Error('Message text or attachment is required'));
