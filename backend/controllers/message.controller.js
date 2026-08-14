@@ -2,6 +2,7 @@ const Message = require('../models/Message');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
 const path = require('path');
+const cloudinary = require('cloudinary').v2;
 const { getSocketIO } = require('../utils/socket');
 const { createNotification } = require('../utils/notification');
 
@@ -96,14 +97,26 @@ const createMessage = async (req, res, next) => {
             return next(new Error('Recipient not found'));
         }
 
-        // Process uploaded images
-        const publicDir = path.join(__dirname, '..', 'public');
-        const images = req.files && req.files.length > 0
-            ? req.files.map((file) => {
-                const relativePath = path.relative(publicDir, file.path).replace(/\\/g, '/');
-                return `/${relativePath}`;
-              })
-            : [];
+        // Process uploaded images — upload to Cloudinary for persistent storage
+        let images = [];
+        if (req.files && req.files.length > 0) {
+            const uploadPromises = req.files.map(async (file) => {
+                try {
+                    const result = await cloudinary.uploader.upload(file.path, {
+                        folder: process.env.CLOUDINARY_FOLDER || 'illuwrl-messages',
+                        resource_type: 'auto',
+                    });
+                    return result.secure_url;
+                } catch (err) {
+                    console.error('Cloudinary upload failed for message image:', file.path, err.message);
+                    // Fallback to local path
+                    const publicDir = path.join(__dirname, '..', 'public');
+                    const relativePath = path.relative(publicDir, file.path).replace(/\\/g, '/');
+                    return `/${relativePath}`;
+                }
+            });
+            images = await Promise.all(uploadPromises);
+        }
 
         // Content is optional if images are present
         const msgContent = content && content.trim() ? content.trim() : '';
